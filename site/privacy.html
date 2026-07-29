@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n-doc="priv.title">steamprofiler.org</title>
+<meta name="description" content="What steamprofiler.org does with data: what leaves the server on a lookup, the little that is kept, and what is not collected at all.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0b0a0e">
+<link rel="preload" href="/fonts/bricolage-grotesque-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts.css">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/extras.css">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+
+<header class="bar-top">
+  <a class="wordmark" href="/">steamprofiler<span>.org</span></a>
+  <nav class="bar-mods">
+    <a class="mod" href="/" data-i18n="nav.lookup"></a>
+    <a class="mod" href="/feedback" data-i18n="nav.messages"></a>
+    <a class="mod" href="/support" data-i18n="nav.support"></a>
+    <span class="langs" id="langs"></span>
+  </nav>
+</header>
+
+<main class="page">
+  <section class="page-head">
+    <p class="eyebrow" data-i18n="priv.eyebrow"></p>
+    <h1 class="display" data-i18n="priv.h1"></h1>
+    <p class="lede" data-i18n-html="priv.lede"></p>
+    <!-- The date is filled from POLICY_LOG rather than written here, so that
+         editing the policy and forgetting the date is not a thing that can
+         happen. Empty until the script runs, which is the honest failure. -->
+    <p class="page-stamp">
+      <span data-i18n="priv.updated"></span> <time id="priv-date"></time>
+      · <a href="/privacy/history" data-i18n="pol.see"></a>
+    </p>
+  </section>
+
+  <!-- ── What a lookup actually does ───────────────────────────────── -->
+  <article class="panel">
+    <div class="panel-bar"><span data-i18n="priv.flow"></span><b data-i18n="priv.flow_tag"></b></div>
+    <div class="panel-body">
+      <p class="card-body" data-i18n="priv.flow_1"></p>
+      <p class="card-body" data-i18n="priv.flow_2"></p>
+      <p class="card-body" data-i18n-html="priv.flow_3"></p>
+    </div>
+  </article>
+
+  <!-- ── What is kept ──────────────────────────────────────────────── -->
+  <article class="panel">
+    <div class="panel-bar"><span data-i18n="priv.kept"></span><b data-i18n="priv.kept_tag"></b></div>
+    <div class="panel-body">
+      <p class="card-body" data-i18n="priv.kept_intro"></p>
+      <ul class="plist">
+        <li data-i18n-html="priv.kept_msg"></li>
+        <li data-i18n-html="priv.kept_hash"></li>
+        <li data-i18n-html="priv.kept_lang"></li>
+        <li data-i18n-html="priv.kept_log"></li>
+        <li data-i18n-html="priv.kept_cache"></li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- ── What does not exist here ──────────────────────────────────── -->
+  <article class="panel">
+    <div class="panel-bar"><span data-i18n="priv.none"></span><b data-i18n="priv.none_tag"></b></div>
+    <div class="panel-body">
+      <ul class="plist">
+        <li data-i18n-html="priv.none_track"></li>
+        <li data-i18n-html="priv.none_cookie"></li>
+        <li data-i18n-html="priv.none_login"></li>
+        <li data-i18n-html="priv.none_history"></li>
+        <li data-i18n-html="priv.none_sell"></li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- ── Third parties the browser reaches ─────────────────────────── -->
+  <article class="panel">
+    <div class="panel-bar"><span data-i18n="priv.third"></span><b data-i18n="priv.third_tag"></b></div>
+    <div class="panel-body">
+      <p class="card-body" data-i18n="priv.third_intro"></p>
+      <ul class="plist">
+        <li data-i18n-html="priv.third_valve"></li>
+        <li data-i18n-html="priv.third_cdn"></li>
+        <li data-i18n-html="priv.third_tunnel"></li>
+        <li data-i18n-html="priv.third_pay"></li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- ── When the profile is not yours ─────────────────────────────── -->
+  <article class="panel">
+    <div class="panel-bar"><span data-i18n="priv.subject"></span><b data-i18n="priv.subject_tag"></b></div>
+    <div class="panel-body">
+      <p class="card-body" data-i18n="priv.subject_1"></p>
+      <p class="card-body" data-i18n-html="priv.subject_2"></p>
+    </div>
+  </article>
+
+  <!-- ── Rights and contact ────────────────────────────────────────── -->
+  <article class="panel">
+    <div class="panel-bar"><span data-i18n="priv.rights"></span><b data-i18n="priv.rights_tag"></b></div>
+    <div class="panel-body">
+      <p class="card-body" data-i18n-html="priv.rights_1"></p>
+      <p class="card-body" data-i18n="priv.rights_2"></p>
+      <p class="form-note" data-i18n-html="priv.rights_3"></p>
+    </div>
+  </article>
+</main>
+
+<footer class="foot">
+  <p><a href="/" data-i18n="nav.lookup"></a> · <a href="/privacy/history" data-i18n="pol.see"></a> · <a href="/feedback" data-i18n="foot.bugs_ideas"></a></p>
+  <p id="credit-slot"><a href="/u/gordziilla">made with &hearts;</a></p>
+  <p class="foot-legal" data-i18n="foot.disclaimer"></p>
+</footer>
+
+<script src="/dict.js"></script>
+<script src="/i18n.js"></script>
+<script src="/lib.js"></script>
+<script src="/policy-log.js"></script>
+<script src="/privacy.js"></script>
+</body>
+</html>

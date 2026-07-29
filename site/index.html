@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n-doc="land.title">steamprofiler.org</title>
+<meta name="description" content="Look up any public Steam profile: the whole library as an area map, one rectangle per game, and a page of its own for every game.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0b0a0e">
+<meta property="og:title" content="steamprofiler.org">
+<meta property="og:description" content="Any public Steam profile, with its library drawn to scale: one rectangle per game, area proportional to hours.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://steamprofiler.org/">
+<link rel="preload" href="fonts/bricolage-grotesque-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="home.css">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+</head>
+<body>
+
+<header class="bar-top">
+  <a class="wordmark" href="/">steamprofiler<span>.org</span></a>
+  <nav class="bar-mods">
+    <a class="mod" href="/feedback" data-i18n="nav.messages">feedback</a>
+    <a class="mod" href="/support" data-i18n="nav.support">support</a>
+    <a class="mod" href="https://steamcommunity.com/dev" data-hide-narrow="1" data-i18n="nav.steam_api">steam web api ↗</a>
+    <span class="langs" id="langs"></span>
+  </nav>
+</header>
+
+<main class="land">
+  <section class="land-in">
+    <p class="eyebrow" data-i18n="land.eyebrow"></p>
+    <h1 class="display" data-i18n-html="land.h1"></h1>
+    <p class="lede" data-i18n-html="land.lede"></p>
+
+    <form class="find" id="find" novalidate>
+      <label class="find-label" for="q" data-i18n="land.field"></label>
+      <div class="find-row">
+        <input class="find-input" id="q" name="q" type="text" autocomplete="off"
+               spellcheck="false" enterkeyhint="go"
+               data-i18n-ph="land.placeholder"
+               aria-describedby="find-help">
+        <button class="find-go" type="submit" id="find-go" data-i18n="land.go"></button>
+      </div>
+      <p class="find-help" id="find-help" data-i18n-html="land.help"></p>
+      <p class="find-error" id="find-error" hidden role="alert"></p>
+    </form>
+
+    <ul class="land-notes">
+      <li data-i18n-html="land.note_stored"></li>
+      <li data-i18n-html="land.note_public"></li>
+      <li data-i18n-html="land.note_login"></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="foot">
+  <p><a href="/u/gordziilla" data-i18n="foot.example"></a> · <a href="/feedback" data-i18n="foot.bugs_ideas"></a> · <a href="/support" data-i18n="nav.support"></a> · <a href="/privacy" data-i18n="nav.privacy"></a></p>
+  <p id="credit-slot"><a href="/u/gordziilla">made with ♥</a></p>
+  <p class="foot-legal" data-i18n="foot.disclaimer"></p>
+</footer>
+
+<noscript>
+  <p class="noscript">This page queries Steam live. Turn JavaScript on to use it.</p>
+</noscript>
+
+<script src="dict.js"></script>
+<script src="i18n.js"></script>
+<script src="lib.js"></script>
+<script src="search.js"></script>
+</body>
+</html>

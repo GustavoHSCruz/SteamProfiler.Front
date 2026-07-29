@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>403 / steamprofiler.org</title>
+<!-- Zero requests, and that is the whole design brief. Someone reading this
+     page has already been told no, so the page costs the server one response
+     and nothing else: styles inline, no script, no webfont, and an empty data:
+     icon because a browser with no <link rel=icon> goes and asks for
+     /favicon.ico on its own. All three languages at once, because there is no
+     script here to pick one and the reader is not being asked to click.
+
+     How long the ban lasts is deliberately not written anywhere on this page,
+     and must not be added back - not in the copy and not in a comment like
+     this one, which is served to the reader along with everything else. It
+     lives in GUARD_BAN, it is allowed to change, and naming it turns a system
+     rule into a promise while telling a scanner when to come back. The one way
+     out offered here is the appeal, which is a person reading it, not a
+     clock. -->
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    --bg: #0b0a0e; --panel: #131219; --line: #282631;
+    --text: #eeecf3; --dim: #8e8a9b; --faint: #5d5a6b; --accent: #ffb454;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+    font-family: var(--sans); font-size: 16px; line-height: 1.55;
+    display: flex; align-items: center; justify-content: center;
+    padding: clamp(16px, 5vw, 48px);
+  }
+  main {
+    width: 100%; max-width: 46rem;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    padding: clamp(20px, 4vw, 40px);
+  }
+  .code {
+    font-family: var(--mono); font-weight: 500; font-size: 13px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent);
+    margin: 0 0 6px;
+  }
+  h1 {
+    margin: 0 0 4px; font-size: clamp(26px, 5vw, 38px); font-weight: 800;
+    letter-spacing: -0.03em; line-height: 1.05;
+  }
+  .lede { margin: 0; color: var(--dim); font-size: 15px; }
+  /* The quote carries the tone of the whole page, so it gets the weight. */
+  blockquote {
+    margin: 26px 0 0; padding: 16px 18px;
+    background: #1a1822; border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0;
+  }
+  blockquote p { margin: 0; font-size: clamp(17px, 2.6vw, 21px); font-weight: 600; }
+  blockquote cite {
+    display: block; margin-top: 6px; font-style: normal; color: var(--faint);
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em;
+  }
+  section { border-top: 1px solid var(--line); margin-top: 26px; padding-top: 20px; }
+  h2 {
+    font-family: var(--mono); font-weight: 500; font-size: 12px;
+    letter-spacing: 0.16em; color: var(--faint);
+    margin: 0 0 8px; text-transform: uppercase;
+  }
+  section p { margin: 0; }
+  /* Short paragraphs with air between them. The copy lands harder broken up
+     than it does as a block, and a block is what it was. */
+  section p + p { margin-top: 13px; }
+  .last { color: var(--dim); }
+  .appeal {
+    margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line);
+  }
+  .appeal a {
+    display: inline-block; color: var(--bg); background: var(--accent);
+    text-decoration: none; font-weight: 700; font-size: 15px;
+    padding: 11px 20px; border-radius: 9px;
+  }
+  .appeal a:hover, .appeal a:focus { background: #ffc879; }
+  .appeal p {
+    margin: 0 0 12px; color: var(--dim); font-size: 14px;
+  }
+  footer {
+    margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--line);
+    color: var(--faint); font-family: var(--mono); font-size: 12px;
+  }
+  /* The site is dark by design and this page is not the place to introduce a
+     second look, but a reader forcing light should not get white on white. */
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f4f3f7; --panel: #ffffff; --line: #dedce6;
+      --text: #17161c; --dim: #5b5769; --faint: #85809a; --accent: #9a5c00;
+    }
+    blockquote { background: #f4f3f7; }
+    .appeal a { color: #ffffff; }
+    .appeal a:hover, .appeal a:focus { background: #7d4a00; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <p class="code">403 / banned</p>
+  <h1>Banned</h1>
+  <p class="lede">Banido &middot; Забанен</p>
+
+  <blockquote>
+    <p>&ldquo;Ah shit, here we go again.&rdquo;</p>
+    <cite>Carl Johnson</cite>
+  </blockquote>
+
+  <section lang="en">
+    <h2>English</h2>
+    <p>You went looking for a page you had no business asking for. Expecting to find
+    something? Here is your free ban.</p>
+    <p>This service is run by one person, on one machine, and that person has very
+    little patience for this.</p>
+    <p class="last">It is a community site, for the community. Go outside and touch
+    some grass.</p>
+  </section>
+
+  <section lang="pt-BR">
+    <h2>Português</h2>
+    <p>Você foi atrás de uma página que não devia. Esperava conseguir alguma coisa?
+    Toma aqui seu banimento grátis.</p>
+    <p>O serviço é mantido por uma pessoa só, numa máquina só, e essa pessoa não tem
+    muita paciência com isso.</p>
+    <p class="last">É um site da comunidade, para a comunidade. Sai do quarto e vai
+    tocar numa grama.</p>
+  </section>
+
+  <section lang="ru">
+    <h2>Русский</h2>
+    <p>Вы полезли за страницей, которую просить не следовало. Рассчитывали что-то найти?
+    Вот вам бесплатный бан.</p>
+    <p>Сервис держит один человек на одной машине, и терпения на такое у него немного.</p>
+    <p class="last">Это сайт сообщества и для сообщества. Выйдите на улицу, потрогайте
+    траву.</p>
+  </section>
+
+  <div class="appeal">
+    <p>If you think this was a mistake, open a ticket.<br>
+    Se você acha que isto foi um engano, abra um chamado.<br>
+    Если считаете это ошибкой, отправьте обращение.</p>
+    <a href="/appeal">Support &middot; Suporte &middot; Поддержка</a>
+  </div>
+
+  <footer>steamprofiler.org</footer>
+</main>
+</body>
+</html>

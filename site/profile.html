@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perfil - steamprofiler.org</title>
+<meta name="description" content="A Steam library measured in area: every game a profile has played, one rectangle each.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0b0a0e">
+<meta name="robots" content="noindex">
+<!-- Link previews. A scraper does not run JavaScript, so these cannot be filled
+     in by the router: nginx rewrites the marker below per profile, and what is
+     here is the fallback for anything that reaches this file another way. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="steamprofiler.org">
+<meta property="og:description" content="A Steam library measured in area: every game a profile has played, one rectangle each.">
+<!--og-->
+<link rel="preload" href="/fonts/bricolage-grotesque-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts.css">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/home.css">
+<link rel="stylesheet" href="/games.css">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+
+<header class="bar-top">
+  <a class="wordmark" href="/">steamprofiler<span>.org</span></a>
+  <nav class="bar-mods">
+    <a class="mod" id="back-link" href="/" hidden></a>
+    <span class="mod" id="mod-now" hidden><i class="dot"></i><span id="mod-now-text"></span></span>
+    <a class="mod" href="/feedback" data-i18n="nav.messages">feedback</a>
+    <a class="mod" href="/support" data-i18n="nav.support">support</a>
+    <a class="mod" href="/" data-i18n="nav.lookup_other">look up another profile</a>
+    <span class="langs" id="langs"></span>
+  </nav>
+</header>
+
+<p class="state" id="loading"></p>
+
+<div class="state state--fail" id="failure" hidden>
+  <p id="failure-text"></p>
+  <p class="state-links">
+    <a id="failure-retry" href="/" hidden></a>
+    <a href="/" data-i18n="err.try_other"></a>
+  </p>
+</div>
+
+<!-- ── The dashboard ───────────────────────────────────────────────── -->
+<main id="dash" hidden>
+
+  <section class="stage">
+    <div class="map" id="map" role="list" data-i18n-title="dash.map_label"></div>
+
+    <div class="float">
+      <div class="float-bar">
+        <span id="float-who">perfil</span>
+        <span id="float-span"></span>
+      </div>
+      <div class="float-body">
+        <h1 class="display"><span id="h-hours">-</span> <span data-i18n="dash.hours"></span></h1>
+        <p class="lede" id="h-lede"></p>
+      </div>
+    </div>
+
+    <output class="readout" id="readout" aria-live="polite"></output>
+  </section>
+
+  <p class="stage-caption"><span data-i18n="dash.caption"></span> <span class="only-wide" data-i18n="dash.caption_hint"></span></p>
+
+  <section class="grid" data-tile-in>
+
+    <article class="panel p-now">
+      <div class="panel-bar"><span data-i18n="dash.recent"></span><b id="now-total">-</b></div>
+      <div class="panel-body">
+        <div class="rows" id="now-rows"></div>
+        <p class="note" id="now-note"></p>
+      </div>
+    </article>
+
+    <article class="panel p-plat">
+      <div class="panel-bar"><span data-i18n="dash.system"></span><b data-i18n="dash.system_head"></b></div>
+      <div class="panel-body">
+        <p class="figure is-hot"><span id="plat-share">-</span><small data-i18n="dash.system_sub"></small></p>
+        <div class="meter" id="plat-meter" data-animate="1"><i></i></div>
+        <dl class="kv" id="plat-kv"></dl>
+        <p class="note" id="plat-note"></p>
+      </div>
+    </article>
+
+    <article class="panel p-acct">
+      <div class="panel-bar"><span data-i18n="dash.account"></span><b id="acct-level">-</b></div>
+      <div class="panel-body">
+        <div class="acct">
+          <img class="avatar" id="avatar" alt="" width="72" height="72" loading="lazy" decoding="async">
+          <div class="acct-id">
+            <p class="persona" id="persona">-</p>
+            <p class="note" id="member-since"></p>
+          </div>
+        </div>
+        <dl class="kv" id="acct-kv"></dl>
+      </div>
+    </article>
+
+    <!-- What the library cost, at the store's price today rather than at
+         whatever anyone actually paid. The panel says which of the two it is. -->
+    <article class="panel p-money" id="panel-money">
+      <div class="panel-bar"><span data-i18n="money.title"></span><b id="money-head">-</b></div>
+      <div class="panel-body">
+        <p class="figure is-hot"><span id="money-total">-</span><small data-i18n="money.total_sub"></small></p>
+        <dl class="kv" id="money-kv"></dl>
+        <div class="rate" id="money-rates"></div>
+        <p class="note" id="money-note"></p>
+      </div>
+    </article>
+
+    <article class="panel p-gen" id="panel-gen">
+      <div class="panel-bar"><span data-i18n="gen.title"></span><b id="gen-head">-</b></div>
+      <div class="panel-body">
+        <div class="rows" id="gen-rows"></div>
+        <p class="note" id="gen-note"></p>
+      </div>
+    </article>
+
+    <!-- The versus page has existed since the treemap did. This is the first
+         thing that makes it clickable rather than typed from memory. -->
+    <article class="panel p-mates" id="panel-mates">
+      <div class="panel-bar"><span data-i18n="fr.title"></span><b id="fr-head">-</b></div>
+      <div class="panel-body">
+        <ul class="mates" id="fr-list"></ul>
+        <p class="note" id="fr-note"></p>
+      </div>
+    </article>
+
+    <!-- Whatever the profile wrote in its text showcase, set like a terminal. -->
+    <article class="panel p-rig" id="panel-showcase">
+      <div class="panel-bar"><span data-i18n="dash.showcase"></span><b>~/profile</b></div>
+      <div class="panel-body">
+        <pre class="term" id="showcase"></pre>
+        <div class="term-quote" id="bio-wrap" hidden>
+          <span class="term-prompt">$</span>
+          <pre class="term-out" id="bio"></pre>
+        </div>
+      </div>
+    </article>
+
+    <article class="panel p-pages" id="jogos">
+      <div class="panel-bar"><span data-i18n="dash.pages"></span><b id="pages-count">-</b></div>
+      <div class="panel-body">
+        <ul class="pages" id="pages"></ul>
+        <p class="note" data-i18n="dash.pages_note"></p>
+      </div>
+    </article>
+
+    <article class="panel p-table">
+      <div class="panel-bar"><span data-i18n="dash.table"></span><b id="table-share">-</b></div>
+      <div class="panel-body">
+        <div class="table-scroll">
+          <table class="ranked">
+            <thead>
+              <tr>
+                <th class="c-rank" scope="col">#</th>
+                <th scope="col" data-i18n="th.game"></th>
+                <th class="c-num" scope="col" data-i18n="th.hours"></th>
+                <th class="c-num" scope="col">%</th>
+                <th class="c-num c-os" scope="col" data-i18n="th.linux"></th>
+                <th class="c-date" scope="col" data-i18n="th.last"></th>
+              </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </article>
+
+    <!-- Behind a button on purpose: three calls per game against the owner's
+         key, which is the most expensive thing this site can be asked for. -->
+    <article class="panel p-rare" id="raridades">
+      <div class="panel-bar"><span data-i18n="rar.title"></span><b id="rar-head">-</b></div>
+      <div class="panel-body">
+        <button class="rar-go" id="rar-go" type="button"></button>
+        <ul class="rares" id="rar-list"></ul>
+        <p class="note" id="rar-note"></p>
+      </div>
+    </article>
+
+    <article class="panel p-time" id="linha">
+      <div class="panel-bar"><span data-i18n="time.title"></span><b id="time-span">-</b></div>
+      <div class="panel-body">
+        <div class="time" id="time-chart"></div>
+        <output class="time-out" id="time-out" aria-live="polite"></output>
+        <p class="note" data-i18n="time.note"></p>
+      </div>
+    </article>
+
+    <article class="panel p-all" id="biblioteca">
+      <div class="panel-bar"><span data-i18n="dash.all"></span><b id="all-count">-</b></div>
+      <div class="panel-body">
+        <div class="all-tools">
+          <input class="all-find" id="all-find" type="search" autocomplete="off"
+                 data-i18n-ph="dash.all_find" data-i18n-title="dash.all_find">
+          <div class="all-sorts" id="all-sorts" role="group" data-i18n-title="dash.all_sort"></div>
+        </div>
+        <ul class="all" id="all-list"></ul>
+        <button class="all-more" id="all-more" type="button" hidden></button>
+        <p class="note" id="all-note"></p>
+        <p class="all-pile"><a id="all-pile-link" href="/"></a></p>
+        <form class="cmp" id="cmp">
+          <label class="cmp-label" for="cmp-who" data-i18n="vs.compare_with"></label>
+          <div class="cmp-row">
+            <input class="cmp-who" id="cmp-who" type="text" autocomplete="off"
+                   data-i18n-ph="vs.compare_ph">
+            <button class="cmp-go" type="submit" data-i18n="vs.go"></button>
+          </div>
+        </form>
+      </div>
+    </article>
+
+  </section>
+</main>
+
+<!-- ── One game ────────────────────────────────────────────────────── -->
+<main id="game" hidden>
+  <div id="g-root"></div>
+</main>
+
+<!-- ── Two profiles ────────────────────────────────────────────────── -->
+<main id="versus" hidden>
+  <div id="v-root"></div>
+</main>
+
+<!-- ── The pile ────────────────────────────────────────────────────────
+     Every game owned and never once launched. On most accounts this is the
+     larger half of the library, and until now it was five hundred rows in a
+     list somebody else's games were also in. -->
+<main id="backlog" hidden>
+  <header class="bl-head">
+    <h1 class="display"><span id="bl-count">-</span> <span data-i18n="bl.title"></span></h1>
+    <p class="lede" id="bl-lede"></p>
+  </header>
+
+  <section class="grid">
+    <article class="panel p-bl">
+      <div class="panel-bar"><span data-i18n="bl.pile"></span><b id="bl-worth">-</b></div>
+      <div class="panel-body">
+        <div class="all-tools">
+          <input class="all-find" id="bl-find" type="search" autocomplete="off"
+                 data-i18n-ph="bl.find" data-i18n-title="bl.find">
+          <div class="all-sorts" id="bl-sorts" role="group" data-i18n-title="dash.all_sort"></div>
+        </div>
+        <ul class="pile" id="bl-list"></ul>
+        <button class="all-more" id="bl-more" type="button" hidden></button>
+        <p class="note" id="bl-note"></p>
+      </div>
+    </article>
+  </section>
+</main>
+
+<footer class="foot">
+  <p><span data-i18n="foot.source_pre"></span> <time id="g-generated"></time>. <a href="/feedback" data-i18n="foot.found_bug"></a> · <a href="/privacy" data-i18n="nav.privacy"></a></p>
+  <p id="credit-slot"><a href="/u/gordziilla">made with ♥</a></p>
+  <p class="foot-legal" data-i18n="foot.disclaimer"></p>
+</footer>
+
+<noscript>
+  <p class="noscript">This page builds its data live, straight from Steam. Turn JavaScript on to see it.</p>
+</noscript>
+
+<script src="/dict.js"></script>
+<script src="/i18n.js"></script>
+<script src="/lib.js"></script>
+<script src="/dash.js"></script>
+<script src="/game.js"></script>
+<script src="/router.js"></script>
+</body>
+</html>

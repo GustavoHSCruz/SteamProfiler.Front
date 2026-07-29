@@ -1,0 +1,120 @@
+/* steamprofiler.org - routing for /u/*.
+   nginx serves profile.html for every path under /u/, so the path is the state:
+
+     /u/<perfil>            the dashboard
+     /u/<perfil>/<appid>    one game
+     /u/<perfil>/backlog    everything owned and never launched
+
+   <perfil> is whatever the visitor typed - a vanity name or a steamID64 - and it
+   stays in the URL untouched so the link is shareable and readable. */
+
+const parts = decodeURIComponent(location.pathname).split('/').filter(Boolean);
+const query = parts[1] || '';
+const appid = parts[2] && /^\d+$/.test(parts[2]) ? Number(parts[2]) : null;
+// /u/<a>/vs/<b> - two libraries against each other. `vs` cannot collide with an
+// appid, which is always digits, so the same path space carries both. `backlog`
+// is in that same space for the same reason.
+const rival = parts[2] === 'vs' && parts[3] ? parts[3] : null;
+const pile = parts[2] === 'backlog';
+
+const loading = el('loading');
+const failure = el('failure');
+
+function fail(message, retry) {
+  loading.hidden = true;
+  // A half-drawn view behind an error message reads as two answers at once.
+  el('dash').hidden = true;
+  el('game').hidden = true;
+  el('backlog').hidden = true;
+  failure.hidden = false;
+  el('failure-text').textContent = message;
+  const again = el('failure-retry');
+  if (retry) {
+    again.hidden = false;
+    again.href = retry;
+    again.textContent = t('err.see_profile');
+  }
+}
+
+function showChrome(profileQuery, persona) {
+  const back = el('back-link');
+  back.href = `/u/${encodeURIComponent(profileQuery)}`;
+  back.textContent = persona ? `↩ ${persona}` : t('nav.profile');
+  back.hidden = false;
+}
+
+(async () => {
+  applyStatic();
+  langSwitchInto(el('langs'));
+  // The credit belongs on the page whether the lookup worked or not.
+  creditInto(el('credit-slot'));
+
+  if (!query) {
+    location.replace('/');
+    return;
+  }
+
+  el('loading').innerHTML = t('dash.loading', { who: `<b>${query}</b>` });
+
+  let steamid;
+  try {
+    ({ steamid } = await api(`/resolve?q=${encodeURIComponent(query)}`));
+  } catch (e) {
+    fail(e.message);
+    return;
+  }
+
+  try {
+    if (rival) {
+      let other;
+      try {
+        ({ steamid: other } = await api(`/resolve?q=${encodeURIComponent(rival)}`));
+      } catch (e) {
+        fail(t('vs.no_rival', { who: rival }));
+        return;
+      }
+      // Both in flight at once: they are two independent lookups, and the
+      // second one should not wait on the first one's round trips to Steam.
+      const [a, b] = await Promise.all([
+        api(`/profile?id=${steamid}`), api(`/profile?id=${other}`),
+      ]);
+      document.title = `${a.profile.persona} vs ${b.profile.persona} - steamprofiler.org`;
+      loading.hidden = true;
+      el('versus').hidden = false;
+      renderVersus(a, b, encodeURIComponent(query), encodeURIComponent(rival), el('v-root'));
+      showChrome(query, a.profile.persona);
+    } else if (pile) {
+      const d = await api(`/profile?id=${steamid}`);
+      loading.hidden = true;
+      el('backlog').hidden = false;
+      showChrome(query, d.profile.persona);
+      // Its own await: the page is drawn from the profile and then asks the
+      // store cache for prices, which it can do without.
+      await renderBacklog(d, encodeURIComponent(query));
+    } else if (appid) {
+      // The game view needs the profile anyway (for the name and the rank), and
+      // the API has it cached by the time this returns.
+      const g = await api(`/game?id=${steamid}&appid=${appid}`);
+      document.title = `${g.name} - steamprofiler.org`;
+      loading.hidden = true;
+      el('game').hidden = false;
+      renderGame(g, el('g-root'));
+      const when = el('g-generated');
+      if (g.generated_at) {
+        when.dateTime = g.generated_at;
+        when.textContent = stamp(g.generated_at);
+      }
+      showChrome(query, null);
+      api(`/profile?id=${steamid}`)
+        .then((p) => showChrome(query, p.profile.persona))
+        .catch(() => {});
+    } else {
+      const d = await api(`/profile?id=${steamid}`);
+      loading.hidden = true;
+      el('dash').hidden = false;
+      renderDashboard(d, encodeURIComponent(query));
+    }
+  } catch (e) {
+    fail(e.message, appid ? `/u/${encodeURIComponent(query)}` : null);
+  }
+})();

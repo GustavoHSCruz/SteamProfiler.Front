@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n-doc="blog.title">steamprofiler.org</title>
+<meta name="description" content="A post from the steamprofiler.org blog.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0b0a0e">
+<meta property="og:type" content="article">
+<link rel="preload" href="/fonts/bricolage-grotesque-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts.css">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/extras.css">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+
+<header class="bar-top">
+  <a class="wordmark" href="/">steamprofiler<span>.org</span></a>
+  <nav class="bar-mods">
+    <a class="mod" href="/blog" data-i18n="blog.all"></a>
+    <a class="mod" href="/" data-i18n="nav.lookup"></a>
+    <a class="mod" href="/feedback" data-i18n="nav.messages"></a>
+    <span class="langs" id="langs"></span>
+  </nav>
+</header>
+
+<main class="page">
+  <p class="state" id="loading" data-i18n="blog.loading"></p>
+
+  <section id="failure" hidden>
+    <p class="eyebrow" data-i18n="blog.eyebrow"></p>
+    <h1 class="display" id="failure-text">-</h1>
+    <p class="lede"><a href="/blog" data-i18n="blog.all"></a></p>
+  </section>
+
+  <article id="post" hidden>
+    <header class="page-head post-head">
+      <p class="eyebrow" id="post-tags"></p>
+      <h1 class="display" id="post-title">-</h1>
+      <p class="lede" id="post-lede" hidden></p>
+      <p class="page-stamp" id="post-stamp"></p>
+      <p class="notice" id="post-lang" hidden></p>
+    </header>
+
+    <div class="prose" id="post-body"></div>
+
+    <div class="post-foot">
+      <div class="post-vote" id="post-vote"></div>
+      <p class="form-note" data-i18n-html="blog.vote_note"></p>
+    </div>
+
+    <nav class="post-nav" id="post-nav"></nav>
+  </article>
+</main>
+
+<footer class="foot">
+  <p><a href="/blog" data-i18n="blog.all"></a> · <a href="/" data-i18n="nav.lookup"></a> · <a href="/feedback" data-i18n="foot.bugs_ideas"></a></p>
+  <p id="credit-slot"><a href="/u/gordziilla">made with &hearts;</a></p>
+  <p class="foot-legal" data-i18n="foot.disclaimer"></p>
+</footer>
+
+<noscript>
+  <p class="noscript">This page reads the post with JavaScript. Turn it on to use it.</p>
+</noscript>
+
+<script src="/dict.js"></script>
+<script src="/i18n.js"></script>
+<script src="/lib.js"></script>
+<script src="/post.js"></script>
+</body>
+</html>

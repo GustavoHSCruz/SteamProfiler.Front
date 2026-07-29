@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>429 / steamprofiler.org</title>
+<!-- Same construction as banned.html and for the same reason: one response,
+     no second request. This one is likelier to be read by an actual person,
+     since half a minute is what a reader clicking quickly earns, so the copy
+     is written to reassure rather than to accuse. Deliberately not in the tone
+     of banned.html: that page is for somebody who came looking for a
+     credential, this one is for somebody who wanted to see a profile.
+
+     The number appears three times below and once as Retry-After in
+     nginx.conf, and none of them can read GUARD_BLOCK. If it changes, it
+     changes in all five places or the page starts lying. -->
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    --bg: #0b0a0e; --panel: #131219; --line: #282631;
+    --text: #eeecf3; --dim: #8e8a9b; --faint: #5d5a6b; --accent: #ffb454;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+    font-family: var(--sans); font-size: 16px; line-height: 1.55;
+    display: flex; align-items: center; justify-content: center;
+    padding: clamp(16px, 5vw, 48px);
+  }
+  main {
+    width: 100%; max-width: 46rem;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    padding: clamp(20px, 4vw, 40px);
+  }
+  .code {
+    font-family: var(--mono); font-weight: 500; font-size: 13px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent);
+    margin: 0 0 6px;
+  }
+  h1 {
+    margin: 0 0 4px; font-size: clamp(26px, 5vw, 38px); font-weight: 800;
+    letter-spacing: -0.03em; line-height: 1.05;
+  }
+  .lede { margin: 0; color: var(--dim); font-size: 15px; }
+  section { border-top: 1px solid var(--line); margin-top: 26px; padding-top: 20px; }
+  h2 {
+    font-family: var(--mono); font-weight: 500; font-size: 12px;
+    letter-spacing: 0.16em; color: var(--faint);
+    margin: 0 0 8px; text-transform: uppercase;
+  }
+  section p { margin: 0; }
+  strong { color: var(--accent); font-weight: 600; }
+  footer {
+    margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--line);
+    color: var(--faint); font-family: var(--mono); font-size: 12px;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f4f3f7; --panel: #ffffff; --line: #dedce6;
+      --text: #17161c; --dim: #5b5769; --faint: #85809a; --accent: #9a5c00;
+    }
+  }
+</style>
+</head>
+<body>
+<main>
+  <p class="code">429 / too many requests</p>
+  <h1>Thirty seconds</h1>
+  <p class="lede">Trinta segundos &middot; Тридцать секунд</p>
+
+  <section lang="en">
+    <h2>English</h2>
+    <p>This address is asking faster than the site answers. Every profile it builds
+    spends the owner's Steam allowance, so there is a ceiling, and you reached it.
+    Wait <strong>thirty seconds</strong> and reload. Nothing is wrong with your browser,
+    and nothing was blocked for good.</p>
+  </section>
+
+  <section lang="pt-BR">
+    <h2>Português</h2>
+    <p>Este endereço está pedindo mais rápido do que o site responde. Cada perfil montado
+    gasta a cota da Steam do dono, então existe um teto, e você chegou nele. Espere
+    <strong>trinta segundos</strong> e recarregue. Não há nada de errado com o seu
+    navegador, e nada foi bloqueado em definitivo.</p>
+  </section>
+
+  <section lang="ru">
+    <h2>Русский</h2>
+    <p>С этого адреса запросы идут быстрее, чем сайт успевает отвечать. Каждый собранный
+    профиль расходует квоту Steam владельца, поэтому есть предел, и вы его достигли.
+    Подождите <strong>тридцать секунд</strong> и обновите страницу. С вашим браузером всё
+    в порядке, и ничего не заблокировано насовсем.</p>
+  </section>
+
+  <footer>steamprofiler.org</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n-doc="sup.title">steamprofiler.org</title>
+<meta name="description" content="steamprofiler.org runs on a server at home and is free. If it was useful and you want to help pay the power bill, there is a way.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0b0a0e">
+<link rel="preload" href="/fonts/bricolage-grotesque-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts.css">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/extras.css">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+
+<header class="bar-top">
+  <a class="wordmark" href="/">steamprofiler<span>.org</span></a>
+  <nav class="bar-mods">
+    <a class="mod" href="/" data-i18n="nav.lookup"></a>
+    <a class="mod" href="/feedback" data-i18n="nav.messages"></a>
+    <span class="langs" id="langs"></span>
+  </nav>
+</header>
+
+<main class="page">
+  <section class="page-head">
+    <p class="eyebrow" data-i18n="sup.eyebrow"></p>
+    <h1 class="display" data-i18n="sup.h1"></h1>
+    <p class="lede" data-i18n-html="sup.lede"></p>
+  </section>
+
+  <div class="channels" id="channels"></div>
+
+  <p class="empty" id="none" hidden></p>
+
+  <article class="panel" id="honest">
+    <div class="panel-bar"><span data-i18n="sup.honest"></span><b data-i18n="sup.no_promise"></b></div>
+    <div class="panel-body">
+      <p class="card-body" data-i18n="sup.honest_1"></p>
+      <p class="card-body" data-i18n="sup.honest_2"></p>
+      <p class="form-note" data-i18n-html="sup.honest_3"></p>
+    </div>
+  </article>
+</main>
+
+<footer class="foot">
+  <p><a href="/feedback" data-i18n="foot.bugs_ideas"></a> · <a href="/privacy" data-i18n="nav.privacy"></a></p>
+  <p id="credit-slot"><a href="/u/gordziilla">made with ♥</a></p>
+  <p class="foot-legal" data-i18n="foot.disclaimer"></p>
+</footer>
+
+<noscript>
+  <p class="noscript">This page loads the support channels with JavaScript. Turn it on to see them.</p>
+</noscript>
+
+<script src="/dict.js"></script>
+<script src="/i18n.js"></script>
+<script src="/lib.js"></script>
+<script src="/support.js"></script>
+</body>
+</html>

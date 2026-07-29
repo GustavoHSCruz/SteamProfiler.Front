@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n-doc="msg.title">steamprofiler.org</title>
+<meta name="description" content="Found a bug, have an idea, or want to complain about something on steamprofiler.org? Send it here. Whatever I accept goes on the public board.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0b0a0e">
+<link rel="preload" href="/fonts/bricolage-grotesque-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts.css">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/extras.css">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+
+<header class="bar-top">
+  <a class="wordmark" href="/">steamprofiler<span>.org</span></a>
+  <nav class="bar-mods">
+    <a class="mod" href="/" data-i18n="nav.lookup"></a>
+    <a class="mod" href="/support" data-i18n="nav.support"></a>
+    <span class="langs" id="langs"></span>
+  </nav>
+</header>
+
+<main class="page">
+  <section class="page-head">
+    <p class="eyebrow" data-i18n="msg.eyebrow"></p>
+    <h1 class="display" data-i18n-html="msg.h1"></h1>
+    <p class="lede" data-i18n-html="msg.lede"></p>
+  </section>
+
+  <div class="cols">
+    <!-- ── The form ──────────────────────────────────────────────── -->
+    <article class="panel">
+      <div class="panel-bar"><span data-i18n="msg.form"></span><b data-i18n="msg.no_login"></b></div>
+      <div class="panel-body">
+        <form id="form" novalidate>
+          <div class="field">
+            <label for="kind" data-i18n="msg.what"></label>
+            <div class="kinds">
+              <label class="kind">
+                <input type="radio" name="kind" value="bug" id="kind" checked>
+                <span data-i18n="msg.kind_bug"></span>
+              </label>
+              <label class="kind">
+                <input type="radio" name="kind" value="ideia">
+                <span data-i18n="msg.kind_idea"></span>
+              </label>
+              <label class="kind">
+                <input type="radio" name="kind" value="outro">
+                <span data-i18n="msg.kind_other"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="title" data-i18n="msg.title_field"></label>
+            <input class="input" id="title" name="title" type="text" maxlength="120"
+                   autocomplete="off" data-i18n-ph="msg.title_ph">
+          </div>
+
+          <div class="field">
+            <label for="message" data-i18n="msg.body"></label>
+            <textarea class="textarea" id="message" name="message" maxlength="2000"
+                      data-i18n-ph="msg.body_ph"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="contact"><span data-i18n="msg.contact"></span> <em data-i18n="msg.contact_opt"></em></label>
+            <input class="input" id="contact" name="contact" type="text" maxlength="200"
+                   autocomplete="off" data-i18n-ph="msg.contact_ph">
+          </div>
+
+          <div class="trap" aria-hidden="true">
+            <label for="website" data-i18n="msg.trap"></label>
+            <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
+          </div>
+
+          <div class="form-foot">
+            <button class="btn" type="submit" id="send" data-i18n="msg.send"></button>
+            <span class="form-note" id="count">0 / 2000</span>
+          </div>
+          <div class="notice" id="result" hidden></div>
+        </form>
+
+        <p class="form-note" data-i18n-html="msg.privacy"></p>
+      </div>
+    </article>
+
+    <!-- ── The board ─────────────────────────────────────────────── -->
+    <section>
+      <article class="panel">
+        <div class="panel-bar"><span data-i18n="msg.board"></span><b id="board-count">-</b></div>
+        <div class="panel-body">
+          <div class="board" id="board"></div>
+          <p class="empty" id="board-empty" hidden data-i18n="msg.board_empty"></p>
+        </div>
+      </article>
+    </section>
+  </div>
+</main>
+
+<footer class="foot">
+  <p><a href="/" data-i18n="nav.lookup"></a> · <a href="/privacy" data-i18n="nav.privacy"></a></p>
+  <p id="credit-slot"><a href="/u/gordziilla">made with ♥</a></p>
+  <p class="foot-legal" data-i18n="foot.disclaimer"></p>
+</footer>
+
+<noscript>
+  <p class="noscript">This page sends the message with JavaScript. Turn it on to use it.</p>
+</noscript>
+
+<script src="/dict.js"></script>
+<script src="/i18n.js"></script>
+<script src="/lib.js"></script>
+<script src="/feedback.js"></script>
+</body>
+</html>

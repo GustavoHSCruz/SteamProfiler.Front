@@ -1,0 +1,135 @@
+/* Generates site/policy-log.js and site/policy-text.js from the live priv.*
+   keys in site/dict.js. Run from the repo root.
+
+   The snapshot comes from the dictionary rather than being retyped, or the
+   archive would be a paraphrase of the policy instead of a copy of it.
+
+   Two files on purpose: /privacy needs only the newest date and loads the
+   small one, while the archive text - which grows by 41 strings x 3 languages
+   every revision - is only ever fetched by the page that reads it. */
+const fs = require('fs'), vm = require('vm');
+
+const ctx = {};
+vm.createContext(ctx);
+vm.runInContext(fs.readFileSync('site/dict.js', 'utf8') + ';globalThis.__D=DICT;', ctx);
+const D = ctx.__D;
+
+const LANGS = ['en', 'pt', 'ru'];
+const keys = Object.keys(D.en).filter((k) => k.startsWith('priv.')).sort();
+
+/* One entry per revision. `text: 'live'` means "take it from dict.js now" and
+   may only ever appear on the last entry - everything before it is frozen and
+   is read back out of the existing policy-text.js. */
+const REVISIONS = [
+  {
+    version: 1,
+    date: '2026-07-27',
+    commit: null,
+    summary: {
+      en: 'First published. Everything the site keeps, everything it does not, and who else sees anything.',
+      pt: 'Primeira publicação. Tudo o que o site guarda, tudo o que ele não guarda, e quem mais vê alguma coisa.',
+      ru: 'Первая публикация. Всё, что сайт хранит, всё, чего не хранит, и кто ещё что-то видит.',
+    },
+  },
+  {
+    version: 2,
+    date: '2026-07-28',
+    commit: null,
+    summary: {
+      en: 'The game pages now show what a game costs, so this server asks the Steam storefront as well as the Steam Web API. Said so.',
+      pt: 'As páginas de jogo passaram a mostrar quanto o jogo custa, então este servidor consulta a loja da Steam além da Steam Web API. Passei a dizer isso.',
+      ru: 'На страницах игр появилась цена, поэтому сервер обращается не только к Steam Web API, но и к магазину Steam. Теперь об этом сказано.',
+    },
+  },
+  {
+    version: 3,
+    date: '2026-07-28',
+    commit: null,
+    summary: {
+      en: 'Prices are now read from the shop matching the reader\'s language, so the language choice is sent with a price request. It used to say the choice never left your machine, and that had stopped being true.',
+      pt: 'Os preços passaram a ser lidos da loja correspondente ao idioma do leitor, então a escolha de idioma vai junto na consulta de preço. O texto dizia que a escolha nunca saía da sua máquina, e isso tinha deixado de ser verdade.',
+      ru: 'Цены теперь читаются из магазина, соответствующего языку читателя, поэтому выбор языка уходит вместе с запросом цены. Раньше было сказано, что выбор не покидает вашу машину, и это перестало быть правдой.',
+    },
+    text: 'live',
+  },
+];
+
+// Frozen revisions are read back out of the file rather than rebuilt, so that
+// re-running this can never rewrite history - only append to it.
+let frozen = {};
+if (fs.existsSync('site/policy-text.js')) {
+  const old = {};
+  vm.createContext(old);
+  vm.runInContext(fs.readFileSync('site/policy-text.js', 'utf8') + ';globalThis.__T=POLICY_TEXT;', old);
+  frozen = old.__T || {};
+}
+
+const q = (s) => JSON.stringify(s);
+
+/* ── policy-log.js — metadata only, loaded by both pages ───────────── */
+
+const log = [`/* steamprofiler.org - the index of the privacy policy's revisions.
+
+   Dates, summaries and commits only; the archived text of each one is in
+   policy-text.js, which only the archive page loads. /privacy reads the newest
+   date out of here, so the date on the policy cannot drift from the policy.
+
+   \`commit\` is the sha in github.com/GustavoHSCruz/SteamProfiler that carried
+   the revision. It is null until the commit exists, and the page draws the
+   link only when there is one.
+
+   Generated - see the header of policy-text.js for how to add a revision. */
+
+const POLICY_LOG = [`];
+
+for (const r of REVISIONS) {
+  log.push(`  {`);
+  log.push(`    version: ${r.version},`);
+  log.push(`    date: ${q(r.date)},`);
+  log.push(`    commit: ${r.commit ? q(r.commit) : 'null'},`);
+  log.push(`    summary: {`);
+  for (const l of LANGS) log.push(`      ${l}: ${q(r.summary[l])},`);
+  log.push(`    },`);
+  log.push(`  },`);
+}
+log.push(`];`, ``);
+fs.writeFileSync('site/policy-log.js', log.join('\n'));
+
+/* ── policy-text.js — the archive proper ───────────────────────────── */
+
+const out = [`/* steamprofiler.org - every revision of the privacy policy, whole, kept.
+
+   The live text is in dict.js under priv.*; this file is the photographs of
+   it. A revision is never edited once published: if it was wrong, that is what
+   the next one says, and both stay. That is the whole point - a policy with no
+   archive is a policy that can be rewritten without anybody noticing.
+
+   Adding a revision: edit the policy in dict.js, append an entry to REVISIONS
+   in tools/gen-policy.js with \`text: 'live'\` (and take that marker off the one
+   before it), then run the generator. It reads the frozen revisions back out
+   of this file rather than rebuilding them, so re-running can only ever append
+   to history, never rewrite it.
+
+   tools/check-policy.js fails if the newest revision here has drifted from
+   dict.js, or if the date on /privacy has drifted from policy-log.js. */
+
+const POLICY_TEXT = {`];
+
+for (const r of REVISIONS) {
+  const text = r.text === 'live'
+    ? Object.fromEntries(LANGS.map((l) => [l, Object.fromEntries(keys.map((k) => [k, D[l][k]]))]))
+    : frozen[r.version];
+  if (!text) throw new Error(`revision ${r.version} is frozen but not in policy-text.js`);
+  out.push(`  ${r.version}: {`);
+  for (const l of LANGS) {
+    out.push(`    ${l}: {`);
+    for (const k of Object.keys(text[l]).sort()) out.push(`      ${q(k)}: ${q(text[l][k])},`);
+    out.push(`    },`);
+  }
+  out.push(`  },`);
+}
+out.push(`};`, ``);
+fs.writeFileSync('site/policy-text.js', out.join('\n'));
+
+console.log(`policy-log.js: ${REVISIONS.length} revision(s)`);
+console.log(`policy-text.js: ${keys.length} keys × ${LANGS.length} languages in the newest`);

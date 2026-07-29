@@ -1,0 +1,495 @@
+/* steamprofiler.org - the second system: messages, the board, support, and triage.
+   Same tokens and same chrome as the rest; these are just three more panels. */
+
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(30px, 6vh, 72px) var(--edge) var(--edge);
+}
+.page-head { max-width: 62ch; }
+.page-head .lede { margin-top: 20px; }
+
+.cols {
+  display: grid;
+  grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+  gap: var(--gap);
+  align-items: start;
+  margin-top: clamp(26px, 3.4vw, 44px);
+}
+@media (max-width: 900px) { .cols { grid-template-columns: 1fr; } }
+
+/* ── Forms ────────────────────────────────────────────────────────── */
+
+.field { margin-bottom: 16px; }
+.field:last-of-type { margin-bottom: 0; }
+.field > label {
+  display: block;
+  margin-bottom: 8px;
+  font-family: var(--label);
+  font-size: 10px;
+  font-weight: var(--label-w);
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.field > label em {
+  font-style: normal;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--faint);
+}
+
+.input, .textarea, .select {
+  width: 100%;
+  padding: 11px 13px;
+  background: var(--bg);
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.textarea { min-height: 130px; resize: vertical; font-family: var(--sans); }
+.input::placeholder, .textarea::placeholder { color: var(--faint); }
+.select { font-family: var(--mono); font-size: 13px; }
+
+/* The kind picker: three pills, one choice, no dropdown for three options. */
+.kinds { display: flex; flex-wrap: wrap; gap: 6px; }
+.kind { position: relative; }
+.kind input { position: absolute; opacity: 0; width: 0; height: 0; }
+.kind span {
+  display: block;
+  padding: 9px 15px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--dim);
+  cursor: pointer;
+}
+.kind input:checked + span {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #1b1205;
+  font-weight: 500;
+}
+.kind input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Only a form filler ever sees this. */
+.trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+.btn {
+  padding: 12px 22px;
+  background: var(--accent);
+  border: 0;
+  border-radius: 8px;
+  color: #1b1205;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn:disabled { opacity: 0.55; cursor: progress; }
+.btn--quiet {
+  background: none;
+  border: 1px solid var(--line-2);
+  color: var(--dim);
+  font-weight: 500;
+}
+.btn--quiet:hover { color: var(--text); border-color: var(--dim); filter: none; }
+.btn--danger { background: none; border: 1px solid #7a3630; color: #e08a7c; font-weight: 500; }
+.btn--danger:hover { background: #7a36301f; filter: none; }
+
+.form-foot { display: flex; align-items: center; gap: 14px; margin-top: 20px; flex-wrap: wrap; }
+.form-note { font-family: var(--mono); font-size: 11px; line-height: 1.6; color: var(--faint); }
+
+.notice {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border-left: 2px solid var(--line-2);
+  background: var(--panel-2);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.65;
+}
+.notice[data-tone="bad"] { border-left-color: #ff7a5c; background: #ff5f4514; color: #ffb8a8; }
+.notice[data-tone="good"] { border-left-color: #5ee08a; background: #5ee08a12; color: #a8e8c0; }
+
+/* ── The board ────────────────────────────────────────────────────── */
+
+.board { display: grid; gap: var(--gap); }
+.card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 16px;
+  padding: 16px 18px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+}
+
+/* The vote is the only control on the board, so it gets the whole left column. */
+.vote {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 52px;
+  padding: 8px 6px;
+  background: var(--panel-2);
+  border: 1px solid var(--line-2);
+  border-radius: 10px;
+  color: var(--dim);
+  font-family: var(--mono);
+  cursor: pointer;
+}
+.vote:hover { border-color: var(--dim); color: var(--text); }
+.vote[data-on="1"] { background: var(--accent); border-color: var(--accent); color: #1b1205; }
+.vote i { font-style: normal; font-size: 11px; line-height: 1; }
+.vote b { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.card-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.card-title { margin: 0; font-size: 16px; font-weight: 600; letter-spacing: -0.015em; }
+.card-body { margin: 10px 0 0; font-size: 13.5px; line-height: 1.6; color: var(--dim); white-space: pre-wrap; }
+.card-meta { margin: 10px 0 0; font-family: var(--mono); font-size: 11px; color: var(--faint); }
+
+.tag {
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--dim);
+  white-space: nowrap;
+}
+.tag[data-kind="bug"] { border-color: #7a3630; color: #e08a7c; }
+.tag[data-kind="ideia"] { border-color: #4a5f7a; color: #8fb4e0; }
+.tag[data-status="aceito"] { border-color: #5b6f3a; color: #b6d074; }
+.tag[data-status="fazendo"] { border-color: var(--accent-d); color: var(--accent); }
+.tag[data-status="feito"] { border-color: #3a6f52; color: #7fd0a0; }
+.tag[data-status="recusado"] { border-color: var(--line-2); color: var(--faint); }
+.tag[data-status="novo"] { border-color: var(--accent); color: var(--accent); }
+.tag[data-kind="appeal"] { border-color: #6b4a7a; color: #c79ae0; }
+/* The one badge on this page built to stop the eye. An address that was let
+   back in and earned another ban is the case where reading carefully matters
+   most, and it is also the easiest one to scroll past. */
+.tag[data-repeat] {
+  border-color: #a3333c;
+  background: #2a1619;
+  color: #ff7b84;
+  font-weight: 600;
+}
+
+/* His answer, quoted under the message it answers. */
+.reply {
+  margin: 14px 0 0;
+  padding: 11px 14px;
+  background: var(--panel-2);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.reply span {
+  display: block;
+  margin-bottom: 5px;
+  font-family: var(--label);
+  font-size: 9.5px;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.empty {
+  padding: 26px 20px;
+  border: 1px dashed var(--line-2);
+  border-radius: var(--r);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--faint);
+  text-align: center;
+}
+
+/* ── Support ──────────────────────────────────────────────────────── */
+
+.channels { display: grid; gap: var(--gap); margin-top: clamp(26px, 3.4vw, 44px); }
+.channel {
+  padding: clamp(18px, 2.4vw, 26px);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+}
+.channel-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; }
+.channel-name {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: -0.03em;
+}
+.channel-blurb { margin: 10px 0 0; font-size: 13.5px; line-height: 1.6; color: var(--dim); }
+
+/* The address is the whole point of the panel, so it is the biggest thing in it
+   and it is never truncated - a shortened address is an address you cannot use. */
+.addr { display: flex; gap: 8px; margin-top: 16px; align-items: stretch; }
+.addr code {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  background: var(--bg);
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text);
+  word-break: break-all;
+  user-select: all;
+}
+.addr .btn { flex: none; align-self: stretch; }
+.channel-verified {
+  display: block;
+  margin-top: 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--faint);
+}
+.channel-verified::before { content: "✓ "; color: #7fd0a0; }
+
+.channel-link { display: inline-block; margin-top: 16px; text-decoration: none; }
+
+/* These are utility pages, not the hero: the headline is a label, not a thesis. */
+.page-head .display {
+  font-size: clamp(1.9rem, 4.4vw, 3.3rem);
+}
+
+/* ── The privacy page ─────────────────────────────────────────────── */
+/* Itemised claims, each one a line the reader can check against the site.
+   Same shape as the notes on the landing page - a rule on the left, mono,
+   quiet - but that one lives in home.css, which this page does not load. */
+.plist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+.plist li {
+  padding-left: 14px;
+  border-left: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.75;
+  color: var(--faint);
+}
+.plist b { color: var(--dim); font-weight: 400; }
+/* When a panel opens with a sentence and then itemises it, the list should read
+   as the answer to that sentence rather than as its next line. */
+.card-body + .plist { margin-top: 14px; }
+
+/* The revision date, sitting under the headline. */
+.page-stamp {
+  margin: 14px 0 0;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--faint);
+}
+
+/* ── The policy archive ───────────────────────────────────────────────
+   One block per revision, and inside it either the diff against the one
+   before or the whole text as it read. The two colours here are the only
+   ones on the site that mean something other than "accent" - green for
+   what a revision added, red for what it took away - because a diff that
+   is all one colour is not a diff. */
+.rev { margin-bottom: var(--gap); }
+.rev-tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+.rev-tabs .btn { padding: 7px 14px; font-size: 12.5px; }
+.rev-tabs .btn[data-on="1"] { border-color: var(--accent); color: var(--accent); cursor: default; }
+.rev-commit { color: var(--link); }
+
+/* One key of the policy. The key itself is the heading, in mono, because it
+   is the stable name of that paragraph - the thing a reader can go and find
+   on /privacy - and inventing a prettier label for it would be inventing a
+   second name for the same thing. */
+.dk { padding: 14px 0; border-top: 1px solid var(--line); }
+.dk:first-child { border-top: 0; padding-top: 0; }
+.dk-h {
+  margin: 0 0 8px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  font-weight: 400;
+}
+.dk-h code { font-family: var(--mono); font-size: 11.5px; color: var(--dim); }
+.dk-tag {
+  font-family: var(--label);
+  font-size: 10px;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.dk[data-kind="added"] .dk-tag { color: #5ee08a; }
+.dk[data-kind="removed"] .dk-tag { color: #ff7a5c; }
+.dk-text { margin: 0; font-size: 14px; line-height: 1.75; color: var(--dim); }
+.dk-text ins, .dk-text del {
+  /* A deleted run and the inserted run that replaces it sit flush against each
+     other, and two highlights touching read as one word. The padding is the
+     seam. */
+  padding: 1px 3px;
+  border-radius: 3px;
+}
+.dk-text ins {
+  background: #5ee08a1f;
+  color: #a8e8c0;
+  text-decoration: none;
+  box-shadow: inset 0 -1px 0 #5ee08a66;
+}
+.dk-text del { background: #ff5f4514; color: #ffb8a8; text-decoration-color: #ff7a5c99; }
+.dk-only, .dk-none { color: var(--faint); font-style: normal; font-family: var(--mono); font-size: 11.5px; }
+
+
+/* ── The blog ─────────────────────────────────────────────────────────
+   Two shapes: a list of cards, which is the board's shape because it is the
+   same object (a thing with a vote on it), and a single column of prose,
+   which nothing else on this site has needed until now.
+
+   The reading column is set in ch rather than px on purpose. Every other
+   panel here holds numbers and wants the width of the screen; a paragraph
+   wants about seventy characters and gets worse with more, regardless of how
+   wide the monitor is. */
+
+.posts { display: grid; gap: var(--gap); }
+
+/* The title is a link, and it must not look like the body text that follows
+   it two lines down. */
+.post-link {
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.post-link:hover { color: var(--accent); border-bottom-color: var(--accent-d); }
+
+.post-head { max-width: 62ch; }
+.post-head .page-stamp { margin-top: 14px; }
+.post-head .notice { margin-top: 18px; max-width: 62ch; }
+
+.prose {
+  max-width: 70ch;
+  margin: clamp(26px, 3.4vw, 44px) 0 0;
+  font-size: 15.5px;
+  line-height: 1.72;
+  color: var(--dim);
+}
+.prose p { margin: 0 0 20px; }
+.prose b { color: var(--text); font-weight: 600; }
+.prose em { font-style: italic; }
+.prose a { color: var(--link); }
+
+/* Headings inside a post are display type at body scale: the same voice as
+   the page title, quieter, so a long post has landmarks without every
+   section announcing itself as a new page. */
+.prose-h {
+  margin: 34px 0 14px;
+  font-family: var(--display);
+  font-weight: var(--display-w);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--text);
+}
+h2.prose-h { font-size: 23px; }
+h3.prose-h { font-size: 18px; }
+h4.prose-h { font-size: 15.5px; letter-spacing: 0; }
+.prose > .prose-h:first-child { margin-top: 0; }
+
+.prose-list { margin: 0 0 20px; padding-left: 20px; }
+.prose-list li { margin-bottom: 8px; }
+.prose-list li::marker { color: var(--faint); }
+
+.prose-quote {
+  margin: 0 0 20px;
+  padding-left: 16px;
+  border-left: 2px solid var(--line-2);
+  color: var(--faint);
+}
+.prose-quote p { margin: 0; }
+
+.prose code {
+  padding: 1px 5px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--panel-2);
+  font-family: var(--mono);
+  font-size: 0.86em;
+  color: var(--text);
+}
+/* A code block scrolls on its own rather than widening the page: a long line
+   of shell should not be able to make the whole post scroll sideways. */
+.prose pre {
+  margin: 0 0 20px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--panel);
+  overflow-x: auto;
+}
+.prose pre code {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--dim);
+  white-space: pre;
+}
+.prose hr { margin: 30px 0; border: 0; border-top: 1px solid var(--line); }
+
+.post-foot {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  max-width: 70ch;
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+.post-foot .form-note { flex: 1; min-width: 220px; margin: 0; }
+.post-vote { display: flex; align-items: center; gap: 12px; }
+.post-foot-note { display: block; max-width: 70ch; margin-top: 24px; }
+
+/* Where the previous and next posts go. Two panels rather than two links,
+   because the title is the useful part and a title needs room. */
+.post-nav {
+  display: grid;
+  gap: var(--gap);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  max-width: 70ch;
+  margin-top: var(--gap);
+}
+.post-step {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--panel);
+  text-decoration: none;
+  color: var(--dim);
+}
+.post-step:hover { border-color: var(--line-2); color: var(--text); }
+.post-step--next { text-align: right; }
+.post-step-dir {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 6px;
+}
+.post-step b { font-weight: 500; font-size: 14px; }

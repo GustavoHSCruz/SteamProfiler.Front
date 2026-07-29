@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n-doc="blog.title">steamprofiler.org</title>
+<meta name="description" content="Notes about steamprofiler.org: what was built, what it reads out of Steam, and what the numbers on it can and cannot say.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0b0a0e">
+<meta property="og:title" content="blog - steamprofiler.org">
+<meta property="og:description" content="Notes about what was built here, and why it reads the way it does.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://steamprofiler.org/blog">
+<link rel="preload" href="/fonts/bricolage-grotesque-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts.css">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/extras.css">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+
+<header class="bar-top">
+  <a class="wordmark" href="/">steamprofiler<span>.org</span></a>
+  <nav class="bar-mods">
+    <a class="mod" href="/" data-i18n="nav.lookup"></a>
+    <a class="mod" href="/feedback" data-i18n="nav.messages"></a>
+    <a class="mod" href="/support" data-i18n="nav.support"></a>
+    <span class="langs" id="langs"></span>
+  </nav>
+</header>
+
+<main class="page">
+  <section class="page-head">
+    <p class="eyebrow" data-i18n="blog.eyebrow"></p>
+    <h1 class="display" data-i18n-html="blog.h1"></h1>
+    <p class="lede" data-i18n-html="blog.lede"></p>
+  </section>
+
+  <article class="panel">
+    <div class="panel-bar"><span data-i18n="blog.posts_bar"></span><b id="post-count">-</b></div>
+    <div class="panel-body">
+      <div class="posts" id="posts"></div>
+      <p class="empty" id="posts-empty" hidden data-i18n="blog.empty"></p>
+    </div>
+  </article>
+
+  <!-- The vote is counted per address today, and the page says so rather than
+       implying it is one per person. That is the whole reason accounts are
+       being built, and stating the current limit is how the next step reads as
+       a fix instead of as a surprise. -->
+  <p class="form-note post-foot-note" data-i18n-html="blog.vote_note"></p>
+</main>
+
+<footer class="foot">
+  <p><a href="/" data-i18n="nav.lookup"></a> · <a href="/feedback" data-i18n="foot.bugs_ideas"></a> · <a href="/privacy" data-i18n="nav.privacy"></a></p>
+  <p id="credit-slot"><a href="/u/gordziilla">made with &hearts;</a></p>
+  <p class="foot-legal" data-i18n="foot.disclaimer"></p>
+</footer>
+
+<noscript>
+  <p class="noscript">This page reads the posts with JavaScript. Turn it on to use it.</p>
+</noscript>
+
+<script src="/dict.js"></script>
+<script src="/i18n.js"></script>
+<script src="/lib.js"></script>
+<script src="/blog.js"></script>
+</body>
+</html>

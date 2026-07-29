@@ -1,0 +1,518 @@
+/* steamprofiler.org - base layer.
+   The site is framed as a tiling workspace, because that is what the machine
+   behind these hours actually runs: panels with gaps and rounded corners, a
+   status bar across the top, mono labels, and a border that lights up on the
+   panel you are pointing at. Warm amber on cold violet-black - a screen at 2am.
+
+   This file owns: tokens, reset, chrome, and the primitives both the front page
+   and the game pages build from. home.css and games.css own their own layouts. */
+
+:root {
+  /* Canvas */
+  --bg:      #0b0a0e;
+  --panel:   #131219;
+  --panel-2: #1a1822;
+  --line:    #282631;
+  --line-2:  #383544;
+  --text:    #eeecf3;
+  --dim:     #8e8a9b;
+  --faint:   #5d5a6b;
+
+  /* One accent. Amber, because the whole site is a count of hours after dark. */
+  --accent:  #ffb454;
+  --accent-d:#c97f22;
+  --link:    #9fb4ff;
+
+  /* The focus ring is the only gradient on the site, and it is Hyprland's. */
+  --focus-ring: linear-gradient(120deg, #33ccff, #a37bff 55%, #ff7ac4);
+
+  --r:    14px;   /* rounding */
+  --gap:  10px;   /* gaps_in  */
+  --edge: clamp(12px, 2vw, 22px); /* gaps_out */
+  --pad:  clamp(16px, 1.9vw, 26px);
+
+  --display: 'Bricolage Grotesque', 'Archivo', system-ui, sans-serif;
+  --display-w: 800;
+  --display-tt: none;
+  --display-ls: -0.035em;
+  --display-lh: 0.94;
+  --sans: 'Archivo', system-ui, -apple-system, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --label: var(--mono);
+  --label-w: 500;
+  --label-ls: 0.16em;
+
+  --bar-fill: var(--accent);
+  --bar-rest: #26232f;
+  --ground: none;
+
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  background-image: var(--ground);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.5;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+
+img { max-width: 100%; }
+
+/* Several hidden elements are also flex or grid items, and a display rule in a
+   class beats the user-agent rule for [hidden]. Settle it here, once. */
+[hidden] { display: none !important; }
+
+/* ── Status bar ───────────────────────────────────────────────────────
+   Waybar, more or less: fixed height, mono, modules pushed to the edges. */
+
+.bar-top {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  height: 42px;
+  padding: 0 var(--edge);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11.5px;
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  text-decoration: none;
+}
+.wordmark span { color: var(--faint); font-weight: 400; }
+.wordmark::before {
+  content: "";
+  width: 9px; height: 9px;
+  border-radius: 2px;
+  background: var(--accent);
+  flex: none;
+}
+
+/* The modules scroll sideways when they do not fit - at any width, not only
+   on a phone. overflow-x:auto costs nothing while the row fits, and the row
+   stops fitting long before 620px on a profile page: five modules and three
+   language buttons ran the page 231px wide at 621px, which is a landscape
+   phone and a small tablet.
+
+   flex:0 1 auto so the strip shrinks but never grows; the bar's space-between
+   keeps it against the right edge while there is room. Never flex-end here -
+   on an overflowing flex row that pushes the first items off the left edge
+   where no scroll can reach them. */
+.bar-mods {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* Room for a focus ring, which overflow-y:hidden would otherwise clip. */
+  padding-block: 5px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.bar-mods::-webkit-scrollbar { display: none; }
+.mod, .langs, .lang { flex: none; }
+
+.mod {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--dim);
+  text-decoration: none;
+  white-space: nowrap;
+}
+a.mod:hover { border-color: var(--line-2); color: var(--text); }
+.mod b { color: var(--text); font-weight: 500; }
+.mod .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent);
+  flex: none;
+}
+.mod[data-live="1"] .dot { background: #5ee08a; }
+@media (prefers-reduced-motion: no-preference) {
+  .mod[data-live="1"] .dot { animation: pulse 2.4s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: 0.35; } }
+}
+
+@media (max-width: 620px) {
+  .mod[data-hide-narrow="1"] { display: none; }
+  /* The bar is sticky and it cannot wrap: three lines of chrome stuck to the
+     top of a phone is three lines the page never gets back. And it cannot
+     truncate either - a profile page carries five modules and three language
+     buttons, and ellipsis on all of them is eight unreadable stubs.
+     So the strip scrolls sideways instead. One line tall, nothing hidden, and
+     the half-visible module at the right edge is its own affordance: it is
+     what tells a thumb there is more over there. */
+  .bar-top { gap: 8px; }
+}
+
+/* Small screens are read at arm's length, often on a bus. The mono label tier
+   bottoms out around 9.5px, which is a size chosen for a monitor sixty
+   centimetres away and is not legible on a phone held at arm's reach.
+
+   A floor, not a redesign: the labels keep their letter-spacing, their case
+   and their colour - they just stop shrinking past the point where they can
+   be read at all. */
+@media (max-width: 620px) {
+  .eyebrow { font-size: 11px; }
+  .note { font-size: 12px; }
+  .foot { font-size: 12px; }
+  .foot-legal { font-size: 11px; line-height: 1.7; }
+}
+
+/* ── Typography ───────────────────────────────────────────────────── */
+
+.display {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: var(--display-w);
+  font-size: clamp(2.5rem, 8vw, 6.4rem);
+  line-height: var(--display-lh);
+  letter-spacing: var(--display-ls);
+  text-transform: var(--display-tt);
+  text-wrap: balance;
+}
+
+.eyebrow {
+  margin: 0 0 18px;
+  font-family: var(--label);
+  font-size: 11px;
+  font-weight: var(--label-w);
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.lede {
+  margin: 22px 0 0;
+  max-width: 54ch;
+  font-size: clamp(1rem, 1.25vw, 1.15rem);
+  line-height: 1.55;
+  color: var(--dim);
+  text-wrap: pretty;
+}
+.lede b { color: var(--text); font-weight: 600; }
+.lede .hot { color: var(--accent); font-weight: 600; }
+
+/* ── Panels ───────────────────────────────────────────────────────── */
+
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+/* The focused panel gets the compositor's gradient border. Drawn as an inset
+   ring so it never changes the box size and never shifts the grid. */
+.panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--focus-ring);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 180ms ease;
+  pointer-events: none;
+}
+.panel:hover::after, .panel:focus-within::after { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .panel::after { transition: none; } }
+
+.panel-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px var(--pad);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--label);
+  font-size: 10.5px;
+  font-weight: var(--label-w);
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.panel-bar b { color: var(--text); font-weight: 600; letter-spacing: 0.04em; }
+.panel-body { padding: var(--pad); flex: 1; min-width: 0; }
+.panel-body > :first-child { margin-top: 0; }
+
+/* ── Numbers ──────────────────────────────────────────────────────── */
+
+.figure {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: var(--display-w);
+  font-size: clamp(2rem, 3.6vw, 3.2rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.figure small {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--dim);
+  margin-left: 8px;
+}
+.figure.is-hot { color: var(--accent); }
+
+.note {
+  margin: 14px 0 0;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.65;
+  color: var(--faint);
+}
+
+/* ── Key / value ──────────────────────────────────────────────────── */
+
+.kv {
+  margin: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  font-family: var(--mono);
+  font-size: 12.5px;
+}
+.kv dt { padding: 8px 12px 8px 0; color: var(--dim); border-top: 1px solid var(--line); }
+.kv dd {
+  margin: 0;
+  padding: 8px 0;
+  text-align: right;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  border-top: 1px solid var(--line);
+}
+.kv dt:first-of-type, .kv dt:first-of-type + dd { border-top: 0; padding-top: 0; }
+
+/* ── Meters ───────────────────────────────────────────────────────── */
+
+.meter {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--bar-rest);
+  overflow: hidden;
+}
+.meter i { display: block; height: 100%; border-radius: inherit; background: var(--bar-fill); }
+@media (prefers-reduced-motion: no-preference) {
+  .meter[data-animate="1"] i {
+    animation: measure 700ms cubic-bezier(0.2, 0.75, 0.2, 1) backwards;
+  }
+  /* No !important here: keyframe declarations marked important are ignored, and
+     an animation already outranks the inline width the renderer sets. */
+  @keyframes measure { from { width: 0; } }
+}
+
+/* ── Ranked rows: name, meter, figure ─────────────────────────────── */
+
+.rows { display: block; }
+.row {
+  display: grid;
+  grid-template-columns: minmax(90px, 1.4fr) minmax(0, 2.4fr) auto;
+  align-items: center;
+  gap: 4px 14px;
+  padding: 9px 0;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+.row:first-child { border-top: 0; padding-top: 0; }
+.row-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--dim);
+}
+.row[data-lead="1"] .row-name { color: var(--text); }
+.row-fig { text-align: right; font-weight: 500; white-space: nowrap; }
+.row-fig em { font-style: normal; color: var(--faint); margin-left: 7px; }
+
+@media (max-width: 560px) {
+  /* Name and figure keep the first line; the meter drops below both. */
+  .row { grid-template-columns: minmax(0, 1fr) auto; }
+  .row .meter { grid-column: 1 / -1; order: 3; margin-top: 6px; }
+}
+
+/* ── Footer ───────────────────────────────────────────────────────── */
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding: 26px var(--edge) 44px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--faint);
+}
+.foot p { margin: 0; }
+.foot a { color: var(--dim); }
+
+/* Its own line under the links: Valve owns Steam, this site does not, and
+   saying so is the whole point of the paragraph. */
+.foot-legal {
+  flex-basis: 100%;
+  max-width: 78ch;
+  line-height: 1.6;
+  opacity: 0.72;
+}
+
+.noscript {
+  padding: var(--edge);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+/* ── Load sequence: panels tile in, the way windows do ────────────── */
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-tile-in] > * {
+    animation: tile-in 460ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  }
+  @keyframes tile-in {
+    from { opacity: 0; transform: scale(0.965); }
+  }
+}
+
+/* ── Loading and failure ──────────────────────────────────────────────
+   The page has to say what it is doing, because a cold lookup means a
+   couple of seconds of waiting on Steam. */
+
+.state {
+  padding: clamp(60px, 16vh, 160px) var(--edge);
+  max-width: 60ch;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--dim);
+}
+.state b { color: var(--text); font-weight: 500; }
+.state--fail { color: var(--text); }
+.state--fail p { margin: 0 0 18px; font-size: 15px; }
+.state-links { display: flex; flex-wrap: wrap; gap: 18px; font-size: 12.5px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  #loading::after {
+    content: "";
+    display: inline-block;
+    width: 6px; height: 6px;
+    margin-left: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 1.1s ease-in-out infinite;
+  }
+}
+
+/* ── Footer credit ────────────────────────────────────────────────────
+   Whose site this is. The name is read live, because a Steam persona is
+   whatever the person felt like today. */
+
+.credit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--dim);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.credit:hover { color: var(--text); border-bottom-color: var(--line-2); }
+.credit-face {
+  width: 20px; height: 20px;
+  border-radius: 4px;
+  border: 1px solid var(--line-2);
+  flex: none;
+}
+.credit-text { white-space: nowrap; }
+.credit-heart { font-style: normal; color: var(--accent); }
+.credit b { color: var(--text); font-weight: 500; }
+
+/* ── Language picker ──────────────────────────────────────────────────
+   Three codes in the status bar. Not a dropdown: with three options a
+   dropdown hides two of them behind a click for no reason. */
+
+.langs { display: inline-flex; gap: 2px; margin-left: 2px; }
+.lang {
+  padding: 5px 9px;
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--faint);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+.lang:hover { color: var(--text); border-color: var(--line-2); }
+.lang[data-on="1"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #1b1205;
+  cursor: default;
+}
+
+
+/* ── Thumbs ───────────────────────────────────────────────────────────
+   A mouse pointer is one pixel and a fingertip is about forty. Every
+   control in the top bar was built for the pointer and came out between
+   19 and 29 pixels tall - on the one row that is on every page of the
+   site.
+
+   This block sits at the end of the file on purpose. Media queries add no
+   specificity, so these have to come *after* the rules they override or
+   they lose on source order alone - which is exactly what happened when
+   they were written next to the other narrow rules further up. */
+@media (max-width: 620px) {
+  .bar-top { height: 52px; }
+  .mod { padding: 10px 13px; }
+  .lang { padding: 9px 11px; }
+  /* The wordmark is the way home from every page. It was a 19px line of
+     text; it gets the whole height of the bar to be hit in, and does not
+     move a pixel doing it. */
+  .wordmark { align-self: stretch; padding: 4px 0; }
+}

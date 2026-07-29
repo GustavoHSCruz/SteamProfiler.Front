@@ -1,0 +1,787 @@
+/* steamprofiler.org - front page.
+   The hero is not a headline over a photo, it is the library itself: 435 games
+   drawn to scale, one rectangle each, area proportional to hours. The headline
+   sits over it as a floating window on a tiled desktop. */
+
+/* ── Stage ────────────────────────────────────────────────────────── */
+
+.stage {
+  position: relative;
+  margin: var(--edge);
+  height: clamp(420px, 74vh, 720px);
+}
+
+.map {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+/* Cells are positioned in percentages by app.js, so the map reflows with the
+   viewport without a relayout pass. */
+.cell {
+  position: absolute;
+  display: block;
+  padding: 7px 9px;
+  border: 0;
+  border-radius: 5px;
+  background: var(--panel-2);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  overflow: hidden;
+  cursor: default;
+  transition: filter 140ms ease, box-shadow 140ms ease;
+}
+a.cell { cursor: pointer; }
+.cell:hover, .cell[data-on="1"] {
+  filter: brightness(1.35);
+  box-shadow: inset 0 0 0 1.5px var(--text);
+  z-index: 2;
+}
+.cell[data-dark="1"] { color: #1b1205; }
+.cell[data-dark="1"]:hover, .cell[data-dark="1"][data-on="1"] {
+  filter: brightness(1.08);
+  box-shadow: inset 0 0 0 1.5px #1b1205;
+}
+@media (prefers-reduced-motion: reduce) { .cell { transition: none; } }
+
+.cell-name {
+  display: block;
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cell-h {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--mono);
+  font-size: 11px;
+  opacity: 0.68;
+  font-variant-numeric: tabular-nums;
+}
+/* Only the biggest cells can afford a headline-sized figure. */
+.cell[data-big="1"] .cell-name { font-size: clamp(15px, 2vw, 22px); }
+.cell[data-big="1"] .cell-h { font-size: clamp(12px, 1.3vw, 15px); margin-top: 4px; }
+/* Below label size a cell is just a mark on the map; the radius would eat it. */
+.cell[data-tiny="1"] { padding: 0; border-radius: 2px; }
+
+/* The floating window: the one element that breaks the tiling. */
+.float {
+  position: absolute;
+  left: clamp(14px, 3vw, 34px);
+  bottom: clamp(14px, 3vw, 34px);
+  z-index: 3;
+  width: min(560px, calc(100% - clamp(28px, 6vw, 68px)));
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter: blur(18px) saturate(1.2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+  box-shadow: 0 24px 60px -20px #000, 0 0 0 1px #00000060;
+  overflow: hidden;
+}
+.float-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--line);
+  background: #ffffff06;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--faint);
+}
+.float-body { padding: clamp(18px, 2.4vw, 30px); }
+.float .display { font-size: clamp(2.6rem, 5.6vw, 4.6rem); }
+.float .lede { margin-top: 16px; font-size: clamp(0.94rem, 1.05vw, 1.05rem); max-width: none; }
+
+.readout {
+  position: absolute;
+  right: clamp(14px, 3vw, 34px);
+  top: clamp(14px, 3vw, 34px);
+  z-index: 3;
+  max-width: min(340px, 46vw);
+  padding: 10px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter: blur(14px);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--dim);
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+.readout[data-on="1"] { opacity: 1; }
+.readout b { display: block; font-family: var(--sans); font-size: 14px; color: var(--text); }
+.readout .r-share { color: var(--accent); }
+@media (prefers-reduced-motion: reduce) { .readout { transition: none; } }
+
+.stage-caption {
+  margin: calc(var(--edge) * -0.4) var(--edge) var(--edge);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--faint);
+}
+
+/* ── Bento ────────────────────────────────────────────────────────── */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--gap);
+  padding: 0 var(--edge) var(--edge);
+  align-items: start;
+}
+.p-now   { grid-column: span 4; }
+.p-plat  { grid-column: span 4; }
+.p-acct  { grid-column: span 4; }
+.p-rig   { grid-column: span 5; }
+.p-pages { grid-column: span 7; }
+.p-table { grid-column: span 12; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .grid > *:nth-child(1) { animation-delay: 40ms; }
+  .grid > *:nth-child(2) { animation-delay: 90ms; }
+  .grid > *:nth-child(3) { animation-delay: 140ms; }
+  .grid > *:nth-child(4) { animation-delay: 190ms; }
+  .grid > *:nth-child(5) { animation-delay: 240ms; }
+  .grid > *:nth-child(6) { animation-delay: 290ms; }
+  .grid > *:nth-child(7) { animation-delay: 340ms; }
+  .grid > *:nth-child(8) { animation-delay: 390ms; }
+  .grid > *:nth-child(9) { animation-delay: 440ms; }
+}
+
+/* ── Account ──────────────────────────────────────────────────────── */
+
+.acct { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.avatar {
+  width: 72px; height: 72px;
+  border-radius: 10px;
+  border: 1px solid var(--line-2);
+  background: var(--panel-2);
+  flex: none;
+}
+.persona {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 19px;
+  letter-spacing: -0.02em;
+}
+.acct-id .note { margin-top: 3px; }
+
+/* ── The rig, as a terminal ───────────────────────────────────────── */
+
+.term {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.85;
+  white-space: pre-wrap;
+}
+.term .k { color: var(--faint); }
+.term .v { color: var(--text); }
+.term .lead { color: var(--accent); }
+
+.term-quote {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.term-prompt { font-family: var(--mono); font-size: 12.5px; color: var(--accent); }
+.term-out {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--dim);
+  white-space: pre-wrap;
+}
+
+/* ── Game page index ──────────────────────────────────────────────── */
+
+.pages {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: var(--gap);
+}
+.pages a {
+  display: block;
+  height: 100%;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--tint, var(--line-2));
+  border-radius: 10px;
+  background: var(--panel-2);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 140ms ease, transform 140ms ease;
+}
+.pages a:hover { border-color: var(--line-2); border-left-color: var(--tint, var(--accent)); transform: translateY(-2px); }
+@media (prefers-reduced-motion: reduce) { .pages a { transition: none; } .pages a:hover { transform: none; } }
+.pg-name {
+  display: block;
+  font-weight: 600;
+  font-size: 14.5px;
+  letter-spacing: -0.015em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pg-hours {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--tint, var(--dim));
+  font-variant-numeric: tabular-nums;
+}
+.pg-line {
+  display: block;
+  margin-top: 7px;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--faint);
+}
+
+/* ── Ranked table ─────────────────────────────────────────────────── */
+
+.table-scroll { overflow-x: auto; }
+.ranked {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+.ranked th {
+  padding: 0 12px 10px 0;
+  border-bottom: 1px solid var(--line-2);
+  font-weight: 500;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
+  text-align: left;
+  white-space: nowrap;
+}
+.ranked td {
+  padding: 8px 12px 8px 0;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.ranked tbody tr:last-child td { border-bottom: 0; }
+/* The name column absorbs the slack so the figures stay grouped right. */
+.ranked .c-num, .ranked td.c-num { text-align: right; width: 1%; }
+.ranked .c-rank, .ranked td.c-rank { text-align: right; color: var(--faint); width: 1%; padding-right: 14px; }
+.ranked .c-date, .ranked td.c-date { color: var(--faint); width: 1%; }
+.ranked .c-os, .ranked td.c-os { padding-left: 20px; }
+.ranked .t-name {
+  font-family: var(--sans);
+  font-size: 13.5px;
+  font-weight: 500;
+  width: 100%;
+  max-width: 42ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ranked .t-name a { color: inherit; text-decoration-color: var(--faint); }
+.ranked .t-hours { font-weight: 600; }
+.ranked .t-dim { color: var(--faint); }
+.ranked tr[data-lead="1"] .t-share { color: var(--accent); font-weight: 600; }
+.ranked tbody tr:hover td { background: #ffffff06; }
+
+/* ── Narrow ───────────────────────────────────────────────────────── */
+
+@media (max-width: 1080px) {
+  .p-now, .p-plat, .p-acct { grid-column: span 6; }
+  .p-rig, .p-pages { grid-column: span 12; }
+}
+
+@media (max-width: 760px) {
+  .grid > * { grid-column: 1 / -1 !important; }
+  .stage { height: auto; display: flex; flex-direction: column-reverse; gap: var(--gap); }
+  .map { position: relative; inset: auto; height: 62vh; }
+  .float { position: static; width: auto; backdrop-filter: none; box-shadow: none; }
+  .readout { display: none; }
+  .only-wide { display: none; }
+  .ranked .t-name { max-width: 20ch; }
+}
+
+/* ── Landing ──────────────────────────────────────────────────────────
+   No treemap here yet - there is no profile to draw. The field is the
+   whole page, sitting in the same floating-window chrome the dashboard
+   headline uses so the two read as one site. */
+
+.land {
+  display: grid;
+  place-items: center;
+  min-height: calc(100vh - 42px - 120px);
+  padding: clamp(30px, 7vh, 90px) var(--edge);
+  background-image:
+    radial-gradient(80% 60% at 50% -10%, #ffb4540f 0%, transparent 60%),
+    repeating-linear-gradient(0deg, #ffffff05 0 1px, transparent 1px 40px),
+    repeating-linear-gradient(90deg, #ffffff05 0 1px, transparent 1px 40px);
+}
+.land-in { width: 100%; max-width: 780px; }
+.land .display { font-size: clamp(2.2rem, 6.4vw, 4.4rem); }
+.land .lede { max-width: 62ch; margin-top: 24px; }
+
+.find {
+  margin: clamp(30px, 4vw, 46px) 0 0;
+  padding: clamp(18px, 2.4vw, 26px);
+  background: var(--panel);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+  box-shadow: 0 24px 60px -34px #000;
+}
+.find-label {
+  display: block;
+  margin-bottom: 10px;
+  font-family: var(--label);
+  font-size: 10px;
+  font-weight: var(--label-w);
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.find-row { display: flex; gap: 8px; }
+.find-input {
+  flex: 1;
+  min-width: 0;
+  padding: 13px 15px;
+  background: var(--bg);
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 14px;
+}
+.find-input::placeholder { color: var(--faint); }
+.find-input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.find-go {
+  flex: none;
+  padding: 13px 22px;
+  background: var(--accent);
+  border: 0;
+  border-radius: 8px;
+  color: #1b1205;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+}
+.find-go:hover { filter: brightness(1.08); }
+.find-go:disabled { opacity: 0.6; cursor: progress; }
+
+.find-help {
+  margin: 14px 0 0;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--faint);
+}
+.find-help b { color: var(--dim); font-weight: 400; }
+.find-error {
+  margin: 14px 0 0;
+  padding: 11px 13px;
+  background: #ff5f4514;
+  border-left: 2px solid #ff7a5c;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.6;
+  color: #ffb8a8;
+}
+
+.land-notes {
+  margin: clamp(26px, 3.4vw, 40px) 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+.land-notes li {
+  padding-left: 16px;
+  border-left: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--faint);
+}
+.land-notes b { color: var(--dim); font-weight: 400; }
+
+@media (max-width: 560px) {
+  .find-row { flex-direction: column; }
+  .find-go { width: 100%; }
+}
+
+/* A game without its own layout says so, quietly. */
+.pg-line[data-plain="1"] { color: var(--faint); opacity: 0.75; }
+
+/* ── The whole library ────────────────────────────────────────────────
+   The table above stops at 25 and the treemap folds the tail into one block.
+   This is the plain list underneath both: everything owned, searchable, and
+   honest about the half that was never launched. */
+.p-all { grid-column: span 12; }
+.all-tools {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  margin-bottom: 14px;
+}
+.all-find {
+  flex: 1 1 220px; min-width: 0; padding: 9px 12px;
+  font: inherit; font-size: 14px; color: var(--text);
+  background: var(--bg); border: 1px solid var(--line-2); border-radius: var(--r);
+}
+.all-find:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.all-sorts { display: flex; gap: 4px; }
+.all-sort {
+  padding: 8px 12px; font-family: var(--label); font-size: 10px;
+  font-weight: var(--label-w); letter-spacing: var(--label-ls); text-transform: uppercase;
+  color: var(--dim); background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: var(--r); cursor: pointer;
+}
+.all-sort:hover { color: var(--text); }
+.all-sort[data-on="1"] { color: var(--bg); background: var(--accent); border-color: var(--accent); }
+.all { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.all-row {
+  display: grid; align-items: center; gap: 12px;
+  grid-template-columns: 44px minmax(0, 1fr) 80px 58px 106px;
+  padding: 7px 12px; border-radius: var(--r);
+  color: var(--text); text-decoration: none;
+}
+.all-row:hover { background: var(--panel-2); }
+.all-row:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.all-rank { font-family: var(--mono); font-size: 12px; color: var(--faint); }
+.all-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+/* A game with a page of its own is worth pointing at, since that is the whole
+   reason someone is reading this list. */
+.all-row[data-themed="1"] .all-name::after {
+  content: "●"; margin-left: 8px; font-size: 8px; vertical-align: middle; color: var(--accent);
+}
+.all-h, .all-share, .all-date {
+  font-family: var(--mono); font-size: 12px; text-align: right; color: var(--dim);
+}
+.all-date { color: var(--faint); }
+.all-row[data-never="1"] { color: var(--faint); }
+.all-row[data-never="1"] .all-h { font-family: var(--sans); font-size: 11px; }
+.all-more {
+  margin-top: 12px; padding: 10px 16px; width: 100%;
+  font-family: var(--label); font-size: 10px; font-weight: var(--label-w);
+  letter-spacing: var(--label-ls); text-transform: uppercase;
+  color: var(--dim); background: var(--panel-2);
+  border: 1px solid var(--line); border-radius: var(--r); cursor: pointer;
+}
+.all-more:hover { color: var(--text); border-color: var(--line-2); }
+@media (max-width: 760px) {
+  .all-row { grid-template-columns: 36px minmax(0, 1fr) 68px; }
+  .all-share, .all-date { display: none; }
+}
+
+/* ── Two profiles ─────────────────────────────────────────────────────
+   Left is always the profile in the first path segment, right is always the
+   one after /vs/. Amber for the left, blue for the right, everywhere on the
+   page - the colours are the only legend there is. */
+:root { --v-a: var(--accent); --v-b: #6ea8ff; }
+.v { padding: clamp(20px, 3vw, 40px) var(--edge) var(--edge); }
+.v-head {
+  display: grid; grid-template-columns: 1fr auto 1fr; gap: clamp(10px, 2vw, 26px);
+  align-items: center; margin-bottom: 18px;
+}
+.v-who {
+  display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+  background: var(--panel); border-radius: var(--r); text-decoration: none; color: var(--text);
+  border: 1px solid var(--line);
+}
+.v-who--b { flex-direction: row-reverse; text-align: right; }
+.v-who:hover { border-color: var(--line-2); }
+.v-face { width: 56px; height: 56px; border-radius: 8px; }
+.v-who b { display: block; font-size: 17px; }
+.v-who span { display: block; margin-top: 3px; font-family: var(--mono); font-size: 12px; color: var(--dim); }
+.v-vs {
+  font-family: var(--label); font-size: 11px; letter-spacing: var(--label-ls);
+  text-transform: uppercase; color: var(--faint);
+}
+.v-split { display: flex; height: 12px; border-radius: 6px; overflow: hidden; background: var(--bar-rest); }
+.v-split-a { background: var(--v-a); }
+.v-split-b { background: var(--v-b); }
+.v-split-note { margin: 8px 0 clamp(22px, 3vw, 34px); font-size: 13px; color: var(--dim); }
+.v-maps { display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.v-maplabel {
+  margin: 0 0 8px; font-family: var(--label); font-size: 10px;
+  letter-spacing: var(--label-ls); text-transform: uppercase; color: var(--faint);
+}
+.v-map {
+  position: relative; aspect-ratio: 600 / 340; background: var(--panel);
+  border-radius: var(--r); overflow: hidden;
+}
+.v-cell { position: absolute; border-radius: 2px; outline: 1px solid var(--bg); outline-offset: -1px; }
+.v-cell[data-tail="1"] {
+  background: repeating-linear-gradient(-45deg, rgba(255,180,84,.05) 0 6px, rgba(255,180,84,.11) 6px 12px);
+}
+.v-h { margin: clamp(28px, 4vw, 44px) 0 14px; font-size: clamp(20px, 3vw, 28px); }
+.v-common { display: grid; gap: 8px; }
+.v-item { padding: 10px 12px; background: var(--panel); border-radius: var(--r); }
+.v-row { display: grid; grid-template-columns: 70px 1fr 70px; gap: 12px; align-items: baseline; }
+.v-row-name { min-width: 0; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.v-row-name a { color: var(--text); text-decoration: none; font-size: 14px; }
+.v-row-name a:hover { color: var(--accent); }
+.v-row-a, .v-row-b { font-family: var(--mono); font-size: 12.5px; }
+.v-row-a { color: var(--v-a); }
+.v-row-b { color: var(--v-b); text-align: right; }
+.v-bar { display: flex; height: 7px; margin-top: 8px; border-radius: 4px; overflow: hidden; background: var(--bar-rest); }
+.v-bar-a { background: var(--v-a); }
+.v-bar-b { background: var(--v-b); }
+.v-note { margin: 14px 0 0; font-size: 13px; color: var(--dim); }
+
+/* The field that starts one, at the foot of the library. */
+.cmp { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+.cmp-label {
+  display: block; margin-bottom: 8px; font-family: var(--label); font-size: 10px;
+  font-weight: var(--label-w); letter-spacing: var(--label-ls);
+  text-transform: uppercase; color: var(--faint);
+}
+.cmp-row { display: flex; gap: 8px; }
+.cmp-who {
+  flex: 1 1 auto; min-width: 0; padding: 9px 12px; font: inherit; font-size: 14px;
+  color: var(--text); background: var(--bg); border: 1px solid var(--line-2); border-radius: var(--r);
+}
+.cmp-who:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.cmp-go {
+  padding: 9px 18px; font-family: var(--label); font-size: 10px; font-weight: var(--label-w);
+  letter-spacing: var(--label-ls); text-transform: uppercase;
+  color: var(--bg); background: var(--accent); border: 0; border-radius: var(--r); cursor: pointer;
+}
+.cmp-go:hover { background: var(--accent-d); }
+@media (max-width: 620px) {
+  .v-head { grid-template-columns: 1fr; }
+  .v-who--b { flex-direction: row; text-align: left; }
+}
+
+/* ── The years ────────────────────────────────────────────────────── */
+.p-time { grid-column: span 12; }
+.time {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+  gap: 4px; align-items: end; height: 190px;
+}
+.time-col {
+  display: grid; grid-template-rows: 1fr auto; justify-items: center; gap: 6px;
+  height: 100%; padding: 0; background: none; border: 0; cursor: pointer;
+}
+/* The bar sits absolutely inside this box instead of taking a percentage of a
+   grid row. A content-sized row is not a definite height, so a percentage
+   against it resolves to auto and every bar flattens to its min-height - which
+   is exactly what the chart used to do. The 1fr row plus a positioned
+   containing block gives the percentage something real to measure against. */
+.time-bar { position: relative; width: 100%; align-self: stretch; }
+.time-col i {
+  position: absolute; left: 0; right: 0; bottom: 0; min-height: 2px;
+  background: linear-gradient(180deg, var(--accent), var(--accent-d));
+  border-radius: 3px 3px 0 0;
+}
+.time-col[data-empty="1"] i { background: var(--line); min-height: 2px; height: 2px; }
+.time-col span { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+.time-col:hover i, .time-col:focus-visible i { filter: brightness(1.15); }
+.time-col:hover span, .time-col:focus-visible span { color: var(--text); }
+.time-col:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.time-out {
+  display: block; margin-top: 14px; min-height: 1.4em;
+  font-size: 13.5px; color: var(--dim);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .time-col i { animation: grow 700ms cubic-bezier(0.2,0.75,0.2,1) backwards; }
+  @keyframes grow { from { height: 0; } }
+}
+
+/* ── What it cost ─────────────────────────────────────────────────────
+   Prices are the store's today, in the store's currency, and the note under
+   the panel says so - Steam does not publish what anybody actually paid, and
+   a number labelled "what you spent" would be a guess wearing a receipt. */
+.p-money { grid-column: span 4; }
+/* A currency total is a long figure and the caption under it is a sentence.
+   Side by side they wrap into each other, so the caption gets its own line. */
+.p-money .figure { font-size: clamp(1.7rem, 2.8vw, 2.5rem); }
+.p-money .figure { margin-bottom: 20px; }
+.p-money .figure small { display: block; margin: 9px 0 0; }
+.rate { display: grid; gap: 8px; margin-top: 16px; }
+.rate-line {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline; gap: 10px;
+  padding-top: 8px; border-top: 1px solid var(--line);
+}
+.rate-cap {
+  grid-column: 1 / -1; font-family: var(--label); font-size: 9.5px;
+  font-weight: var(--label-w); letter-spacing: var(--label-ls);
+  text-transform: uppercase; color: var(--faint);
+  border-top: 1px solid var(--line); padding-top: 10px;
+}
+.rate-cap + .rate-line { border-top: 0; padding-top: 0; }
+.rate-name {
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: 13px; color: var(--text); text-decoration: none;
+}
+.rate-name:hover { color: var(--accent); }
+.rate-fig {
+  font-family: var(--mono); font-size: 12px; color: var(--dim);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.rate-fig em { font-style: normal; color: var(--faint); margin-left: 6px; }
+
+/* ── What it is made of ───────────────────────────────────────────── */
+.p-gen { grid-column: span 4; }
+
+/* ── Friends ──────────────────────────────────────────────────────────
+   Each tile goes to the versus page. The private ones are drawn dimmed and
+   are not links: their libraries cannot be read, and offering the click
+   anyway would only spend a lookup to reach an error. */
+.p-mates { grid-column: span 4; }
+.mates {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  gap: 6px;
+}
+.mate {
+  display: block; position: relative; border-radius: var(--r);
+  overflow: hidden; line-height: 0;
+  border: 1px solid var(--line); background: var(--panel-2);
+}
+a.mate:hover { border-color: var(--accent); transform: translateY(-2px); }
+a.mate { transition: transform 140ms ease, border-color 140ms ease; }
+@media (prefers-reduced-motion: reduce) {
+  a.mate { transition: none; }
+  a.mate:hover { transform: none; }
+}
+a.mate:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mate img { display: block; width: 100%; height: auto; aspect-ratio: 1; }
+.mate[data-private="1"] { opacity: 0.38; filter: grayscale(1); }
+
+/* ── The rarest things here ───────────────────────────────────────────
+   One list, ordered by how much of the world holds each unlock. The game is
+   the second line because the achievement is the subject and the game is
+   only where it happened. */
+.p-rare { grid-column: span 12; }
+.rar-go {
+  padding: 11px 18px; font-family: var(--label); font-size: 10px;
+  font-weight: var(--label-w); letter-spacing: var(--label-ls);
+  text-transform: uppercase; color: var(--bg); background: var(--accent);
+  border: 0; border-radius: var(--r); cursor: pointer;
+}
+.rar-go:hover { filter: brightness(1.08); }
+.rar-go:disabled { opacity: 0.55; cursor: progress; filter: none; }
+.rares {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 8px;
+}
+.rares:not(:empty) { margin-top: 16px; }
+.rare {
+  display: grid; grid-template-columns: 40px minmax(0, 1fr) auto;
+  align-items: center; gap: 12px;
+  padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--r);
+  background: var(--panel-2); color: inherit; text-decoration: none;
+}
+.rare:hover { border-color: var(--line-2); }
+.rare img { width: 40px; height: 40px; border-radius: 6px; display: block; }
+.rare-txt { min-width: 0; }
+.rare-name {
+  display: block; font-size: 13.5px; font-weight: 600;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.rare-game {
+  display: block; margin-top: 2px; font-family: var(--mono); font-size: 11px;
+  color: var(--faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.rare-pct {
+  font-family: var(--mono); font-size: 13px; font-weight: 600;
+  color: var(--accent); font-variant-numeric: tabular-nums;
+}
+
+/* ── The pile ─────────────────────────────────────────────────────────
+   The art here is Steam's small header straight from the CDN, not the local
+   hero cache: a pile of three hundred games nobody opened would be a hundred
+   megabytes of art fetched for pages nobody asked for. Lazy, so only the
+   rows actually scrolled to are ever fetched at all. */
+.all-pile { margin-top: 12px; font-size: 13px; }
+.all-pile a { color: var(--link); }
+.bl-head { padding: clamp(20px, 3vw, 40px) var(--edge) var(--edge); }
+.bl-head .display { font-size: clamp(2rem, 5vw, 3.6rem); }
+.bl-head .lede { margin-top: 14px; max-width: 66ch; }
+.p-bl { grid-column: span 12; }
+.pile {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+.pile-row {
+  display: block; border: 1px solid var(--line); border-radius: var(--r);
+  overflow: hidden; background: var(--panel-2); color: inherit; text-decoration: none;
+}
+.pile-row:hover { border-color: var(--line-2); }
+.pile-row:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.pile-art {
+  display: block; width: 100%; aspect-ratio: 460 / 215; object-fit: cover;
+  background: var(--line); border-bottom: 1px solid var(--line);
+}
+.pile-txt { display: block; padding: 9px 11px; }
+.pile-name {
+  display: block; font-size: 13.5px; font-weight: 600;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pile-meta {
+  display: block; margin-top: 3px; font-family: var(--mono); font-size: 11px;
+  color: var(--faint);
+}
+.pile-meta b { color: var(--dim); font-weight: 400; }
+
+@media (max-width: 1080px) {
+  .p-money, .p-gen, .p-mates { grid-column: span 6; }
+}
+@media (max-width: 720px) {
+  .p-money, .p-gen, .p-mates { grid-column: span 12; }
+}
+
+/* ── The profile, on a phone ──────────────────────────────────────────
+   The controls on this page were all built pointer-first and came out
+   between 19 and 30 pixels tall. That is fine for a cursor and wrong for
+   a thumb, so on a narrow screen they get the height back. Nothing moves
+   and nothing is hidden: they are just tall enough to hit.
+
+   The treemap cells are deliberately left alone. Their size *is* the
+   data - a game with a tenth of a percent of the hours gets a tenth of a
+   percent of the area, and padding that out would be drawing a lie. The
+   "+N jogos" tile at the bottom is the way into the small ones, and the
+   full list below it is the way that always works. */
+@media (max-width: 620px) {
+  .all-sorts { flex-wrap: wrap; gap: 6px; }
+  .all-sort { padding: 12px 14px; font-size: 11px; }
+  .all-more { padding: 14px 16px; font-size: 11px; }
+
+  /* A 19px-tall link in a list of nine is a coin toss on a phone. */
+  .rate-line { padding: 6px 0; }
+  .rate-name { padding: 6px 0; font-size: 14px; }
+  .rate-cap { font-size: 11px; }
+
+  /* The years chart: 20px-wide columns are hard to hit, and there are
+     thirteen of them. Letting the row scroll sideways gives each one room
+     to be a real target instead of a sliver. */
+  .times { overflow-x: auto; scrollbar-width: none; }
+  .times::-webkit-scrollbar { display: none; }
+  .time-col { min-width: 34px; }
+}
