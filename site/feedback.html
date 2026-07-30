@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title data-i18n-doc="msg.title">steamprofiler.org</title>
+<title data-i18n-doc="msg.title">Feedback - steamprofiler.org</title>
 <meta name="description" content="Found a bug, have an idea, or want to complain about something on steamprofiler.org? Send it here. Whatever I accept goes on the public board.">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0b0a0e">
@@ -19,84 +19,85 @@
 <header class="bar-top">
   <a class="wordmark" href="/">steamprofiler<span>.org</span></a>
   <nav class="bar-mods">
-    <a class="mod" href="/" data-i18n="nav.lookup"></a>
-    <a class="mod" href="/support" data-i18n="nav.support"></a>
+    <a class="mod" href="/" data-i18n="nav.lookup">look up a profile</a>
+    <a class="mod" href="/blog" data-i18n="nav.blog">blog</a>
+    <a class="mod" href="/support" data-i18n="nav.support">support</a>
     <span class="langs" id="langs"></span>
   </nav>
 </header>
 
 <main class="page">
   <section class="page-head">
-    <p class="eyebrow" data-i18n="msg.eyebrow"></p>
-    <h1 class="display" data-i18n-html="msg.h1"></h1>
-    <p class="lede" data-i18n-html="msg.lede"></p>
+    <p class="eyebrow" data-i18n="msg.eyebrow">feedback</p>
+    <h1 class="display" data-i18n-html="msg.h1">Found a bug?<br>Something missing?</h1>
+    <p class="lede" data-i18n-html="msg.lede">Write it here. I read everything. Whatever I accept becomes an item on the board beside this, with the state it is in - and anyone who agrees can vote, so I know what matters most. <b>No account needed.</b></p>
   </section>
 
   <div class="cols">
     <!-- ── The form ──────────────────────────────────────────────── -->
     <article class="panel">
-      <div class="panel-bar"><span data-i18n="msg.form"></span><b data-i18n="msg.no_login"></b></div>
+      <div class="panel-bar"><span data-i18n="msg.form">leave a message</span><b data-i18n="msg.no_login">no sign-in</b></div>
       <div class="panel-body">
         <form id="form" novalidate>
           <div class="field">
-            <label for="kind" data-i18n="msg.what"></label>
+            <label for="kind" data-i18n="msg.what">what it is</label>
             <div class="kinds">
               <label class="kind">
                 <input type="radio" name="kind" value="bug" id="kind" checked>
-                <span data-i18n="msg.kind_bug"></span>
+                <span data-i18n="msg.kind_bug">it's a bug</span>
               </label>
               <label class="kind">
                 <input type="radio" name="kind" value="ideia">
-                <span data-i18n="msg.kind_idea"></span>
+                <span data-i18n="msg.kind_idea">it's an idea</span>
               </label>
               <label class="kind">
                 <input type="radio" name="kind" value="outro">
-                <span data-i18n="msg.kind_other"></span>
+                <span data-i18n="msg.kind_other">something else</span>
               </label>
             </div>
           </div>
 
           <div class="field">
-            <label for="title" data-i18n="msg.title_field"></label>
+            <label for="title" data-i18n="msg.title_field">title</label>
             <input class="input" id="title" name="title" type="text" maxlength="120"
                    autocomplete="off" data-i18n-ph="msg.title_ph">
           </div>
 
           <div class="field">
-            <label for="message" data-i18n="msg.body"></label>
+            <label for="message" data-i18n="msg.body">message</label>
             <textarea class="textarea" id="message" name="message" maxlength="2000"
                       data-i18n-ph="msg.body_ph"></textarea>
           </div>
 
           <div class="field">
-            <label for="contact"><span data-i18n="msg.contact"></span> <em data-i18n="msg.contact_opt"></em></label>
+            <label for="contact"><span data-i18n="msg.contact">contact</span> <em data-i18n="msg.contact_opt">- optional, only if you want an answer</em></label>
             <input class="input" id="contact" name="contact" type="text" maxlength="200"
                    autocomplete="off" data-i18n-ph="msg.contact_ph">
           </div>
 
           <div class="trap" aria-hidden="true">
-            <label for="website" data-i18n="msg.trap"></label>
+            <label for="website" data-i18n="msg.trap">site</label>
             <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
           </div>
 
           <div class="form-foot">
-            <button class="btn" type="submit" id="send" data-i18n="msg.send"></button>
+            <button class="btn" type="submit" id="send" data-i18n="msg.send">Send</button>
             <span class="form-note" id="count">0 / 2000</span>
           </div>
           <div class="notice" id="result" hidden></div>
         </form>
 
-        <p class="form-note" data-i18n-html="msg.privacy"></p>
+        <p class="form-note" data-i18n-html="msg.privacy">I keep the message, the contact if you write one, and a <b>salted hash</b> of your address - only to count one vote per person and to stop a flood. I do not keep the address itself, and there is no tracker on this page.</p>
       </div>
     </article>
 
     <!-- ── The board ─────────────────────────────────────────────── -->
     <section>
       <article class="panel">
-        <div class="panel-bar"><span data-i18n="msg.board"></span><b id="board-count">-</b></div>
+        <div class="panel-bar"><span data-i18n="msg.board">board</span><b id="board-count">-</b></div>
         <div class="panel-body">
           <div class="board" id="board"></div>
-          <p class="empty" id="board-empty" hidden data-i18n="msg.board_empty"></p>
+          <p class="empty" id="board-empty" hidden data-i18n="msg.board_empty">Nothing approved yet. Be the first - whatever I accept appears here.</p>
         </div>
       </article>
     </section>
@@ -104,9 +105,9 @@
 </main>
 
 <footer class="foot">
-  <p><a href="/" data-i18n="nav.lookup"></a> · <a href="/privacy" data-i18n="nav.privacy"></a></p>
+  <p><a href="/" data-i18n="nav.lookup">look up a profile</a> · <a href="/privacy" data-i18n="nav.privacy">privacy</a> · <a class="foot-repo" href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener" data-i18n="foot.repo">source code ↗</a></p>
   <p id="credit-slot"><a href="/u/gordziilla">made with ♥</a></p>
-  <p class="foot-legal" data-i18n="foot.disclaimer"></p>
+  <p class="foot-legal" data-i18n="foot.disclaimer">steamprofiler.org is an independent hobby project. It is not affiliated with, endorsed by, or connected to Valve Corporation. Steam and the Steam logo are trademarks of Valve Corporation. Game names and art belong to their respective owners.</p>
 </footer>
 
 <noscript>

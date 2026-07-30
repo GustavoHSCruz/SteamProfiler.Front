@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title data-i18n-doc="priv.title">steamprofiler.org</title>
+<title data-i18n-doc="priv.title">Privacy - steamprofiler.org</title>
 <meta name="description" content="What steamprofiler.org does with data: what leaves the server on a lookup, the little that is kept, and what is not collected at all.">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0b0a0e">
@@ -19,104 +19,130 @@
 <header class="bar-top">
   <a class="wordmark" href="/">steamprofiler<span>.org</span></a>
   <nav class="bar-mods">
-    <a class="mod" href="/" data-i18n="nav.lookup"></a>
-    <a class="mod" href="/feedback" data-i18n="nav.messages"></a>
-    <a class="mod" href="/support" data-i18n="nav.support"></a>
+    <a class="mod" href="/" data-i18n="nav.lookup">look up a profile</a>
+    <a class="mod" href="/blog" data-i18n="nav.blog">blog</a>
+    <a class="mod" href="/feedback" data-i18n="nav.messages">feedback</a>
+    <a class="mod" href="/support" data-i18n="nav.support">support</a>
     <span class="langs" id="langs"></span>
   </nav>
 </header>
 
 <main class="page">
   <section class="page-head">
-    <p class="eyebrow" data-i18n="priv.eyebrow"></p>
-    <h1 class="display" data-i18n="priv.h1"></h1>
-    <p class="lede" data-i18n-html="priv.lede"></p>
+    <p class="eyebrow" data-i18n="priv.eyebrow">privacy</p>
+    <h1 class="display" data-i18n="priv.h1">What this site does with data.</h1>
+    <p class="lede" data-i18n-html="priv.lede">Short version: this site looks up public Steam profiles and keeps almost nothing. The long version is below, written so you can check every line of it against the site itself.</p>
     <!-- The date is filled from POLICY_LOG rather than written here, so that
          editing the policy and forgetting the date is not a thing that can
          happen. Empty until the script runs, which is the honest failure. -->
     <p class="page-stamp">
-      <span data-i18n="priv.updated"></span> <time id="priv-date"></time>
-      · <a href="/privacy/history" data-i18n="pol.see"></a>
+      <span data-i18n="priv.updated">Last revised on</span> <time id="priv-date"></time>
+      · <a href="/privacy/history" data-i18n="pol.see">earlier versions</a>
     </p>
   </section>
 
   <!-- ── What a lookup actually does ───────────────────────────────── -->
   <article class="panel">
-    <div class="panel-bar"><span data-i18n="priv.flow"></span><b data-i18n="priv.flow_tag"></b></div>
+    <div class="panel-bar"><span data-i18n="priv.flow">what a lookup does</span><b data-i18n="priv.flow_tag">live, every time</b></div>
     <div class="panel-body">
-      <p class="card-body" data-i18n="priv.flow_1"></p>
-      <p class="card-body" data-i18n="priv.flow_2"></p>
-      <p class="card-body" data-i18n-html="priv.flow_3"></p>
+      <p class="card-body" data-i18n="priv.flow_1">When you type a profile, your browser asks this server, and this server asks Steam. The Steam Web API key is mine and stays here; your browser never sees it, and Steam never learns who was asking.</p>
+      <p class="card-body" data-i18n="priv.flow_2">What comes back is what the profile already publishes to anyone: the display name, the avatar, the games, the hours, the achievements. If a profile hides its game details, Steam returns nothing and the page says so. Nothing private is unlocked here.</p>
+      <p class="card-body" data-i18n-html="priv.flow_3">The answer is held in memory for fifteen minutes, so that a reload does not spend the key twice, and then it is gone. It is never written to disk. The one exception is a game's key art, cached as a plain JPEG at <b>/art/&lt;appid&gt;.jpg</b> - a picture of a game, with nobody's name on it.</p>
     </div>
   </article>
 
   <!-- ── What is kept ──────────────────────────────────────────────── -->
   <article class="panel">
-    <div class="panel-bar"><span data-i18n="priv.kept"></span><b data-i18n="priv.kept_tag"></b></div>
+    <div class="panel-bar"><span data-i18n="priv.kept">what is kept</span><b data-i18n="priv.kept_tag">the whole list</b></div>
     <div class="panel-body">
-      <p class="card-body" data-i18n="priv.kept_intro"></p>
+      <p class="card-body" data-i18n="priv.kept_intro">Everything this server keeps once the request is over, with nothing left out:</p>
       <ul class="plist">
-        <li data-i18n-html="priv.kept_msg"></li>
-        <li data-i18n-html="priv.kept_hash"></li>
-        <li data-i18n-html="priv.kept_lang"></li>
-        <li data-i18n-html="priv.kept_log"></li>
-        <li data-i18n-html="priv.kept_cache"></li>
+        <li data-i18n-html="priv.kept_msg"><b>The messages you send.</b> If you write on the feedback page, the text, the kind and the contact you chose to type are stored so I can read and answer them. Whatever I accept goes on the public board. Do not put anything in there you would not want read.</li>
+        <li data-i18n-html="priv.kept_hash"><b>A salted hash of your address.</b> Not the address - a one-way digest of it, salted with a secret that never leaves this server, which cannot be turned back and is useless anywhere else. It counts one vote per person on the board, it holds the rate limit, and it is the handle a shut-out address needs for an appeal to be matched to the block it is about. This secret never changes: a ban that expires because a secret was rotated is not a ban.</li>
+        <!-- The two the counting added. Next to the hash they are a second
+             digest of, rather than at the end, because reading them apart from
+             it makes the list look like there are two unrelated things holding
+             an address when there is one idea with two lifetimes. -->
+        <li data-i18n-html="priv.kept_count"><b>A count of visits, for seven days.</b> A second digest of your address, under a different secret that is replaced every seven days. While it stands, a visit of yours is recognisable as "the same one again"; when it is replaced, the previous digests are deleted and only totals remain. Kept with it: how many requests, the first and the last time, the region, and a guess at what kind of visitor it was. Deliberately not kept with it: a record of each day you came - because a day on this side and a day on the lookup side would be exactly the join the two counts are built to not have.</li>
+        <li data-i18n-html="priv.kept_origin"><b>Your country and region.</b> They arrive in a header that Cloudflare adds, already resolved. This server never needs your address to know them, never works them out itself, and never writes one down.</li>
+        <li data-i18n-html="priv.kept_lang"><b>The language you picked.</b> One entry in your browser's localStorage, <b>sp-lang</b>, holding "en", "pt" or "ru". It also decides which Steam shop a price is read from, so a request for a price carries a country code derived from it - and that lands in the server log, which has no address in it. That is the only thing the choice sends anywhere.</li>
+        <li data-i18n-html="priv.kept_log"><b>A server log with no addresses.</b> The web server writes one line per request: the time, the path, the status code, the browser string. No IP address in it, deliberately - the format was changed to drop it, precisely so the log is not a record of who looked up whom.</li>
+        <li data-i18n-html="priv.kept_cache"><b>Game prices and genres.</b> A local cache of Steam store data, filed by game, not by person.</li>
       </ul>
     </div>
   </article>
 
   <!-- ── What does not exist here ──────────────────────────────────── -->
   <article class="panel">
-    <div class="panel-bar"><span data-i18n="priv.none"></span><b data-i18n="priv.none_tag"></b></div>
+    <div class="panel-bar"><span data-i18n="priv.none">what is not here</span><b data-i18n="priv.none_tag">none of it</b></div>
     <div class="panel-body">
       <ul class="plist">
-        <li data-i18n-html="priv.none_track"></li>
-        <li data-i18n-html="priv.none_cookie"></li>
-        <li data-i18n-html="priv.none_login"></li>
-        <li data-i18n-html="priv.none_history"></li>
-        <li data-i18n-html="priv.none_sell"></li>
+        <li data-i18n-html="priv.none_track"><b>Counting of my own, and no tracker.</b> No Google Analytics, no pixel, no fingerprinting, no third-party script of any kind - the page loads code from this domain and nowhere else, and the Content-Security-Policy the server sends makes your browser enforce that. What does exist is counting done here, by me: how many visits came back, from what region, and how many times each profile was looked up. It is an experiment, and the section on those is below.</li>
+        <li data-i18n-html="priv.none_cookie"><b>No cookies.</b> Not one, not even a "necessary" one. There is no consent banner because there is nothing to consent to.</li>
+        <li data-i18n-html="priv.none_login"><b>No account and no sign-in.</b> There is no password here to leak, and this site never asks for your Steam credentials. Anything that does is not this site.</li>
+        <li data-i18n-html="priv.none_history"><b>Nothing joins who looked to what was looked at.</b> There are two separate counts: one says a visitor came back, the other says a profile was looked up. They share no column, so the join does not exist - it is not that I choose not to run it, it is that there is nothing to run it on. What one visitor asked for is still held in memory for an hour, because that is how the rate limiter tells a reader from a scraper, and it is never written down.</li>
+        <li data-i18n-html="priv.none_sell"><b>No ads and nothing for sale.</b> No data goes to anyone, for money or otherwise. There is no business here to have a business model.</li>
       </ul>
+    </div>
+  </article>
+
+  <!-- ── What here is an experiment ────────────────────────────────── -->
+  <!-- Written as a standing rule rather than as an account of the counting
+       that prompted it: the next experiment should not need this section
+       rewritten, only priv.exp_now amended to name it. -->
+  <article class="panel">
+    <div class="panel-bar"><span data-i18n="priv.exp">what here is an experiment</span><b data-i18n="priv.exp_tag">switched on to see</b></div>
+    <div class="panel-body">
+      <p class="card-body" data-i18n="priv.exp_intro">This site changes often, and some of what is here is an experiment. That word means one specific thing here: it is switched on to see whether it is any use, and if it gets in the way of the people using the site, it goes back off. It is not a warning for you to distrust - it is my commitment to remove. While one is on, all of this holds:</p>
+      <ul class="plist">
+        <li data-i18n-html="priv.exp_data"><b>It gets no new data quietly.</b> If an experiment needs a kind of information this policy does not already describe, the policy changes first, in the same revision, and the history says which one it was.</li>
+        <li data-i18n-html="priv.exp_time"><b>It gets no longer to keep it.</b> The period stated for a thing is the period, whether the thing is being tested or not.</li>
+        <li data-i18n-html="priv.exp_end"><b>When it ends it leaves nothing behind.</b> If I switch one off, what it collected is deleted, not kept in case.</li>
+        <li data-i18n-html="priv.exp_decide"><b>It decides nothing about you.</b> No page changes because of it, no lookup is refused because of it, nothing is ranked by it, and none of it leaves this server.</li>
+        <li data-i18n-html="priv.exp_rights"><b>Your rights are the same.</b> "Experimental" is about how good a number is and how long a feature lasts, not about how much I owe you. Everything under your rights, further down, applies exactly as written.</li>
+      </ul>
+      <p class="card-body" data-i18n="priv.exp_now">What is in this condition today is the counting of visits and of lookups described above - the first thing here to be, which is why this section exists at all. It is imprecise by nature, and worth knowing how: addresses get recycled, so a carrier network behind one shared address makes many people look like one, and the same person on wifi, on a phone and behind a VPN looks like several. The guess at what kind of visitor something is comes from how it behaved, and it gets it wrong. Expect this list to change, and when it does, it will be in the history.</p>
     </div>
   </article>
 
   <!-- ── Third parties the browser reaches ─────────────────────────── -->
   <article class="panel">
-    <div class="panel-bar"><span data-i18n="priv.third"></span><b data-i18n="priv.third_tag"></b></div>
+    <div class="panel-bar"><span data-i18n="priv.third">who else sees anything</span><b data-i18n="priv.third_tag">four, and that is all</b></div>
     <div class="panel-body">
-      <p class="card-body" data-i18n="priv.third_intro"></p>
+      <p class="card-body" data-i18n="priv.third_intro">A site that draws from Steam cannot be a closed room. These are every outside party involved and exactly what each one sees:</p>
       <ul class="plist">
-        <li data-i18n-html="priv.third_valve"></li>
-        <li data-i18n-html="priv.third_cdn"></li>
-        <li data-i18n-html="priv.third_tunnel"></li>
-        <li data-i18n-html="priv.third_pay"></li>
+        <li data-i18n-html="priv.third_valve"><b>Valve.</b> The lookup leaves this server for the Steam Web API under my key, and opening a game page also asks the Valve shop your language belongs to - the American, the Brazilian or the Russian one - what that game costs there today. Steam prices each region separately, so nothing here is converted: the number shown is the one that shop quotes. Both go out from here, so Valve sees this server asking and never you. The price block links out to the store, but nothing from Valve loads until you follow that link.</li>
+        <li data-i18n-html="priv.third_cdn"><b>Steam's image CDN.</b> Avatars and key art load straight from Valve's servers into your browser, because mirroring a thousand images per lookup does not hold up. That means Valve's CDN sees your address, the same way it would if you opened the Steam store. It is the one place where something of yours reaches a third party.</li>
+        <li data-i18n-html="priv.third_tunnel"><b>Cloudflare.</b> The site is published through a Cloudflare tunnel, so your request travels through their network and is subject to their handling on the way here. They are also the ones who report the country and the region, so besides carrying the request they locate it - which is how this server can count where traffic comes from without ever holding an address.</li>
+        <li data-i18n-html="priv.third_pay"><b>Ko-fi, only if you click it.</b> The support page links out; nothing of theirs loads until you follow the link, and from there you are on their site under their terms. The crypto addresses involve nobody at all.</li>
       </ul>
     </div>
   </article>
 
   <!-- ── When the profile is not yours ─────────────────────────────── -->
   <article class="panel">
-    <div class="panel-bar"><span data-i18n="priv.subject"></span><b data-i18n="priv.subject_tag"></b></div>
+    <div class="panel-bar"><span data-i18n="priv.subject">when the profile is someone else's</span><b data-i18n="priv.subject_tag">public data, still a person</b></div>
     <div class="panel-body">
-      <p class="card-body" data-i18n="priv.subject_1"></p>
-      <p class="card-body" data-i18n-html="priv.subject_2"></p>
+      <p class="card-body" data-i18n="priv.subject_1">This site can look up any public Steam profile, which means it can draw a page about someone who never came here. That page holds only what Steam already shows to anyone with the link, it is built fresh on every visit, and it is neither indexed nor stored here.</p>
+      <p class="card-body" data-i18n-html="priv.subject_2">If the profile is yours and you would rather it could not be drawn here, there are two ways: set your game details to private on Steam, and this site can no longer read anything - or <a href="/feedback">write to me</a> and I will block the profile by hand.</p>
     </div>
   </article>
 
   <!-- ── Rights and contact ────────────────────────────────────────── -->
   <article class="panel">
-    <div class="panel-bar"><span data-i18n="priv.rights"></span><b data-i18n="priv.rights_tag"></b></div>
+    <div class="panel-bar"><span data-i18n="priv.rights">your rights, and me</span><b data-i18n="priv.rights_tag">one person, one inbox</b></div>
     <div class="panel-body">
-      <p class="card-body" data-i18n-html="priv.rights_1"></p>
-      <p class="card-body" data-i18n="priv.rights_2"></p>
-      <p class="form-note" data-i18n-html="priv.rights_3"></p>
+      <p class="card-body" data-i18n-html="priv.rights_1">This is a hobby project run by one person on a server at home, and I am the one answerable for what it does with data. The legal basis for the little that is processed is legitimate interest in keeping the service running - answering lookups, stopping abuse, reading feedback, and measuring whether the site is used at all - under Brazil's LGPD and, where it reaches, the GDPR.</p>
+      <p class="card-body" data-i18n="priv.rights_2">You can ask what is stored about you, ask for it to be corrected, or ask for it to be deleted, and I will do it. In practice the honest answer is almost always that there is nothing to delete, unless you left a message.</p>
+      <p class="form-note" data-i18n-html="priv.rights_3">Write to me through the <a href="/feedback">feedback page</a>. If this policy changes, the date above changes with it.</p>
     </div>
   </article>
 </main>
 
 <footer class="foot">
-  <p><a href="/" data-i18n="nav.lookup"></a> · <a href="/privacy/history" data-i18n="pol.see"></a> · <a href="/feedback" data-i18n="foot.bugs_ideas"></a></p>
+  <p><a href="/" data-i18n="nav.lookup">look up a profile</a> · <a href="/privacy/history" data-i18n="pol.see">earlier versions</a> · <a href="/feedback" data-i18n="foot.bugs_ideas">bugs and ideas</a> · <a class="foot-repo" href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener" data-i18n="foot.repo">source code ↗</a></p>
   <p id="credit-slot"><a href="/u/gordziilla">made with &hearts;</a></p>
-  <p class="foot-legal" data-i18n="foot.disclaimer"></p>
+  <p class="foot-legal" data-i18n="foot.disclaimer">steamprofiler.org is an independent hobby project. It is not affiliated with, endorsed by, or connected to Valve Corporation. Steam and the Steam logo are trademarks of Valve Corporation. Game names and art belong to their respective owners.</p>
 </footer>
 
 <script src="/dict.js"></script>

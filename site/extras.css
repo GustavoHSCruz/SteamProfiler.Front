@@ -312,10 +312,11 @@
 .rev-tabs .btn[data-on="1"] { border-color: var(--accent); color: var(--accent); cursor: default; }
 .rev-commit { color: var(--link); }
 
-/* One key of the policy. The key itself is the heading, in mono, because it
-   is the stable name of that paragraph - the thing a reader can go and find
-   on /privacy - and inventing a prettier label for it would be inventing a
-   second name for the same thing. */
+/* One key of the policy. The heading is what the paragraph is about, and the
+   key rides along after it in mono: it is the stable name of that paragraph -
+   the thing a reader can go and find on /privacy - but it is a name, not a
+   sentence, and a page made of nothing but names reads as broken. Prose in the
+   reading colour, key in the dim one, so the eye lands on the words. */
 .dk { padding: 14px 0; border-top: 1px solid var(--line); }
 .dk:first-child { border-top: 0; padding-top: 0; }
 .dk-h {
@@ -327,7 +328,8 @@
   font-size: 12px;
   font-weight: 400;
 }
-.dk-h code { font-family: var(--mono); font-size: 11.5px; color: var(--dim); }
+.dk-name { font-size: 13.5px; font-weight: 500; color: var(--text); }
+.dk-h code { font-family: var(--mono); font-size: 11.5px; color: var(--faint); }
 .dk-tag {
   font-family: var(--label);
   font-size: 10px;

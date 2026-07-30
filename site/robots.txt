@@ -1,0 +1,61 @@
+# steamprofiler.org
+#
+# The pages of the site are open. The profiles are not, and that is the whole
+# point of this file: /u/ is somebody else's name, avatar and hours, and this
+# site looking it up live is a different thing from a search engine keeping a
+# copy of it under their name forever. The privacy policy says the site holds
+# no record of who was looked up; an index of /u/ would be exactly that record,
+# kept by somebody else.
+#
+# /api/ is data for the pages, not pages. /appeal is an answer to something -
+# it means nothing to a reader who arrives at it cold, and the ban notice that
+# leads to it is served internally and has no address of its own.
+
+User-agent: *
+Allow: /
+Disallow: /u/
+Disallow: /api/
+Disallow: /appeal
+
+# ── The agents a person is standing behind ───────────────────────────
+# These are not crawlers. Each one fetches a page because somebody asked their
+# assistant a question about that page, once, and nothing is indexed or kept
+# afterwards. That is the first of the two things separated above and not the
+# second: a person looking a profile up through an assistant is a person
+# looking a profile up, which is what this site is for. The crawlers that
+# collect - GPTBot, ClaudeBot, Google-Extended, PerplexityBot, Bytespider and
+# everyone else - stay under the rule above and stay out of /u/.
+#
+# The distinction is the operators' own, published in their documentation:
+# every one of these is named apart from that company's indexing and training
+# crawler precisely so that a site can answer the two differently.
+#
+# Only the first of them is bound by what follows. Anthropic documents
+# Claude-User as respecting robots.txt, so that block is a rule. OpenAI and
+# Perplexity both say the opposite about theirs - that a fetch a person asked
+# for is not automated crawling and robots.txt may not apply to it - so those
+# two blocks are a statement of what this site wants rather than something it
+# enforces. They are written down anyway, because the wanted thing is the same
+# either way and silence would read as the refusal above.
+#
+# Google is absent on purpose and not by oversight: it publishes no
+# user-triggered token that takes robots.txt at all, so there is nothing here
+# to address. Google-Extended, which does read this file, is the training and
+# grounding crawler and belongs under the rule above with the rest.
+
+User-agent: Claude-User
+Allow: /
+Disallow: /api/
+Disallow: /appeal
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /api/
+Disallow: /appeal
+
+User-agent: Perplexity-User
+Allow: /
+Disallow: /api/
+Disallow: /appeal
+
+Sitemap: https://steamprofiler.org/sitemap.xml

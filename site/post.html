@@ -3,7 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title data-i18n-doc="blog.title">steamprofiler.org</title>
+<!-- What this post is called, filled in before the page is sent. A link card
+     is drawn by something that does not run scripts, so the title cannot
+     arrive the way the rest of the page does - by the time post.js had it, the
+     card would already say "steamprofiler.org". Above the plain title and
+     description below on purpose: the first of each is the one a parser reads,
+     and these two are the fallback for anywhere this is served as a static
+     file, where the line above is only a comment. -->
+<!--#include virtual="/api/blog/meta?slug=$slug" -->
+<!--og-->
+<title data-i18n-doc="blog.title">blog - steamprofiler.org</title>
 <meta name="description" content="A post from the steamprofiler.org blog.">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0b0a0e">
@@ -20,20 +29,20 @@
 <header class="bar-top">
   <a class="wordmark" href="/">steamprofiler<span>.org</span></a>
   <nav class="bar-mods">
-    <a class="mod" href="/blog" data-i18n="blog.all"></a>
-    <a class="mod" href="/" data-i18n="nav.lookup"></a>
-    <a class="mod" href="/feedback" data-i18n="nav.messages"></a>
+    <a class="mod" href="/blog" data-i18n="blog.all">all posts</a>
+    <a class="mod" href="/" data-i18n="nav.lookup">look up a profile</a>
+    <a class="mod" href="/feedback" data-i18n="nav.messages">feedback</a>
     <span class="langs" id="langs"></span>
   </nav>
 </header>
 
 <main class="page">
-  <p class="state" id="loading" data-i18n="blog.loading"></p>
+  <p class="state" id="loading" data-i18n="blog.loading">Opening the post</p>
 
   <section id="failure" hidden>
-    <p class="eyebrow" data-i18n="blog.eyebrow"></p>
+    <p class="eyebrow" data-i18n="blog.eyebrow">blog</p>
     <h1 class="display" id="failure-text">-</h1>
-    <p class="lede"><a href="/blog" data-i18n="blog.all"></a></p>
+    <p class="lede"><a href="/blog" data-i18n="blog.all">all posts</a></p>
   </section>
 
   <article id="post" hidden>
@@ -43,13 +52,17 @@
       <p class="lede" id="post-lede" hidden></p>
       <p class="page-stamp" id="post-stamp"></p>
       <p class="notice" id="post-lang" hidden></p>
+      <!-- Two different admissions, so two lines: one says you are reading
+           another language than you asked for, the other says a machine wrote
+           the words you are reading. A post can owe the reader both. -->
+      <p class="notice" id="post-machine" hidden></p>
     </header>
 
     <div class="prose" id="post-body"></div>
 
     <div class="post-foot">
       <div class="post-vote" id="post-vote"></div>
-      <p class="form-note" data-i18n-html="blog.vote_note"></p>
+      <p class="form-note" data-i18n-html="blog.vote_note">The vote is counted per address, one per post, exactly the way the board counts them. That is not one per person and it is not pretending to be: <b>accounts are the next thing being built here</b>, and the vote moves to the account when they arrive.</p>
     </div>
 
     <nav class="post-nav" id="post-nav"></nav>
@@ -57,9 +70,9 @@
 </main>
 
 <footer class="foot">
-  <p><a href="/blog" data-i18n="blog.all"></a> · <a href="/" data-i18n="nav.lookup"></a> · <a href="/feedback" data-i18n="foot.bugs_ideas"></a></p>
+  <p><a href="/blog" data-i18n="blog.all">all posts</a> · <a href="/" data-i18n="nav.lookup">look up a profile</a> · <a href="/feedback" data-i18n="foot.bugs_ideas">bugs and ideas</a> · <a class="foot-repo" href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener" data-i18n="foot.repo">source code ↗</a></p>
   <p id="credit-slot"><a href="/u/gordziilla">made with &hearts;</a></p>
-  <p class="foot-legal" data-i18n="foot.disclaimer"></p>
+  <p class="foot-legal" data-i18n="foot.disclaimer">steamprofiler.org is an independent hobby project. It is not affiliated with, endorsed by, or connected to Valve Corporation. Steam and the Steam logo are trademarks of Valve Corporation. Game names and art belong to their respective owners.</p>
 </footer>
 
 <noscript>

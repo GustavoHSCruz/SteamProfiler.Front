@@ -678,7 +678,9 @@ function buildCompare(query) {
   input.setAttribute('aria-label', t('vs.compare_with'));
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const other = input.value.trim();
+    // Same as the landing field: a pasted profile URL goes in as the name it
+    // holds, never as the URL itself.
+    const other = steamHandle(input.value);
     if (other) location.href = `/u/${query}/vs/${encodeURIComponent(other)}`;
   });
 }

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title data-i18n-doc="land.title">steamprofiler.org</title>
+<title data-i18n-doc="land.title">steamprofiler.org - your Steam library, drawn to scale</title>
 <meta name="description" content="Look up any public Steam profile: the whole library as an area map, one rectangle per game, and a page of its own for every game.">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0b0a0e">
@@ -11,6 +11,115 @@
 <meta property="og:description" content="Any public Steam profile, with its library drawn to scale: one rectangle per game, area proportional to hours.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://steamprofiler.org/">
+<link rel="canonical" href="https://steamprofiler.org/">
+
+<!-- The same answers the page gives, in the form a machine reads.
+
+     This is here because of what happens when a person asks an assistant
+     whether this site is safe before they use it. The assistant fetches the
+     page, does not run the script, and has to decide from what is left. The
+     three questions it always asks are the three below: is there a login, does
+     the site want a Steam Web API key, and who is behind it. Every one of them
+     is answered in the copy above and on /privacy. Answering them again here
+     costs a kilobyte and means the answer does not depend on anybody's reader
+     rendering the site correctly.
+
+     Only claims that are structural go in this block - things that stop being
+     true by rewriting the site rather than by editing a sentence. There is no
+     sign-in because there is no route that could take one; the key lives in the
+     server's environment; the project is nobody's but its author's. A claim
+     that needs a paragraph to qualify belongs on /privacy, which this points
+     at, and not in a file that no reader can see and correct. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://steamprofiler.org/#site",
+      "url": "https://steamprofiler.org/",
+      "name": "steamprofiler.org",
+      "inLanguage": ["en", "pt-BR", "ru"],
+      "description": "Look up any public Steam profile: the whole library as an area map, one rectangle per game, and a page of its own for every game."
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://steamprofiler.org/#app",
+      "name": "steamprofiler.org",
+      "url": "https://steamprofiler.org/",
+      "isPartOf": { "@id": "https://steamprofiler.org/#site" },
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Any web browser",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "description": "Reads a public Steam profile through the Steam Web API and draws its library to scale, one rectangle per game, area proportional to hours played.",
+      "disambiguatingDescription": "An independent hobby project. Not affiliated with, endorsed by, or connected to Valve Corporation. Steam and the Steam logo are trademarks of Valve Corporation.",
+      "usageInfo": "https://steamprofiler.org/privacy",
+      "privacyPolicy": "https://steamprofiler.org/privacy",
+      "codeRepository": "https://github.com/GustavoHSCruz/SteamProfiler.Front",
+      "license": "https://opensource.org/licenses/MIT",
+      "sameAs": ["https://github.com/GustavoHSCruz/SteamProfiler.Front"]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://steamprofiler.org/#faq",
+      "isPartOf": { "@id": "https://steamprofiler.org/#site" },
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Does steamprofiler.org ask you to sign in to Steam?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. There is no sign-in on this site and no route that accepts one: not a password, not a Steam Guard code, not Steam OpenID, not a QR code. A lookup needs a vanity name, a steamID64 or a profile URL and nothing else. Any page claiming to be this site and asking for a Steam password is not this site."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does steamprofiler.org ask for your Steam Web API key?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Never. The site queries Steam with the owner's own key, which stays in the server's environment and is never sent to the browser. You are never asked for a key of your own, and you should not give your Steam Web API key to any website."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Where does the data on steamprofiler.org come from?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "From the official Steam Web API and the Steam storefront, live, at the moment of the lookup, and cached for about fifteen minutes. Only what a profile makes public is readable: if a profile has Game details set to private, Steam returns nothing and the page says so."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does steamprofiler.org trade, sell or handle Steam items?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. The site never touches an inventory, a trade, a market listing or a payment. It reads profile data and draws it. It sells nothing, runs no ads, gives nothing away and holds no giveaway, raffle or vote."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What does steamprofiler.org store about the people who use it?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No record of who looked up which profile. There are no tracking cookies and no third-party analytics; addresses are kept only as a salted hash for rate limiting, and the access log has the address stripped out. The full account is at https://steamprofiler.org/privacy, with every earlier version of it at https://steamprofiler.org/privacy/history."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is steamprofiler.org affiliated with Valve?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. It is an independent hobby project running on a home server, free, funded by its author. It is not affiliated with, endorsed by, or connected to Valve Corporation."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
 <link rel="preload" href="fonts/bricolage-grotesque-800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="fonts.css">
@@ -23,6 +132,7 @@
 <header class="bar-top">
   <a class="wordmark" href="/">steamprofiler<span>.org</span></a>
   <nav class="bar-mods">
+    <a class="mod" href="/blog" data-i18n="nav.blog">blog</a>
     <a class="mod" href="/feedback" data-i18n="nav.messages">feedback</a>
     <a class="mod" href="/support" data-i18n="nav.support">support</a>
     <a class="mod" href="https://steamcommunity.com/dev" data-hide-narrow="1" data-i18n="nav.steam_api">steam web api ↗</a>
@@ -32,35 +142,35 @@
 
 <main class="land">
   <section class="land-in">
-    <p class="eyebrow" data-i18n="land.eyebrow"></p>
-    <h1 class="display" data-i18n-html="land.h1"></h1>
-    <p class="lede" data-i18n-html="land.lede"></p>
+    <p class="eyebrow" data-i18n="land.eyebrow">steam · any public profile</p>
+    <h1 class="display" data-i18n-html="land.h1">The whole library,<br>drawn to scale.</h1>
+    <p class="lede" data-i18n-html="land.lede">Type in a Steam profile. I read its public library and draw the time: <b>one rectangle per game</b>, area proportional to hours. Every game gets a page of its own, and <b>the most played ones get a themed one</b>.</p>
 
     <form class="find" id="find" novalidate>
-      <label class="find-label" for="q" data-i18n="land.field"></label>
+      <label class="find-label" for="q" data-i18n="land.field">steam profile</label>
       <div class="find-row">
         <input class="find-input" id="q" name="q" type="text" autocomplete="off"
                spellcheck="false" enterkeyhint="go"
                data-i18n-ph="land.placeholder"
                aria-describedby="find-help">
-        <button class="find-go" type="submit" id="find-go" data-i18n="land.go"></button>
+        <button class="find-go" type="submit" id="find-go" data-i18n="land.go">Look it up</button>
       </div>
-      <p class="find-help" id="find-help" data-i18n-html="land.help"></p>
+      <p class="find-help" id="find-help" data-i18n-html="land.help">A vanity name, a steamID64 or the full URL all work. The profile needs <b>Game details</b> set to public - that is the Steam setting that releases the game list.</p>
       <p class="find-error" id="find-error" hidden role="alert"></p>
     </form>
 
     <ul class="land-notes">
-      <li data-i18n-html="land.note_stored"></li>
-      <li data-i18n-html="land.note_public"></li>
-      <li data-i18n-html="land.note_login"></li>
+      <li data-i18n-html="land.note_stored"><b>No profile is stored.</b> Every lookup goes to Steam live and is cached for 15 minutes, that is all.</li>
+      <li data-i18n-html="land.note_public"><b>Only what is public.</b> If a profile hides its game details, Steam returns nothing and the page says so.</li>
+      <li data-i18n-html="land.note_login"><b>No sign-in.</b> The API key stays on the server; your browser never sees it.</li>
     </ul>
   </section>
 </main>
 
 <footer class="foot">
-  <p><a href="/u/gordziilla" data-i18n="foot.example"></a> · <a href="/feedback" data-i18n="foot.bugs_ideas"></a> · <a href="/support" data-i18n="nav.support"></a> · <a href="/privacy" data-i18n="nav.privacy"></a></p>
+  <p><a href="/u/gordziilla" data-i18n="foot.example">see a finished example</a> · <a href="/blog" data-i18n="nav.blog">blog</a> · <a href="/feedback" data-i18n="foot.bugs_ideas">bugs and ideas</a> · <a href="/support" data-i18n="nav.support">support</a> · <a href="/privacy" data-i18n="nav.privacy">privacy</a> · <a class="foot-repo" href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener" data-i18n="foot.repo">source code ↗</a></p>
   <p id="credit-slot"><a href="/u/gordziilla">made with ♥</a></p>
-  <p class="foot-legal" data-i18n="foot.disclaimer"></p>
+  <p class="foot-legal" data-i18n="foot.disclaimer">steamprofiler.org is an independent hobby project. It is not affiliated with, endorsed by, or connected to Valve Corporation. Steam and the Steam logo are trademarks of Valve Corporation. Game names and art belong to their respective owners.</p>
 </footer>
 
 <noscript>

@@ -20,7 +20,10 @@ function complain(message) {
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const q = input.value.trim();
+  // A pasted profile URL becomes the name inside it before it ever reaches the
+  // address bar: the whole URL would go in percent-encoded, which is neither
+  // readable nor shareable, and its slashes would read as extra path segments.
+  const q = steamHandle(input.value);
   error.hidden = true;
 
   if (!q) {
@@ -31,7 +34,8 @@ form.addEventListener('submit', async (e) => {
   button.disabled = true;
   button.textContent = t('land.searching');
   try {
-    // Only to check it exists; the URL keeps whatever was typed, so it stays readable.
+    // Only to check it exists; the URL keeps the name, not a steamid, so it
+    // stays readable.
     await api(`/resolve?q=${encodeURIComponent(q)}`);
     location.assign(`/u/${encodeURIComponent(q)}`);
   } catch (err) {

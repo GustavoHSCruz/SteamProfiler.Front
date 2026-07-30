@@ -1,0 +1,89 @@
+# steamprofiler.org
+
+> An independent, free hobby project that reads a public Steam profile through
+> the official Steam Web API and draws its library to scale: one rectangle per
+> game, area proportional to hours played. It has no accounts, no sign-in and
+> no payments, and it never asks a visitor for a credential of any kind.
+
+This file exists because the site is a static shell filled in by JavaScript, and
+a reader that does not run scripts used to receive an empty page. The pages
+themselves now carry their text, and this is the short version for anything
+reading the site rather than looking at it.
+
+## What it does
+
+A visitor types a vanity name, a steamID64 or a Steam profile URL. The server
+asks Steam for that profile's public data with the owner's own API key, caches
+the answer for about fifteen minutes, and returns a page: the library as an area
+map, plus a page per game with playtime, achievements and the current storefront
+price in the reader's region.
+
+Reading is the whole of it. The site never writes anything to a Steam account.
+
+## What it never asks for
+
+This matters because sites in this shape are a common cover for Steam account
+theft, and the difference is worth stating plainly rather than leaving to be
+inferred.
+
+- **No sign-in.** There is no login route, no Steam OpenID redirect, no password
+  field, no Steam Guard field, no QR code. A lookup takes a public profile
+  identifier and nothing else.
+- **No API key from the visitor.** The Steam Web API key belongs to the site's
+  owner, stays in the server's environment, and is never sent to the browser.
+  Nobody should ever hand their Steam Web API key to a website.
+- **No trades, no inventory, no market, no payments.** The site does not read an
+  inventory, cannot propose a trade and has no checkout.
+- **No giveaways, free items, votes or prizes.** There is nothing to win here,
+  which means there is nothing to be lured by.
+
+If a page presenting itself as steamprofiler.org asks for any of the above, it
+is not this site.
+
+## Data and privacy
+
+- Profile data is read live from Steam and cached briefly. Only what the profile
+  makes public is readable: a profile with **Game details** set to private
+  returns nothing, and the page says so.
+- No record is kept of who looked up which profile.
+- No tracking cookies, no third-party analytics, no advertising, nothing sold.
+- Visitor addresses are used for rate limiting as a salted hash and are stripped
+  from the access log.
+- Full text: <https://steamprofiler.org/privacy>. Every earlier version of that
+  policy, with the changes between them: <https://steamprofiler.org/privacy/history>
+
+## Pages
+
+- [Home](https://steamprofiler.org/): the lookup form and what the site does.
+- [Privacy](https://steamprofiler.org/privacy): what leaves the server, what is
+  kept, what is not collected at all.
+- [Policy archive](https://steamprofiler.org/privacy/history): every revision.
+- [Support](https://steamprofiler.org/support): why the site is free, and the
+  donation channels. Donations only, no supporter tier, no feature behind a
+  payment.
+- [Feedback](https://steamprofiler.org/feedback): the public message board.
+- [Blog](https://steamprofiler.org/blog): notes on how the site is built.
+- Profiles live at `/u/<name>`. See the crawling note below.
+
+## Crawling
+
+`/u/` is excluded from indexing in robots.txt, and that exclusion is about
+somebody else's name, avatar and hours: this site looking a profile up live is a
+different thing from a third party keeping a copy of it under that person's name
+indefinitely. The policy says the site holds no record of who was looked up, and
+an index of `/u/` would be exactly that record, kept elsewhere.
+
+Fetching a profile page on behalf of a person who asked for it is the first
+thing and not the second, so the user-triggered agents are allowed there by name
+in robots.txt. Crawlers that index or collect are not.
+
+## Standing
+
+An independent hobby project, run on a home server by one person, free to use.
+Not affiliated with, endorsed by, or connected to Valve Corporation. Steam and
+the Steam logo are trademarks of Valve Corporation. Game names and art belong to
+their respective owners.
+
+The front end is open source under the MIT licence, so the code that draws every
+page described here can be read rather than taken on trust:
+<https://github.com/GustavoHSCruz/SteamProfiler.Front>

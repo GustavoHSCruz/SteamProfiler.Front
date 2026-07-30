@@ -30,6 +30,9 @@
   <nav class="bar-mods">
     <a class="mod" id="back-link" href="/" hidden></a>
     <span class="mod" id="mod-now" hidden><i class="dot"></i><span id="mod-now-text"></span></span>
+    <!-- The bar already carries the profile's own state, so the blog steps
+         aside first when the screen gets narrow; the footer link stays. -->
+    <a class="mod" href="/blog" data-hide-narrow="1" data-i18n="nav.blog">blog</a>
     <a class="mod" href="/feedback" data-i18n="nav.messages">feedback</a>
     <a class="mod" href="/support" data-i18n="nav.support">support</a>
     <a class="mod" href="/" data-i18n="nav.lookup_other">look up another profile</a>
@@ -43,7 +46,7 @@
   <p id="failure-text"></p>
   <p class="state-links">
     <a id="failure-retry" href="/" hidden></a>
-    <a href="/" data-i18n="err.try_other"></a>
+    <a href="/" data-i18n="err.try_other">try another profile</a>
   </p>
 </div>
 
@@ -59,7 +62,7 @@
         <span id="float-span"></span>
       </div>
       <div class="float-body">
-        <h1 class="display"><span id="h-hours">-</span> <span data-i18n="dash.hours"></span></h1>
+        <h1 class="display"><span id="h-hours">-</span> <span data-i18n="dash.hours">hours.</span></h1>
         <p class="lede" id="h-lede"></p>
       </div>
     </div>
@@ -67,12 +70,12 @@
     <output class="readout" id="readout" aria-live="polite"></output>
   </section>
 
-  <p class="stage-caption"><span data-i18n="dash.caption"></span> <span class="only-wide" data-i18n="dash.caption_hint"></span></p>
+  <p class="stage-caption"><span data-i18n="dash.caption">Each rectangle is a game, with area proportional to hours.</span> <span class="only-wide" data-i18n="dash.caption_hint">Hover it, or use the arrow keys.</span></p>
 
   <section class="grid" data-tile-in>
 
     <article class="panel p-now">
-      <div class="panel-bar"><span data-i18n="dash.recent"></span><b id="now-total">-</b></div>
+      <div class="panel-bar"><span data-i18n="dash.recent">last 14 days</span><b id="now-total">-</b></div>
       <div class="panel-body">
         <div class="rows" id="now-rows"></div>
         <p class="note" id="now-note"></p>
@@ -80,9 +83,9 @@
     </article>
 
     <article class="panel p-plat">
-      <div class="panel-bar"><span data-i18n="dash.system"></span><b data-i18n="dash.system_head"></b></div>
+      <div class="panel-bar"><span data-i18n="dash.system">system</span><b data-i18n="dash.system_head">linux vs windows</b></div>
       <div class="panel-body">
-        <p class="figure is-hot"><span id="plat-share">-</span><small data-i18n="dash.system_sub"></small></p>
+        <p class="figure is-hot"><span id="plat-share">-</span><small data-i18n="dash.system_sub">of the hours with a recorded OS</small></p>
         <div class="meter" id="plat-meter" data-animate="1"><i></i></div>
         <dl class="kv" id="plat-kv"></dl>
         <p class="note" id="plat-note"></p>
@@ -90,7 +93,7 @@
     </article>
 
     <article class="panel p-acct">
-      <div class="panel-bar"><span data-i18n="dash.account"></span><b id="acct-level">-</b></div>
+      <div class="panel-bar"><span data-i18n="dash.account">account</span><b id="acct-level">-</b></div>
       <div class="panel-body">
         <div class="acct">
           <img class="avatar" id="avatar" alt="" width="72" height="72" loading="lazy" decoding="async">
@@ -106,9 +109,9 @@
     <!-- What the library cost, at the store's price today rather than at
          whatever anyone actually paid. The panel says which of the two it is. -->
     <article class="panel p-money" id="panel-money">
-      <div class="panel-bar"><span data-i18n="money.title"></span><b id="money-head">-</b></div>
+      <div class="panel-bar"><span data-i18n="money.title">what it cost</span><b id="money-head">-</b></div>
       <div class="panel-body">
-        <p class="figure is-hot"><span id="money-total">-</span><small data-i18n="money.total_sub"></small></p>
+        <p class="figure is-hot"><span id="money-total">-</span><small data-i18n="money.total_sub">at the store’s price today</small></p>
         <dl class="kv" id="money-kv"></dl>
         <div class="rate" id="money-rates"></div>
         <p class="note" id="money-note"></p>
@@ -116,7 +119,7 @@
     </article>
 
     <article class="panel p-gen" id="panel-gen">
-      <div class="panel-bar"><span data-i18n="gen.title"></span><b id="gen-head">-</b></div>
+      <div class="panel-bar"><span data-i18n="gen.title">what it is made of</span><b id="gen-head">-</b></div>
       <div class="panel-body">
         <div class="rows" id="gen-rows"></div>
         <p class="note" id="gen-note"></p>
@@ -126,7 +129,7 @@
     <!-- The versus page has existed since the treemap did. This is the first
          thing that makes it clickable rather than typed from memory. -->
     <article class="panel p-mates" id="panel-mates">
-      <div class="panel-bar"><span data-i18n="fr.title"></span><b id="fr-head">-</b></div>
+      <div class="panel-bar"><span data-i18n="fr.title">friends</span><b id="fr-head">-</b></div>
       <div class="panel-body">
         <ul class="mates" id="fr-list"></ul>
         <p class="note" id="fr-note"></p>
@@ -135,7 +138,7 @@
 
     <!-- Whatever the profile wrote in its text showcase, set like a terminal. -->
     <article class="panel p-rig" id="panel-showcase">
-      <div class="panel-bar"><span data-i18n="dash.showcase"></span><b>~/profile</b></div>
+      <div class="panel-bar"><span data-i18n="dash.showcase">showcase</span><b>~/profile</b></div>
       <div class="panel-body">
         <pre class="term" id="showcase"></pre>
         <div class="term-quote" id="bio-wrap" hidden>
@@ -146,26 +149,26 @@
     </article>
 
     <article class="panel p-pages" id="jogos">
-      <div class="panel-bar"><span data-i18n="dash.pages"></span><b id="pages-count">-</b></div>
+      <div class="panel-bar"><span data-i18n="dash.pages">pages per game</span><b id="pages-count">-</b></div>
       <div class="panel-body">
         <ul class="pages" id="pages"></ul>
-        <p class="note" data-i18n="dash.pages_note"></p>
+        <p class="note" data-i18n="dash.pages_note">The 25 most played. Each card says whether the game has a themed page or falls back to the standard one.</p>
       </div>
     </article>
 
     <article class="panel p-table">
-      <div class="panel-bar"><span data-i18n="dash.table"></span><b id="table-share">-</b></div>
+      <div class="panel-bar"><span data-i18n="dash.table">top 25 by hour</span><b id="table-share">-</b></div>
       <div class="panel-body">
         <div class="table-scroll">
           <table class="ranked">
             <thead>
               <tr>
                 <th class="c-rank" scope="col">#</th>
-                <th scope="col" data-i18n="th.game"></th>
-                <th class="c-num" scope="col" data-i18n="th.hours"></th>
+                <th scope="col" data-i18n="th.game">game</th>
+                <th class="c-num" scope="col" data-i18n="th.hours">hours</th>
                 <th class="c-num" scope="col">%</th>
-                <th class="c-num c-os" scope="col" data-i18n="th.linux"></th>
-                <th class="c-date" scope="col" data-i18n="th.last"></th>
+                <th class="c-num c-os" scope="col" data-i18n="th.linux">linux</th>
+                <th class="c-date" scope="col" data-i18n="th.last">last played</th>
               </tr>
             </thead>
             <tbody id="table-body"></tbody>
@@ -177,7 +180,7 @@
     <!-- Behind a button on purpose: three calls per game against the owner's
          key, which is the most expensive thing this site can be asked for. -->
     <article class="panel p-rare" id="raridades">
-      <div class="panel-bar"><span data-i18n="rar.title"></span><b id="rar-head">-</b></div>
+      <div class="panel-bar"><span data-i18n="rar.title">the rarest things here</span><b id="rar-head">-</b></div>
       <div class="panel-body">
         <button class="rar-go" id="rar-go" type="button"></button>
         <ul class="rares" id="rar-list"></ul>
@@ -186,16 +189,16 @@
     </article>
 
     <article class="panel p-time" id="linha">
-      <div class="panel-bar"><span data-i18n="time.title"></span><b id="time-span">-</b></div>
+      <div class="panel-bar"><span data-i18n="time.title">the years</span><b id="time-span">-</b></div>
       <div class="panel-body">
         <div class="time" id="time-chart"></div>
         <output class="time-out" id="time-out" aria-live="polite"></output>
-        <p class="note" data-i18n="time.note"></p>
+        <p class="note" data-i18n="time.note">Steam gives one date per game: the last time it was launched. So this is a chart of endings, not of what was played each year - a game opened every year since 2015 appears only in the most recent bar.</p>
       </div>
     </article>
 
     <article class="panel p-all" id="biblioteca">
-      <div class="panel-bar"><span data-i18n="dash.all"></span><b id="all-count">-</b></div>
+      <div class="panel-bar"><span data-i18n="dash.all">the whole library</span><b id="all-count">-</b></div>
       <div class="panel-body">
         <div class="all-tools">
           <input class="all-find" id="all-find" type="search" autocomplete="off"
@@ -207,11 +210,11 @@
         <p class="note" id="all-note"></p>
         <p class="all-pile"><a id="all-pile-link" href="/"></a></p>
         <form class="cmp" id="cmp">
-          <label class="cmp-label" for="cmp-who" data-i18n="vs.compare_with"></label>
+          <label class="cmp-label" for="cmp-who" data-i18n="vs.compare_with">Compare with another profile</label>
           <div class="cmp-row">
             <input class="cmp-who" id="cmp-who" type="text" autocomplete="off"
                    data-i18n-ph="vs.compare_ph">
-            <button class="cmp-go" type="submit" data-i18n="vs.go"></button>
+            <button class="cmp-go" type="submit" data-i18n="vs.go">compare</button>
           </div>
         </form>
       </div>
@@ -236,13 +239,13 @@
      list somebody else's games were also in. -->
 <main id="backlog" hidden>
   <header class="bl-head">
-    <h1 class="display"><span id="bl-count">-</span> <span data-i18n="bl.title"></span></h1>
+    <h1 class="display"><span id="bl-count">-</span> <span data-i18n="bl.title">never launched</span></h1>
     <p class="lede" id="bl-lede"></p>
   </header>
 
   <section class="grid">
     <article class="panel p-bl">
-      <div class="panel-bar"><span data-i18n="bl.pile"></span><b id="bl-worth">-</b></div>
+      <div class="panel-bar"><span data-i18n="bl.pile">the pile</span><b id="bl-worth">-</b></div>
       <div class="panel-body">
         <div class="all-tools">
           <input class="all-find" id="bl-find" type="search" autocomplete="off"
@@ -258,9 +261,9 @@
 </main>
 
 <footer class="foot">
-  <p><span data-i18n="foot.source_pre"></span> <time id="g-generated"></time>. <a href="/feedback" data-i18n="foot.found_bug"></a> · <a href="/privacy" data-i18n="nav.privacy"></a></p>
+  <p><span data-i18n="foot.source_pre">Read from Steam. Fetched</span> <time id="g-generated"></time>. <a href="/feedback" data-i18n="foot.found_bug">found a bug?</a> · <a href="/blog" data-i18n="nav.blog">blog</a> · <a href="/privacy" data-i18n="nav.privacy">privacy</a> · <a class="foot-repo" href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener" data-i18n="foot.repo">source code ↗</a></p>
   <p id="credit-slot"><a href="/u/gordziilla">made with ♥</a></p>
-  <p class="foot-legal" data-i18n="foot.disclaimer"></p>
+  <p class="foot-legal" data-i18n="foot.disclaimer">steamprofiler.org is an independent hobby project. It is not affiliated with, endorsed by, or connected to Valve Corporation. Steam and the Steam logo are trademarks of Valve Corporation. Game names and art belong to their respective owners.</p>
 </footer>
 
 <noscript>

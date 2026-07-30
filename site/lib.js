@@ -49,6 +49,33 @@ function cash(cents, currency) {
   return CASH[cur].format(cents / 100);
 }
 
+/** What someone typed, reduced to the one thing a /u/ path should carry: a
+ *  vanity name or a steamID64. People paste the profile URL far more often than
+ *  they read the name out of it, and both Steam shapes hold the handle in the
+ *  same place:
+ *
+ *    https://steamcommunity.com/id/gordziilla/
+ *    https://steamcommunity.com/profiles/76561198086380973/
+ *
+ *  Whatever is not a URL comes back trimmed and untouched. This decides what
+ *  the address bar looks like, not what exists - the API still answers that. */
+function steamHandle(text) {
+  const s = (text || '').trim();
+  const m = /steamcommunity\.com\/(?:id|profiles)\/([A-Za-z0-9_-]{2,64})/i.exec(s);
+  return m ? m[1] : s;
+}
+
+/** decodeURIComponent throws on a half-written escape, and a URL somebody
+ *  trimmed by hand is exactly where that happens. A path segment that cannot be
+ *  decoded is still worth reading as it stands. */
+function unesc(s) {
+  try {
+    return decodeURIComponent(s);
+  } catch {
+    return s;
+  }
+}
+
 const el = (id) => document.getElementById(id);
 const still = () => !window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
 

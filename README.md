@@ -60,6 +60,9 @@ site/
   policy-text.js  past privacy policies, frozen
   policy-log.js   the index of those revisions
 
+  robots.txt      what may be crawled, and why /u/ may not
+  llms.txt        the same site described for something reading it
+
 tools/            checks and generators, run with node, never shipped
 ```
 
@@ -121,6 +124,26 @@ month names come for free.
 A translation is therefore a pure front-end change: add or fix keys in `dict.js`
 and nothing else has to move.
 
+## The shells carry their text
+
+Every page is markup plus `data-i18n` attributes, and `applyStatic()` fills them
+on boot. That is right for a browser and was wrong for everything else: a fetch
+of the site with no JavaScript returned a nav bar and eight empty paragraphs, so
+anything reading rather than rendering the site - a crawler, a link preview, an
+assistant asked whether the site is safe - saw a page that said nothing.
+
+`tools/gen-shell.js` copies the English string into each of those elements. The
+browser is unaffected, because `applyStatic()` still overwrites every one of
+them with the reader's language a moment later. What changed is what is there
+before the script runs.
+
+`dict.js` is still the only place a string is written. The generator copies;
+`--check` is what keeps it a copy. After editing any `data-i18n` string, run:
+
+```
+node tools/gen-shell.js
+```
+
 ## The policy archive
 
 `/privacy/history` keeps every past version of the privacy policy whole, with a
@@ -140,13 +163,15 @@ append to history.
 ```
 node tools/check-policy.js    # the newest revision matches dict.js, dates agree
 node tools/check-prices.js    # the per-game price blocks are still distinct
+node tools/gen-shell.js --check  # the HTML shells match dict.js
 node tools/gen-policy.js      # regenerate policy-text.js after a policy edit
+node tools/gen-shell.js       # rewrite the shells after an edit to dict.js
 python3 tools/fonts.py        # re-vendor the faces and rewrite fonts.css
 ```
 
 There is no test runner and no linter config. `node --check` on a changed file
-is what the deployment path runs, and these three checks cover the two places
-where a copy-paste is easy and invisible.
+is what the deployment path runs, and these checks cover the places where a
+copy-paste is easy and invisible.
 
 ## Fonts
 

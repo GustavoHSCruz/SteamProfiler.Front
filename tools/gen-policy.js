@@ -50,6 +50,16 @@ const REVISIONS = [
       pt: 'Os preços passaram a ser lidos da loja correspondente ao idioma do leitor, então a escolha de idioma vai junto na consulta de preço. O texto dizia que a escolha nunca saía da sua máquina, e isso tinha deixado de ser verdade.',
       ru: 'Цены теперь читаются из магазина, соответствующего языку читателя, поэтому выбор языка уходит вместе с запросом цены. Раньше было сказано, что выбор не покидает вашу машину, и это перестало быть правдой.',
     },
+  },
+  {
+    version: 4,
+    date: '2026-07-30',
+    commit: null,
+    summary: {
+      en: 'I now count visits that come back, for seven days at a time, with the country and region Cloudflare reports, and I count how many times each profile was looked up per day - deliberately with no way to join the two. And I now say what an experiment on this site is worth in general, because this is the first one. The text said there was no analytics and that nothing on disk recorded when somebody came; both had stopped being true.',
+      pt: 'Passei a contar visitas que voltam, em janelas de sete dias, com o país e a região que a Cloudflare informa, e a contar quantas vezes cada perfil foi consultado por dia - de propósito sem nenhuma forma de ligar as duas coisas. E passei a dizer o que vale um experimento neste site em geral, porque este é o primeiro. O texto dizia que não havia analytics e que nada em disco registrava quando alguém veio; as duas coisas tinham deixado de ser verdade.',
+      ru: 'Теперь я считаю возвращающиеся визиты, окнами по семь дней, со страной и регионом, которые сообщает Cloudflare, и считаю, сколько раз в день смотрели каждый профиль, - намеренно без всякой возможности связать одно с другим. И теперь я говорю, чего вообще стоит эксперимент на этом сайте, потому что этот - первый. В тексте было сказано, что аналитики нет и что ничто на диске не записывает, когда кто-то приходил; и то, и другое перестало быть правдой.',
+    },
     text: 'live',
   },
 ];

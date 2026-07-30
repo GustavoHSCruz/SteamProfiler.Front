@@ -30,7 +30,11 @@ const DOTA_TIERS = {
 function dotaRank(r) {
   const tier = r.tier ? Math.floor(r.tier / 10) : 0;
   const badge = h('div', { cls: 'd-medal' });
+  // No tier means uncalibrated or unpublished, and the fallback for --tier is
+  // the accent - which is the gold this scale ends at. A blank medal that reads
+  // as Immortal is worse than no medal, so it is greyed instead.
   if (tier) badge.style.setProperty('--tier', DOTA_TIERS[tier] || 'var(--accent)');
+  else badge.dataset.blank = '1';
   badge.append(h('span', { cls: 'd-medal-tier', text: String(tier || '-') }));
   if (!r.immortal && r.stars) {
     const pips = h('span', { cls: 'd-medal-stars' });
@@ -58,8 +62,39 @@ function dotaRank(r) {
     h('p', { cls: 'd-note', text: t('g.dota_rank_note') }));
 }
 
+/* What a profile with no published match history stands in for. Every field the
+   scoreboard reads, present and empty, so the page below draws the same panels
+   in the same order whether or not OpenDota has ever seen this account. num()
+   already prints null as "-", which is what most of these become. */
+const DOTA_BLANK = {
+  matches: null, wins: null, losses: null, win_rate: null, medal: null,
+  rank: {}, kills: null, deaths: null, assists: null, kda: null,
+  avg_gpm: null, avg_xpm: null, avg_last_hits: null, avg_denies: null,
+  avg_duration_min: null, heroes_played: null, heroes_total: null, heroes: [],
+  sides: { radiant: {}, dire: {} }, in_match_hours: null,
+};
+
+/* The one panel that only exists on a profile with nothing to show: what is
+   missing, why Valve is not the reason, and the setting that fixes it. It sits
+   directly under the hero, where the win/loss scale it explains just came up
+   empty, and it is built as a d-panel because it is part of this page rather
+   than a notice bolted on top of it. */
+function dotaGap() {
+  return h('section', { cls: 'd-panel d-panel--gap' },
+    head('d-panel-head', t('g.dota_gap_head'), t('g.dota_gap_meta')),
+    h('div', { cls: 'd-gap' },
+      h('p', { cls: 'd-gap-what', text: t('g.gap_dota_what') }),
+      h('p', { cls: 'd-gap-why', text: t('g.gap_dota_why') }),
+      h('p', { cls: 'd-gap-fix-h', text: t('g.dota_gap_how') }),
+      h('p', { cls: 'd-gap-fix', text: t('g.gap_dota_fix') })));
+}
+
 function renderDota(g, root) {
-  const d = g.dota;
+  // A profile that never turned the setting on keeps Dota's scoreboard rather
+  // than being sent to a page of its own; the numbers are blank and one panel
+  // says why. See DOTA_BLANK.
+  const blank = !g.dota;
+  const d = g.dota || DOTA_BLANK;
   const wrap = h('div', { cls: 'd' });
   const art = d.heroes.find((x) => x.art);
 
@@ -71,7 +106,8 @@ function renderDota(g, root) {
     }));
   }
 
-  const meta = [d.medal, `${num(g.record_hours)} h`, t('g.heroes_count', { n: num(d.heroes_played), total: num(d.heroes_total) })]
+  const meta = [d.medal, `${num(g.record_hours)} h`,
+                blank ? null : t('g.heroes_count', { n: num(d.heroes_played), total: num(d.heroes_total) })]
     .filter(Boolean).join('  ·  ');
 
   const tally = h('div', { cls: 'd-tally' },
@@ -82,13 +118,21 @@ function renderDota(g, root) {
         const bar = h('div', { cls: 'd-scale-bar' });
         const w = h('i', { cls: 'd-w' });
         const l = h('i', { cls: 'd-l' });
-        w.style.width = `${d.win_rate}%`;
-        l.style.width = `${100 - d.win_rate}%`;
-        if (!still()) bar.dataset.animate = '1';
+        // Left flat rather than measured out when there is no rate: a bar that
+        // animated to nothing would read as a loss streak instead of as no data.
+        if (d.win_rate != null) {
+          w.style.width = `${d.win_rate}%`;
+          l.style.width = `${100 - d.win_rate}%`;
+          if (!still()) bar.dataset.animate = '1';
+        } else {
+          bar.dataset.blank = '1';
+        }
         bar.append(w, l, h('span', { cls: 'd-even' }));
         return bar;
       })(),
-      h('p', { cls: 'd-even-note', text: t('g.dota_even', { pct: num(d.win_rate, 1) }) })),
+      h('p', { cls: 'd-even-note',
+        text: d.win_rate != null ? t('g.dota_even', { pct: num(d.win_rate, 1) })
+                                 : t('g.dota_even_blank') })),
     h('div', { cls: 'd-side d-side--d' },
       h('b', { text: num(d.losses) }), h('span', { text: t('g.losses') })));
 
@@ -98,11 +142,16 @@ function renderDota(g, root) {
     tally));
   wrap.append(hero);
 
-  if (d.rank) wrap.append(dotaRank(d.rank));
+  if (blank) wrap.append(dotaGap());
+
+  // Always drawn now: the medal is the panel a reader looks for first, and an
+  // unranked-looking badge says more than the panel not being there at all.
+  wrap.append(dotaRank(d.rank || {}));
 
   // The scoreboard. Column order is Dota's own: hero, then the counts.
   const board = h('section', { cls: 'd-panel' },
-    head('d-panel-head', t('g.heroes_most'), t('g.heroes_of', { n: d.heroes.length, total: num(d.heroes_played) })));
+    head('d-panel-head', t('g.heroes_most'),
+         blank ? null : t('g.heroes_of', { n: d.heroes.length, total: num(d.heroes_played) })));
 
   const table = h('div', { cls: 'd-board' });
   table.append(h('div', { cls: 'd-row d-row--head' },
@@ -122,8 +171,13 @@ function renderDota(g, root) {
       fillBar('d-rowbar', x.win_rate, i * 40));
     table.append(row);
   });
+  // The column headers stay: they are what makes this read as the scoreboard
+  // waiting to be filled rather than as a panel that failed to load.
+  if (!d.heroes.length) {
+    table.append(h('p', { cls: 'd-board-blank', text: t('g.dota_no_heroes') }));
+  }
   board.append(table, h('p', { cls: 'd-note',
-    text: t('g.dota_board_note') }));
+    text: blank ? t('g.dota_board_blank_note') : t('g.dota_board_note') }));
   wrap.append(board);
 
   // Match details: the block Dota shows under the scoreboard.
@@ -146,28 +200,34 @@ function renderDota(g, root) {
     for (const [side, v] of sides) {
       cols.append(h('div', { cls: `d-sidecard d-sidecard--${side}` },
         h('p', { cls: 'd-sidecard-name', text: side === 'radiant' ? 'Radiant' : 'Dire' }),
-        h('b', { cls: 'd-sidecard-rate', text: `${num(v.win_rate, 1)}%` }),
+        h('b', { cls: 'd-sidecard-rate',
+                 text: v.win_rate != null ? `${num(v.win_rate, 1)}%` : '-' }),
         h('span', { cls: 'd-sidecard-meta', text: t('g.of_matches', { won: num(v.wins), total: num(v.games) }) }),
         fillBar('d-sidecard-bar', v.win_rate)));
     }
     const r = d.sides.radiant, dr = d.sides.dire;
     wrap.append(h('section', { cls: 'd-panel' },
-      head('d-panel-head', t('g.map_side'), t('g.n_matches', { n: num((r?.games || 0) + (dr?.games || 0)) })),
+      head('d-panel-head', t('g.map_side'),
+           blank ? null : t('g.n_matches', { n: num((r?.games || 0) + (dr?.games || 0)) })),
       cols,
-      r && dr ? h('p', { cls: 'd-note',
+      // Both sides have to have a rate before they can be subtracted; on a blank
+      // profile they are two empty objects, and NaN is what that used to print.
+      r?.win_rate != null && dr?.win_rate != null ? h('p', { cls: 'd-note',
         text: t('g.dota_sides', { pts: num(r.win_rate - dr.win_rate, 1) }) }) : null));
   }
 
-  if (d.in_match_hours) {
-    const outside = g.record_hours - d.in_match_hours;
+  if (d.in_match_hours || blank) {
+    const outside = blank ? null : g.record_hours - d.in_match_hours;
     wrap.append(h('section', { cls: 'd-panel d-panel--quiet' },
       head('d-panel-head', t('g.clock'), t('g.clock_sub')),
       h('div', { cls: 'd-clock' },
         h('div', { cls: 'd-clock-part' }, h('b', { text: `${num(d.in_match_hours)} h` }), h('span', { text: t('g.in_match') })),
         h('div', { cls: 'd-clock-part d-clock-part--dim' }, h('b', { text: `${num(outside)} h` }), h('span', { text: t('g.menu_queue') }))),
-      fillBar('d-clockbar', (d.in_match_hours / g.record_hours) * 100),
+      fillBar('d-clockbar', blank ? 0 : (d.in_match_hours / g.record_hours) * 100),
       h('p', { cls: 'd-note',
-        text: t('g.dota_clock_note', { n: num(d.matches), inside: num(d.in_match_hours), total: hrs(g.record_hours) }) })));
+        text: blank
+          ? t('g.dota_clock_blank_note', { total: hrs(g.record_hours) })
+          : t('g.dota_clock_note', { n: num(d.matches), inside: num(d.in_match_hours), total: hrs(g.record_hours) }) })));
   }
 
   root.append(wrap);
@@ -5438,12 +5498,9 @@ const STAT_GAMES = new Set(['counter-strike-2', 'arma-3', 'payday-2',
                             'the-forest', 'geoguessr', 'strife',
                             'business-tour']);
 
+// Dota is not here: it never reaches renderEmpty any more. Its gap_dota_* lines
+// are still the ones a reader sees, drawn by dotaGap() inside the scoreboard.
 function reasonFor(g) {
-  if (g.theme === 'dota-2') {
-    return {
-      what: t('g.gap_dota_what'), why: t('g.gap_dota_why'), fix: t('g.gap_dota_fix'),
-    };
-  }
   if (STAT_GAMES.has(g.theme)) {
     return {
       what: t('g.gap_stats_what'), why: t('g.gap_stats_why'), fix: t('g.gap_stats_fix'),
@@ -5560,7 +5617,11 @@ const NEEDS = {
   'stalker-cop-ee': (g) => g.achievements?.unlocked,
   // The sequel keeps its page on the clock alone: the dosimeter is drawn from
   // the achievement set, and the counters are allowed to be missing.
-  'dota-2': (g) => g.dota,
+  //
+  // Dota is deliberately absent from this table. Its layout draws every panel
+  // with or without a match history - see DOTA_BLANK - so a profile that never
+  // opted in gets the scoreboard with the numbers still blank and one panel
+  // saying how to fill them, rather than a differently shaped page.
   'counter-strike-2': (g) => g.cs2,
   'arma-3': (g) => g.arma3,
   'payday-2': (g) => g.payday2,

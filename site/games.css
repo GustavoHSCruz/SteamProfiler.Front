@@ -237,6 +237,69 @@
   max-width: 76ch;
 }
 
+/* ── Dota with no published match history ────────────────────────────
+   The page keeps every panel it always has; these rules are only about the
+   empty state reading as empty on purpose rather than as a failed load. */
+
+/* Both segments are zero-width here, so the bar is its own outline and the
+   break-even tick. The hatch keeps it from looking like a bar still filling. */
+.d-scale-bar[data-blank="1"] {
+  background: repeating-linear-gradient(
+    -45deg, transparent 0 5px, var(--line-2) 5px 6px);
+  opacity: 0.5;
+}
+
+/* The one panel that is not a scoreboard. It takes the accent edge so it reads
+   as the thing to act on, and keeps the panel shape so it stays part of the
+   page rather than a notice bolted on top of it. */
+.d-panel--gap { border-left: 2px solid var(--accent); padding-left: 16px; }
+
+.d-gap p { margin: 0; max-width: 74ch; }
+.d-gap-what {
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text);
+}
+.d-gap-why {
+  margin-top: 10px !important;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--faint);
+}
+.d-gap-fix-h {
+  margin-top: 16px !important;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.d-gap-fix {
+  margin-top: 7px !important;
+  padding: 12px 14px;
+  background: var(--panel);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+/* An uncalibrated medal, or one this profile does not publish. Grey, because
+   the accent this would otherwise fall back to is the gold of the top tier. */
+.d-medal[data-blank="1"] { --tier: var(--line-2); opacity: 0.75; }
+
+/* Sits under the column headers, in the space the rows would have filled. */
+.d-board-blank {
+  margin: 0;
+  padding: 22px 4px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--faint);
+  border-top: 1px solid var(--line-2);
+}
+
 /* The medal. Valve ships the rank art inside the game, not on a CDN this page
    may load from, so the badge is drawn: the tier's colour in a beveled hexagon,
    the stars as pips around the rim, exactly as many as the account has. */

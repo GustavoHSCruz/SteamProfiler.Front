@@ -72,6 +72,40 @@ function diffWords(before, after) {
   return out;
 }
 
+/* ── The heading of a block ────────────────────────────────────────── */
+
+/** What the paragraph is about, in words.
+ *
+ *  The key used to be the whole heading, on the argument that it is the stable
+ *  name of that paragraph and a prettier label would be a second name for the
+ *  same thing. The argument was right and the page was still wrong: a column of
+ *  `priv.kept_lang` reads as a translation that failed to load, not as a
+ *  policy. So the words come first now and the name stays beside them, which
+ *  costs nothing and is still checkable against /privacy.
+ *
+ *  The label is read out of the text rather than kept in a table. Almost every
+ *  one of these strings opens with a bold lead-in that is already the title of
+ *  its paragraph, and a table would be one more thing to keep in step with a
+ *  file that grows by 41 strings every time the policy is touched. */
+function labelFor(text) {
+  const lead = /^\s*<b>([\s\S]*?)<\/b>/i.exec(text || '');
+  if (lead) return prose(lead[1]).replace(/[.:;,]\s*$/, '');
+  const flat = prose(text || '');
+  if (flat.length <= 58) return flat;
+  return `${flat.slice(0, 58).replace(/\s+\S*$/, '')}…`;
+}
+
+/** The line above a block: the label, the key, and the tag when there is one.
+ *  A removed key has no `after`, so the label comes from whichever side exists;
+ *  if neither does there is nothing to name and the key carries the line. */
+function keyHead(key, text, tag) {
+  const label = labelFor(text);
+  return h('h3', { cls: 'dk-h' },
+    label ? h('span', { cls: 'dk-name', text: label }) : null,
+    h('code', { text: key }),
+    tag ? h('span', { cls: 'dk-tag', text: t(`pol.${tag}`) }) : null);
+}
+
 /** One changed key, drawn. Text nodes only. */
 function diffLine(key, before, after) {
   const body = h('p', { cls: 'dk-text' });
@@ -93,9 +127,7 @@ function diffLine(key, before, after) {
 
   const tag = before == null ? 'added' : after == null ? 'removed' : 'changed';
   return h('section', { cls: 'dk', data: { kind: tag } },
-    h('h3', { cls: 'dk-h' },
-      h('code', { text: key }),
-      h('span', { cls: 'dk-tag', text: t(`pol.${tag}`) })),
+    keyHead(key, after == null ? before : after, tag),
     body);
 }
 
@@ -113,7 +145,7 @@ function fullInto(node, rev) {
   const text = textOf(rev, LANG);
   for (const key of Object.keys(text).sort()) {
     node.append(h('section', { cls: 'dk' },
-      h('h3', { cls: 'dk-h' }, h('code', { text: key })),
+      keyHead(key, text[key], null),
       // innerHTML on purpose: this view exists to show the policy as it read,
       // and it read with its links and its bold. Same treatment /privacy gives
       // the same strings.

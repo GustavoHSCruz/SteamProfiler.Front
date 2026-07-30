@@ -46,11 +46,14 @@ the accent colour is a page that should have used the generic renderer.
 node --check site/<changed>.js
 node tools/check-policy.js
 node tools/check-prices.js
+node tools/gen-shell.js --check
 ```
 
 The deployment path refuses a file that does not parse, so `node --check` is not
-optional. Run the two check scripts if you touched the policy text or a price
-block.
+optional. Run the check scripts if you touched the policy text or a price block.
+If you edited any string that a `data-i18n` attribute points at, run
+`node tools/gen-shell.js` and commit the shells it rewrites: the HTML carries
+the English text so that the page says something before the script runs.
 
 Screenshots help a lot for anything visual. Light and dark are not a thing here,
 but three languages are: a layout that fits in English and overflows in Russian

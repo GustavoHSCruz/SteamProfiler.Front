@@ -211,6 +211,15 @@ function navInto(node, item) {
     });
   }
 
+  // Same principle one step further: the text is in your language, and a
+  // machine put it there. Saying so costs nothing and is the difference
+  // between a translation and a text pretending to have been written.
+  if (item.machine) {
+    const note = el('post-machine');
+    note.hidden = false;
+    note.textContent = t('blog.machine', { origin: t(`lang.${item.origin}`) });
+  }
+
   renderProse(item.body, el('post-body'));
   voteInto(el('post-vote'), item);
   navInto(el('post-nav'), item);
