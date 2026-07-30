@@ -1,0 +1,40 @@
+# The same tools/check.sh the pre-push hook runs and the deploy runs, run once
+# more where the result is public and permanent.
+#
+# It is deliberately not a different set of checks. A workflow that tests
+# something the author cannot run locally is a workflow that fails after the
+# push, when the fixing is expensive; a workflow that runs exactly the local
+# gate is a second opinion about the machine rather than about the code, which
+# is what CI on a one-person project is actually worth: proof that the tree
+# passes somewhere that is not the author's laptop, in a log anybody can read.
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # So a red badge caused by an outage can be cleared without an empty commit.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # No package.json and nothing to install: the checks are node and python
+      # reading files. Pinned to a major so a runner image bump cannot change
+      # what "passes" means without the change being visible here.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: tools/check.sh
+        run: ./tools/check.sh

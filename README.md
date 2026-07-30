@@ -1,5 +1,7 @@
 # steamprofiler.org - front end
 
+[![check](https://github.com/GustavoHSCruz/SteamProfiler.Front/actions/workflows/ci.yml/badge.svg)](https://github.com/GustavoHSCruz/SteamProfiler.Front/actions/workflows/ci.yml)
+
 The client half of [steamprofiler.org](https://steamprofiler.org): a Steam
 profile reader that draws a whole library to scale and gives every game that was
 ever launched a page designed after that game's own interface.
@@ -158,7 +160,39 @@ from the one before it), then run the generator. It reads the frozen revisions
 back out of `policy-text.js` rather than rebuilding them, so re-running can only
 append to history.
 
+## How a change reaches the site
+
+A push is what publishes. Saving a file does nothing, and that is deliberate:
+it used to publish, five seconds later, to everybody.
+
+```
+git push
+  |
+  +-- .githooks/pre-push runs tools/check.sh here
+  |     refused -> nothing is pushed, so nothing is published
+  |
+  +-- GitHub Actions runs tools/check.sh in the cloud
+  |     the badge above, and a log anybody can read
+  |
+  +-- the deploy exports origin/main, runs tools/check.sh
+        against the export, and ships that
+```
+
+What is on the site is a commit, not a working tree. Uncommitted work stays on
+the machine it was written on; `python3 serve.py` is the preview.
+
+The hook lives in `.githooks/` so that it is versioned rather than existing on
+one machine. A fresh checkout has to be pointed at it once:
+
+```
+git config core.hooksPath .githooks
+```
+
 ## Checks
+
+`tools/check.sh` is all of them, and is what the hook, the workflow and the
+deploy each run. The individual pieces, for when one of them is what you are
+working on:
 
 ```
 node tools/check-policy.js    # the newest revision matches dict.js, dates agree

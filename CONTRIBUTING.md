@@ -6,8 +6,13 @@ take a few days.
 ## Running it
 
 ```
-python3 serve.py          # http://127.0.0.1:8013
+git config core.hooksPath .githooks   # once, per checkout
+python3 serve.py                      # http://127.0.0.1:8013
 ```
+
+The first line points git at the versioned pre-push hook, which runs the checks
+before anything leaves your machine. Without it the checks still run in CI, but
+you find out after the push instead of before.
 
 Edit a file in `site/`, reload the page. There is nothing to rebuild and
 nothing to restart. `serve.py` forwards `/api/` to the live site, so profiles,
@@ -43,11 +48,13 @@ the accent colour is a page that should have used the generic renderer.
 ## Before opening a PR
 
 ```
-node --check site/<changed>.js
-node tools/check-policy.js
-node tools/check-prices.js
-node tools/gen-shell.js --check
+./tools/check.sh
 ```
+
+That is everything: syntax on every file, the policy archive, the price blocks,
+the shells against `dict.js`, and the HTML - tag balance, duplicate ids, every
+`data-i18n` key present in all three languages, and every internal link
+pointing at a route that exists. The pre-push hook runs it for you.
 
 The deployment path refuses a file that does not parse, so `node --check` is not
 optional. Run the check scripts if you touched the policy text or a price block.

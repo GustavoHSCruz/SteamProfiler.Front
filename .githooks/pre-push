@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# A push is what publishes now, so this is the last place a broken tree can be
+# stopped cheaply. After it, the fixing happens in the commit history.
+#
+# Versioned, and reached through core.hooksPath rather than by copying into
+# .git/hooks: a hook inside .git is invisible to the repository and exists on
+# exactly one machine, which is the same as not existing.
+#
+#   git push --no-verify   skips this. It is there for the case where the
+#                          checks themselves are what is broken. It also skips
+#                          the only gate in front of production, so it is worth
+#                          knowing that is what you are doing.
+set -uo pipefail
+
+echo "pre-push: running the checks before this leaves the machine"
+if ! ./tools/check.sh; then
+  echo
+  echo "pre-push: REFUSED. Nothing was pushed, so nothing will be published."
+  exit 1
+fi
