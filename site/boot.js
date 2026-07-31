@@ -140,98 +140,213 @@ const BOOT_SHAPE = {
 };
 
 /* ── The wait of one game ──────────────────────────────────────────────
-   A themed page is not the generic page with other colours: Dota is a table,
-   War Thunder is a tree, Skyrim is a sky. So the wait for one is not the
-   generic skeleton in other colours either. Each of these traces the page that
-   is about to land, from the same description its CSS block is written under.
+   A themed page is not the generic page in other colours, so the wait for one
+   is not the generic skeleton in other colours either. Each of these builds
+   that game's own screen out of that game's own classes - the pause menu's tab
+   column, the scoreboard's rows, the research tree's ranks - with every place a
+   number or a name will land left blank.
 
-   Every one of them opens with the art band, because every game page does.
-   A theme with no shape here still arrives themed - the palette, the lettering
-   and the art come from the head and the CSS, which is most of what makes a
-   page recognisable - and lands on the generic panels below. */
-const ART = { x: 0, y: 0, w: 100, h: 34 };
+   That is the whole trick and the reason it is affordable: the layout is not
+   redrawn here, it is games.css doing what it already does. This file writes
+   the same markup the renderer writes, without the data, so the wait is the
+   page with nothing in it yet rather than a picture of the page.
 
-/** GTA V: the pause menu. Tab column down the left, segmented meters right. */
-function shapeGta() {
-  const out = [ART];
-  for (let i = 0; i < 6; i++) out.push({ x: 0, y: 38 + i * 10.4, w: 19, h: 8.6 });
-  out.push({ x: 23, y: 38, w: 52, h: 9 });
-  for (let i = 0; i < 4; i++) {
-    out.push({ x: 23, y: 52 + i * 12, w: 77, h: 4 });
-    for (let s = 0; s < 8; s++) out.push({ x: 23 + s * 9.7, y: 58 + i * 12, w: 8.9, h: 4.6 });
+   A theme with no template here still arrives themed - palette, lettering and
+   key art come from the head and the stylesheet - and waits on the generic
+   panels. Adding one is one function and one line in BOOT_WAIT. */
+
+/** Where a number or a name is going to be. Sized in em on purpose: dropped
+ *  inside a title it takes the title's size, inside a row it takes the row's,
+ *  so one helper follows every type scale on the site without being told. */
+const blank = (w) => h('i', { cls: 'wait-b', style: { '--w': w } });
+
+const rep = (n, make) => Array.from({ length: n }, (_, i) => make(i));
+
+/** GTA V: the pause menu. Tabs down the left, stats as segmented meters. */
+function waitGta() {
+  const stats = h('div', { cls: 'gta-stats' });
+  for (const w of ['7em', '5.5em', '4.5em']) {
+    stats.append(h('div', { cls: 'gta-stat' },
+      h('span', { cls: 'gta-stat-label' }, blank(w)),
+      h('div', { cls: 'gta-seg' }, ...rep(20, () => h('i'))),
+      h('b', { cls: 'gta-stat-val' }, blank('3.5em'))));
   }
-  return out;
+  return h('div', { cls: 'gta' },
+    h('div', { cls: 'gta-shell' },
+      h('nav', { cls: 'gta-tabs' },
+        h('span', { cls: 'gta-tab', data: { on: '1' } }, blank('5em')),
+        h('span', { cls: 'gta-tab' }, blank('6em')),
+        h('span', { cls: 'gta-tab' }, blank('4em'))),
+      h('div', { cls: 'gta-body' },
+        h('p', { cls: 'gta-kicker' }, blank('16em')),
+        h('h1', { cls: 'gta-title' }, blank('9em')),
+        stats,
+        h('p', { cls: 'gta-note' }, blank('24em')))),
+    h('div', { cls: 'gta-cards' }, ...rep(6, () => h('article', { cls: 'gta-card' },
+      h('div', { cls: 'gta-card-text' },
+        blank('8em'), blank('13em'), blank('6em'))))));
 }
 
-/** Dota 2: the header, then the hero table, one thin row per hero. */
-function shapeDota() {
-  const out = [ART, { x: 0, y: 38, w: 100, h: 11 }];
-  for (let i = 0; i < 9; i++) out.push({ x: 0, y: 52 + i * 5.4, w: 100, h: 4.6 });
-  return out;
+/** Dota 2: the scoreboard. The hero table is the page. */
+function waitDota() {
+  const board = h('div', { cls: 'd-board' },
+    h('div', { cls: 'd-row d-row--head' },
+      blank('4em'), blank('6em'), blank('2em'), blank('2em'), blank('2em'), blank('3em')),
+    ...rep(9, () => h('div', { cls: 'd-row' },
+      h('span', { cls: 'd-face d-face--none' }),
+      h('span', { cls: 'd-name' }, blank('8em')),
+      blank('2em'), blank('2em'), blank('2em'), blank('3em'))));
+  return h('div', { cls: 'd' },
+    h('header', { cls: 'd-hero' },
+      h('p', { cls: 'd-kicker' }, blank('18em')),
+      h('h1', { cls: 'd-title' }, blank('7em'))),
+    h('div', { cls: 'd-tally' },
+      h('div', { cls: 'd-side d-side--r' }, blank('2.5em')),
+      h('div', { cls: 'd-scale' }, h('div', { cls: 'd-scale-bar' }, h('i', { cls: 'd-w' }))),
+      h('div', { cls: 'd-side d-side--d' }, blank('2.5em'))),
+    h('section', { cls: 'd-panel' },
+      h('div', { cls: 'd-panel-head' }, blank('9em')), board));
 }
 
-/** Counter-Strike 2: the buy panel beside the loadout, then the map rows. */
-function shapeCs2() {
-  const out = [ART, { x: 0, y: 38, w: 30, h: 26 }];
-  for (let i = 0; i < 8; i++) {
-    out.push({ x: 33 + (i % 4) * 17, y: 38 + Math.floor(i / 4) * 13.5, w: 16, h: 12.5 });
-  }
-  for (let i = 0; i < 5; i++) out.push({ x: 0, y: 68 + i * 6.6, w: 100, h: 5.8 });
-  return out;
+/** Counter-Strike 2: the HUD over the buy menu. */
+function waitCs2() {
+  return h('div', { cls: 'cs' },
+    h('header', { cls: 'cs-top' },
+      h('p', { cls: 'cs-kicker' }, blank('20em')),
+      h('h1', { cls: 'cs-title' }, blank('8em')),
+      h('p', { cls: 'cs-sub' }, blank('16em')),
+      h('div', { cls: 'cs-hud' }, ...rep(4, (i) => h('div', {
+        cls: i === 3 ? 'cs-hud-cell cs-hud-cell--money' : 'cs-hud-cell',
+      }, blank('3em'), h('b', {}, blank('4em')))))),
+    h('div', { cls: 'cs-section' },
+      h('h2', { cls: 'cs-h' }, blank('7em')),
+      h('section', { cls: 'cs-buy' },
+        h('nav', { cls: 'cs-rail' }, ...rep(5, () => h('span', { cls: 'cs-rail-item' },
+          blank('5em'), h('em', {}, blank('1.5em'))))),
+        h('div', { cls: 'cs-guns' }, ...rep(8, () => h('article', { cls: 'cs-gun' },
+          h('span', { cls: 'cs-gun-name' }, blank('5em')),
+          h('b', { cls: 'cs-gun-kills' }, blank('3em')),
+          h('span', { cls: 'cs-gun-acc' }, blank('4em'))))))),
+    h('div', { cls: 'cs-maps' }, ...rep(6, () => h('div', { cls: 'cs-map' },
+      h('span', { cls: 'cs-map-name' }, blank('7em')),
+      h('div', { cls: 'cs-map-bar' }, h('i', { cls: 'cs-ct' })),
+      h('span', { cls: 'cs-map-n' }, blank('2em')),
+      h('span', { cls: 'cs-map-n cs-map-n--dim' }, blank('2em')),
+      h('span', { cls: 'cs-map-rate' }, blank('3em'))))));
 }
 
-/** Arma 3: two columns of panels, the left one a shade wider. */
-function shapeArma3() {
-  const out = [ART];
-  for (let i = 0; i < 4; i++) {
-    out.push({ x: 0, y: 38 + i * 16, w: 50.5, h: 14.4 });
-    out.push({ x: 52.5, y: 38 + i * 16, w: 47.5, h: 14.4 });
-  }
-  return out;
+/** Arma 3: the briefing. Map on one side, the loadout on the other. */
+function waitArma3() {
+  return h('div', { cls: 'a3' },
+    h('h1', { cls: 'a3-title' }, blank('11em')),
+    h('p', { cls: 'a3-stamp' }, blank('14em')),
+    h('div', { cls: 'a3-cols' },
+      h('section', { cls: 'a3-map' },
+        h('div', { cls: 'a3-map-head' }, blank('8em')),
+        h('div', { cls: 'a3-map-body' }, ...rep(5, () => h('div', { cls: 'a3-marker' },
+          h('span', { cls: 'a3-marker-name' }, blank('9em')),
+          h('div', { cls: 'a3-marker-h' }, h('i', { cls: 'a3-marker-fill' })))))),
+      h('section', { cls: 'a3-slots' },
+        h('h2', { cls: 'a3-slot-h' }, blank('6em')),
+        ...rep(6, () => h('div', { cls: 'a3-slot' },
+          h('span', { cls: 'a3-slot-name' }, blank('7em')),
+          h('div', { cls: 'a3-slot-bar' }, h('i')))))),
+    h('section', { cls: 'a3-tasks' }, ...rep(4, () => h('p', { cls: 'a3-task-meta' },
+      h('i', { cls: 'a3-tick' }), blank('18em')))));
 }
 
-/** War Thunder: the research tree. A spine down the left, ranks across it. */
-function shapeWarThunder() {
-  const out = [ART, { x: 0, y: 38, w: 2.4, h: 62 }];
-  for (let rank = 0; rank < 5; rank++) {
-    for (let node = 0; node < 6; node++) {
-      out.push({ x: 7 + node * 15.6, y: 39 + rank * 12.4, w: 14, h: 10.4 });
-    }
-  }
-  return out;
+/** War Thunder: the research tree. A rank per year, nodes across it. */
+function waitWarThunder() {
+  return h('div', { cls: 'wt' },
+    h('header', { cls: 'wt-head' },
+      h('p', { cls: 'wt-kicker' }, blank('17em')),
+      h('h1', { cls: 'wt-title' }, blank('8em'))),
+    h('div', { cls: 'wt-tree' }, ...rep(4, () => h('section', { cls: 'wt-rank' },
+      h('div', { cls: 'wt-rank-head' },
+        h('span', { cls: 'wt-year' }, blank('3em')),
+        h('span', { cls: 'wt-count' }, blank('5em'))),
+      h('div', { cls: 'wt-nodes' }, ...rep(6, () => h('article', { cls: 'wt-node' },
+        h('span', { cls: 'wt-node-icon wt-node-icon--none' }),
+        h('div', { cls: 'wt-node-text' }, blank('7em'), blank('4em')))))))));
 }
 
-/** Skyrim: the constellation. One star per achievement, unevenly hung. */
-function shapeSkyrim() {
-  const out = [ART];
-  // Fixed rather than random, because two reloads of the same page showing a
-  // different sky reads as the page having changed its mind about something.
-  const sky = [
-    [12, 44, 3.4], [26, 52, 2.2], [37, 41, 4.2], [49, 55, 2.6], [61, 44, 3],
-    [73, 58, 3.8], [86, 46, 2.4], [18, 66, 2.8], [31, 76, 3.6], [44, 68, 2.2],
-    [57, 80, 3.2], [69, 71, 2.6], [81, 84, 3], [92, 66, 2.2], [8, 88, 2.6],
-    [40, 92, 2.4], [66, 92, 2.8], [24, 90, 2],
-  ];
-  for (const [x, y, r] of sky) out.push({ x, y, w: r, h: r * 1.78, round: true });
-  return out;
+/** Skyrim: the sky before the stars are hung in it. */
+function waitSkyrim() {
+  const sky = h('figure', { cls: 'sk-sky' },
+    h('i', { cls: 'sk-aurora', attr: { 'aria-hidden': 'true' } }),
+    h('i', { cls: 'sk-dust', attr: { 'aria-hidden': 'true' } }));
+  // Fixed rather than random: two reloads of one page drawing a different sky
+  // reads as the page having changed its mind about something.
+  const stars = [[12, 30], [23, 46], [31, 22], [39, 58], [46, 35], [54, 64],
+                 [61, 28], [68, 52], [74, 38], [82, 60], [88, 33], [17, 66],
+                 [35, 72], [50, 18], [65, 74], [79, 24], [92, 52], [27, 58]];
+  stars.forEach(([x, y], i) => {
+    const star = h('span', { cls: 'sk-star', data: i % 4 === 0 ? { bright: '1' } : {} });
+    star.style.left = `${x}%`;
+    star.style.top = `${y}%`;
+    star.style.setProperty('--size', `${(5 + (i % 5) * 2).toFixed(1)}px`);
+    sky.append(star);
+  });
+  return h('div', { cls: 'sk' },
+    h('header', { cls: 'sk-head' },
+      h('p', { cls: 'sk-kicker' }, blank('15em')),
+      h('h1', { cls: 'sk-title' }, blank('7em')),
+      h('p', { cls: 'sk-sub' }, blank('9em'))),
+    sky,
+    h('div', { cls: 'sk-perks' }, ...rep(6, () => h('article', { cls: 'sk-perk' },
+      h('span', { cls: 'sk-perk-icon' }),
+      h('div', { cls: 'sk-perk-meta' }, blank('8em'), blank('5em'))))));
 }
 
 /** Microsoft Flight Simulator: three gauges over the logbook. */
-function shapeMsfs() {
-  const out = [ART];
-  for (let i = 0; i < 3; i++) out.push({ x: 6 + i * 32, y: 39, w: 22, h: 39, round: true });
-  for (let i = 0; i < 5; i++) out.push({ x: 0, y: 82 + i * 3.8, w: 100, h: 3.2 });
-  return out;
+function waitMsfs() {
+  const dial = () => h('div', { cls: 'fs-gauge' },
+    h('div', { cls: 'fs-dial' },
+      h('i', { cls: 'fs-dial-track' }), h('i', { cls: 'fs-dial-fill' }),
+      h('i', { cls: 'fs-dial-tick' })),
+    h('span', { cls: 'fs-gauge-read' }, blank('4em')));
+  const rows = h('tbody', {}, ...rep(7, () => h('tr', {},
+    h('td', { cls: 'fs-log-date' }, blank('4em')),
+    h('td', {}, blank('11em')),
+    h('td', { cls: 'fs-log-rare' }, blank('3em')))));
+  return h('div', { cls: 'fs' },
+    h('header', { cls: 'fs-head' },
+      h('p', { cls: 'fs-kicker' }, blank('18em')),
+      h('h1', { cls: 'fs-title' }, blank('9em')),
+      h('p', { cls: 'fs-sub' }, blank('13em'))),
+    h('section', { cls: 'fs-panel' }, dial(), dial(), dial()),
+    h('section', { cls: 'fs-logwrap' },
+      h('h2', { cls: 'fs-h' }, blank('6em')),
+      h('div', { cls: 'fs-log-scroll' }, h('table', { cls: 'fs-log' }, rows))));
 }
 
-const BOOT_THEME_SHAPE = {
-  'gta-v': shapeGta,
-  'dota-2': shapeDota,
-  'counter-strike-2': shapeCs2,
-  'arma-3': shapeArma3,
-  'war-thunder': shapeWarThunder,
-  'skyrim': shapeSkyrim,
-  'msfs': shapeMsfs,
+/** Call of Duty: the dog tag over the calendar. */
+function waitCod() {
+  return h('div', { cls: 'cod' },
+    h('div', { cls: 'cod-tag' },
+      h('span', { cls: 'cod-tag-line' }, blank('9em')),
+      h('span', { cls: 'cod-tag-line' }, blank('6em')),
+      h('span', { cls: 'cod-tag-meta' }, blank('11em'))),
+    h('p', { cls: 'cod-lede' }, blank('26em')),
+    h('p', { cls: 'cod-hours' }, blank('5em')),
+    h('div', { cls: 'cod-face' }, ...rep(28, (i) => h('span', {
+      cls: i % 9 === 0 ? 'cod-face-cell cod-face-cell--hot' : 'cod-face-cell',
+    }))),
+    ...rep(5, () => h('article', { cls: 'cod-one' },
+      h('span', { cls: 'cod-one-icon' }),
+      h('span', { cls: 'cod-one-label' }, blank('10em')),
+      h('span', { cls: 'cod-one-meta' }, blank('6em')))));
+}
+
+const BOOT_WAIT = {
+  'gta-v': waitGta,
+  'dota-2': waitDota,
+  'counter-strike-2': waitCs2,
+  'arma-3': waitArma3,
+  'war-thunder': waitWarThunder,
+  'skyrim': waitSkyrim,
+  'msfs': waitMsfs,
+  'call-of-duty': waitCod,
 };
 
 /* ── Whose wait this is ────────────────────────────────────────────────
@@ -267,6 +382,22 @@ function bootTheme() {
  *
  *  A game with no art keeps the plain skeleton: the image removes itself and
  *  nothing has to know in advance which games have one. */
+/** The same art, across the top of a themed wait, where the real page opens on
+ *  it too. Its own band rather than a cell, because inside a themed wait there
+ *  are no cells - and it still warms the cache for the page underneath. */
+function bootArtBand(appid) {
+  const band = h('div', { cls: 'wait-art' });
+  if (!appid) return band;
+  const art = h('img', {
+    attr: { src: `/art/${appid}.jpg`, alt: '', 'aria-hidden': 'true',
+            decoding: 'async', fetchpriority: 'high' },
+  });
+  art.addEventListener('load', () => { band.dataset.on = '1'; });
+  art.addEventListener('error', () => { art.remove(); });
+  band.append(art);
+  return band;
+}
+
 function bootArt(box, appid) {
   const first = box.firstElementChild;
   if (!first || !appid) return;
@@ -283,8 +414,19 @@ function bootArt(box, appid) {
 function bootSkeleton(box, kind, appid, theme) {
   if (!box) return;
   box.textContent = '';
-  const own = kind === 'game' && theme && BOOT_THEME_SHAPE[theme];
-  const rects = own ? own() : (BOOT_SHAPE[kind] || BOOT_SHAPE.dash)();
+  delete box.dataset.wait;
+
+  // The themed wait, when this game has one: its own screen, unfilled. It
+  // replaces the rectangles rather than dressing them, which is the difference
+  // between the page arriving and a drawing of the page arriving.
+  const own = kind === 'game' && theme && BOOT_WAIT[theme];
+  if (own) {
+    box.dataset.wait = theme;
+    box.append(bootArtBand(appid), own());
+    return;
+  }
+
+  const rects = (BOOT_SHAPE[kind] || BOOT_SHAPE.dash)();
   rects.forEach((r, i) => {
     // A star and a gauge are round on the page they are standing in for, and a
     // square standing in for a circle is the one cell that reads as the wrong

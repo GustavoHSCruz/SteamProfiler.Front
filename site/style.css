@@ -499,8 +499,55 @@ a.mod:hover { border-color: var(--line-2); color: var(--text); }
   transition: opacity 420ms ease;
 }
 .boot-cell[data-art] .boot-art { opacity: 0.66; }
-/* Skyrim's stars and the flight simulator's gauges. */
-.boot-cell[data-round] { border-radius: 50%; }
+
+/* ── The wait that is the game's own screen ────────────────────────────
+   When a game has a themed page, the wait is that page with nothing in it
+   yet: boot.js writes the same markup the renderer writes, and games.css
+   lays it out exactly as it lays out the real thing. So there is almost
+   nothing to style here - only the blanks where the data will land, and the
+   rules that keep a page nobody can use yet from behaving as if they could. */
+.boot-map[data-wait] {
+  background: var(--bg);
+  /* The real page scrolls; this one is a window onto its first screen. */
+  overflow: hidden;
+}
+/* Nothing in here is clickable, and nothing in here is focusable either: the
+   templates deliberately use spans where the real page uses a link or a
+   button, so tabbing never lands on a control that does not exist yet. */
+.boot-map[data-wait] * { pointer-events: none; }
+
+.wait-art {
+  height: clamp(120px, 22vh, 200px);
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+}
+.wait-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 420ms ease;
+}
+.wait-art[data-on] img { opacity: 0.5; }
+
+/* Where a number or a name is going to be. In em, so it takes the size of
+   whatever it was dropped into, and in currentColor, so it takes that
+   element's own colour in whichever of the hundred and twenty-eight palettes
+   this page is wearing. */
+.wait-b {
+  display: inline-block;
+  width: var(--w, 4em);
+  height: 0.72em;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: 0.14;
+  vertical-align: middle;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .wait-b { animation: wait-pulse 1.9s ease-in-out infinite; }
+  @keyframes wait-pulse { 0%, 100% { opacity: 0.09; } 50% { opacity: 0.2; } }
+}
+
 
 @media (prefers-reduced-motion: no-preference) {
   .boot-cell {
