@@ -1,7 +1,15 @@
 /* steamprofiler.org - one post.
 
-   The slug is the path, the same way a profile is: nginx serves this shell for
-   every /blog/<slug> and the script reads location.pathname.
+   The address is the path, the same way a profile is: nginx serves this shell
+   for every /blog/... and the script reads location.pathname.
+
+   An address is two parts, `/blog/<id>/<title>`, and only the first is asked
+   about. The id resolves the post; the title after it is the post's own title
+   in some language, there to be read before the click and ignored after it -
+   which is what makes a link work when it was made in a language the person
+   opening it does not read. What that person gets is their language, and the
+   address bar is then quietly corrected to match, without a reload and without
+   a redirect: see below, at the replaceState.
 
    The text arrives as the owner typed it and is turned into elements here,
    node by node, with textContent - never innerHTML. That is not caution about
@@ -11,7 +19,7 @@
    about HTML. It also keeps the site's CSP honest: script-src 'self' means
    what it says on this page too. */
 
-const slug = decodeURIComponent(location.pathname).split('/').filter(Boolean)[1] || '';
+const key = decodeURIComponent(location.pathname).split('/').filter(Boolean)[1] || '';
 
 /* ── The little marker set ─────────────────────────────────────────────
    Not markdown, and deliberately not: it is the six things a post here
@@ -142,7 +150,7 @@ function voteInto(node, item) {
   votes.addEventListener('click', async () => {
     votes.disabled = true;
     try {
-      const got = await post('/blog/vote', { slug: item.slug });
+      const got = await post('/blog/vote', { key: item.pid });
       votes.lastElementChild.textContent = String(got.votes);
       if (got.voted) votes.dataset.on = '1';
       else delete votes.dataset.on;
@@ -158,12 +166,12 @@ function voteInto(node, item) {
 
 function navInto(node, item) {
   if (item.prev) {
-    node.append(h('a', { cls: 'post-step', attr: { href: `/blog/${item.prev.slug}` } },
+    node.append(h('a', { cls: 'post-step', attr: { href: item.prev.url } },
       h('span', { cls: 'post-step-dir', text: t('blog.prev') }),
       h('b', { text: item.prev.title })));
   }
   if (item.next) {
-    node.append(h('a', { cls: 'post-step post-step--next', attr: { href: `/blog/${item.next.slug}` } },
+    node.append(h('a', { cls: 'post-step post-step--next', attr: { href: item.next.url } },
       h('span', { cls: 'post-step-dir', text: t('blog.next') }),
       h('b', { text: item.next.title })));
   }
@@ -176,7 +184,7 @@ function navInto(node, item) {
 
   let item;
   try {
-    item = await api(`/blog/post?slug=${encodeURIComponent(slug)}&lang=${LANG}`);
+    item = await api(`/blog/post?key=${encodeURIComponent(key)}&lang=${LANG}`);
   } catch (e) {
     el('loading').hidden = true;
     el('failure').hidden = false;
@@ -185,6 +193,25 @@ function navInto(node, item) {
   }
 
   document.title = `${item.title} - steamprofiler.org`;
+
+  /* The address bar, put right. The post that just arrived is in this reader's
+     language and has an address of its own in that language, which is almost
+     never the one they clicked: a link from a Portuguese chat opened by
+     somebody reading in Russian, or the bare id, or the address the post was
+     published under years ago. All three resolve, and all three are now
+     replaced by the one that matches what is on the screen.
+
+     replaceState and not a redirect: the request already happened, the text is
+     already here, and the id in the URL was never wrong - only quiet about
+     which language this is. It also leaves the back button alone, which a
+     pushState here would fill with an entry for the page already being read.
+
+     A language with no slug has the id for an address, and that is what this
+     writes; the URL gets shorter rather than staying somebody else's. */
+  if (item.url && item.url !== location.pathname) {
+    history.replaceState(null, '', item.url + location.search + location.hash);
+  }
+
   el('loading').hidden = true;
   el('post').hidden = false;
 

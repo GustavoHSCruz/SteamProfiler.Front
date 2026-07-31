@@ -13,12 +13,80 @@
 <meta property="og:site_name" content="steamprofiler.org">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0b0a0e">
+<!-- The card for a page that is not a profile. A profile has its own,
+     rendered by the api out of that library; everything else shares this one,
+     which is the same drawing with made-up hours. -->
+<meta property="og:image" content="https://steamprofiler.org/og-home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A Steam library drawn as a treemap: one big rectangle for the most played game and a long tail of small ones.">
+<meta name="twitter:card" content="summary_large_image">
+<!-- What this page is, for a reader that is not a person. The home page
+     carries the whole graph - the site, the application, the questions people
+     ask before they trust it - and every other page carries this much: which
+     site it belongs to, what it is, and where it sits. Same @id for the site
+     on all six, so that a reader collecting them gets one site with six pages
+     rather than six sites. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://steamprofiler.org/#site",
+      "url": "https://steamprofiler.org/",
+      "name": "steamprofiler.org"
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://steamprofiler.org/privacy/history#webpage",
+      "url": "https://steamprofiler.org/privacy/history",
+      "name": "Policy archive - steamprofiler.org",
+      "description": "Every revision of the steamprofiler.org privacy policy, kept whole, with the diff between each one and a link to the commit that carried it.",
+      "dateModified": "2026-07-30",
+      "inLanguage": "en",
+      "isPartOf": {
+        "@id": "https://steamprofiler.org/#site"
+      },
+      "breadcrumb": {
+        "@id": "https://steamprofiler.org/privacy/history#breadcrumb"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://steamprofiler.org/privacy/history#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "steamprofiler.org",
+          "item": "https://steamprofiler.org/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Privacy",
+          "item": "https://steamprofiler.org/privacy"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Revision history"
+        }
+      ]
+    }
+  ]
+}
+</script>
 <link rel="preload" href="/fonts/bricolage-grotesque-800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/fonts.css">
 <link rel="stylesheet" href="/style.css">
 <link rel="stylesheet" href="/extras.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body>
 

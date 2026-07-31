@@ -3,15 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title data-i18n-doc="land.title">steamprofiler.org - your Steam library, drawn to scale</title>
-<meta name="description" content="Look up any public Steam profile: the whole library as an area map, one rectangle per game, and a page of its own for every game.">
+<title data-i18n-doc="land.title">Where did your Steam hours go? Your library, drawn to scale</title>
+<meta name="description" content="One rectangle per game, sized by the hours you put into it. Paste any public Steam profile and see the whole library drawn to scale. No sign-in.">
 <meta property="og:site_name" content="steamprofiler.org">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0b0a0e">
-<meta property="og:title" content="steamprofiler.org">
-<meta property="og:description" content="Any public Steam profile, with its library drawn to scale: one rectangle per game, area proportional to hours.">
+<meta property="og:title" content="Where did your Steam hours go? Your library, drawn to scale">
+<meta property="og:description" content="One rectangle per game, sized by the hours you put into it. Paste any public Steam profile and see the whole library drawn to scale.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://steamprofiler.org/">
+<!-- A profile gets its own card, rendered by the api from that library. This
+     one is for every page that is not a profile: a link with no picture beside
+     four that have one is the link nobody opens. -->
+<meta property="og:image" content="https://steamprofiler.org/og-home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A Steam library drawn as a treemap: one big rectangle for the most played game and a long tail of small ones.">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://steamprofiler.org/">
 
 <!-- The same answers the page gives, in the form a machine reads.
@@ -36,12 +44,20 @@
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "Person",
+      "@id": "https://steamprofiler.org/#author",
+      "name": "GustavoHSCruz",
+      "url": "https://github.com/GustavoHSCruz",
+      "sameAs": ["https://github.com/GustavoHSCruz"]
+    },
+    {
       "@type": "WebSite",
       "@id": "https://steamprofiler.org/#site",
       "url": "https://steamprofiler.org/",
       "name": "steamprofiler.org",
       "inLanguage": ["en", "pt-BR", "ru"],
-      "description": "Look up any public Steam profile: the whole library as an area map, one rectangle per game, and a page of its own for every game."
+      "description": "One rectangle per game, sized by the hours you put into it. Paste any public Steam profile and see the whole library drawn to scale.",
+      "author": { "@id": "https://steamprofiler.org/#author" }
     },
     {
       "@type": "WebApplication",
@@ -56,6 +72,8 @@
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
       "description": "Reads a public Steam profile through the Steam Web API and draws its library to scale, one rectangle per game, area proportional to hours played.",
       "disambiguatingDescription": "An independent hobby project. Not affiliated with, endorsed by, or connected to Valve Corporation. Steam and the Steam logo are trademarks of Valve Corporation.",
+      "author": { "@id": "https://steamprofiler.org/#author" },
+      "creator": { "@id": "https://steamprofiler.org/#author" },
       "usageInfo": "https://steamprofiler.org/privacy",
       "privacyPolicy": "https://steamprofiler.org/privacy",
       "codeRepository": "https://github.com/GustavoHSCruz/SteamProfiler.Front",
@@ -67,6 +85,14 @@
       "@id": "https://steamprofiler.org/#faq",
       "isPartOf": { "@id": "https://steamprofiler.org/#site" },
       "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is steamprofiler.org a scam?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No, and the way to check that is not to take this answer for it. The site has no sign-in, so there is no password to lose; it never asks for a Steam Web API key; it sells nothing, runs no ads and holds no giveaway; and it only reads what a profile has already made public through Steam's own API. The code that does all of that is public at https://github.com/GustavoHSCruz/SteamProfiler.Front, so every claim on this page can be checked against the thing that runs. It is one person's hobby project, run on a server at home, and it is not connected to Valve."
+          }
+        },
         {
           "@type": "Question",
           "name": "Does steamprofiler.org ask you to sign in to Steam?",
@@ -127,6 +153,9 @@
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="home.css">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.ico" sizes="48x48">
+<link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head>
 <body>
 
@@ -144,7 +173,7 @@
 <main class="land">
   <section class="land-in">
     <p class="eyebrow" data-i18n="land.eyebrow">steam · any public profile</p>
-    <h1 class="display" data-i18n-html="land.h1">The whole library,<br>drawn to scale.</h1>
+    <h1 class="display" data-i18n-html="land.h1">Your whole Steam library,<br>drawn to scale.</h1>
     <p class="lede" data-i18n-html="land.lede">Type in a Steam profile. I read its public library and draw the time: <b>one rectangle per game</b>, area proportional to hours. Every game gets a page of its own, and <b>the most played ones get a themed one</b>.</p>
 
     <form class="find" id="find" novalidate>

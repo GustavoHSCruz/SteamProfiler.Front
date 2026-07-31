@@ -3,7 +3,11 @@
    The list is asked for in the reader's language and the server answers with
    whichever text it actually has, saying which of the two that was. So a post
    written only in English still appears on the Portuguese index, with the note
-   on it, rather than quietly not existing for that reader. */
+   on it, rather than quietly not existing for that reader.
+
+   The address comes with the card, for the same reason: a post has one per
+   language, and which one this reader should be handed is a question the side
+   holding the titles can answer and this one cannot. */
 
 /* One vote per address per post, toggled. Same contract as the message board,
    and the same weakness, which the page states under the list. */
@@ -17,7 +21,7 @@ function voteButton(item) {
   votes.addEventListener('click', async () => {
     votes.disabled = true;
     try {
-      const got = await post('/blog/vote', { slug: item.slug });
+      const got = await post('/blog/vote', { key: item.pid });
       votes.lastElementChild.textContent = String(got.votes);
       if (got.voted) votes.dataset.on = '1';
       else delete votes.dataset.on;
@@ -41,7 +45,7 @@ function cardFor(item) {
     item.translated ? null : txt(`  ·  ${t('blog.in_original', { lang: t(`lang.${item.lang}`) })}`));
 
   const head = h('div', { cls: 'card-head' },
-    h('a', { cls: 'card-title post-link', attr: { href: `/blog/${item.slug}` }, text: item.title }));
+    h('a', { cls: 'card-title post-link', attr: { href: item.url }, text: item.title }));
   for (const tag of item.tags) head.append(h('span', { cls: 'tag', text: tag }));
 
   return h('article', { cls: 'card' },

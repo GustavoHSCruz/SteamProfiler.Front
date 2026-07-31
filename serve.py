@@ -4,7 +4,7 @@
     python3 serve.py
 
 Serves site/ on http://127.0.0.1:8013 with the same URL map the live site uses,
-so /u/<profile> reaches the dashboard and /blog/<slug> reaches a post. There is
+so /u/<profile> reaches the dashboard and /blog/<id>/<title> reaches a post. There is
 no build step and nothing to install: the stdlib is the whole dependency list.
 
 This server holds no data. Anything under /api/ or /art/ is forwarded to a
@@ -45,7 +45,10 @@ PAGES = {
 # Old Portuguese paths, kept because links to them exist.
 REDIRECTS = {'/apoiar': '/support', '/recados': '/feedback'}
 
-BLOG_POST = re.compile(r'^/blog/[a-z0-9][a-z0-9-]{0,79}$')
+# Two segments, the second optional: a post is addressed by its id, and what
+# follows is its own title in whichever language the link was made in. Same
+# pattern as the live nginx, which is the point of this file.
+BLOG_POST = re.compile(r'^/blog/[a-z0-9][a-z0-9-]{0,79}(?:/[a-z0-9][a-z0-9-]{0,79})?$')
 PROFILE = re.compile(r'^/u/')
 
 # Everything the browser asks for that this server cannot answer from disk.

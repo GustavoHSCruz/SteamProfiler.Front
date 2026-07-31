@@ -33,11 +33,10 @@ function canonical() {
   return `/u/${encodeURIComponent(query)}${tail}`;
 }
 
-const loading = el('loading');
 const failure = el('failure');
 
 function fail(message, retry) {
-  loading.hidden = true;
+  bootStop();
   // A half-drawn view behind an error message reads as two answers at once.
   el('dash').hidden = true;
   el('game').hidden = true;
@@ -74,7 +73,9 @@ function showChrome(profileQuery, persona) {
     history.replaceState(null, '', canonical() + location.search + location.hash);
   }
 
-  el('loading').innerHTML = t('dash.loading', { who: `<b>${query}</b>` });
+  // The wait screen knows which of the four views is coming, because each one
+  // waits on different calls and the skeleton it draws is that view's layout.
+  bootStart(rival ? 'versus' : pile ? 'backlog' : appid ? 'game' : 'dash', query);
 
   let steamid;
   try {
@@ -83,6 +84,9 @@ function showChrome(profileQuery, persona) {
     fail(e.message);
     return;
   }
+  // Held back in the versus case: that view is looking up two handles and the
+  // step says so, so it is not done until the second one answers.
+  if (!rival) bootMark('resolved');
 
   try {
     if (rival) {
@@ -93,21 +97,26 @@ function showChrome(profileQuery, persona) {
         fail(t('vs.no_rival', { who: rival }));
         return;
       }
+      bootMark('resolved');
       // Both in flight at once: they are two independent lookups, and the
       // second one should not wait on the first one's round trips to Steam.
       const [a, b] = await Promise.all([
         api(`/profile?id=${steamid}`), api(`/profile?id=${other}`),
       ]);
       document.title = `${a.profile.persona} vs ${b.profile.persona} - steamprofiler.org`;
-      loading.hidden = true;
+      // Fetched, then drawn, then the screen comes down: the last step on the
+      // checklist is the drawing, and it is done here rather than claimed.
+      bootMark('fetched');
       el('versus').hidden = false;
       renderVersus(a, b, encodeURIComponent(query), encodeURIComponent(rival), el('v-root'));
       showChrome(query, a.profile.persona);
+      bootDone();
     } else if (pile) {
       const d = await api(`/profile?id=${steamid}`);
-      loading.hidden = true;
+      bootMark('fetched');
       el('backlog').hidden = false;
       showChrome(query, d.profile.persona);
+      bootDone();
       // Its own await: the page is drawn from the profile and then asks the
       // store cache for prices, which it can do without.
       await renderBacklog(d, encodeURIComponent(query));
@@ -116,7 +125,7 @@ function showChrome(profileQuery, persona) {
       // the API has it cached by the time this returns.
       const g = await api(`/game?id=${steamid}&appid=${appid}`);
       document.title = `${g.name} - steamprofiler.org`;
-      loading.hidden = true;
+      bootMark('fetched');
       el('game').hidden = false;
       renderGame(g, el('g-root'));
       const when = el('g-generated');
@@ -125,14 +134,16 @@ function showChrome(profileQuery, persona) {
         when.textContent = stamp(g.generated_at);
       }
       showChrome(query, null);
+      bootDone();
       api(`/profile?id=${steamid}`)
         .then((p) => showChrome(query, p.profile.persona))
         .catch(() => {});
     } else {
       const d = await api(`/profile?id=${steamid}`);
-      loading.hidden = true;
+      bootMark('fetched');
       el('dash').hidden = false;
       renderDashboard(d, encodeURIComponent(query));
+      bootDone();
     }
   } catch (e) {
     fail(e.message, appid ? `/u/${encodeURIComponent(query)}` : null);

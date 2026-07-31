@@ -77,7 +77,7 @@ tools/            checks and generators, run with node, never shipped
 | `/u/<profile>/<appid>` | one game |
 | `/u/<profile>/vs/<other>` | two libraries against each other |
 | `/u/<profile>/backlog` | everything owned and never launched |
-| `/blog`, `/blog/<slug>` | the index and a post |
+| `/blog`, `/blog/<id>/<title>` | the index and a post. The id resolves it; the title is that post's own title in the language the link was made in, and the page rewrites it to the reader's without reloading |
 | `/feedback` | leave a bug or an idea, and the public board |
 | `/support` | the donation channels |
 | `/privacy`, `/privacy/history` | the policy and its archive |

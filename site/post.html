@@ -10,19 +10,29 @@
      description below on purpose: the first of each is the one a parser reads,
      and these two are the fallback for anywhere this is served as a static
      file, where the line above is only a comment. -->
-<!--#include virtual="/api/blog/meta?slug=$slug" -->
-<!--og-->
+<!--#include virtual="/api/blog/meta?key=$key&title=$title&host=$http_host&scheme=$ext_scheme" -->
 <title data-i18n-doc="blog.title">blog - steamprofiler.org</title>
 <meta name="description" content="A post from the steamprofiler.org blog.">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0b0a0e">
 <meta property="og:type" content="article">
+<!-- The card for a page that is not a profile. A profile has its own,
+     rendered by the api out of that library; everything else shares this one,
+     which is the same drawing with made-up hours. -->
+<meta property="og:image" content="https://steamprofiler.org/og-home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A Steam library drawn as a treemap: one big rectangle for the most played game and a long tail of small ones.">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="/fonts/bricolage-grotesque-800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/fonts.css">
 <link rel="stylesheet" href="/style.css">
 <link rel="stylesheet" href="/extras.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body>
 

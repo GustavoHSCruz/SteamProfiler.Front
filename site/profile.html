@@ -22,6 +22,9 @@
 <link rel="stylesheet" href="/home.css">
 <link rel="stylesheet" href="/games.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body>
 
@@ -40,7 +43,27 @@
   </nav>
 </header>
 
-<p class="state" id="loading"></p>
+<!-- The wait. A cold lookup is ten seconds of Steam, so the page spends them
+     showing the shape of what is coming instead of a spinner: boot.js tiles
+     the map in, walks the checklist and drives the bar. Hidden until it does,
+     because without a script none of it is ever filled. -->
+<section class="boot" id="loading" hidden>
+  <div class="boot-map" id="boot-map" aria-hidden="true"></div>
+  <div class="boot-win">
+    <div class="boot-bar">
+      <span class="boot-path">/u/<b id="boot-who"></b></span>
+      <span class="boot-count" id="boot-count"></span>
+    </div>
+    <div class="boot-body">
+      <p class="boot-head" id="boot-head" data-i18n="load.h_dash">Reading this library off Steam</p>
+      <ol class="boot-steps" id="boot-steps" aria-hidden="true"></ol>
+      <p class="boot-quip" id="boot-quip" hidden></p>
+    </div>
+    <div class="boot-track" id="boot-track" role="progressbar"
+         aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="boot-fill"></i></div>
+  </div>
+  <p class="boot-say" id="boot-say" aria-live="polite"></p>
+</section>
 
 <div class="state state--fail" id="failure" hidden>
   <p id="failure-text"></p>
@@ -274,6 +297,7 @@
 <script src="/i18n.js" defer></script>
 <script src="/lib.js" defer></script>
 <script src="/dash.js" defer></script>
+<script src="/boot.js" defer></script>
 <script src="/game.js" defer></script>
 <script src="/router.js" defer></script>
 </body>
