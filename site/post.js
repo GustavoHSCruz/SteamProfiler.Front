@@ -244,7 +244,7 @@ function navInto(node, item) {
   if (item.machine) {
     const note = el('post-machine');
     note.hidden = false;
-    note.textContent = t('blog.machine', { origin: t(`lang.${item.origin}`) });
+    note.textContent = t('blog.machine');
   }
 
   renderProse(item.body, el('post-body'));
