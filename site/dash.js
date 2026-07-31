@@ -320,13 +320,26 @@ function dressAvatar(pf) {
     panel.dataset.dressed = '1';
   }
 
-  if (items.frame?.image_large) {
+  const frame = items.frame;
+  if (frame?.image_small || frame?.image_large) {
     face.dataset.framed = '1';
-    face.append(h('img', {
+    // The still first, because the animated one is an APNG of ninety frames
+    // and most of a megabyte: the frame is around the face immediately and
+    // starts moving when it has arrived, rather than the face sitting bare
+    // for as long as that takes. A reader who asked for less motion keeps the
+    // still, which is exactly what Steam ships it for.
+    const still_url = frame.image_large || frame.image_small;
+    const shown = h('img', {
       cls: 'face-frame',
-      attr: { src: items.frame.image_large, alt: '', 'aria-hidden': 'true',
-              loading: 'lazy', decoding: 'async', title: items.frame.name || '' },
-    }));
+      attr: { src: still_url, alt: '', 'aria-hidden': 'true',
+              decoding: 'async', title: frame.name || '' },
+    });
+    face.append(shown);
+    if (!still() && frame.image_small && frame.image_small !== still_url) {
+      const moving = new Image();
+      moving.addEventListener('load', () => { shown.src = frame.image_small; }, { once: true });
+      moving.src = frame.image_small;
+    }
   }
 }
 
