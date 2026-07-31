@@ -499,6 +499,8 @@ a.mod:hover { border-color: var(--line-2); color: var(--text); }
   transition: opacity 420ms ease;
 }
 .boot-cell[data-art] .boot-art { opacity: 0.66; }
+/* Skyrim's stars and the flight simulator's gauges. */
+.boot-cell[data-round] { border-radius: 50%; }
 
 @media (prefers-reduced-motion: no-preference) {
   .boot-cell {

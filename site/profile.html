@@ -15,6 +15,15 @@
 <meta property="og:site_name" content="steamprofiler.org">
 <meta property="og:description" content="A Steam library measured in area: every game a profile has played, one rectangle each.">
 <!--og-->
+<!-- Which themed page this is going to be, on a /u/<who>/<appid> path and
+     nowhere else. The api answers the include with one meta tag, or with
+     nothing when the game has no theme of its own, and boot.js reads it before
+     it draws the first thing on the screen - so a themed game's wait is that
+     game's wait rather than the site's, from the first frame.
+
+     A dev server without SSI leaves this as the comment it is, and the wait
+     falls back to the site's own palette. The page is not built on it. -->
+<!--#include virtual="/api/game/theme?appid=$appid" -->
 <link rel="preload" href="/fonts/bricolage-grotesque-800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/fonts.css">

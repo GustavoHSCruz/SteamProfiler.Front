@@ -139,6 +139,123 @@ const BOOT_SHAPE = {
   versus: () => [...bootTiles(18, 0, 0, 49.4, 100), ...bootTiles(18, 50.6, 0, 49.4, 100)],
 };
 
+/* ── The wait of one game ──────────────────────────────────────────────
+   A themed page is not the generic page with other colours: Dota is a table,
+   War Thunder is a tree, Skyrim is a sky. So the wait for one is not the
+   generic skeleton in other colours either. Each of these traces the page that
+   is about to land, from the same description its CSS block is written under.
+
+   Every one of them opens with the art band, because every game page does.
+   A theme with no shape here still arrives themed - the palette, the lettering
+   and the art come from the head and the CSS, which is most of what makes a
+   page recognisable - and lands on the generic panels below. */
+const ART = { x: 0, y: 0, w: 100, h: 34 };
+
+/** GTA V: the pause menu. Tab column down the left, segmented meters right. */
+function shapeGta() {
+  const out = [ART];
+  for (let i = 0; i < 6; i++) out.push({ x: 0, y: 38 + i * 10.4, w: 19, h: 8.6 });
+  out.push({ x: 23, y: 38, w: 52, h: 9 });
+  for (let i = 0; i < 4; i++) {
+    out.push({ x: 23, y: 52 + i * 12, w: 77, h: 4 });
+    for (let s = 0; s < 8; s++) out.push({ x: 23 + s * 9.7, y: 58 + i * 12, w: 8.9, h: 4.6 });
+  }
+  return out;
+}
+
+/** Dota 2: the header, then the hero table, one thin row per hero. */
+function shapeDota() {
+  const out = [ART, { x: 0, y: 38, w: 100, h: 11 }];
+  for (let i = 0; i < 9; i++) out.push({ x: 0, y: 52 + i * 5.4, w: 100, h: 4.6 });
+  return out;
+}
+
+/** Counter-Strike 2: the buy panel beside the loadout, then the map rows. */
+function shapeCs2() {
+  const out = [ART, { x: 0, y: 38, w: 30, h: 26 }];
+  for (let i = 0; i < 8; i++) {
+    out.push({ x: 33 + (i % 4) * 17, y: 38 + Math.floor(i / 4) * 13.5, w: 16, h: 12.5 });
+  }
+  for (let i = 0; i < 5; i++) out.push({ x: 0, y: 68 + i * 6.6, w: 100, h: 5.8 });
+  return out;
+}
+
+/** Arma 3: two columns of panels, the left one a shade wider. */
+function shapeArma3() {
+  const out = [ART];
+  for (let i = 0; i < 4; i++) {
+    out.push({ x: 0, y: 38 + i * 16, w: 50.5, h: 14.4 });
+    out.push({ x: 52.5, y: 38 + i * 16, w: 47.5, h: 14.4 });
+  }
+  return out;
+}
+
+/** War Thunder: the research tree. A spine down the left, ranks across it. */
+function shapeWarThunder() {
+  const out = [ART, { x: 0, y: 38, w: 2.4, h: 62 }];
+  for (let rank = 0; rank < 5; rank++) {
+    for (let node = 0; node < 6; node++) {
+      out.push({ x: 7 + node * 15.6, y: 39 + rank * 12.4, w: 14, h: 10.4 });
+    }
+  }
+  return out;
+}
+
+/** Skyrim: the constellation. One star per achievement, unevenly hung. */
+function shapeSkyrim() {
+  const out = [ART];
+  // Fixed rather than random, because two reloads of the same page showing a
+  // different sky reads as the page having changed its mind about something.
+  const sky = [
+    [12, 44, 3.4], [26, 52, 2.2], [37, 41, 4.2], [49, 55, 2.6], [61, 44, 3],
+    [73, 58, 3.8], [86, 46, 2.4], [18, 66, 2.8], [31, 76, 3.6], [44, 68, 2.2],
+    [57, 80, 3.2], [69, 71, 2.6], [81, 84, 3], [92, 66, 2.2], [8, 88, 2.6],
+    [40, 92, 2.4], [66, 92, 2.8], [24, 90, 2],
+  ];
+  for (const [x, y, r] of sky) out.push({ x, y, w: r, h: r * 1.78, round: true });
+  return out;
+}
+
+/** Microsoft Flight Simulator: three gauges over the logbook. */
+function shapeMsfs() {
+  const out = [ART];
+  for (let i = 0; i < 3; i++) out.push({ x: 6 + i * 32, y: 39, w: 22, h: 39, round: true });
+  for (let i = 0; i < 5; i++) out.push({ x: 0, y: 82 + i * 3.8, w: 100, h: 3.2 });
+  return out;
+}
+
+const BOOT_THEME_SHAPE = {
+  'gta-v': shapeGta,
+  'dota-2': shapeDota,
+  'counter-strike-2': shapeCs2,
+  'arma-3': shapeArma3,
+  'war-thunder': shapeWarThunder,
+  'skyrim': shapeSkyrim,
+  'msfs': shapeMsfs,
+};
+
+/* ── Whose wait this is ────────────────────────────────────────────────
+   A themed game does not wait behind the site's palette. nginx asks the api
+   which theme the appid in the path is and pastes the answer into the head, so
+   by the time this runs the name is already in the document - and setting it
+   on <html> is the same line game.js runs when the real page arrives, against
+   the same :root[data-game] blocks in games.css. The whole screen changes:
+   background, panels, accent, the display face, the corner radius.
+
+   Read from the head rather than fetched, because a fetch resolves after the
+   first paint and every themed game would open grey and then become itself.
+
+   Cleared on the way out only when the page never got its own: game.js sets
+   the same attribute for real, and taking it off after that would undress the
+   page it just dressed. */
+function bootTheme() {
+  const said = document.querySelector('meta[name="sp-game"]');
+  const name = said && said.content.trim();
+  if (!name) return null;
+  document.documentElement.dataset.game = name;
+  return name;
+}
+
 /** The game's own art, in the cell where the page is about to put it.
  *
  *  Everything else on this screen is deliberately anonymous, because nothing
@@ -163,12 +280,16 @@ function bootArt(box, appid) {
   first.append(art);
 }
 
-function bootSkeleton(box, kind, appid) {
+function bootSkeleton(box, kind, appid, theme) {
   if (!box) return;
   box.textContent = '';
-  const rects = (BOOT_SHAPE[kind] || BOOT_SHAPE.dash)();
+  const own = kind === 'game' && theme && BOOT_THEME_SHAPE[theme];
+  const rects = own ? own() : (BOOT_SHAPE[kind] || BOOT_SHAPE.dash)();
   rects.forEach((r, i) => {
-    const cell = h('div', { cls: 'boot-cell' });
+    // A star and a gauge are round on the page they are standing in for, and a
+    // square standing in for a circle is the one cell that reads as the wrong
+    // page rather than as the page not being there yet.
+    const cell = h('div', { cls: 'boot-cell', data: r.round ? { round: '1' } : {} });
     cell.style.left = `${r.x}%`;
     cell.style.top = `${r.y}%`;
     // The gap is taken out here rather than out of the rectangles, because the
@@ -286,13 +407,16 @@ function bootStart(kind, who, appid) {
 
   el('boot-who').textContent = who;
   el('boot-head').textContent = t(BOOT_HEAD[kind]);
+  // Before the skeleton, because the skeleton is drawn in this theme's colours
+  // and its shape is this theme's shape.
+  const theme = bootTheme();
   const list = el('boot-steps');
   list.textContent = '';
   for (const s of steps) {
     s.node = h('li', { text: t(s.key) });
     list.append(s.node);
   }
-  bootSkeleton(el('boot-map'), kind, appid);
+  bootSkeleton(el('boot-map'), kind, appid, theme);
   // The window opens empty however many times it is opened: nothing here
   // starts a second wait today, and a line left over from a previous one is
   // the page talking about something that already finished.
