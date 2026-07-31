@@ -185,12 +185,16 @@ a.cell { cursor: pointer; }
 .face { position: relative; flex: none; line-height: 0; }
 .face-frame {
   position: absolute;
-  /* The frames Steam ships are drawn with a fixed proportion of air around
-     the avatar. This is that proportion, so a frame lines up on its own
-     rather than being placed per frame. */
-  inset: -18%;
-  width: 136%;
-  height: 136%;
+  /* Measured, not guessed. A Steam frame is a 224px canvas whose artwork
+     leaves an opening of about 178px in the middle, and the avatar is what
+     fills that opening: 224/178 is 1.26, so the frame is drawn a quarter
+     larger than the face and hangs 12.9% off each side. Steam's own profile
+     draws it at the same proportion, which is why one number works for every
+     frame instead of one per frame. It was 136% here, and that is a frame
+     floating a ring of air away from the face it is supposed to be around. */
+  inset: -12.9%;
+  width: 125.8%;
+  height: 125.8%;
   max-width: none;
   pointer-events: none;
 }
@@ -199,7 +203,10 @@ a.cell { cursor: pointer; }
    not change with it - a Steam avatar is square and stays square, framed or
    not, because that is the picture the person uploaded and cropping it round
    is this site deciding something about somebody else's face. */
-.face[data-framed] .avatar { border-color: transparent; }
+/* And square with no rounding at all: the opening it sits in is a square with
+   sharp corners, so ten pixels of radius here is ten pixels of the panel
+   showing through inside the frame, at each corner. */
+.face[data-framed] .avatar { border-color: transparent; border-radius: 0; }
 
 /* ── The hover card's background, behind the account panel ────────────
    Bought in the points shop, drawn by Steam behind the card that pops up on a
