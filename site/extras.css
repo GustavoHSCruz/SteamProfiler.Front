@@ -9,6 +9,14 @@
 .page-head { max-width: 62ch; }
 .page-head .lede { margin-top: 20px; }
 
+/* A post is one column of prose with nothing beside it, so the shell is that
+   column and not the wide one. 1180px is the width the pages built out of
+   panels need; on a post the surplus had nothing to hold and simply pushed the
+   text to the left of a screen it was not otherwise using. Narrow enough that
+   the column the prose already sets is what centres, rather than sitting in
+   the corner of a container three times its size. */
+.page--read { max-width: 660px; }
+
 .cols {
   display: grid;
   grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
