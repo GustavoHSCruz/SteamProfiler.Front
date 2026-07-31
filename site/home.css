@@ -16,6 +16,12 @@
   inset: 0;
   border-radius: var(--r);
   overflow: hidden;
+  /* A floor under the cells. They are amber at an opacity that carries how
+     many hours each one holds, so whatever is behind the map is read as part
+     of their colour - which was nothing until a profile background could be
+     back there. Not opaque: the wallpaper still comes through, it just stops
+     being mistaken for the data. */
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
 }
 
 /* Cells are positioned in percentages by app.js, so the map reflows with the
@@ -189,8 +195,50 @@ a.cell { cursor: pointer; }
   pointer-events: none;
 }
 /* A framed avatar loses the site's border: the frame is the border now, and
-   two of them read as a picture inside a box inside a picture. */
-.face[data-framed] .avatar { border-color: transparent; border-radius: 50%; }
+   two of them read as a picture inside a box inside a picture. The shape does
+   not change with it - a Steam avatar is square and stays square, framed or
+   not, because that is the picture the person uploaded and cropping it round
+   is this site deciding something about somebody else's face. */
+.face[data-framed] .avatar { border-color: transparent; }
+
+/* ── The hover card's background, behind the account panel ────────────
+   Bought in the points shop, drawn by Steam behind the card that pops up on a
+   name. This panel is that card here, so the picture keeps its proportions:
+   a strip across the top of a strip.
+
+   It sits under the panel's own contents and behind a scrim, for the reason
+   the page background has one - everything on top of it is text, and a bought
+   background is not allowed to cost the reader a single figure. */
+.p-acct { position: relative; }
+.acct-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 0.42;
+  pointer-events: none;
+}
+.acct-bg video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.acct-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--panel) 58%, transparent),
+    color-mix(in srgb, var(--panel) 92%, transparent));
+}
+/* Everything the panel already had goes over it. */
+.p-acct[data-dressed] > .panel-bar, .p-acct[data-dressed] > .panel-body {
+  position: relative;
+  z-index: 1;
+}
+.p-acct[data-dressed] > .panel-bar { background: transparent; }
 .persona {
   margin: 0;
   font-family: var(--display);

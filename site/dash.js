@@ -142,9 +142,16 @@ function buildMap(library, totalHours, query) {
       // Striped, because this block is a group of games rather than one game:
       // its area is honest, but the intensity ramp would not be.
       node.style.background =
-        'repeating-linear-gradient(-45deg, rgba(255,180,84,.05) 0 6px, rgba(255,180,84,.11) 6px 12px)';
+        'repeating-linear-gradient(-45deg, rgba(255,180,84,.14) 0 6px, rgba(255,180,84,.22) 6px 12px)';
     } else {
-      const alpha = 0.05 + 0.92 * Math.pow(g.hours / top, 0.42);
+      // The floor used to be 0.05, which is a cell that is very nearly not
+      // there. That was fine over a flat page and stopped being fine the day
+      // the page could have somebody's profile background behind it: the
+      // faintest cells are the smallest ones, and a wallpaper showing through
+      // them turned the tail of the map into whatever that picture happened to
+      // be. The ramp still runs to the same top, so the map reads the same
+      // way - only its bottom end is opaque enough to be a cell.
+      const alpha = 0.18 + 0.79 * Math.pow(g.hours / top, 0.42);
       node.style.background = `rgba(255, 180, 84, ${alpha.toFixed(3)})`;
       if (alpha > 0.42) node.dataset.dark = '1';
     }
@@ -290,6 +297,29 @@ function dressAvatar(pf) {
     moving.addEventListener('load', () => { img.src = items.avatar.image_small; }, { once: true });
     moving.src = items.avatar.image_small;
   }
+  // The hover card's background, behind the panel that is this site's version
+  // of that card. It is a strip and the panel is a strip, which is why it goes
+  // here and not where the profile background went: stretched over a whole
+  // page it would be the wrong picture in the wrong shape.
+  const mini = items.mini;
+  const panel = el('panel-acct');
+  if (mini?.image_large && panel) {
+    const stage = h('div', { cls: 'acct-bg' });
+    stage.style.backgroundImage = `url("${mini.image_large}")`;
+    if (!still() && mini.movie_webm) {
+      const movie = h('video', {
+        attr: { autoplay: '', muted: '', loop: '', playsinline: '', 'aria-hidden': 'true',
+                preload: 'metadata', poster: mini.image_large },
+      }, h('source', { attr: { src: mini.movie_webm, type: 'video/webm' } }),
+         mini.movie_mp4 ? h('source', { attr: { src: mini.movie_mp4, type: 'video/mp4' } }) : null);
+      movie.muted = true;
+      movie.addEventListener('error', () => movie.remove(), { once: true });
+      stage.append(movie);
+    }
+    panel.prepend(stage);
+    panel.dataset.dressed = '1';
+  }
+
   if (items.frame?.image_large) {
     face.dataset.framed = '1';
     face.append(h('img', {
