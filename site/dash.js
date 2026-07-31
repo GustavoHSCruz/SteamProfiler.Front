@@ -272,11 +272,86 @@ function buildPlatform(p) {
   });
 }
 
+/** What this profile is wearing, where the profile itself wears it.
+ *
+ *  The frame is a picture with a transparent hole in it, drawn over the avatar
+ *  rather than around it, which is why it cannot be a CSS border. The animated
+ *  avatar is a gif and simply takes the still one's place; if it never loads,
+ *  what is underneath is the still, already there. Both are Steam's own files,
+ *  on the CDN the site's policy already allows for avatars. */
+function dressAvatar(pf) {
+  const items = pf.items || {};
+  const face = el('face');
+  const img = el('avatar');
+  if (items.avatar?.image_small) {
+    // Only after it has arrived: swapping the src first would blank the face
+    // for as long as the gif takes, which is longer than the still took.
+    const moving = new Image();
+    moving.addEventListener('load', () => { img.src = items.avatar.image_small; }, { once: true });
+    moving.src = items.avatar.image_small;
+  }
+  if (items.frame?.image_large) {
+    face.dataset.framed = '1';
+    face.append(h('img', {
+      cls: 'face-frame',
+      attr: { src: items.frame.image_large, alt: '', 'aria-hidden': 'true',
+              loading: 'lazy', decoding: 'async', title: items.frame.name || '' },
+    }));
+  }
+}
+
+/** The profile's own background, behind the whole page.
+ *
+ *  It is what Steam draws behind that person's profile, so it goes where a
+ *  background goes rather than into a panel. The still lands first and stays
+ *  as the floor under the video: a browser that will not play the video, a
+ *  connection that has not finished it, and a reader who asked for less motion
+ *  all end on the same picture rather than on nothing.
+ *
+ *  Held well back - the page is a page of numbers and they have to stay
+ *  readable over it, which is also why the video is muted, loops, and is never
+ *  a control anybody has to dismiss. */
+function dressPage(pf) {
+  const bg = (pf.items || {}).background;
+  const stage = el('bg');
+  if (!bg || !stage) return;
+  if (bg.image_large) {
+    stage.style.backgroundImage = `url("${bg.image_large}")`;
+    stage.dataset.on = '1';
+  }
+  // still() is the site's own reading of prefers-reduced-motion, used by every
+  // other animation here. A background that moves is exactly what it is about.
+  if (still() || !bg.movie_webm) return;
+  const movie = h('video', {
+    cls: 'bg-movie',
+    attr: { autoplay: '', muted: '', loop: '', playsinline: '', 'aria-hidden': 'true',
+            preload: 'metadata', poster: bg.image_large || '' },
+  }, h('source', { attr: { src: bg.movie_webm, type: 'video/webm' } }),
+     bg.movie_mp4
+       ? h('source', { attr: { src: bg.movie_mp4, type: 'video/mp4' } })
+       : null);
+  // Muted has to be set as a property as well: the attribute alone is ignored
+  // by some browsers deciding whether autoplay is allowed.
+  movie.muted = true;
+  movie.addEventListener('error', () => movie.remove(), { once: true });
+  stage.append(movie);
+}
+
 function buildAccount(pf) {
   if (pf.avatar) {
     const img = el('avatar');
     img.src = pf.avatar;
     img.alt = `Avatar de ${pf.persona}`;
+  }
+  dressAvatar(pf);
+  dressPage(pf);
+  // Where this page's subject actually lives. The whole site reads Steam and
+  // never writes to it, so the last step of anything anybody wants to do with
+  // a profile happens over there.
+  if (pf.url) {
+    const go = el('steam-link');
+    go.href = pf.url;
+    go.hidden = false;
   }
   el('persona').textContent = pf.persona || '-';
   el('acct-level').textContent = pf.level != null ? t('dash.level', { n: num(pf.level) }) : '-';

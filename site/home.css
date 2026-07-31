@@ -170,6 +170,27 @@ a.cell { cursor: pointer; }
   background: var(--panel-2);
   flex: none;
 }
+
+/* ── What Steam sells to go around an avatar ──────────────────────────
+   A frame is a picture with a hole in it, and it is drawn over the avatar
+   rather than around it: it overlaps, it is often not rectangular, and half
+   of them are animated. So the avatar keeps its size and the frame is laid
+   on top, bigger than the face by exactly the margin these are drawn with. */
+.face { position: relative; flex: none; line-height: 0; }
+.face-frame {
+  position: absolute;
+  /* The frames Steam ships are drawn with a fixed proportion of air around
+     the avatar. This is that proportion, so a frame lines up on its own
+     rather than being placed per frame. */
+  inset: -18%;
+  width: 136%;
+  height: 136%;
+  max-width: none;
+  pointer-events: none;
+}
+/* A framed avatar loses the site's border: the frame is the border now, and
+   two of them read as a picture inside a box inside a picture. */
+.face[data-framed] .avatar { border-color: transparent; border-radius: 50%; }
 .persona {
   margin: 0;
   font-family: var(--display);
@@ -178,6 +199,23 @@ a.cell { cursor: pointer; }
   letter-spacing: -0.02em;
 }
 .acct-id .note { margin-top: 3px; }
+
+/* The way out to the profile itself. Quiet, because this site reads Steam and
+   never writes to it: anything a visitor actually wants to do with a profile
+   happens over there, and this is the door. */
+.btn-steam {
+  display: inline-block;
+  margin-top: 9px;
+  padding: 5px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--dim);
+  text-decoration: none;
+  transition: border-color 140ms ease, color 140ms ease;
+}
+.btn-steam:hover, .btn-steam:focus-visible { border-color: var(--accent-d); color: var(--text); }
 
 /* ── The rig, as a terminal ───────────────────────────────────────── */
 

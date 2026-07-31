@@ -79,6 +79,40 @@ img { max-width: 100%; }
    class beats the user-agent rule for [hidden]. Settle it here, once. */
 [hidden] { display: none !important; }
 
+/* ── Somebody else's wallpaper ────────────────────────────────────────
+   The background a profile wears on Steam, behind the page about it. Fixed,
+   so it behaves like a background and not like a picture the page scrolls
+   past, and held far enough back that a column of numbers stays readable over
+   it - which is the whole constraint here. The gradient is not decoration: it
+   is what keeps the text near the top legible against a bright still.
+
+   Empty until dash.js finds one, and absent on every other page. */
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-position: center top;
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+.bg[data-on] { opacity: 0.3; }
+.bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--bg) 55%, transparent),
+    color-mix(in srgb, var(--bg) 88%, transparent));
+}
+.bg-movie {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* ── Status bar ───────────────────────────────────────────────────────
    Waybar, more or less: fixed height, mono, modules pushed to the edges. */
 

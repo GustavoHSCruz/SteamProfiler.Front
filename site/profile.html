@@ -37,6 +37,12 @@
 </head>
 <body>
 
+<!-- The profile's own background, when it has one. Empty and invisible until
+     dash.js fills it, fixed behind everything, and never in the way: it holds
+     no text, takes no clicks and is skipped by screen readers, because it is
+     the wallpaper of somebody else's profile and not information. -->
+<div class="bg" id="bg" aria-hidden="true"></div>
+
 <header class="bar-top">
   <a class="wordmark" href="/">steamprofiler<span>.org</span></a>
   <nav class="bar-mods">
@@ -128,10 +134,19 @@
       <div class="panel-bar"><span data-i18n="dash.account">account</span><b id="acct-level">-</b></div>
       <div class="panel-body">
         <div class="acct">
-          <img class="avatar" id="avatar" alt="" width="72" height="72" loading="lazy" decoding="async">
+          <!-- The avatar, and the two things Steam sells to go around it. The
+               frame is a picture with a hole in it that sits over the avatar,
+               so it needs an element of its own rather than a border; the
+               animated one simply replaces the still when the profile has it.
+               Both are added by dash.js only when this profile wears them. -->
+          <div class="face" id="face">
+            <img class="avatar" id="avatar" alt="" width="72" height="72" loading="lazy" decoding="async">
+          </div>
           <div class="acct-id">
             <p class="persona" id="persona">-</p>
             <p class="note" id="member-since"></p>
+            <a class="btn-steam" id="steam-link" hidden rel="noopener"
+               data-i18n="dash.open_steam">Open on Steam ↗</a>
           </div>
         </div>
         <dl class="kv" id="acct-kv"></dl>
