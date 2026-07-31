@@ -60,6 +60,16 @@ const REVISIONS = [
       pt: 'Passei a contar visitas que voltam, em janelas de sete dias, com o país e a região que a Cloudflare informa, e a contar quantas vezes cada perfil foi consultado por dia - de propósito sem nenhuma forma de ligar as duas coisas. E passei a dizer o que vale um experimento neste site em geral, porque este é o primeiro. O texto dizia que não havia analytics e que nada em disco registrava quando alguém veio; as duas coisas tinham deixado de ser verdade.',
       ru: 'Теперь я считаю возвращающиеся визиты, окнами по семь дней, со страной и регионом, которые сообщает Cloudflare, и считаю, сколько раз в день смотрели каждый профиль, - намеренно без всякой возможности связать одно с другим. И теперь я говорю, чего вообще стоит эксперимент на этом сайте, потому что этот - первый. В тексте было сказано, что аналитики нет и что ничто на диске не записывает, когда кто-то приходил; и то, и другое перестало быть правдой.',
     },
+  },
+  {
+    version: 5,
+    date: '2026-07-31',
+    commit: null,
+    summary: {
+      en: 'The home page now offers the last five profiles you looked up, so there is a second thing in your browser\'s localStorage. It is a list of what you typed, it stays on your machine, and there is a button that erases it - but the policy said there was one entry there, and now there are two.',
+      pt: 'A página inicial passou a oferecer os últimos cinco perfis que você consultou, então existe uma segunda coisa no localStorage do seu navegador. É uma lista do que você digitou, fica na sua máquina, e tem um botão que apaga - mas a política dizia que havia uma entrada lá, e agora são duas.',
+      ru: 'На главной странице появились последние пять профилей, которые вы искали, поэтому в localStorage вашего браузера теперь вторая запись. Это список того, что вы набрали, он остаётся на вашей машине, и есть кнопка, которая его стирает, - но в политике было сказано, что там одна запись, а теперь их две.',
+    },
     text: 'live',
   },
 ];

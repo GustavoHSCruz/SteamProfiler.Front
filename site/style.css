@@ -486,6 +486,20 @@ a.mod:hover { border-color: var(--line-2); color: var(--text); }
   background: var(--panel-2);
 }
 
+/* The game's key art, in the cell that becomes the key art. Held under full
+   opacity because it is still a wait and not the page: enough to recognise the
+   game across the room, not enough to be mistaken for the thing having
+   arrived. */
+.boot-art {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 420ms ease;
+}
+.boot-cell[data-art] .boot-art { opacity: 0.66; }
+
 @media (prefers-reduced-motion: no-preference) {
   .boot-cell {
     animation:
@@ -500,6 +514,10 @@ a.mod:hover { border-color: var(--line-2); color: var(--text); }
     0%, 100% { background: var(--panel-2); }
     50% { background: color-mix(in srgb, var(--accent) 14%, var(--panel-2)); }
   }
+  /* The cell holding the art keeps its entrance and drops out of the wave: a
+     picture that pulses reads as a picture loading badly, and the wave exists
+     to say the empty cells are not empty for good. */
+  .boot-cell[data-art] { animation-name: boot-in; }
 }
 
 .boot-win {

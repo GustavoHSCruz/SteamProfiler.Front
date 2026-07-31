@@ -75,7 +75,7 @@ function showChrome(profileQuery, persona) {
 
   // The wait screen knows which of the four views is coming, because each one
   // waits on different calls and the skeleton it draws is that view's layout.
-  bootStart(rival ? 'versus' : pile ? 'backlog' : appid ? 'game' : 'dash', query);
+  bootStart(rival ? 'versus' : pile ? 'backlog' : appid ? 'game' : 'dash', query, appid);
 
   let steamid;
   try {

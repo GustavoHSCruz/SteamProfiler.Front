@@ -14,12 +14,14 @@
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0b0a0e">
 <!-- The card for a page that is not a profile. A profile has its own,
-     rendered by the api out of that library; everything else shares this one,
-     which is the same drawing with made-up hours. -->
-<meta property="og:image" content="https://steamprofiler.org/og-home.png">
+     rendered by the api out of that library; every other page has one drawn
+     for it by tools/gen-og.py, in the same layout with its own words and its
+     own motif, so two links from here in one chat do not arrive as one
+     picture. -->
+<meta property="og:image" content="https://steamprofiler.org/og-privacy.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="A Steam library drawn as a treemap: one big rectangle for the most played game and a long tail of small ones.">
+<meta property="og:image:alt" content="A grid of twenty cells with nineteen struck through and one filled, for what the site keeps.">
 <meta name="twitter:card" content="summary_large_image">
 <!-- What this page is, for a reader that is not a person. The home page
      carries the whole graph - the site, the application, the questions people
@@ -134,6 +136,7 @@
         <li data-i18n-html="priv.kept_count"><b>A count of visits, for seven days.</b> A second digest of your address, under a different secret that is replaced every seven days. While it stands, a visit of yours is recognisable as "the same one again"; when it is replaced, the previous digests are deleted and only totals remain. Kept with it: how many requests, the first and the last time, the region, and a guess at what kind of visitor it was. Deliberately not kept with it: a record of each day you came - because a day on this side and a day on the lookup side would be exactly the join the two counts are built to not have.</li>
         <li data-i18n-html="priv.kept_origin"><b>Your country and region.</b> They arrive in a header that Cloudflare adds, already resolved. This server never needs your address to know them, never works them out itself, and never writes one down.</li>
         <li data-i18n-html="priv.kept_lang"><b>The language you picked.</b> One entry in your browser's localStorage, <b>sp-lang</b>, holding "en", "pt" or "ru". It also decides which Steam shop a price is read from, so a request for a price carries a country code derived from it - and that lands in the server log, which has no address in it. That is the only thing the choice sends anywhere.</li>
+        <li data-i18n-html="priv.kept_recent"><b>What you looked up, in your browser.</b> A second localStorage entry, <b>sp-recent</b>, holding the last five profiles you looked up from the home page and nothing else about them - no times, no personas, no count. It is a shortcut back into the field, it never reaches this server, and the button beside the list on the home page erases it.</li>
         <li data-i18n-html="priv.kept_log"><b>A server log with no addresses.</b> The web server writes one line per request: the time, the path, the status code, the browser string. No IP address in it, deliberately - the format was changed to drop it, precisely so the log is not a record of who looked up whom.</li>
         <li data-i18n-html="priv.kept_cache"><b>Game prices and genres.</b> A local cache of Steam store data, filed by game, not by person.</li>
       </ul>

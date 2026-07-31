@@ -139,7 +139,31 @@ const BOOT_SHAPE = {
   versus: () => [...bootTiles(18, 0, 0, 49.4, 100), ...bootTiles(18, 50.6, 0, 49.4, 100)],
 };
 
-function bootSkeleton(box, kind) {
+/** The game's own art, in the cell where the page is about to put it.
+ *
+ *  Everything else on this screen is deliberately anonymous, because nothing
+ *  about the profile is known yet. The game is the exception: the appid is in
+ *  the URL, and /art/<appid>.jpg answers to the appid alone - nginx serves it
+ *  from the cache or the api fetches it from Steam - so the one thing that can
+ *  honestly be shown before the data arrives is which game this is. The same
+ *  request warms the cache for the page underneath.
+ *
+ *  A game with no art keeps the plain skeleton: the image removes itself and
+ *  nothing has to know in advance which games have one. */
+function bootArt(box, appid) {
+  const first = box.firstElementChild;
+  if (!first || !appid) return;
+  const art = h('img', {
+    cls: 'boot-art',
+    attr: { src: `/art/${appid}.jpg`, alt: '', 'aria-hidden': 'true',
+            decoding: 'async', fetchpriority: 'high' },
+  });
+  art.addEventListener('load', () => { first.dataset.art = '1'; });
+  art.addEventListener('error', () => { art.remove(); });
+  first.append(art);
+}
+
+function bootSkeleton(box, kind, appid) {
   if (!box) return;
   box.textContent = '';
   const rects = (BOOT_SHAPE[kind] || BOOT_SHAPE.dash)();
@@ -160,6 +184,7 @@ function bootSkeleton(box, kind) {
     cell.style.setProperty('--wave', `${lead + 520 + (r.x + r.y) * 7}ms`);
     box.append(cell);
   });
+  if (kind === 'game') bootArt(box, appid);
 }
 
 /* ── The window ────────────────────────────────────────────────────── */
@@ -237,7 +262,7 @@ function bootTick() {
 
 /** Put the screen up. `kind` picks the checklist and the shape of the
  *  skeleton together, so what tiles in is the layout that is coming. */
-function bootStart(kind, who) {
+function bootStart(kind, who, appid) {
   const root = el('loading');
   if (!root || !BOOT_PLAN[kind]) return;
 
@@ -267,7 +292,7 @@ function bootStart(kind, who) {
     s.node = h('li', { text: t(s.key) });
     list.append(s.node);
   }
-  bootSkeleton(el('boot-map'), kind);
+  bootSkeleton(el('boot-map'), kind, appid);
   // The window opens empty however many times it is opened: nothing here
   // starts a second wait today, and a line left over from a previous one is
   // the page talking about something that already finished.

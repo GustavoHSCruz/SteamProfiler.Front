@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title data-i18n-doc="land.title">Where did your Steam hours go? Your library, drawn to scale</title>
+<title data-i18n-doc="land.title">steamprofiler.org - your Steam library, drawn to scale</title>
 <meta name="description" content="One rectangle per game, sized by the hours you put into it. Paste any public Steam profile and see the whole library drawn to scale. No sign-in.">
 <meta property="og:site_name" content="steamprofiler.org">
 <meta name="color-scheme" content="dark">
@@ -188,6 +188,18 @@
       <p class="find-help" id="find-help" data-i18n-html="land.help">A vanity name, a steamID64 or the full URL all work. The profile needs <b>Game details</b> set to public - that is the Steam setting that releases the game list.</p>
       <p class="find-error" id="find-error" hidden role="alert"></p>
     </form>
+
+    <!-- What you looked up before, from this browser and nowhere else. Hidden
+         until there is one, because an empty list of your own history is a
+         promise of a feature rather than a feature. The button that clears it
+         is beside it and not in a settings page: a list of names that cannot be
+         taken off the screen where it appears is a list you did not agree to. -->
+    <section class="recent" id="recent" hidden>
+      <h2 class="recent-head" id="recent-head" data-i18n="land.recent">looked up before</h2>
+      <ul class="recent-list" id="recent-list" aria-labelledby="recent-head"></ul>
+      <button class="recent-clear" type="button" id="recent-clear"
+              data-i18n="land.recent_clear">forget these</button>
+    </section>
 
     <ul class="land-notes">
       <li data-i18n-html="land.note_stored"><b>No profile is stored.</b> Every lookup goes to Steam live and is cached for 15 minutes, that is all.</li>

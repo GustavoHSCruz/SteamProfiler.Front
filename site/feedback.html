@@ -14,12 +14,14 @@
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0b0a0e">
 <!-- The card for a page that is not a profile. A profile has its own,
-     rendered by the api out of that library; everything else shares this one,
-     which is the same drawing with made-up hours. -->
-<meta property="og:image" content="https://steamprofiler.org/og-home.png">
+     rendered by the api out of that library; every other page has one drawn
+     for it by tools/gen-og.py, in the same layout with its own words and its
+     own motif, so two links from here in one chat do not arrive as one
+     picture. -->
+<meta property="og:image" content="https://steamprofiler.org/og-feedback.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="A Steam library drawn as a treemap: one big rectangle for the most played game and a long tail of small ones.">
+<meta property="og:image:alt" content="The message board drawn as cards, each with a vote button beside it.">
 <meta name="twitter:card" content="summary_large_image">
 <!-- What this page is, for a reader that is not a person. The home page
      carries the whole graph - the site, the application, the questions people

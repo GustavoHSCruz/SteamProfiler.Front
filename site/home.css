@@ -411,6 +411,69 @@ a.cell { cursor: pointer; }
   color: #ffb8a8;
 }
 
+/* ── What you looked up before ─────────────────────────────────────────
+   Under the field and above the notes, because it is a shortcut into the field
+   rather than a section of the page. Mono and quiet: these are handles, and a
+   handle is a string somebody typed, not a title. */
+.recent {
+  margin: clamp(20px, 2.6vw, 30px) 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+.recent-head {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.recent-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.recent-chip {
+  display: inline-block;
+  max-width: 22ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 5px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--dim);
+  text-decoration: none;
+  transition: border-color 140ms ease, color 140ms ease;
+}
+.recent-chip:hover, .recent-chip:focus-visible {
+  border-color: var(--accent-d);
+  color: var(--text);
+}
+/* Deliberately as plain as the rest: forgetting the list is an ordinary thing
+   to want, not a warning to be styled like one. */
+.recent-clear {
+  margin-left: auto;
+  padding: 4px 2px;
+  background: none;
+  border: 0;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--faint);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.recent-clear:hover, .recent-clear:focus-visible { color: var(--dim); }
+
 .land-notes {
   margin: clamp(26px, 3.4vw, 40px) 0 0;
   padding: 0;
