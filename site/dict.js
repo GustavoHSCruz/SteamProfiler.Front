@@ -318,6 +318,7 @@ const DICT = {
     'board.shares': '{n} games · {common} of them also here',
     'board.alone_head': '{n} games here that none of the {mates} friends who answered own, out of {total} compared.',
     /* ── One year ── */
+    'time.open': 'open {year} →',
     'yr.dropped': 'put down that year',
     'yr.unlocked': 'unlocked that year',
     'yr.note': 'Steam gives one date per game: the last time it was launched. So a game is on this page if this was the year it was put down for good, not if it was played during it.',
@@ -1801,6 +1802,7 @@ const DICT = {
     'board.shares': '{n} jogos · {common} também estão aqui',
     'board.alone_head': '{n} jogos daqui que nenhum dos {mates} amigos que responderam tem, de {total} comparados.',
     /* ── Um ano ── */
+    'time.open': 'abrir {year} →',
     'yr.dropped': 'largados nesse ano',
     'yr.unlocked': 'desbloqueado nesse ano',
     'yr.note': 'A Steam dá uma data por jogo: a última vez que ele foi aberto. Então um jogo está nesta página se este foi o ano em que ele foi largado de vez, não se ele foi jogado durante o ano.',
@@ -3280,6 +3282,7 @@ const DICT = {
     'board.shares': '{n} игр · {common} есть и здесь',
     'board.alone_head': '{n} игр отсюда, которых нет ни у одного из {mates} ответивших друзей, из {total} сравнённых.',
     /* ── Один год ── */
+    'time.open': 'открыть {year} →',
     'yr.dropped': 'отложено в этом году',
     'yr.unlocked': 'открыто в этом году',
     'yr.note': 'Steam даёт одну дату на игру: когда её запускали в последний раз. Значит, игра на этой странице, если именно в этом году её отложили окончательно, а не если в этом году в неё играли.',

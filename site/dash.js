@@ -657,7 +657,7 @@ function buildLibrary(library, unplayed, query) {
    recent one. The note under the chart says so, because the shape invites the
    other reading and the other reading would be wrong. */
 
-function buildTimeline(library) {
+function buildTimeline(library, query) {
   const chart = el('time-chart');
   const out = el('time-out');
   if (!chart) return;
@@ -683,17 +683,37 @@ function buildTimeline(library) {
   el('time-span').textContent = t('time.span', { from: keys[0], to: keys[keys.length - 1] });
 
   const say = (y, b) => {
+    out.textContent = '';
     if (!b) { out.textContent = t('time.empty_year', { year: y }); return; }
     const biggest = b.games.slice().sort((x, z) => z.hours - x.hours)[0];
-    out.textContent = t('time.readout', {
-      year: y, n: num(b.games.length), h: hrs(b.hours), game: biggest.name,
-    });
+    out.append(
+      txt(t('time.readout', {
+        year: y, n: num(b.games.length), h: hrs(b.hours), game: biggest.name,
+      })),
+      txt(' '),
+      // The bars are links too, but a bar does not look like one. This says the
+      // page exists in words, next to the year it is about.
+      h('a', {
+        cls: 'time-go',
+        text: t('time.open', { year: y }),
+        attr: { href: `/u/${query}/year/${y}` },
+      }));
   };
 
   chart.textContent = '';
   for (const y of span) {
     const b = years.get(y);
-    const col = h('button', { cls: 'time-col', attr: { type: 'button' } });
+    // A year with something in it is a link to that year's page; a year with
+    // nothing in it stays a button, because the page it would open has nothing
+    // to put on it. This is also the only way into /u/<perfil>/year/<ano>:
+    // the chart is where somebody is already looking at a year when they want
+    // to see more of it.
+    const col = b
+      ? h('a', {
+        cls: 'time-col',
+        attr: { href: `/u/${query}/year/${y}`, title: t('time.open', { year: y }) },
+      })
+      : h('button', { cls: 'time-col', attr: { type: 'button' } });
     const bar = h('i');
     bar.style.height = `${b ? Math.max(2, (b.hours / top) * 100) : 0}%`;
     if (!b) col.dataset.empty = '1';
@@ -1564,7 +1584,7 @@ function renderDashboard(d, query) {
   buildShowcase(pf);
   buildPages(d.top_games, query);
   buildTable(d.top_games, query);
-  buildTimeline(d.library);
+  buildTimeline(d.library, query);
   buildLibrary(d.library, d.unplayed, query);
   buildCompare(query);
 
