@@ -409,6 +409,42 @@ function buildAccount(pf) {
     [t('dash.screenshots'), pf.screenshots != null ? num(pf.screenshots) : null],
     [t('dash.reviews'), pf.reviews != null ? num(pf.reviews) : null],
   ]);
+  buildBans(pf.bans);
+}
+
+/** Steam's own record on this account. Drawn only when there is one: an
+ *  account with nothing against it is the ordinary case, and a line saying
+ *  "no bans" under every profile on the site would be read by nobody and
+ *  would make the profiles that do carry one harder to spot, not easier.
+ *
+ *  What it never says is why. Steam publishes that a ban happened, how many,
+ *  and how long ago, and nothing at all about what for - so this prints those
+ *  three and stops there. The date is the one thing worth having: a VAC ban
+ *  from eleven years ago and one from last month are the same figure in the
+ *  same field and are not the same fact. */
+function buildBans(b) {
+  const line = el('acct-ban');
+  if (!line || !b) return;
+
+  const bits = [];
+  if (b.vac) bits.push(t('ban.vac', { n: num(b.vac), raw: b.vac }));
+  if (b.game) bits.push(t('ban.game', { n: num(b.game), raw: b.game }));
+  if (b.community) bits.push(t('ban.community'));
+  if (b.economy) {
+    // Steam's own word for the state, and it has more of them than this site
+    // has strings. An unknown one falls back to saying that trading is
+    // restricted, which is the part that is true of all of them.
+    const key = `ban.trade_${b.economy}`;
+    const said = t(key);
+    bits.push(said === key ? t('ban.trade') : said);
+  }
+  if (!bits.length) return;
+
+  const when = b.days_since != null && b.last
+    ? ` ${t('ban.when', { days: num(b.days_since), raw: b.days_since, date: shortDate(b.last) })}`
+    : '';
+  line.textContent = bits.join(' · ') + when;
+  line.hidden = false;
 }
 
 function buildShowcase(pf) {
@@ -952,9 +988,44 @@ function buildFriends(fl, query) {
   el('fr-note').textContent = t('fr.note');
 }
 
-/* ── The rarest things here ────────────────────────────────────────────
+/* ── The scan ──────────────────────────────────────────────────────────
    Behind a button because it is the most expensive thing the site can be
-   asked for: three calls to Steam per game, against the owner's key. */
+   asked for: three calls to Steam per game, against the owner's key.
+
+   One scan, three panels. The same three calls that say which unlocks are
+   rare also say which games are nearest to a hundred percent and when every
+   unlock happened, so the answer is fetched once and every panel that needs
+   part of it reads that one answer. Whichever button gets pressed fills all
+   of them, because there is nothing left for the second press to buy. */
+
+/** The scan, in flight or in hand. A rejection clears it: the panel puts its
+ *  button back, and a button that cannot be pressed again is a page that has
+ *  to be reloaded to retry something that failed once. */
+let SCAN = null;
+function scanOnce(steamid) {
+  if (!SCAN) {
+    SCAN = api(`/unlocks?id=${steamid}`).catch((e) => { SCAN = null; throw e; });
+  }
+  return SCAN;
+}
+
+/** Everything a panel fed by the scan has to be able to do: say it is working,
+ *  draw the answer, and hand the button back when it did not arrive. */
+const SCAN_PANELS = [];
+
+async function pressScan(steamid, howMany) {
+  for (const p of SCAN_PANELS) p.waiting(howMany);
+  let got;
+  try {
+    got = await scanOnce(steamid);
+  } catch (e) {
+    // Every panel, not only the one that was pressed: they are all waiting on
+    // the one request, so they all have to stop waiting on it.
+    for (const p of SCAN_PANELS) p.failed(e.message, howMany);
+    return;
+  }
+  for (const p of SCAN_PANELS) p.fill(got);
+}
 
 function buildRarities(steamid, howMany) {
   const go = el('rar-go');
@@ -965,47 +1036,231 @@ function buildRarities(steamid, howMany) {
   }
   go.textContent = t('rar.go', { n: num(howMany) });
   el('rar-note').textContent = t('rar.hint');
+  go.addEventListener('click', () => pressScan(steamid, howMany));
+
+  SCAN_PANELS.push({
+    waiting: (n) => {
+      go.disabled = true;
+      go.textContent = t('rar.loading', { n: num(n) });
+    },
+    failed: (message, n) => {
+      go.disabled = false;
+      go.textContent = t('rar.go', { n: num(n) });
+      el('rar-note').textContent = message;
+    },
+    fill: (got) => {
+      go.remove();
+      const list = el('rar-list');
+      list.textContent = '';
+      for (const a of got.rarest) {
+        const row = h('a', {
+          cls: 'rare',
+          attr: { href: `/u/${MONEY_Q}/${a.appid}`, title: a.description || a.name },
+        });
+        if (a.icon) {
+          row.append(h('img', {
+            attr: { src: a.icon, alt: '', width: '40', height: '40', loading: 'lazy' },
+          }));
+        } else {
+          row.append(h('span'));
+        }
+        row.append(
+          h('span', { cls: 'rare-txt' },
+            h('b', { cls: 'rare-name', text: a.name }),
+            h('span', { cls: 'rare-game', text: a.game })),
+          h('span', { cls: 'rare-pct', text: rarity(a.rarity) }));
+        list.append(h('li', {}, row));
+      }
+
+      el('rar-head').textContent = t('rar.head', { n: num(got.rarest.length) });
+      el('rar-note').textContent = got.rarest.length
+        ? t('rar.note', { n: num(got.scanned), m: num(got.with_achievements) })
+        : t('rar.none', { n: num(got.scanned) });
+    },
+  });
+}
+
+/* ── Closest to a hundred percent ──────────────────────────────────────
+   The other half of the same three calls, and until this panel existed it was
+   fetched and thrown away: which achievements are still locked, and how much
+   of the world holds them.
+
+   Ordered by how many are left rather than by percentage. Two missing out of a
+   hundred and two out of five are the same evening's work and a very different
+   pair of percentages, and the number somebody can act on is the count. The
+   percentage is still printed, because it is the one that says how far this
+   profile already got. */
+
+function buildClose(steamid, howMany) {
+  const go = el('close-go');
+  if (!go) return;
+  if (!steamid) {
+    el('completar')?.remove();
+    return;
+  }
+  go.textContent = t('close.go', { n: num(howMany) });
+  el('close-note').textContent = t('close.hint');
+  go.addEventListener('click', () => pressScan(steamid, howMany));
+
+  SCAN_PANELS.push({
+    waiting: (n) => {
+      go.disabled = true;
+      go.textContent = t('rar.loading', { n: num(n) });
+    },
+    failed: (message, n) => {
+      go.disabled = false;
+      go.textContent = t('close.go', { n: num(n) });
+      el('close-note').textContent = message;
+    },
+    fill: (got) => {
+      go.remove();
+      const rows = got.close || [];
+      const done = (got.perfect || []).length;
+      const list = el('close-list');
+      list.textContent = '';
+
+      for (const g of rows) {
+        const row = h('a', {
+          cls: 'close',
+          attr: { href: `/u/${MONEY_Q}/${g.appid}` },
+        });
+        row.append(
+          h('span', { cls: 'close-top' },
+            h('b', { cls: 'close-name', text: g.name }),
+            h('span', { cls: 'close-pct', text: `${num(g.completion, 1)}%` })),
+          fillBar('meter', g.completion),
+          h('span', { cls: 'close-sub', text: t('close.left', {
+            n: num(g.missing), raw: g.missing,
+            have: num(g.unlocked), total: num(g.total),
+          }) }));
+        // The wall, when Steam publishes a rarity for it: a hundred percent
+        // here costs whatever the rarest locked one costs, and that number is
+        // the difference between an evening and never.
+        if (g.hardest) {
+          row.append(h('span', { cls: 'close-wall', text: t('close.wall', {
+            name: g.hardest.name, pct: rarity(g.hardest.rarity),
+          }) }));
+        }
+        if (g.easiest && g.easiest.key !== g.hardest?.key) {
+          row.append(h('span', { cls: 'close-next', text: t('close.next', {
+            name: g.easiest.name, pct: rarity(g.easiest.rarity),
+          }) }));
+        }
+        list.append(h('li', {}, row));
+      }
+
+      el('close-head').textContent = rows.length
+        ? t('close.head', { n: num(rows.length) })
+        : '-';
+      el('close-note').textContent = rows.length
+        ? t('close.note', { n: num(got.scanned), done: num(done), doneRaw: done })
+        : t('close.none', { n: num(got.scanned), done: num(done), doneRaw: done });
+    },
+  });
+}
+
+/* ── The friend list, ranked ───────────────────────────────────────────
+   The strip above says who is on the list. This says the thing a list of
+   faces cannot: who has the bigger clock, and which games on this profile
+   nobody else on the list has ever bought.
+
+   One call per friend, so it waits for a button like the scan does. A friend
+   whose game details are private answers with nothing at all, which is the
+   common case and is reported as private rather than as a zero - a zero would
+   put them at the bottom of a ranking they are not in. */
+
+function buildBoard(steamid, query, friends, me) {
+  const wrap = el('placar');
+  if (!wrap) return;
+  const go = el('board-go');
+  // Nothing to rank against: the friend list is private, or empty. The strip
+  // is not drawn in that case either, and neither is this.
+  if (!steamid || !friends?.people?.length) {
+    wrap.remove();
+    return;
+  }
+  go.textContent = t('board.go');
+  el('board-note').textContent = t('board.hint');
 
   go.addEventListener('click', async () => {
     go.disabled = true;
-    go.textContent = t('rar.loading', { n: num(howMany) });
+    go.textContent = t('board.loading');
     let got;
     try {
-      got = await api(`/rarities?id=${steamid}`);
+      got = await api(`/mates?id=${steamid}`);
     } catch (e) {
       go.disabled = false;
-      go.textContent = t('rar.go', { n: num(howMany) });
-      el('rar-note').textContent = e.message;
+      go.textContent = t('board.go');
+      el('board-note').textContent = e.message;
       return;
     }
     go.remove();
 
-    const list = el('rar-list');
+    // The subject sits inside its own ranking rather than above it. A
+    // leaderboard that leaves out the person it was built for is a list of
+    // other people.
+    const rows = (got.ranked || []).map((m) => ({ ...m }));
+    rows.splice(got.me.rank - 1, 0, {
+      steamid: null, persona: me.persona, avatar: me.avatar,
+      hours: got.me.hours, games: got.compared, common: null, self: true,
+    });
+
+    const list = el('board-list');
     list.textContent = '';
-    for (const a of got.rarest) {
-      const row = h('a', {
-        cls: 'rare',
-        attr: { href: `/u/${MONEY_Q}/${a.appid}`, title: a.description || a.name },
+    rows.forEach((m, i) => {
+      const inner = h(m.self ? 'span' : 'a', {
+        cls: 'seat',
+        attr: m.self ? {} : { href: `/u/${query}/vs/${m.steamid}` },
+        data: m.self ? { self: '1' } : {},
       });
-      if (a.icon) {
-        row.append(h('img', {
-          attr: { src: a.icon, alt: '', width: '40', height: '40', loading: 'lazy' },
+      inner.append(h('span', { cls: 'seat-rank', text: `${i + 1}` }));
+      if (m.avatar) {
+        inner.append(h('img', {
+          attr: { src: m.avatar, alt: '', width: '32', height: '32', loading: 'lazy' },
         }));
       } else {
-        row.append(h('span'));
+        inner.append(h('span'));
       }
-      row.append(
-        h('span', { cls: 'rare-txt' },
-          h('b', { cls: 'rare-name', text: a.name }),
-          h('span', { cls: 'rare-game', text: a.game })),
-        h('span', { cls: 'rare-pct', text: rarity(a.rarity) }));
-      list.append(h('li', {}, row));
+      inner.append(
+        h('span', { cls: 'seat-txt' },
+          h('b', { cls: 'seat-name', text: m.persona }),
+          h('span', {
+            cls: 'seat-sub',
+            text: m.common == null
+              ? t('board.owns', { n: num(m.games) })
+              : t('board.shares', { n: num(m.games), common: num(m.common) }),
+          })),
+        h('span', { cls: 'seat-h', text: `${num(m.hours)} h` }));
+      list.append(h('li', {}, inner));
+    });
+
+    // The games nobody else on the list owns. Only worth printing when
+    // somebody answered: with nothing to compare against, every game is
+    // unowned by everybody, which says nothing about this library.
+    const alone = got.alone || [];
+    if (got.answered && alone.length) {
+      el('board-alone').hidden = false;
+      el('alone-head').textContent = t('board.alone_head', {
+        n: num(got.alone_total), raw: got.alone_total,
+        mates: num(got.answered), total: num(got.compared),
+      });
+      const ul = el('alone-list');
+      ul.textContent = '';
+      for (const g of alone) {
+        ul.append(h('li', {}, h('a', {
+          cls: 'alone-row',
+          attr: { href: `/u/${query}/${g.appid}` },
+        },
+        h('span', { cls: 'alone-name', text: g.name }),
+        h('span', { cls: 'alone-h', text: g.hours == null ? '' : `${hrs(g.hours)} h` }))));
+      }
     }
 
-    el('rar-head').textContent = t('rar.head', { n: num(got.rarest.length) });
-    el('rar-note').textContent = got.rarest.length
-      ? t('rar.note', { n: num(got.scanned), m: num(got.with_achievements) })
-      : t('rar.none', { n: num(got.scanned) });
+    el('board-head').textContent = t('board.head', { n: num(got.answered) });
+    el('board-note').textContent = t('board.note', {
+      scanned: num(got.scanned), answered: num(got.answered),
+      priv: num(got.private), limit: num(got.limit),
+    });
   });
 }
 
@@ -1138,6 +1393,139 @@ async function renderBacklog(d, query) {
   draw();
 }
 
+/* ── One year ──────────────────────────────────────────────────────────
+   /u/<perfil>/year/<ano>.
+
+   The years panel on the dashboard has always known this much; what it did not
+   have was an address. A year with a link of its own is a year somebody can
+   send to the person they spent it with, and it is the only page on this site
+   that is about a date rather than about a game or a library.
+
+   The same warning the years panel carries applies here and is printed here:
+   Steam publishes one date per game, the last time it was launched. So this is
+   the year a game was put down in, not the year it was played. The unlocks
+   below it are the opposite - those carry the date the unlock happened, which
+   is the only thing on a Steam profile that is genuinely per-year - and they
+   only reach as far down the library as the scan does. */
+
+function renderYear(d, year, query) {
+  const pf = d.profile;
+  const games = (d.library || [])
+    .filter((g) => (g.last_played || '').slice(0, 4) === year)
+    .sort((a, b) => (b.hours ?? -1) - (a.hours ?? -1));
+  const hours = games.reduce((s, g) => s + (g.hours || 0), 0);
+
+  document.title = `${pf.persona} - ${year} - steamprofiler.org`;
+  el('yr-title').textContent = year;
+  el('yr-count').textContent = num(games.length);
+  el('yr-lede').textContent = games.length
+    ? t('yr.lede', {
+      year, n: num(games.length), raw: games.length,
+      h: hrs(hours), game: games[0].name,
+    })
+    : t('yr.empty', { year });
+
+  // The account's own beginning, when it happens to be this year. Free - it is
+  // already on the payload - and it is the one thing on this page that is a
+  // date rather than a count.
+  if ((pf.member_since || '').slice(0, 4) === year) {
+    el('yr-lede').textContent += ` ${t('yr.opened', { date: longDate(pf.member_since) })}`;
+  }
+
+  // Every year this library has anything in, so the arrows only ever point at
+  // a page with something on it.
+  const present = [...new Set((d.library || [])
+    .map((g) => (g.last_played || '').slice(0, 4)).filter(Boolean))].sort();
+  const nav = el('yr-nav');
+  nav.textContent = '';
+  const at = present.indexOf(year);
+  const step = (i, key) => {
+    if (i < 0 || i >= present.length) return;
+    nav.append(h('a', {
+      cls: 'yr-step',
+      text: t(key, { year: present[i] }),
+      attr: { href: `/u/${query}/year/${present[i]}` },
+    }));
+  };
+  // A year with nothing in it is not in `present`, so there is no position to
+  // step from and the arrows come out entirely rather than pointing at the two
+  // ends of the list.
+  if (at >= 0) {
+    step(at - 1, 'yr.prev');
+    step(at + 1, 'yr.next');
+  }
+
+  // The footer's "fetched at" line belongs to every view that was fetched, and
+  // this one is drawn from the same payload the dashboard is.
+  if (d.generated_at) {
+    const when = el('g-generated');
+    when.dateTime = d.generated_at;
+    when.textContent = stamp(d.generated_at);
+  }
+
+  const list = el('yr-list');
+  list.textContent = '';
+  for (const g of games) {
+    list.append(h('li', {}, h('a', {
+      cls: 'all-row',
+      attr: { href: `/u/${query}/${g.appid}` },
+      data: g.themed ? { themed: '1' } : {},
+    },
+    h('span', { cls: 'all-rank', text: g.rank ? `${g.rank}` : '-' }),
+    h('span', { cls: 'all-name', text: g.name }),
+    h('span', { cls: 'all-h', text: `${hrs(g.hours)} h` }),
+    h('span', { cls: 'all-share', text: g.share == null ? '' : `${num(g.share, 1)}%` }),
+    // The day, without the year: this whole page is that year.
+    h('span', { cls: 'all-date', text: dayMonth(g.last_played) || '' }))));
+  }
+
+  // The unlocks, behind the same button the dashboard puts them behind and
+  // answered out of the same cache: a visitor who ran the scan over there gets
+  // this one back in a few milliseconds and spends nothing for it.
+  const go = el('yr-go');
+  const howMany = d.rarity_games || 12;
+  go.textContent = t('close.go', { n: num(howMany) });
+  el('yr-unlock-note').textContent = t('yr.unlocks_hint');
+  go.addEventListener('click', async () => {
+    go.disabled = true;
+    go.textContent = t('rar.loading', { n: num(howMany) });
+    let got;
+    try {
+      got = await scanOnce(d.steamid);
+    } catch (e) {
+      go.disabled = false;
+      go.textContent = t('close.go', { n: num(howMany) });
+      el('yr-unlock-note').textContent = e.message;
+      return;
+    }
+    go.remove();
+
+    const slot = (got.years || {})[year];
+    const ul = el('yr-unlocks');
+    ul.textContent = '';
+    el('yr-unlocked').textContent = slot ? num(slot.unlocks) : '0';
+    if (!slot) {
+      el('yr-unlock-note').textContent = t('yr.unlocks_none', {
+        year, n: num(got.scanned),
+      });
+      return;
+    }
+    for (const g of slot.games) {
+      ul.append(h('li', {}, h('a', {
+        cls: 'close',
+        attr: { href: `/u/${query}/${g.appid}` },
+      },
+      h('span', { cls: 'close-top' },
+        h('b', { cls: 'close-name', text: g.name }),
+        h('span', { cls: 'close-pct', text: num(g.n) })),
+      h('span', { cls: 'close-sub', text: t('yr.in_game', { n: num(g.n), raw: g.n, year }) }))));
+    }
+    el('yr-unlock-note').textContent = t('yr.unlocks_note', {
+      n: num(got.scanned), year,
+    });
+  });
+}
+
 /* ── Entry point ──────────────────────────────────────────────────── */
 
 /** Fill the dashboard skeleton in profile.html from a /api/profile payload. */
@@ -1185,6 +1573,8 @@ function renderDashboard(d, query) {
   buildGenres(d.genres, d.store_coverage);
   buildFriends(d.friend_list, query);
   buildRarities(d.steamid, d.rarity_games || 12);
+  buildClose(d.steamid, d.rarity_games || 12);
+  buildBoard(d.steamid, query, d.friend_list, pf);
   // The store cache is still filling behind this page. Both panels redraw
   // themselves until it stops changing or until asking again stops being
   // worth it.

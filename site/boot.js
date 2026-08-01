@@ -69,11 +69,18 @@ const BOOT_PLAN = {
     ['fetched', [['load.s_two', 0], ['load.s_hours', 3400], ['load.s_extras', 7200]]],
     ['drawn', [['load.s_draw', 0]]],
   ],
+  // The year page waits on exactly what the dashboard waits on - one profile -
+  // so its checklist is that one minus the prices, which it never asks for.
+  year: [
+    ['resolved', [['load.s_find', 0]]],
+    ['fetched', [['load.s_library', 0], ['load.s_hours', 2600], ['load.s_year', 5600]]],
+    ['drawn', [['load.s_page', 0]]],
+  ],
 };
 
 const BOOT_HEAD = {
   dash: 'load.h_dash', backlog: 'load.h_dash',
-  game: 'load.h_game', versus: 'load.h_versus',
+  game: 'load.h_game', versus: 'load.h_versus', year: 'load.h_year',
 };
 
 /* What the window says once the wait stops being short, and when. Three

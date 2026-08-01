@@ -1,9 +1,10 @@
 /* steamprofiler.org - routing for /u/*.
    nginx serves profile.html for every path under /u/, so the path is the state:
 
-     /u/<perfil>            the dashboard
-     /u/<perfil>/<appid>    one game
-     /u/<perfil>/backlog    everything owned and never launched
+     /u/<perfil>              the dashboard
+     /u/<perfil>/<appid>      one game
+     /u/<perfil>/backlog      everything owned and never launched
+     /u/<perfil>/year/<ano>   one year of it
 
    <perfil> is whatever the visitor typed - a vanity name or a steamID64 - and it
    stays in the URL untouched so the link is shareable and readable. */
@@ -20,6 +21,10 @@ const appid = parts[2] && /^\d+$/.test(parts[2]) ? Number(parts[2]) : null;
 // is in that same space for the same reason.
 const rival = parts[2] === 'vs' && parts[3] ? steamHandle(parts[3]) : null;
 const pile = parts[2] === 'backlog';
+// `year/2019` and not `2019`, for the same reason `vs` exists: an appid is
+// digits too, and Steam has apps numbered in the two thousands, so /u/x/2015
+// would be two addresses wearing one path. The word is what tells them apart.
+const year = parts[2] === 'year' && /^(19|20)\d\d$/.test(parts[3] || '') ? parts[3] : null;
 
 /** The address this view should have been reached at. A link built by hand or
  *  held from before this page understood URLs still works, and gets tidied in
@@ -29,7 +34,8 @@ const pile = parts[2] === 'backlog';
 function canonical() {
   const tail = rival ? `/vs/${encodeURIComponent(rival)}`
     : pile ? '/backlog'
-      : appid ? `/${appid}` : '';
+      : year ? `/year/${year}`
+        : appid ? `/${appid}` : '';
   return `/u/${encodeURIComponent(query)}${tail}`;
 }
 
@@ -41,6 +47,7 @@ function fail(message, retry) {
   el('dash').hidden = true;
   el('game').hidden = true;
   el('backlog').hidden = true;
+  el('year').hidden = true;
   failure.hidden = false;
   el('failure-text').textContent = message;
   const again = el('failure-retry');
@@ -75,7 +82,8 @@ function showChrome(profileQuery, persona) {
 
   // The wait screen knows which of the four views is coming, because each one
   // waits on different calls and the skeleton it draws is that view's layout.
-  bootStart(rival ? 'versus' : pile ? 'backlog' : appid ? 'game' : 'dash', query, appid);
+  bootStart(rival ? 'versus' : pile ? 'backlog' : year ? 'year' : appid ? 'game' : 'dash',
+    query, appid);
 
   let steamid;
   try {
@@ -120,6 +128,16 @@ function showChrome(profileQuery, persona) {
       // Its own await: the page is drawn from the profile and then asks the
       // store cache for prices, which it can do without.
       await renderBacklog(d, encodeURIComponent(query));
+    } else if (year) {
+      // Every figure on this page except the unlocks is already in the profile
+      // payload, so the page is complete the moment that lands. The unlocks
+      // cost a scan and wait for a button, exactly as they do on the dashboard.
+      const d = await api(`/profile?id=${steamid}`);
+      bootMark('fetched');
+      el('year').hidden = false;
+      renderYear(d, year, encodeURIComponent(query));
+      showChrome(query, d.profile.persona);
+      bootDone();
     } else if (appid) {
       // The game view needs the profile anyway (for the name and the rank), and
       // the API has it cached by the time this returns.

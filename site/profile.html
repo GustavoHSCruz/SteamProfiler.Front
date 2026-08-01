@@ -150,6 +150,11 @@
           </div>
         </div>
         <dl class="kv" id="acct-kv"></dl>
+        <!-- Steam's own record on this account: VAC, game bans, trading. Drawn
+             only when there is something on it, which is why it is a line here
+             and not a panel: a clean record is the ordinary case and printing
+             "no bans" on every profile would be news on none of them. -->
+        <p class="record" id="acct-ban" hidden></p>
       </div>
     </article>
 
@@ -235,6 +240,33 @@
       </div>
     </article>
 
+    <!-- The other half of the same scan, and it costs nothing extra: the three
+         calls that say which unlocks are rare also say which ones are still
+         locked. Either button fills both panels, because it is one answer. -->
+    <article class="panel p-close" id="completar">
+      <div class="panel-bar"><span data-i18n="close.title">closest to a hundred percent</span><b id="close-head">-</b></div>
+      <div class="panel-body">
+        <button class="rar-go" id="close-go" type="button"></button>
+        <ul class="closes" id="close-list"></ul>
+        <p class="note" id="close-note"></p>
+      </div>
+    </article>
+
+    <!-- A library is only unusual next to other libraries. One call per friend,
+         so it waits for a button like the scan above it. -->
+    <article class="panel p-board" id="placar">
+      <div class="panel-bar"><span data-i18n="board.title">the friend list, ranked</span><b id="board-head">-</b></div>
+      <div class="panel-body">
+        <button class="rar-go" id="board-go" type="button"></button>
+        <ol class="ladder" id="board-list"></ol>
+        <div class="alone" id="board-alone" hidden>
+          <p class="alone-head" id="alone-head"></p>
+          <ul class="alone-list" id="alone-list"></ul>
+        </div>
+        <p class="note" id="board-note"></p>
+      </div>
+    </article>
+
     <article class="panel p-time" id="linha">
       <div class="panel-bar"><span data-i18n="time.title">the years</span><b id="time-span">-</b></div>
       <div class="panel-body">
@@ -302,6 +334,43 @@
         <ul class="pile" id="bl-list"></ul>
         <button class="all-more" id="bl-more" type="button" hidden></button>
         <p class="note" id="bl-note"></p>
+      </div>
+    </article>
+  </section>
+</main>
+
+<!-- ── One year ────────────────────────────────────────────────────────
+     /u/<perfil>/year/<ano>. Written `year/2019` and not `2019` because an
+     appid is digits too, and /u/x/2015 would otherwise be two addresses
+     wearing one path.
+
+     Half of this page is free: which games were put down in that year is in
+     the profile payload the dashboard already reads. The other half - what was
+     unlocked, and when - costs the same scan the rarity panel costs, so it
+     waits behind a button exactly like that one, and lands instantly for
+     anybody who already pressed the other. -->
+<main id="year" hidden>
+  <header class="bl-head">
+    <h1 class="display" id="yr-title">-</h1>
+    <p class="lede" id="yr-lede"></p>
+    <p class="yr-nav" id="yr-nav"></p>
+  </header>
+
+  <section class="grid">
+    <article class="panel p-yr-drop">
+      <div class="panel-bar"><span data-i18n="yr.dropped">put down that year</span><b id="yr-count">-</b></div>
+      <div class="panel-body">
+        <ul class="all" id="yr-list"></ul>
+        <p class="note" data-i18n="yr.note">Steam gives one date per game: the last time it was launched. So a game is on this page if this was the year it was put down for good, not if it was played during it.</p>
+      </div>
+    </article>
+
+    <article class="panel p-yr-un">
+      <div class="panel-bar"><span data-i18n="yr.unlocked">unlocked that year</span><b id="yr-unlocked">-</b></div>
+      <div class="panel-body">
+        <button class="rar-go" id="yr-go" type="button"></button>
+        <ul class="closes" id="yr-unlocks"></ul>
+        <p class="note" id="yr-unlock-note"></p>
       </div>
     </article>
   </section>

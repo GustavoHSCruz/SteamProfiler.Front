@@ -869,6 +869,134 @@ a.mate:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   color: var(--accent); font-variant-numeric: tabular-nums;
 }
 
+/* ── Steam's own record ───────────────────────────────────────────────
+   One line under the account panel, and only on the accounts that have one.
+   Amber like everything else on this site rather than red: the site is
+   reporting what Steam publishes, not passing judgement on it, and red would
+   be an opinion the data does not carry. */
+/* `.record`, not `.ban`: games.css already owns that word - it is the
+   Banana page's own layout - and a class taken by a game page would dress
+   this line in that game's padding wherever both stylesheets are loaded,
+   which is every profile. */
+.record {
+  margin: 14px 0 0; padding: 9px 11px;
+  border: 1px solid var(--accent-d); border-radius: var(--r);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  font-family: var(--mono); font-size: 11.5px; line-height: 1.6;
+  color: var(--accent);
+}
+
+/* ── Closest to a hundred percent ─────────────────────────────────────
+   A card per game: what is done, what is left, and the rarest thing still
+   locked, which is what the remaining percent actually costs. */
+.p-close { grid-column: span 12; }
+.closes {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 8px;
+}
+.closes:not(:empty) { margin-top: 16px; }
+.close {
+  display: block; padding: 11px 13px;
+  border: 1px solid var(--line); border-radius: var(--r);
+  background: var(--panel-2); color: inherit; text-decoration: none;
+}
+.close:hover { border-color: var(--line-2); }
+.close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.close-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.close-name {
+  font-size: 13.5px; font-weight: 600; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.close-pct {
+  font-family: var(--mono); font-size: 13px; font-weight: 600;
+  color: var(--accent); font-variant-numeric: tabular-nums; flex: none;
+}
+.close .meter { margin: 9px 0 7px; }
+.close-sub, .close-wall, .close-next {
+  display: block; font-family: var(--mono); font-size: 11px; line-height: 1.55;
+  color: var(--faint);
+}
+.close-sub { color: var(--dim); }
+.close-wall { margin-top: 5px; }
+
+/* ── The friend list, ranked ──────────────────────────────────────────
+   The subject sits inside its own ranking, marked but not moved: a
+   leaderboard that leaves out the person it was built for is a list of other
+   people. */
+.p-board { grid-column: span 12; }
+.ladder {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 8px;
+}
+.ladder:not(:empty) { margin-top: 16px; }
+.seat {
+  display: grid; grid-template-columns: 26px 32px minmax(0, 1fr) auto;
+  align-items: center; gap: 10px;
+  padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--r);
+  background: var(--panel-2); color: inherit; text-decoration: none;
+}
+a.seat:hover { border-color: var(--line-2); }
+a.seat:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.seat[data-self="1"] { border-color: var(--accent-d); }
+.seat-rank {
+  font-family: var(--mono); font-size: 12px; color: var(--faint);
+  font-variant-numeric: tabular-nums;
+}
+.seat img { width: 32px; height: 32px; border-radius: 6px; display: block; }
+.seat-txt { min-width: 0; }
+.seat-name {
+  display: block; font-size: 13px; font-weight: 600;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.seat-sub {
+  display: block; margin-top: 2px; font-family: var(--mono); font-size: 10.5px;
+  color: var(--faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.seat-h {
+  font-family: var(--mono); font-size: 13px; font-weight: 600;
+  color: var(--accent); font-variant-numeric: tabular-nums;
+}
+.alone { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+.alone-head { margin: 0 0 10px; font-size: 13px; color: var(--dim); }
+.alone-list {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 6px;
+}
+.alone-row {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+  padding: 6px 10px; border: 1px solid var(--line); border-radius: var(--r);
+  background: var(--panel-2); color: inherit; text-decoration: none;
+}
+.alone-row:hover { border-color: var(--line-2); }
+.alone-name {
+  font-size: 12.5px; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.alone-h {
+  font-family: var(--mono); font-size: 11px; color: var(--faint);
+  font-variant-numeric: tabular-nums; flex: none;
+}
+
+/* ── One year ─────────────────────────────────────────────────────────
+   Two panels side by side on a wide screen: what was put down that year, and
+   what was unlocked during it. They are two different kinds of date and the
+   page keeps them apart rather than adding them together. */
+.p-yr-drop { grid-column: span 7; }
+.p-yr-un { grid-column: span 5; }
+.yr-nav { margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; }
+.yr-step {
+  padding: 7px 12px; border: 1px solid var(--line); border-radius: var(--r);
+  background: var(--panel-2); color: var(--link); text-decoration: none;
+  font-family: var(--mono); font-size: 12px;
+}
+.yr-step:hover { border-color: var(--line-2); }
+@media (max-width: 900px) {
+  .p-yr-drop, .p-yr-un { grid-column: span 12; }
+}
+
 /* ── The pile ─────────────────────────────────────────────────────────
    The art here is Steam's small header straight from the CDN, not the local
    hero cache: a pile of three hundred games nobody opened would be a hundred

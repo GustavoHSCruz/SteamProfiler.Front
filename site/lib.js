@@ -22,6 +22,11 @@ function asDate(iso) {
   return new Date(Date.UTC(y, m - 1, d, 12));
 }
 const shortDate = (iso) => { const d = asDate(iso); return d ? SHORT_FMT.format(d) : null; };
+/** Day and month, without the year. For the one page where every row is inside
+ *  the same year already: repeating it five times says nothing and is the
+ *  difference between a date that fits its column and one that wraps. */
+const DAY_FMT = new Intl.DateTimeFormat(locale(), { day: 'numeric', month: 'short' });
+const dayMonth = (iso) => { const d = asDate(iso); return d ? DAY_FMT.format(d) : null; };
 const longDate = (iso) => { const d = asDate(iso); return d ? LONG_FMT.format(d) : null; };
 const stamp = (iso) => (iso ? STAMP_FMT.format(new Date(iso)) : '');
 
