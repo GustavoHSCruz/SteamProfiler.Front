@@ -184,14 +184,22 @@
     <p class="lede" data-i18n-html="land.lede">Type in a Steam profile. I read its public library and draw the time: <b>one rectangle per game</b>, area proportional to hours. Every game gets a page of its own, and <b>the most played ones get a themed one</b>.</p>
 
     <form class="find" id="find" novalidate>
-      <label class="find-label" for="q" data-i18n="land.field">steam profile</label>
+      <div class="find-head">
+        <label class="find-label" for="q" id="find-label" data-i18n="land.field">steam profile</label>
+        <div class="find-kind" role="group" aria-label="Search type">
+          <button type="button" class="find-kind-btn" data-kind="profile" aria-pressed="true" data-i18n="land.kind_profile">profile</button>
+          <button type="button" class="find-kind-btn" data-kind="game" aria-pressed="false" data-i18n="land.kind_game">game</button>
+        </div>
+      </div>
       <div class="find-row">
         <input class="find-input" id="q" name="q" type="text" autocomplete="off"
                spellcheck="false" enterkeyhint="go"
                data-i18n-ph="land.placeholder"
-               aria-describedby="find-help">
+               aria-describedby="find-help" aria-autocomplete="list"
+               aria-controls="game-results" aria-expanded="false">
         <button class="find-go" type="submit" id="find-go" data-i18n="land.go">Look it up</button>
       </div>
+      <ul class="game-results" id="game-results" role="listbox" hidden></ul>
       <p class="find-help" id="find-help" data-i18n-html="land.help">A vanity name, a steamID64 or the full URL all work. The profile needs <b>Game details</b> set to public - that is the Steam setting that releases the game list.</p>
       <p class="find-error" id="find-error" hidden role="alert"></p>
     </form>
