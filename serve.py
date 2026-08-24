@@ -52,6 +52,21 @@ REDIRECTS = {'/apoiar': '/support', '/recados': '/feedback'}
 BLOG_POST = re.compile(r'^/blog/[a-z0-9][a-z0-9-]{0,79}(?:/[a-z0-9][a-z0-9-]{0,79})?$')
 PROFILE = re.compile(r'^/u/')
 
+# One game with nobody attached to it. The live nginx has two locations here: a
+# strict `^/g/(?<appid>\d{1,8})$` with SSI on, and a loose `/g/` that falls back
+# to the same shell. Both are matched, and the loose one on purpose - `/g/abc` is
+# a page in production, where the script reads the address and says that is not
+# an app number. A dev server that 404'd it instead would hide the one error
+# state this route has.
+#
+# The shell carries an SSI include that the live server fills with that game's
+# title, description and JSON-LD. Nothing here fills it: this is a static file
+# server, the directive stays the HTML comment it already is, and the page falls
+# back to its own generic head - which is exactly what the comment in the shell
+# says happens. Link previews are therefore wrong in development and right in
+# production, and that is the one difference worth knowing about this route.
+PUBLIC_GAME = re.compile(r'^/g/')
+
 # Everything the browser asks for that this server cannot answer from disk.
 PROXY_PREFIXES = ('/api/', '/art/')
 PROXY_EXACT = ('/appeal/send',)
@@ -114,6 +129,8 @@ class Handler(SimpleHTTPRequestHandler):
         shell = PAGES.get(path)
         if shell is None and (BLOG_POST.match(path) or PROFILE.match(path)):
             shell = '/post.html' if path.startswith('/blog/') else '/profile.html'
+        if shell is None and PUBLIC_GAME.match(path):
+            shell = '/game-public.html'
         if shell:
             # The router in the page reads the real URL off location, so only
             # what this server opens on disk changes, never what the page sees.

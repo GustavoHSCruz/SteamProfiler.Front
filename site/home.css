@@ -1152,3 +1152,19 @@ a.seat:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   border: 1px solid var(--line); border-radius: var(--r); text-decoration: none;
 }
 .yr-card-go:hover { color: var(--text); border-color: var(--line-2); }
+
+/* The way out of a profile's game page and into the same game with nobody on
+   it. Deliberately quiet and at the very bottom: somebody reading their own
+   record in a game is not looking for this, and it is worth exactly one line
+   to the one who is. */
+.g-public {
+  max-width: 78ch; margin: calc(var(--edge) * 1.5) auto 0;
+  padding-inline: var(--edge); text-align: center;
+}
+.g-public-go {
+  font-family: var(--label); font-weight: var(--label-w);
+  letter-spacing: var(--label-ls); text-transform: uppercase;
+  font-size: .7rem; color: var(--dim); text-decoration: none;
+  border-bottom: 1px solid var(--line-2); padding-bottom: 2px;
+}
+.g-public-go:hover, .g-public-go:focus-visible { color: var(--accent); }

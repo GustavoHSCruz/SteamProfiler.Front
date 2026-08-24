@@ -5480,6 +5480,17 @@ function renderGame(g, root) {
   // whether or not this profile had anything to say about it, and the page with
   // the least on it is the page where that is worth the most.
   priceInto(g, root);
+  // The same game with nobody attached to it. Two reasons it is here and not
+  // only in a sitemap: this address is shareable in a way the one above it is
+  // not - it carries the game and not somebody's account - and it holds the one
+  // thing this page cannot, which is how rare each of these achievements is
+  // across everybody who owns the game rather than on this one profile.
+  root.append(h('p', { cls: 'g-public' },
+    h('a', {
+      cls: 'g-public-go',
+      text: t('gp.this_game'),
+      attr: { href: `/g/${g.appid}` },
+    })));
 }
 
 /* ── When the game has a layout but the profile has no data ───────────

@@ -1,0 +1,232 @@
+/* steamprofiler.org - /g/<appid>, the game on its own.
+
+   Written against the token set and nothing else: every colour, radius and
+   typeface here comes from a custom property that games.css redefines per
+   theme. That is the whole reason this file is short. A page about Dota gets
+   Cinzel and gold, one about Rust gets its rust, and none of it is written
+   twice - `data-game` on <html> is the only thing that changes.
+
+   The one rule that is not a token: this page has to stay legible at the top of
+   a search result and on a phone, so nothing here depends on hover, and the
+   achievement rows are a list that reflows rather than a grid that overflows. */
+
+/* ── The wait ──────────────────────────────────────────────────────── */
+
+.gpw {
+  max-width: 60ch;
+  margin: clamp(60px, 18vh, 160px) auto;
+  padding: 0 var(--edge);
+  text-align: center;
+}
+.gpw-head {
+  font-family: var(--label); font-weight: var(--label-w);
+  letter-spacing: var(--label-ls); text-transform: uppercase;
+  font-size: .78rem; color: var(--dim); margin: 0 0 14px;
+}
+.gpw-track {
+  height: 2px; background: var(--bar-rest); overflow: hidden; border-radius: 2px;
+}
+.gpw-track i {
+  display: block; height: 100%; width: 40%;
+  background: var(--accent); border-radius: inherit;
+  animation: gpw-slide 1.4s ease-in-out infinite;
+}
+@keyframes gpw-slide {
+  0% { transform: translateX(-100%); } 100% { transform: translateX(350%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gpw-track i { animation: none; width: 100%; opacity: .4; }
+}
+
+/* ── The game ──────────────────────────────────────────────────────── */
+
+#gp { padding-bottom: calc(var(--edge) * 2); }
+
+/* Full bleed, and the only thing on the page that is. The art is 616x353 from
+   Steam and is being shown much wider than that, so it is blurred slightly and
+   sat behind a gradient rather than presented as a picture worth looking at -
+   it is the wallpaper for the title, which is the thing worth looking at. */
+.gp-art {
+  position: relative;
+  height: clamp(180px, 30vh, 340px);
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+}
+.gp-art img {
+  width: 100%; height: 100%; object-fit: cover; object-position: center;
+  filter: saturate(1.05) blur(1px); transform: scale(1.04);
+}
+.gp-art::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 30%, transparent),
+                                        var(--bg) 96%);
+}
+
+.gp-head, .gp-panel {
+  max-width: 78ch;
+  margin-inline: auto;
+  padding-inline: var(--edge);
+}
+
+.gp-head { margin-top: -1px; padding-top: var(--pad); position: relative; z-index: 1; }
+
+.gp-kicker {
+  font-family: var(--label); font-weight: var(--label-w);
+  letter-spacing: var(--label-ls); text-transform: uppercase;
+  font-size: .72rem; color: var(--dim); margin: 0 0 10px;
+}
+.gp-title {
+  font-family: var(--display); font-weight: var(--display-w);
+  text-transform: var(--display-tt); letter-spacing: var(--display-ls);
+  line-height: var(--display-lh, 1);
+  font-size: clamp(2.1rem, 7vw, 4rem);
+  margin: 0 0 16px; color: var(--text);
+}
+/* The sentence that says what this page is and is not. Dim, because it is a
+   disclaimer and not the content - but present, because a page of achievements
+   with no hours on it invites exactly the wrong assumption about whose they
+   are, and answering that afterwards is answering it too late. */
+.gp-what {
+  max-width: 62ch; margin: 0 0 18px;
+  color: var(--dim); font-size: .95rem; line-height: 1.55;
+  border-left: 2px solid var(--line-2); padding-left: 12px;
+}
+.gp-steam { margin: 0 0 8px; }
+
+/* ── Panels ────────────────────────────────────────────────────────── */
+
+.gp-panel { margin-top: calc(var(--edge) * 1.6); }
+.gp-bar {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 8px;
+}
+.gp-bar b { font-family: var(--mono); color: var(--accent); font-size: 1.05rem; }
+.gp-h {
+  font-family: var(--label); font-weight: var(--label-w);
+  letter-spacing: var(--label-ls); text-transform: uppercase;
+  font-size: .78rem; color: var(--dim); margin: 0 0 10px;
+}
+.gp-bar .gp-h { margin: 0; }
+.gp-label {
+  font-family: var(--label); font-weight: var(--label-w);
+  letter-spacing: var(--label-ls); text-transform: uppercase;
+  font-size: .68rem; color: var(--faint); margin: 0 0 6px;
+}
+.gp-sub { margin-top: 20px; }
+.gp-note {
+  color: var(--dim); font-size: .87rem; line-height: 1.6;
+  max-width: 66ch; margin: 14px 0 0;
+}
+.gp-half { color: var(--text); }
+
+/* ── The rarest one ────────────────────────────────────────────────── */
+
+.gp-rarest {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  margin-top: 18px; padding: 16px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--r);
+}
+.gp-rarest-icon {
+  width: 64px; height: 64px; border-radius: calc(var(--r) / 2);
+  background: var(--panel-2); flex: none;
+}
+.gp-rarest-body { flex: 1 1 14ch; min-width: 0; }
+.gp-rarest-name {
+  margin: 0; font-weight: 600; font-size: 1.15rem; color: var(--text);
+}
+.gp-rarest-desc { margin: 4px 0 0; color: var(--dim); font-size: .9rem; }
+.gp-rarest-pct { margin: 0; text-align: right; flex: none; }
+.gp-rarest-pct b {
+  display: block; font-family: var(--mono);
+  font-size: clamp(1.6rem, 5vw, 2.4rem); color: var(--accent); line-height: 1;
+}
+.gp-rarest-pct small {
+  display: block; margin-top: 4px; color: var(--faint);
+  font-family: var(--label); letter-spacing: var(--label-ls);
+  text-transform: uppercase; font-size: .62rem;
+}
+
+/* ── The set ───────────────────────────────────────────────────────── */
+
+.gp-list { list-style: none; margin: 10px 0 0; padding: 0; }
+.gp-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--line);
+}
+.gp-row-icon {
+  width: 40px; height: 40px; flex: none;
+  border-radius: calc(var(--r) / 2); background: var(--panel-2);
+}
+.gp-row-icon--none { border: 1px solid var(--line); }
+.gp-row-body { flex: 1 1 auto; min-width: 0; }
+.gp-row-name {
+  margin: 0; font-size: .95rem; color: var(--text);
+  overflow-wrap: anywhere;
+}
+.gp-row-desc {
+  margin: 2px 0 0; font-size: .82rem; color: var(--dim);
+  overflow-wrap: anywhere;
+}
+/* fillBar() from lib.js builds this: a track with one <i> inside it whose width
+   is the percentage. Here the percentage is the rarity itself, unscaled - a
+   sliver is what 0.4% looks like. */
+.gp-row-bar {
+  margin-top: 6px; height: 3px; background: var(--bar-rest);
+  border-radius: 2px; overflow: hidden;
+}
+.gp-row-bar i {
+  display: block; height: 100%; background: var(--bar-fill); border-radius: inherit;
+}
+.gp-row-pct {
+  flex: none; width: 7ch; text-align: right;
+  font-family: var(--mono); font-size: .85rem; color: var(--dim);
+}
+
+/* ── Price ─────────────────────────────────────────────────────────── */
+
+.gp-price-body {
+  margin: 0; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+}
+.gp-price-now {
+  font-family: var(--mono); font-size: clamp(1.4rem, 4vw, 2rem); color: var(--text);
+}
+.gp-price-was { color: var(--faint); font-family: var(--mono); }
+.gp-price-cut {
+  font-style: normal; font-family: var(--mono); color: var(--bg);
+  background: var(--accent); padding: 2px 7px; border-radius: calc(var(--r) / 2);
+}
+
+/* ── The way back in ───────────────────────────────────────────────── */
+
+.gp-find {
+  margin-top: calc(var(--edge) * 2);
+  padding-top: calc(var(--edge) * 1.4);
+  border-top: 1px solid var(--line);
+}
+.gp-find-form { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.gp-find-in {
+  flex: 1 1 22ch; min-width: 0;
+  background: var(--panel); color: var(--text);
+  border: 1px solid var(--line-2); border-radius: var(--r);
+  padding: 12px 14px; font: inherit;
+}
+.gp-find-in::placeholder { color: var(--faint); }
+.gp-find-go {
+  flex: none; cursor: pointer; font: inherit; font-weight: 600;
+  background: var(--accent); color: var(--bg);
+  border: 1px solid transparent; border-radius: var(--r); padding: 12px 20px;
+}
+.gp-find-in:focus-visible, .gp-find-go:focus-visible {
+  outline: 2px solid transparent; border-color: var(--accent);
+}
+
+@media (max-width: 520px) {
+  .gp-rarest-pct { text-align: left; }
+  .gp-row-pct { width: 6ch; }
+}
+
+/* The error state. `.state` in style.css caps its width and does not centre it,
+   which is right on the profile pages - their whole layout starts at the left
+   edge - and wrong here, where everything else on the page is a centred column.
+   Scoped to this shell so nothing else moves. */
+#failure { margin-inline: auto; }

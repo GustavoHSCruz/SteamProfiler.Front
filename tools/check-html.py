@@ -56,6 +56,7 @@ VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link",
 
 # What a link may point at besides a file on disk or a route in serve.PAGES.
 DYNAMIC = (re.compile(r"^/u/"),
+           re.compile(r"^/g/\d{1,8}$"),
            re.compile(r"^/blog/[a-z0-9][a-z0-9-]{0,79}(?:/[a-z0-9][a-z0-9-]{0,79})?$"))
 
 # Google truncates a snippet around here. Not a rule, and not enforced as one:

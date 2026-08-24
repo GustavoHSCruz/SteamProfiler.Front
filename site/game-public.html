@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- What game this is, filled in before the page is sent. A link card and a
+     crawler are both drawn by something that does not run scripts, so the name
+     cannot arrive the way the rest of the page does. Above the plain title and
+     description below on purpose: the first of each is the one a parser reads,
+     and these two are the fallback for anywhere this is served as a static
+     file - a dev server, a checkout - where the line above is only a comment.
+
+     The api answers this one include with the title, the description, the
+     canonical, the Open Graph set and a `VideoGame` JSON-LD graph. Same
+     arrangement post.html already uses for a blog post, and for the same
+     reason: a shell shared by every game cannot carry any game's own head. -->
+<!--#include virtual="/api/game/public/meta?appid=$appid" -->
+<title data-i18n-doc="gp.doc">One game, on its own - steamprofiler.org</title>
+<meta name="description" content="Every achievement in a Steam game, ranked from the rarest to the one almost everybody has, next to what the game costs today. No profile is read to build this page: it is about the game itself.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0b0a0e">
+<!-- There is deliberately no `robots` tag here. Two reasons, and the second
+     is the one that matters.
+
+     First, indexing is the default, so `index, follow` says nothing a crawler
+     did not already assume. That this page is meant to be read is the point of
+     it existing - /u/ is disallowed in robots.txt because it is somebody's
+     account, and an account has no business in a search index, while a game is
+     not an account - but that intent is carried by the absence of a rule, not
+     by a tag repeating the default.
+
+     Second, and the actual reason: the include above emits `noindex` while a
+     game's name is still the `app <appid>` fallback, so a name the storefront
+     has not taught us yet cannot be indexed as if it were the game's. A static
+     `index, follow` below it would put two contradicting rules in one head.
+     Search engines resolve that by taking the most restrictive, so it would
+     probably still work - and "probably still works by someone else's tie-break
+     rule" is not a thing to build the one indexable page of the site on. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="steamprofiler.org">
+<meta property="og:image" content="https://steamprofiler.org/og-home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A Steam library drawn as a treemap: one amber rectangle per game, sized by hours.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="/fonts/bricolage-grotesque-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts.css">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/games.css">
+<link rel="stylesheet" href="/public.css">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+<body>
+
+<header class="bar-top">
+  <a class="wordmark" href="/">steamprofiler<span>.org</span></a>
+  <nav class="bar-mods">
+    <a class="mod" href="/blog" data-hide-narrow="1" data-i18n="nav.blog">blog</a>
+    <a class="mod" href="/about" data-i18n="nav.about">about</a>
+    <a class="mod" href="/feedback" data-i18n="nav.messages">feedback</a>
+    <a class="mod" href="/" data-i18n="nav.lookup_other">look up another profile</a>
+    <span class="langs" id="langs"></span>
+  </nav>
+</header>
+
+<!-- The wait. Two calls to Steam on a cold app, so the page says which game it
+     is reading rather than spinning. Deliberately not boot.js: that file draws
+     the treemap skeleton of a library, and there is no library here. -->
+<section class="gpw" id="gp-wait" hidden>
+  <p class="gpw-head" data-i18n="gp.wait">Reading this game off Steam</p>
+  <div class="gpw-track" role="progressbar" aria-valuemin="0" aria-valuemax="100"><i></i></div>
+</section>
+
+<div class="state state--fail" id="failure" hidden>
+  <p id="failure-text"></p>
+  <!-- Not "try another profile": there is no profile in this address, and
+       sending somebody who mistyped an app number off to look up a person is
+       answering a question they did not ask. -->
+  <p class="state-links">
+    <a href="/" data-i18n="gp.err_back">back to steamprofiler.org</a>
+  </p>
+</div>
+
+<!-- ── One game, belonging to nobody ───────────────────────────────── -->
+<main id="gp" hidden>
+  <div id="gp-root"></div>
+</main>
+
+<footer class="foot">
+  <p><span id="gp-fetched" hidden><span data-i18n="foot.source_pre">Read from Steam. Fetched</span> <time id="gp-generated"></time>. </span><a href="/feedback" data-i18n="foot.found_bug">found a bug?</a> · <a href="/blog" data-i18n="nav.blog">blog</a> · <a href="/about" data-i18n="nav.about">about</a> · <a href="/privacy" data-i18n="nav.privacy">privacy</a> · <a class="foot-repo" href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener" data-i18n="foot.repo">source code ↗</a></p>
+  <p id="credit-slot"><a href="/u/gordziilla">made with ♥</a></p>
+  <p class="foot-legal" data-i18n="foot.disclaimer">steamprofiler.org is an independent hobby project. It is not affiliated with, endorsed by, or connected to Valve Corporation. Steam and the Steam logo are trademarks of Valve Corporation. Game names and art belong to their respective owners.</p>
+</footer>
+
+<noscript>
+  <p class="noscript">This page builds its data live, straight from Steam. Turn JavaScript on to see it.</p>
+</noscript>
+
+<script src="/dict.js" defer></script>
+<script src="/i18n.js" defer></script>
+<script src="/lib.js" defer></script>
+<script src="/public.js" defer></script>
+</body>
+</html>
