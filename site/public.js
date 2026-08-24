@@ -463,6 +463,59 @@ function ladder(g) {
 
 /* ── The catalogue behind the game ─────────────────────────────────── */
 
+function screenshotGallery(shots, gameName) {
+  const grid = h('div', { cls: 'gp-cat-shots' });
+  const image = h('img', { cls: 'gp-lightbox-image', attr: { alt: '' } });
+  const count = h('span', { cls: 'gp-lightbox-count' });
+  const close = h('button', {
+    cls: 'gp-lightbox-close', text: '×',
+    attr: { type: 'button', 'aria-label': t('gp.gallery_close') },
+  });
+  const prev = h('button', {
+    cls: 'gp-lightbox-nav gp-lightbox-prev', text: '‹',
+    attr: { type: 'button', 'aria-label': t('gp.gallery_prev') },
+  });
+  const next = h('button', {
+    cls: 'gp-lightbox-nav gp-lightbox-next', text: '›',
+    attr: { type: 'button', 'aria-label': t('gp.gallery_next') },
+  });
+  const dialog = h('dialog', {
+    cls: 'gp-lightbox', attr: { 'aria-label': t('gp.screenshots') },
+  }, h('div', { cls: 'gp-lightbox-stage' }, image, close, prev, next, count));
+  let index = 0;
+
+  const show = (at) => {
+    index = (at + shots.length) % shots.length;
+    image.src = shots[index].full;
+    image.alt = `${gameName} — ${index + 1}`;
+    count.textContent = t('gp.gallery_item', { n: index + 1, total: shots.length });
+  };
+  shots.forEach((item, at) => {
+    const button = h('button', {
+      cls: 'gp-shot',
+      attr: { type: 'button', 'aria-label': t('gp.gallery_open', { n: at + 1 }) },
+    }, h('img', {
+      attr: { src: item.thumbnail || item.full, alt: '', loading: 'lazy', decoding: 'async' },
+    }));
+    button.addEventListener('click', () => {
+      show(at);
+      dialog.showModal();
+    });
+    grid.append(button);
+  });
+  close.addEventListener('click', () => dialog.close());
+  prev.addEventListener('click', () => show(index - 1));
+  next.addEventListener('click', () => show(index + 1));
+  dialog.addEventListener('click', (event) => {
+    if (event.target === dialog) dialog.close();
+  });
+  dialog.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') show(index - 1);
+    if (event.key === 'ArrowRight') show(index + 1);
+  });
+  return h('div', { cls: 'gp-cat-gallery' }, grid, dialog);
+}
+
 function catalogueBlock(g) {
   const c = g.catalog;
   if (!c) return null;
@@ -530,9 +583,7 @@ function catalogueBlock(g) {
   const shots = (c.screenshots || []).filter((item) => item.full);
   if (shots.length) wrap.append(h('section', { cls: 'gp-cat-media' },
     h('h3', { cls: 'gp-h', text: t('gp.screenshots') }),
-    h('div', { cls: 'gp-cat-shots' }, ...shots.map((item) => h('a', {
-      attr: { href: item.full, target: '_blank', rel: 'noopener' },
-    }, h('img', { attr: { src: item.thumbnail || item.full, alt: '', loading: 'lazy', decoding: 'async' } }))))));
+    screenshotGallery(shots, g.name)));
 
   const requirements = Object.entries(c.requirements || {});
   if (requirements.length) wrap.append(h('section', { cls: 'gp-cat-reqs' },
@@ -552,6 +603,8 @@ function catalogueBlock(g) {
   if (g.news?.length) wrap.append(h('section', { cls: 'gp-cat-news' },
     h('h3', { cls: 'gp-h', text: t('gp.news') }),
     h('div', { cls: 'gp-cat-news-list' }, ...g.news.map((item) => h('article', {},
+      item.image ? h('img', { cls: 'gp-cat-news-image',
+        attr: { src: item.image, alt: '', loading: 'lazy', decoding: 'async' } }) : null,
       h('p', { cls: 'gp-label', text: [item.feed, item.date ? shortDate(new Date(item.date * 1000).toISOString()) : null]
         .filter(Boolean).join(' · ') }),
       h('h4', {}, h('a', { text: item.title, attr: { href: item.url, target: '_blank', rel: 'noopener' } })),
@@ -671,7 +724,7 @@ function lookup(g) {
 
   let g;
   try {
-    g = await api(`/game/public?appid=${APPID}&cc=${store()}`);
+    g = await api(`/game/public?appid=${APPID}&cc=${store()}&l=${encodeURIComponent(LANG)}`);
   } catch (e) {
     fail(e.message);
     return;
