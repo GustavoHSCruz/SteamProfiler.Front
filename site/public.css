@@ -54,6 +54,14 @@
 
 #gp { padding-bottom: calc(var(--edge) * 2); }
 
+.repo-public-title {
+  margin: clamp(20px, 3vw, 30px) 0 0; font-family: var(--display); font-weight: var(--display-w);
+  font-size: clamp(2.8rem, 10vw, 6.5rem); line-height: .9; letter-spacing: var(--display-ls);
+  color: var(--accent);
+}
+.repo-public .repo-pill { margin-top: clamp(20px, 3vw, 30px); }
+.repo-public .repo-pill em { max-width: 11ch; line-height: 1.1; text-transform: uppercase; }
+
 /* Full bleed, and the only thing on the page that is. The art is 616x353 from
    Steam and is being shown much wider than that, so it is blurred slightly and
    sat behind a gradient rather than presented as a picture worth looking at -

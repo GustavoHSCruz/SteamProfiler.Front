@@ -366,6 +366,73 @@ function publicCod(g, root) {
   root.append(wrap);
 }
 
+function publicRepoFace(cls) {
+  const face = h('div', { cls, attr: { 'aria-hidden': 'true' } });
+  const pupils = [h('i', { cls: 'repo-pupil' }), h('i', { cls: 'repo-pupil' })];
+  pupils.forEach((pupil) => face.append(h('span', { cls: 'repo-eye' }, pupil)));
+  return { face, pupils };
+}
+
+function publicRepo(g, root) {
+  const wrap = h('div', { cls: 'repo repo-public' });
+  const pupils = [];
+  const crew = h('div', { cls: 'repo-crew' });
+  ['a', 'b', 'c', 'd'].forEach((tone, index) => {
+    const bot = h('div', { cls: 'repo-bot', data: { tone } });
+    const eyes = publicRepoFace('repo-face');
+    bot.append(eyes.face);
+    bot.style.setProperty('--delay', `${index * 230}ms`);
+    pupils.push(...eyes.pupils);
+    crew.append(bot);
+  });
+  wrap.append(crew, h('h1', { cls: 'repo-public-title', text: g.name }));
+
+  if (g.live?.players != null) wrap.append(h('div', { cls: 'repo-pill' },
+    h('b', { text: num(g.live.players) }), h('em', { text: t('gp.online') })));
+  wrap.append(h('p', { cls: 'repo-cap', text: t('gp.repo_shift') }));
+
+  const c = g.catalog || {};
+  const review = g.reviews || {};
+  const positive = review.total && review.positive != null ? review.positive / review.total * 100 : null;
+  const facts = [
+    [t('gp.reviews'), review.total != null ? num(review.total) : null],
+    [t('gp.positive'), positive != null ? `${num(positive, 1)}%` : null],
+    [t('gp.recommendations'), c.recommendations != null ? num(c.recommendations) : null],
+    [t('gp.released_full'), c.release?.date || null],
+    ['Metacritic', c.metacritic?.score != null ? num(c.metacritic.score) : null],
+  ].filter(([, value]) => value != null);
+  const blobs = h('div', { cls: 'repo-blobs' });
+  facts.forEach(([label, value], index) => {
+    const blob = h('div', { cls: 'repo-blob', data: { tone: 'abcde'[index % 5] } });
+    blob.style.setProperty('--tilt', `${[-2.5, 1.8, -1.2, 2.6, -2][index % 5]}deg`);
+    const eyes = publicRepoFace('repo-face repo-face--sm');
+    pupils.push(...eyes.pupils);
+    blob.append(eyes.face, h('b', { cls: 'repo-huh', text: value }),
+      h('span', { cls: 'repo-blob-label', text: label }));
+    blobs.append(blob);
+  });
+  if (facts.length) wrap.append(blobs);
+  root.append(wrap);
+
+  if (still()) return;
+  let frame = 0;
+  window.addEventListener('pointermove', (event) => {
+    if (frame) cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      pupils.forEach((pupil) => {
+        const box = pupil.parentElement.getBoundingClientRect();
+        const dx = event.clientX - (box.left + box.width / 2);
+        const dy = event.clientY - (box.top + box.height / 2);
+        const angle = Math.atan2(dy, dx);
+        const reach = Math.min(Math.hypot(dx, dy) / 14, box.width * .22);
+        pupil.style.setProperty('--px', `${Math.cos(angle) * reach}px`);
+        pupil.style.setProperty('--py', `${Math.sin(angle) * reach}px`);
+      });
+    });
+  }, { passive: true });
+}
+
 const PUBLIC_LAYOUTS = {
   'dota-2': publicDota,
   'counter-strike-2': publicCs2,
@@ -375,6 +442,7 @@ const PUBLIC_LAYOUTS = {
   'msfs': publicMsfs,
   'gta-v': publicGta,
   'call-of-duty': publicCod,
+  'repo': publicRepo,
 };
 
 /** The set, rarest first.
