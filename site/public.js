@@ -416,7 +416,47 @@ function publicRepo(g, root) {
 
   if (still()) return;
   let frame = 0;
+  let orbit = null;
+  let dizzyTimer = 0;
+
+  const followOrbit = (event) => {
+    const now = performance.now();
+    if (!orbit || now - orbit.lastAt > 280 || now - orbit.startedAt > 3000) {
+      orbit = {
+        startedAt: now, lastAt: now, startX: event.clientX, startY: event.clientY,
+        x: event.clientX, y: event.clientY, angle: null, turn: 0, distance: 0,
+      };
+      return;
+    }
+    const dx = event.clientX - orbit.x;
+    const dy = event.clientY - orbit.y;
+    const step = Math.hypot(dx, dy);
+    if (step < 2) return;
+    const angle = Math.atan2(dy, dx);
+    if (orbit.angle != null) {
+      const delta = Math.atan2(Math.sin(angle - orbit.angle), Math.cos(angle - orbit.angle));
+      // A circular gesture turns gradually. A sharp reversal is ordinary mouse
+      // use, so it breaks the accumulated turn instead of producing dizziness.
+      if (Math.abs(delta) < 1.2) orbit.turn += delta;
+      else orbit.turn = 0;
+    }
+    orbit.angle = angle;
+    orbit.x = event.clientX;
+    orbit.y = event.clientY;
+    orbit.lastAt = now;
+    orbit.distance += step;
+
+    const closed = Math.hypot(event.clientX - orbit.startX, event.clientY - orbit.startY);
+    if (Math.abs(orbit.turn) < Math.PI * 1.7 || orbit.distance < 260 ||
+        closed > Math.max(90, orbit.distance * .32)) return;
+    wrap.dataset.dizzy = '1';
+    clearTimeout(dizzyTimer);
+    dizzyTimer = setTimeout(() => { delete wrap.dataset.dizzy; }, 3800);
+    orbit = null;
+  };
+
   window.addEventListener('pointermove', (event) => {
+    followOrbit(event);
     if (frame) cancelAnimationFrame(frame);
     frame = requestAnimationFrame(() => {
       frame = 0;

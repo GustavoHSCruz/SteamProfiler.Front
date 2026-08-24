@@ -61,6 +61,39 @@
 }
 .repo-public .repo-pill { margin-top: clamp(20px, 3vw, 30px); }
 .repo-public .repo-pill em { max-width: 11ch; line-height: 1.1; text-transform: uppercase; }
+.repo-public .repo-bot { position: relative; }
+.repo-public .repo-bot::after {
+  content: '✦ ･ ✦'; position: absolute; top: -22px; left: 50%; opacity: 0;
+  color: var(--accent); font-size: 18px; letter-spacing: 12px; white-space: nowrap;
+  text-shadow: 0 0 10px #ffd21e99; pointer-events: none;
+}
+.repo-public[data-dizzy="1"] .repo-bot {
+  animation: repo-public-dizzy-bot .52s ease-in-out var(--delay, 0ms) infinite;
+}
+.repo-public[data-dizzy="1"] .repo-face { animation: repo-public-dizzy-face .7s linear infinite; }
+.repo-public[data-dizzy="1"] .repo-pupil { animation: repo-public-dizzy-eye .38s linear infinite; }
+.repo-public[data-dizzy="1"] .repo-eye:nth-child(2) .repo-pupil { animation-direction: reverse; }
+.repo-public[data-dizzy="1"] .repo-bot::after { animation: repo-public-dizzy-stars .8s linear infinite; }
+@keyframes repo-public-dizzy-bot {
+  0%, 100% { transform: translate(-4px, 1px) rotate(-6deg); }
+  50% { transform: translate(4px, -5px) rotate(6deg); }
+}
+@keyframes repo-public-dizzy-face { to { transform: rotate(360deg); } }
+@keyframes repo-public-dizzy-eye {
+  from { transform: translate(-50%, -50%) rotate(0deg) translateX(7px); }
+  to { transform: translate(-50%, -50%) rotate(360deg) translateX(7px); }
+}
+@keyframes repo-public-dizzy-stars {
+  0% { opacity: 0; transform: translate(-50%, 8px) rotate(0deg); }
+  25%, 75% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -9px) rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .repo-public[data-dizzy="1"] .repo-bot,
+  .repo-public[data-dizzy="1"] .repo-face,
+  .repo-public[data-dizzy="1"] .repo-pupil,
+  .repo-public[data-dizzy="1"] .repo-bot::after { animation: none; }
+}
 
 /* Full bleed, and the only thing on the page that is. The art is 616x353 from
    Steam and is being shown much wider than that, so it is blurred slightly and
