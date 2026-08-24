@@ -461,6 +461,104 @@ function ladder(g) {
   return wrap;
 }
 
+/* ── The catalogue behind the game ─────────────────────────────────── */
+
+function catalogueBlock(g) {
+  const c = g.catalog;
+  if (!c) return null;
+  const wrap = h('section', { cls: 'gp-catalogue' });
+  wrap.append(h('div', { cls: 'gp-cat-head' },
+    h('div', {}, h('p', { cls: 'gp-label', text: t('gp.catalog_kicker') }),
+      h('h2', { cls: 'gp-cat-title', text: t('gp.catalog_head') })),
+    g.catalog_at ? h('time', { cls: 'gp-cat-time', text: t('gp.updated', { date: stamp(g.catalog_at) }),
+      attr: { datetime: g.catalog_at } }) : null));
+
+  const review = g.reviews || {};
+  const positive = review.total && review.positive != null ? review.positive / review.total * 100 : null;
+  const facts = [
+    [t('gp.online'), g.live?.players != null ? num(g.live.players) : null],
+    [t('gp.reviews'), review.total != null ? num(review.total) : null],
+    [t('gp.positive'), positive != null ? `${num(positive, 1)}%` : null],
+    [t('gp.released_full'), c.release?.date || null],
+    [t('gp.recommendations'), c.recommendations != null ? num(c.recommendations) : null],
+    ['Metacritic', c.metacritic?.score != null ? num(c.metacritic.score) : null],
+  ].filter(([, value]) => value != null);
+  if (facts.length) {
+    const grid = h('div', { cls: 'gp-cat-facts' });
+    facts.forEach(([label, value]) => grid.append(h('div', { cls: 'gp-cat-fact' },
+      h('b', { text: value }), h('span', { text: label }))));
+    wrap.append(grid);
+  }
+
+  const about = c.about?.startsWith(c.description || '')
+    ? c.about.slice((c.description || '').length).trim() : c.about;
+  if (c.description || about) wrap.append(h('section', { cls: 'gp-cat-about' },
+    h('h3', { cls: 'gp-h', text: t('gp.about_game') }),
+    c.description ? h('p', { cls: 'gp-cat-lede', text: c.description }) : null,
+    about ? h('p', { cls: 'gp-cat-copy', text: about }) : null));
+
+  const credits = [
+    [t('gp.developers'), c.developers], [t('gp.publishers'), c.publishers],
+    [t('gp.platforms'), Object.entries(c.platforms || {}).filter(([, on]) => on).map(([name]) => name)],
+  ].filter(([, values]) => values?.length);
+  if (credits.length) {
+    const dl = h('dl', { cls: 'gp-cat-credits' });
+    credits.forEach(([label, values]) => dl.append(h('dt', { text: label }), h('dd', { text: values.join(' · ') })));
+    wrap.append(dl);
+  }
+
+  const groups = [
+    [t('gp.features'), (c.categories || []).map((item) => item.name)],
+    [t('gp.languages'), c.languages || []],
+  ].filter(([, values]) => values.length);
+  groups.forEach(([label, values]) => wrap.append(h('section', { cls: 'gp-cat-group' },
+    h('h3', { cls: 'gp-h', text: label }),
+    h('div', { cls: 'gp-cat-tags' }, ...values.map((value) => h('span', { text: value }))))));
+
+  const inventory = [
+    [t('gp.dlc'), c.dlc?.length], [t('gp.packages'), c.packages?.length],
+    [t('gp.schema_stats'), g.stat_schema?.length],
+    [t('gp.age'), c.required_age ? `${c.required_age}+` : null],
+  ].filter(([, value]) => value != null);
+  if (inventory.length) {
+    const counts = h('div', { cls: 'gp-cat-inventory' });
+    inventory.forEach(([label, value]) => counts.append(h('p', {},
+      h('b', { text: typeof value === 'number' ? num(value) : value }), h('span', { text: label }))));
+    wrap.append(counts);
+  }
+
+  const shots = (c.screenshots || []).filter((item) => item.full);
+  if (shots.length) wrap.append(h('section', { cls: 'gp-cat-media' },
+    h('h3', { cls: 'gp-h', text: t('gp.screenshots') }),
+    h('div', { cls: 'gp-cat-shots' }, ...shots.map((item) => h('a', {
+      attr: { href: item.full, target: '_blank', rel: 'noopener' },
+    }, h('img', { attr: { src: item.thumbnail || item.full, alt: '', loading: 'lazy', decoding: 'async' } }))))));
+
+  const requirements = Object.entries(c.requirements || {});
+  if (requirements.length) wrap.append(h('section', { cls: 'gp-cat-reqs' },
+    h('h3', { cls: 'gp-h', text: t('gp.requirements') }),
+    ...requirements.map(([platform, req]) => h('details', {},
+      h('summary', { text: platform }),
+      req.minimum ? h('div', {}, h('b', { text: t('gp.minimum') }), h('p', { text: req.minimum })) : null,
+      req.recommended ? h('div', {}, h('b', { text: t('gp.recommended') }), h('p', { text: req.recommended })) : null))));
+
+  const links = [];
+  if (c.website) links.push(h('a', { cls: 'close', text: t('gp.website'),
+    attr: { href: c.website, target: '_blank', rel: 'noopener' } }));
+  if (c.support?.url) links.push(h('a', { cls: 'close', text: t('gp.support'),
+    attr: { href: c.support.url, target: '_blank', rel: 'noopener' } }));
+  if (links.length) wrap.append(h('nav', { cls: 'gp-cat-links' }, ...links));
+
+  if (g.news?.length) wrap.append(h('section', { cls: 'gp-cat-news' },
+    h('h3', { cls: 'gp-h', text: t('gp.news') }),
+    h('div', { cls: 'gp-cat-news-list' }, ...g.news.map((item) => h('article', {},
+      h('p', { cls: 'gp-label', text: [item.feed, item.date ? shortDate(new Date(item.date * 1000).toISOString()) : null]
+        .filter(Boolean).join(' · ') }),
+      h('h4', {}, h('a', { text: item.title, attr: { href: item.url, target: '_blank', rel: 'noopener' } })),
+      item.excerpt ? h('p', { text: item.excerpt }) : null)))));
+  return wrap;
+}
+
 /* ── What it costs ─────────────────────────────────────────────────────
    Through /api/price rather than through the payload above, and on purpose:
    that route has existed since before this page did, it is already appid-only
@@ -605,9 +703,9 @@ function lookup(g) {
   if (themed) {
     if (g.theme !== 'dota-2') put(out, artBand(g));
     themed(g, out);
-    put(out, priceBlock(g), lookup(g));
+    put(out, catalogueBlock(g), priceBlock(g), lookup(g));
   } else {
-    put(out, artBand(g), heading(g), ladder(g), priceBlock(g), lookup(g));
+    put(out, artBand(g), heading(g), catalogueBlock(g), ladder(g), priceBlock(g), lookup(g));
   }
 
   // "Read from Steam. Fetched ." with nothing after it is what the footer said

@@ -42,6 +42,7 @@ site/
     dash.js       the treemap, the panels, the years, the library
     game.js       one renderer per game, dispatched on `theme`
     lib.js        helpers shared by both, the API calls, the footer
+  game-public.html  every /g/<appid>                              public.js
   blog.html       the index                    blog.js
   post.html       one post                     post.js
   feedback.html   the form and the public board                   feedback.js
@@ -75,6 +76,7 @@ tools/            checks and generators, run with node, never shipped
 | `/` | the lookup field |
 | `/u/<profile>` | that profile's dashboard |
 | `/u/<profile>/<appid>` | one game |
+| `/g/<appid>` | one game without a profile: catalogue, live audience, reviews, news and global achievements |
 | `/u/<profile>/vs/<other>` | two libraries against each other |
 | `/u/<profile>/backlog` | everything owned and never launched |
 | `/u/<profile>/year/<year>` | one year of it: what was put down that year, and what was unlocked during it. The word `year` is in the path because an appid is digits too |
@@ -88,6 +90,13 @@ server hands the same shell to all of them, so a new sub-page is a case in the
 router and nothing else.
 
 ## Game pages
+
+`/g/<appid>` is the indexable, profile-free side of the same idea. Its public
+record is rendered by `public.js`: catalogue facts come from the storefront,
+current players and news from the Steam Web API, review totals from the review
+endpoint and achievement rarity from Steam's global percentages. The eight
+games with complete bespoke openings reuse their profile composition with
+global facts; every other app gets the generic public composition.
 
 There is no shared layout below the status bar. `LAYOUTS` in `game.js` holds 158
 renderers plus `renderGeneric`, and each one is built out of that game's own

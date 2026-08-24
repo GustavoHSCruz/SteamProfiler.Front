@@ -185,6 +185,95 @@
   font-family: var(--mono); font-size: .85rem; color: var(--dim);
 }
 
+/* ── Store catalogue ──────────────────────────────────────────────── */
+
+.gp-catalogue {
+  max-width: 1120px; margin: calc(var(--edge) * 2) auto 0; padding: 0 var(--edge);
+}
+.gp-cat-head {
+  display: flex; align-items: end; justify-content: space-between; gap: 20px;
+  padding-bottom: 14px; border-bottom: 1px solid var(--line);
+}
+.gp-cat-title {
+  margin: 0; font-family: var(--display); font-weight: var(--display-w);
+  text-transform: var(--display-tt); letter-spacing: var(--display-ls);
+  font-size: clamp(1.8rem, 5vw, 3.2rem); line-height: 1;
+}
+.gp-cat-time { flex: none; color: var(--faint); font-family: var(--mono); font-size: .72rem; }
+.gp-cat-facts {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  margin-top: 16px; border: 1px solid var(--line); background: var(--panel);
+}
+.gp-cat-fact { min-width: 0; padding: 16px; border-right: 1px solid var(--line); }
+.gp-cat-fact:last-child { border-right: 0; }
+.gp-cat-fact b {
+  display: block; font-family: var(--mono); font-size: clamp(1.25rem, 3vw, 1.8rem);
+  color: var(--text); overflow-wrap: anywhere;
+}
+.gp-cat-fact span, .gp-cat-inventory span {
+  display: block; margin-top: 5px; color: var(--faint); font-family: var(--label);
+  font-size: .62rem; letter-spacing: var(--label-ls); text-transform: uppercase;
+}
+.gp-cat-about, .gp-cat-group, .gp-cat-media, .gp-cat-reqs, .gp-cat-news { margin-top: 34px; }
+.gp-cat-lede { max-width: 72ch; font-size: clamp(1.05rem, 2vw, 1.25rem); line-height: 1.65; }
+.gp-cat-copy {
+  max-width: 82ch; color: var(--dim); line-height: 1.72; white-space: pre-line;
+  max-height: 30rem; overflow: auto; padding-right: 10px;
+}
+.gp-cat-credits {
+  display: grid; grid-template-columns: minmax(120px, .28fr) 1fr;
+  margin: 30px 0 0; border-top: 1px solid var(--line);
+}
+.gp-cat-credits dt, .gp-cat-credits dd { margin: 0; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.gp-cat-credits dt {
+  color: var(--faint); font-family: var(--label); font-size: .68rem;
+  letter-spacing: var(--label-ls); text-transform: uppercase;
+}
+.gp-cat-credits dd { color: var(--text); }
+.gp-cat-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+.gp-cat-tags span {
+  padding: 7px 9px; color: var(--dim); background: var(--panel);
+  border: 1px solid var(--line); border-radius: calc(var(--r) / 2);
+  font-size: .75rem;
+}
+.gp-cat-inventory {
+  display: flex; flex-wrap: wrap; gap: 1px; margin-top: 28px; background: var(--line);
+  border: 1px solid var(--line);
+}
+.gp-cat-inventory p { flex: 1 1 130px; margin: 0; padding: 14px; background: var(--panel); }
+.gp-cat-inventory b { font-family: var(--mono); font-size: 1.25rem; }
+.gp-cat-shots {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr)); gap: 8px;
+}
+.gp-cat-shots a { display: block; aspect-ratio: 16 / 9; overflow: hidden; background: var(--panel); }
+.gp-cat-shots img {
+  display: block; width: 100%; height: 100%; object-fit: cover;
+  transition: transform 180ms ease, filter 180ms ease;
+}
+.gp-cat-shots a:hover img { transform: scale(1.025); filter: brightness(1.08); }
+.gp-cat-reqs { display: grid; gap: 8px; }
+.gp-cat-reqs > .gp-h { margin-bottom: 2px; }
+.gp-cat-reqs details { padding: 12px 14px; border: 1px solid var(--line); background: var(--panel); }
+.gp-cat-reqs summary {
+  cursor: pointer; font-family: var(--label); letter-spacing: var(--label-ls); text-transform: uppercase;
+}
+.gp-cat-reqs details div { margin-top: 16px; }
+.gp-cat-reqs details b { color: var(--accent); font-family: var(--mono); font-size: .78rem; }
+.gp-cat-reqs details p { color: var(--dim); line-height: 1.6; white-space: pre-line; }
+.gp-cat-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+.gp-cat-news-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 10px; }
+.gp-cat-news article { padding: 16px; border: 1px solid var(--line); background: var(--panel); }
+.gp-cat-news h4 { margin: 8px 0; font-size: 1rem; }
+.gp-cat-news article > p:last-child { margin: 0; color: var(--dim); font-size: .82rem; line-height: 1.55; }
+
+@media (max-width: 620px) {
+  .gp-cat-head { display: block; }
+  .gp-cat-time { display: block; margin-top: 12px; }
+  .gp-cat-credits { grid-template-columns: 1fr; }
+  .gp-cat-credits dt { border-bottom: 0; padding-bottom: 0; }
+  .gp-cat-fact { border-bottom: 1px solid var(--line); }
+}
+
 /* ── Price ─────────────────────────────────────────────────────────── */
 
 .gp-price-body {
