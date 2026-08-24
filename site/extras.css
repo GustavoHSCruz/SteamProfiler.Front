@@ -503,3 +503,23 @@ h4.prose-h { font-size: 15.5px; letter-spacing: 0; }
   margin-bottom: 6px;
 }
 .post-step b { font-weight: 500; font-size: 14px; }
+
+/* ── About ─────────────────────────────────────────────────────────────
+   The page that exists because the site never signed itself. Two lists:
+   what it does not do, which is the answer to "is this safe", and where to
+   find the person who wrote it. */
+
+.abt-list { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 10px; }
+.abt-list li {
+  padding: 12px 15px; font-size: 14.5px; line-height: 1.55; color: var(--dim);
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--r);
+}
+.abt-list b { color: var(--text); font-weight: 600; }
+.abt-links { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.abt-links li { border-top: 1px solid var(--line); }
+.abt-links li:first-child { border-top: 0; }
+.abt-links a {
+  display: block; padding: 11px 2px; font-size: 14.5px;
+  color: var(--link); text-decoration: none;
+}
+.abt-links a:hover { text-decoration: underline; }

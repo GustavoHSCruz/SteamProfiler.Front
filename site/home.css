@@ -1074,3 +1074,81 @@ a.seat:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .times::-webkit-scrollbar { display: none; }
   .time-col { min-width: 34px; }
 }
+
+/* ── The rail under the treemap ────────────────────────────────────────
+   What this page can already do, said out loud. Chips and not a menu: it
+   sits between the picture and the panels, so it has to be scannable in one
+   pass and disappear the moment somebody is reading something else. */
+
+.explore {
+  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  margin: 0 var(--edge) calc(var(--gap) * 1.5);
+}
+.explore-lab {
+  font-family: var(--label); font-size: 10px; font-weight: var(--label-w);
+  letter-spacing: var(--label-ls); text-transform: uppercase; color: var(--faint);
+}
+.explore-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  padding: 7px 13px; font-family: var(--label); font-size: 11px;
+  font-weight: var(--label-w); letter-spacing: 0.08em;
+  color: var(--dim); background: var(--panel-2);
+  border: 1px solid var(--line); border-radius: var(--r);
+  text-decoration: none; white-space: nowrap;
+}
+.chip:hover { color: var(--text); border-color: var(--line-2); }
+.chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* ── Which game owns which device ──────────────────────────────────────
+   One line per operating system with anything on it. The Steam Deck is in
+   this list and is not a fourth column anywhere: its hours are already
+   inside the Linux ones. */
+
+.plat-top { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 2px; }
+.plat-top-row {
+  display: grid; align-items: baseline; gap: 10px;
+  grid-template-columns: 78px minmax(0, 1fr) auto;
+  padding: 5px 0; border-top: 1px solid var(--line);
+}
+.plat-top-dev {
+  font-family: var(--label); font-size: 9.5px; font-weight: var(--label-w);
+  letter-spacing: var(--label-ls); text-transform: uppercase; color: var(--faint);
+}
+.plat-top-game {
+  font-weight: 500; font-size: 13px; color: var(--text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.plat-top-h { font-family: var(--mono); font-size: 12px; color: var(--dim); }
+
+/* ── One game out of the pile ──────────────────────────────────────────
+   The button is the same shape as the scan buttons, because it does the
+   same kind of thing: it answers a question the page has been describing. */
+
+.pick { margin-bottom: 14px; }
+.pick-go {
+  padding: 11px 18px; font-family: var(--label); font-size: 10px;
+  font-weight: var(--label-w); letter-spacing: var(--label-ls);
+  text-transform: uppercase; color: var(--bg); background: var(--accent);
+  border: 0; border-radius: var(--r); cursor: pointer;
+}
+.pick-go:hover { filter: brightness(1.08); }
+.pick-card {
+  display: block; margin-top: 10px; padding: 13px 16px;
+  background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: var(--r); text-decoration: none;
+}
+.pick-card:hover { border-color: var(--line-2); }
+.pick-name { display: block; font-size: 17px; font-weight: 600; color: var(--text); }
+.pick-why { display: block; margin-top: 4px; font-size: 13px; color: var(--dim); }
+
+/* ── The year, as something that can leave ─────────────────────────── */
+
+.yr-card { margin: 10px 0 0; }
+.yr-card-go {
+  display: inline-block; padding: 8px 14px;
+  font-family: var(--label); font-size: 10px; font-weight: var(--label-w);
+  letter-spacing: var(--label-ls); text-transform: uppercase;
+  color: var(--dim); background: var(--panel-2);
+  border: 1px solid var(--line); border-radius: var(--r); text-decoration: none;
+}
+.yr-card-go:hover { color: var(--text); border-color: var(--line-2); }

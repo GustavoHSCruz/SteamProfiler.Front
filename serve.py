@@ -38,6 +38,7 @@ PAGES = {
     '/privacy': '/privacy.html',
     '/privacy/history': '/policy-history.html',
     '/blog': '/blog.html',
+    '/about': '/about.html',
     '/appeal': '/appeal.html',
     '/appeal/sent': '/appeal-sent.html',
 }

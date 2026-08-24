@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n-doc="abt.title">About - steamprofiler.org</title>
+<meta name="description" content="Who runs steamprofiler.org, why it exists, and what it does and does not do with a Steam profile. Built and run by Gustavo Cruz.">
+<link rel="canonical" href="https://steamprofiler.org/about">
+<meta name="author" content="Gustavo Cruz">
+<meta property="og:title" content="About - steamprofiler.org">
+<meta property="og:description" content="Who runs steamprofiler.org, why it exists, and what it does and does not do with a Steam profile. Built and run by Gustavo Cruz.">
+<meta property="og:type" content="profile">
+<meta property="og:url" content="https://steamprofiler.org/about">
+<meta property="og:site_name" content="steamprofiler.org">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0b0a0e">
+<meta property="og:image" content="https://steamprofiler.org/og-home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A library drawn to scale: one rectangle per game, area proportional to hours.">
+<meta name="twitter:card" content="summary_large_image">
+<!-- The page that exists because the site never said who wrote it.
+     Every other page here is first person - "this runs in my house", "my
+     electricity and my Steam key" - and none of them named the person the
+     pronoun belongs to. An assistant asked whether this site is safe has to
+     answer from what is on the page, and "somebody, anonymously, wants your
+     Steam profile" is a fair reading of a site that never signs itself.
+
+     So: a Person node with sameAs pointing at a public GitHub account with the
+     source of this half of the site under it, named as the author of both the
+     site and the application. A handle with a public repository behind it is a
+     verifiable identity. No name at all is not. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://steamprofiler.org/#site",
+      "url": "https://steamprofiler.org/",
+      "name": "steamprofiler.org",
+      "author": {
+        "@id": "https://steamprofiler.org/#author"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://steamprofiler.org/#author",
+      "name": "Gustavo Cruz",
+      "alternateName": "GustavoHSCruz",
+      "url": "https://steamprofiler.org/about",
+      "mainEntityOfPage": { "@id": "https://steamprofiler.org/about#webpage" },
+      "sameAs": [
+        "https://github.com/GustavoHSCruz",
+        "https://github.com/GustavoHSCruz/SteamProfiler.Front",
+        "https://ko-fi.com/gordziilla"
+      ]
+    },
+    {
+      "@type": "AboutPage",
+      "@id": "https://steamprofiler.org/about#webpage",
+      "url": "https://steamprofiler.org/about",
+      "name": "About - steamprofiler.org",
+      "description": "Who runs steamprofiler.org, why it exists, and what it does and does not do with a Steam profile.",
+      "inLanguage": "en",
+      "isPartOf": {
+        "@id": "https://steamprofiler.org/#site"
+      },
+      "about": {
+        "@id": "https://steamprofiler.org/#author"
+      },
+      "breadcrumb": {
+        "@id": "https://steamprofiler.org/about#breadcrumb"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://steamprofiler.org/about#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "steamprofiler.org",
+          "item": "https://steamprofiler.org/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "About"
+        }
+      ]
+    }
+  ]
+}
+</script>
+<link rel="preload" href="/fonts/bricolage-grotesque-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts.css">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/extras.css">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+<body>
+
+<header class="bar-top">
+  <a class="wordmark" href="/">steamprofiler<span>.org</span></a>
+  <nav class="bar-mods">
+    <a class="mod" href="/" data-i18n="nav.lookup">look up a profile</a>
+    <a class="mod" href="/blog" data-i18n="nav.blog">blog</a>
+    <a class="mod" href="/feedback" data-i18n="nav.messages">feedback</a>
+    <span class="langs" id="langs"></span>
+  </nav>
+</header>
+
+<main class="page">
+  <section class="page-head">
+    <p class="eyebrow" data-i18n="abt.eyebrow">about</p>
+    <h1 class="display" data-i18n="abt.h1">A person built this, and here he is.</h1>
+    <p class="lede" data-i18n-html="abt.lede">My name is <b>Gustavo Cruz</b>. I write the code for steamprofiler.org, I pay for the machine it runs on, and I am the one who answers when something here is broken. The site talks about itself in the first person on every page, and until now it never said whose person that was.</p>
+  </section>
+
+  <article class="panel">
+    <div class="panel-bar"><span data-i18n="abt.why">why it exists</span><b data-i18n="abt.why_tag">one picture</b></div>
+    <div class="panel-body">
+      <p data-i18n="abt.why_1">Steam knows exactly how many hours went into every game somebody owns, and shows it as a list sorted by a number. A list is the one shape that cannot answer the question people actually have about their own library, which is not "what is on top" but "what did all of it add up to".</p>
+      <p data-i18n="abt.why_2">So this site draws the library to scale instead: one rectangle per game, area proportional to hours. Thirteen years of a Steam account become one picture, and "forty percent of it went into a single game" stops being a sentence somebody has to work out and becomes the first thing on screen.</p>
+      <p data-i18n="abt.why_3">The rest of it grew out of that. Every game that was ever launched gets a page built out of that game’s own interface, because a shared template would have made a hundred and fifty-nine different games look like one spreadsheet.</p>
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-bar"><span data-i18n="abt.safe">is this safe</span><b data-i18n="abt.safe_tag">the short answer</b></div>
+    <div class="panel-body">
+      <p data-i18n="abt.safe_1">It is a fair question to ask of any site that wants a Steam profile, and the answer is in what this one never asks for.</p>
+      <ul class="abt-list">
+        <li data-i18n-html="abt.safe_login"><b>You never sign in.</b> There is no login, no OpenID, no Steam sign-in button, and nothing here can act on an account. Everything on this site is read from the profile Steam already publishes to anybody.</li>
+        <li data-i18n-html="abt.safe_key"><b>You never give me a key.</b> The Steam API key is mine, it lives on my server, and it is why there is a backend at all - a key in the browser is a key given away.</li>
+        <li data-i18n-html="abt.safe_trade"><b>Nothing here trades, sells or offers anything.</b> No items, no skins, no gambling, no "verify your account". If you find a page on this domain doing any of that, it is not mine.</li>
+        <li data-i18n-html="abt.safe_store"><b>Nothing about you is kept.</b> No account, no cookies, no trackers, no analytics profile. What a lookup produces lives in a cache for fifteen minutes and then it is gone - <a href="/privacy">the privacy page is the long version</a>.</li>
+      </ul>
+      <p data-i18n-html="abt.safe_2">The client half of the site is public, MIT licensed, and <a href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener">every line of it is on GitHub ↗</a>. You do not have to take any of the above on trust; you can read it.</p>
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-bar"><span data-i18n="abt.made">how it is made</span><b data-i18n="abt.made_tag">no build step</b></div>
+    <div class="panel-body">
+      <p data-i18n="abt.made_1">Static HTML, CSS and JavaScript, with no framework, no bundler and no dependencies, in front of one small Python service that talks to Steam. What is in the folder is what the browser gets. The fonts are vendored, so not even a font request leaves for somebody else’s server.</p>
+      <p data-i18n-html="abt.made_2">It is a hobby project and it is built with AI assistance, reviewed and shipped by me. I would rather say that plainly here than have somebody work it out and wonder what else was not said.</p>
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-bar"><span data-i18n="abt.find">where to find me</span><b data-i18n="abt.find_tag">and the site</b></div>
+    <div class="panel-body">
+      <ul class="abt-links">
+        <li><a href="https://github.com/GustavoHSCruz" rel="noopener me" data-i18n="abt.gh">GitHub · GustavoHSCruz ↗</a></li>
+        <li><a href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener" data-i18n="abt.repo">The source of this site ↗</a></li>
+        <li><a href="/u/gordziilla" data-i18n="abt.mine">My own profile, read by the site</a></li>
+        <li><a href="/feedback" data-i18n="abt.say">Tell me something is broken</a></li>
+        <li><a href="/support" data-i18n="abt.help">Help pay the power bill</a></li>
+      </ul>
+      <p class="note" data-i18n="abt.note">steamprofiler.org is not affiliated with Valve. It reads what Steam publishes and nothing else, and it stops working the day Steam stops publishing it.</p>
+    </div>
+  </article>
+</main>
+
+<footer class="foot">
+  <p><a href="/" data-i18n="nav.lookup">look up a profile</a> · <a href="/blog" data-i18n="nav.blog">blog</a> · <a href="/privacy" data-i18n="nav.privacy">privacy</a> · <a class="foot-repo" href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener" data-i18n="foot.repo">source code ↗</a></p>
+  <p class="foot-legal" data-i18n="foot.disclaimer">steamprofiler.org is an independent hobby project. It is not affiliated with, endorsed by, or connected to Valve Corporation. Steam and the Steam logo are trademarks of Valve Corporation. Game names and art belong to their respective owners.</p>
+</footer>
+
+<script src="/dict.js" defer></script>
+<script src="/i18n.js" defer></script>
+<script src="/lib.js" defer></script>
+<script src="/about.js" defer></script>
+</body>
+</html>

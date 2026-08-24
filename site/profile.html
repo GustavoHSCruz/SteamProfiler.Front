@@ -110,6 +110,22 @@
 
   <p class="stage-caption"><span data-i18n="dash.caption">Each rectangle is a game, with area proportional to hours.</span> <span class="only-wide" data-i18n="dash.caption_hint">Hover it, or use the arrow keys.</span></p>
 
+  <!-- ── Explore this profile ─────────────────────────────────────────────
+       Everything below this line already existed, and almost nobody found it.
+       A year had one way in and it was clicking a bar on a chart; the pile was
+       a link inside a panel that only appeared when the pile was not empty; the
+       comparison was a text field at the foot of the library; what an hour cost
+       was the eleventh panel down. This rail is not a feature. It is the list of
+       what this page can already do, put where somebody is still looking.
+
+       Anchors and real links, not scroll handlers: the panels already carry ids
+       (#biblioteca, #raridades, #panel-money), so this works with the script
+       that fills it and keeps working without one. -->
+  <nav class="explore" id="explore" hidden aria-labelledby="explore-lab">
+    <b class="explore-lab" id="explore-lab" data-i18n="go.title">explore this profile</b>
+    <div class="explore-row" id="explore-row"></div>
+  </nav>
+
   <section class="grid" data-tile-in>
 
     <article class="panel p-now">
@@ -121,11 +137,12 @@
     </article>
 
     <article class="panel p-plat">
-      <div class="panel-bar"><span data-i18n="dash.system">system</span><b data-i18n="dash.system_head">linux vs windows</b></div>
+      <div class="panel-bar"><span data-i18n="dash.system">system</span><b id="plat-head">-</b></div>
       <div class="panel-body">
         <p class="figure is-hot"><span id="plat-share">-</span><small data-i18n="dash.system_sub">of the hours with a recorded OS</small></p>
         <div class="meter" id="plat-meter" data-animate="1"><i></i></div>
         <dl class="kv" id="plat-kv"></dl>
+        <ul class="plat-top" id="plat-top"></ul>
         <p class="note" id="plat-note"></p>
       </div>
     </article>
@@ -326,6 +343,14 @@
     <article class="panel p-bl">
       <div class="panel-bar"><span data-i18n="bl.pile">the pile</span><b id="bl-worth">-</b></div>
       <div class="panel-body">
+        <!-- The pile answers "what do I own and never opened". This answers the
+             question somebody actually has in front of a pile, which is "so
+             which one, then". It is a filter with its reason printed, not a
+             recommendation: the site has no idea what anybody likes. -->
+        <div class="pick" id="bl-pick" hidden>
+          <button class="pick-go" id="bl-pick-go" type="button" data-i18n="bl.pick">pick one for me</button>
+          <div class="pick-out" id="bl-pick-out" aria-live="polite"></div>
+        </div>
         <div class="all-tools">
           <input class="all-find" id="bl-find" type="search" autocomplete="off"
                  data-i18n-ph="bl.find" data-i18n-title="bl.find">
@@ -354,14 +379,17 @@
     <h1 class="display" id="yr-title">-</h1>
     <p class="lede" id="yr-lede"></p>
     <p class="yr-nav" id="yr-nav"></p>
+    <!-- The card is drawn by the API, from the same payload this page already
+         read, and it is the only thing on this site that is meant to leave it. -->
+    <p class="yr-card"><a class="yr-card-go" id="yr-card" href="/" target="_blank" rel="noopener"></a></p>
   </header>
 
   <section class="grid">
     <article class="panel p-yr-drop">
-      <div class="panel-bar"><span data-i18n="yr.dropped">put down that year</span><b id="yr-count">-</b></div>
+      <div class="panel-bar"><span data-i18n="yr.dropped">last opened that year</span><b id="yr-count">-</b></div>
       <div class="panel-body">
         <ul class="all" id="yr-list"></ul>
-        <p class="note" data-i18n="yr.note">Steam gives one date per game: the last time it was launched. So a game is on this page if this was the year it was put down for good, not if it was played during it.</p>
+        <p class="note" data-i18n="yr.note">Steam gives one date per game: the last time it was launched. So a game is on this page if this was the last year it was opened - not if it was played during it, and not for good either. Open it again tomorrow and it moves to this year.</p>
       </div>
     </article>
 
@@ -377,7 +405,7 @@
 </main>
 
 <footer class="foot">
-  <p><span data-i18n="foot.source_pre">Read from Steam. Fetched</span> <time id="g-generated"></time>. <a href="/feedback" data-i18n="foot.found_bug">found a bug?</a> · <a href="/blog" data-i18n="nav.blog">blog</a> · <a href="/privacy" data-i18n="nav.privacy">privacy</a> · <a class="foot-repo" href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener" data-i18n="foot.repo">source code ↗</a></p>
+  <p><span data-i18n="foot.source_pre">Read from Steam. Fetched</span> <time id="g-generated"></time>. <a href="/feedback" data-i18n="foot.found_bug">found a bug?</a> · <a href="/blog" data-i18n="nav.blog">blog</a> · <a href="/about" data-i18n="nav.about">about</a> · <a href="/privacy" data-i18n="nav.privacy">privacy</a> · <a class="foot-repo" href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener" data-i18n="foot.repo">source code ↗</a></p>
   <p id="credit-slot"><a href="/u/gordziilla">made with ♥</a></p>
   <p class="foot-legal" data-i18n="foot.disclaimer">steamprofiler.org is an independent hobby project. It is not affiliated with, endorsed by, or connected to Valve Corporation. Steam and the Steam logo are trademarks of Valve Corporation. Game names and art belong to their respective owners.</p>
 </footer>

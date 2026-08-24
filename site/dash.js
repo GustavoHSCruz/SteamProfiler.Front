@@ -266,14 +266,124 @@ function buildNow(now) {
   });
 }
 
-function buildPlatform(p) {
-  el('plat-share').textContent = `${num(p.linux_share, 1)}%`;
-  el('plat-meter').firstElementChild.style.width = `${p.linux_share}%`;
-  kvInto(el('plat-kv'), [
-    [t('dash.linux'), `${num(p.linux_hours)} h`],
-    [t('dash.windows'), `${num(p.windows_hours)} h`],
-    [t('dash.no_os'), `${num(p.unattributed_hours)} h`],
-  ]);
+/* ── Explore this profile ──────────────────────────────────────────────
+   The rail under the treemap.
+
+   This page has always been able to open one year on its own, list the games
+   that were never launched, put two libraries side by side, price an hour and
+   scan for the rarest unlock in the library. What it never did was say so. Each
+   of those lived behind a chart bar, a conditional link, a text field at the
+   foot of a panel, or eleven panels of scrolling.
+
+   So: no new data, no new call, nothing fetched. Every chip here points at
+   something already on the payload or already on the page, and a chip that has
+   nothing behind it is not drawn rather than drawn dead. */
+function buildDiscover(d, query) {
+  const rail = el('explore-row');
+  const wrap = el('explore');
+  if (!rail || !wrap) return;
+
+  const chips = [];
+  const chip = (href, label, hint) => chips.push(h('a', {
+    cls: 'chip',
+    text: label,
+    attr: hint ? { href, title: hint } : { href },
+  }));
+
+  // The years this library actually has something in, newest first. Three of
+  // them: the rail is a way in, not a table of contents, and the years panel
+  // further down is still the place that holds all of them.
+  const years = [...new Set((d.library || [])
+    .map((g) => (g.last_played || '').slice(0, 4)).filter(Boolean))]
+    .sort().reverse().slice(0, 3);
+  for (const y of years) chip(`/u/${query}/year/${y}`, y, t('go.year_hint', { year: y }));
+
+  const never = (d.unplayed || []).length;
+  if (never) {
+    chip(`/u/${query}/backlog`, t('go.pile', { n: num(never) }), t('go.pile_hint'));
+  }
+  // The compare field lives at the foot of the library panel, which is where
+  // this points; #biblioteca is that panel and it has carried the id all along.
+  chip('#biblioteca', t('go.vs'), t('go.vs_hint'));
+  if (d.money?.per_hour != null) chip('#panel-money', t('go.money'), t('go.money_hint'));
+  // The scan panels: the chip carries somebody to the button, and does not
+  // press it. Pressing costs three calls per game against the owner's quota,
+  // and a visitor who did not ask for that should not have it spent for them.
+  chip('#raridades', t('go.rare'), t('go.rare_hint'));
+
+  rail.textContent = '';
+  for (const c of chips) rail.append(c);
+  wrap.hidden = !chips.length;
+}
+
+/** Where the hours were spent, across all four things Steam records.
+ *
+ *  The payload has carried mac and deck since the platform block was written
+ *  and this panel showed neither: it read `linux_share` and printed linux
+ *  against windows, so a Steam Deck's hours arrived, were counted into the
+ *  total, and then had no line to appear on. This draws every device that has
+ *  anything on it, and stays quiet about the ones that have nothing rather
+ *  than printing a row of zeroes - an account that never saw a Mac does not
+ *  need to be told it has 0 h of Mac.
+ *
+ *  `library` is here for the same reason: with per-game `os` minutes already
+ *  on every row, "which game owns this device" is a reduce, not a request. */
+function buildPlatform(p, library = []) {
+  // Three operating systems, and the Deck is not one of them: Steam reports a
+  // Deck's hours inside `playtime_linux_forever` as well as on their own, so
+  // adding the four together counts every Deck hour twice. That is what the
+  // backend was doing until this round, and it is why the split here is
+  // Windows/Mac/Linux and the Deck arrives below as a share of Linux rather
+  // than as a fourth slice. Confirmed against payloads where a game reported
+  // playtime_forever=5, linux=5 and deck=5 - the same five minutes, three times.
+  const DEVICES = [
+    { key: 'windows', hours: p.windows_hours, label: t('dash.windows') },
+    { key: 'linux', hours: p.linux_hours, label: t('dash.linux') },
+    { key: 'mac', hours: p.mac_hours, label: t('dash.mac') },
+  ].filter((d) => (d.hours || 0) > 0).sort((a, b) => b.hours - a.hours);
+
+  const top = DEVICES[0];
+  const attributed = p.attributed_hours || 0;
+  const share = (h) => (attributed ? (h / attributed) * 100 : 0);
+
+  // The headline is whichever device actually holds the most, instead of always
+  // being linux. On a Windows account that used to read "13.6%" under the word
+  // "linux", which is a true number answering a question nobody asked.
+  el('plat-share').textContent = top ? `${num(share(top.hours), 1)}%` : '-';
+  el('plat-meter').firstElementChild.style.width = `${top ? share(top.hours) : 0}%`;
+  el('plat-head').textContent = top ? top.label : t('dash.no_os');
+
+  const rows = DEVICES.map((d) => [d.label, `${num(d.hours)} h`]);
+  // Indented under Linux, worded as a share of it, because that is what it is.
+  if ((p.deck_hours || 0) > 0) {
+    rows.push([t('dash.deck'), t('dash.deck_of_linux', {
+      h: num(p.deck_hours),
+      pct: num(p.linux_hours ? (p.deck_hours / p.linux_hours) * 100 : 0),
+    })]);
+  }
+  rows.push([t('dash.no_os'), `${num(p.unattributed_hours)} h`]);
+  kvInto(el('plat-kv'), rows);
+
+  // One line per device naming the game that dominated it. Free: every library
+  // row already carries its own per-OS minutes.
+  const holder = el('plat-top');
+  holder.textContent = '';
+  const named = (p.deck_hours || 0) > 0
+    ? DEVICES.concat([{ key: 'deck', label: t('dash.deck') }])
+    : DEVICES;
+  for (const d of named) {
+    let best = null;
+    for (const g of library) {
+      const min = (g.os || {})[d.key] || 0;
+      if (min > 0 && (!best || min > best.min)) best = { name: g.name, min };
+    }
+    if (!best) continue;
+    holder.append(h('li', { cls: 'plat-top-row' },
+      h('span', { cls: 'plat-top-dev', text: d.label }),
+      h('b', { cls: 'plat-top-game', text: best.name }),
+      h('span', { cls: 'plat-top-h', text: `${hrs(best.min / 60)} h` })));
+  }
+
   el('plat-note').textContent = t('dash.system_note', {
     un: num(p.unattributed_hours), at: num(p.attributed_hours),
   });
@@ -1408,9 +1518,95 @@ async function renderBacklog(d, query) {
     });
   }
 
+  buildPick(games, query, { priceOf, yearOf, freeOf, currency });
+
   more.addEventListener('click', () => { shown += PILE_PAGE; draw(); });
   find.addEventListener('input', () => { shown = PILE_PAGE; draw(); });
   draw();
+}
+
+/** One game out of the pile, and the reason it was the one.
+ *
+ *  Standing in front of three hundred unopened games is the problem this page
+ *  describes and does not solve. What solves it is a smaller number, and the
+ *  honest way to get to one is to say out loud which rule produced it.
+ *
+ *  So: a handful of rules, each of which can name itself in one line, and the
+ *  rule is picked at random rather than the game. "The most expensive thing you
+ *  have never opened" is a fact about the library. "You might like this" would
+ *  be an invention - the site knows what somebody owns and nothing whatever
+ *  about what they enjoy, and a pile of unplayed games is the proof. */
+function buildPick(games, query, { priceOf, yearOf, freeOf, currency }) {
+  const wrap = el('bl-pick');
+  const go = el('bl-pick-go');
+  const out = el('bl-pick-out');
+  if (!wrap || !go || !out || games.length < 2) return;
+  wrap.hidden = false;
+
+  const withPrice = games.filter((g) => priceOf(g.appid) != null);
+  const withYear = games.filter((g) => yearOf(g.appid) != null);
+  const pickOne = (rows) => rows[Math.floor(Math.random() * rows.length)];
+
+  // Every rule returns the game and the key that explains it, or null when the
+  // library cannot answer that particular question - a pile with no prices in
+  // the store cache yet simply has fewer rules available, rather than a rule
+  // that fires with a blank in it.
+  const RULES = [
+    () => {
+      if (!withPrice.length) return null;
+      const g = withPrice.reduce((a, b) => (priceOf(b.appid) > priceOf(a.appid) ? b : a));
+      return { g, why: t('bl.why_dear', { v: cash(priceOf(g.appid), currency) }) };
+    },
+    () => {
+      if (!withYear.length) return null;
+      const g = withYear.reduce((a, b) => (yearOf(b.appid) < yearOf(a.appid) ? b : a));
+      return { g, why: t('bl.why_old', { year: yearOf(g.appid) }) };
+    },
+    () => {
+      if (!withYear.length) return null;
+      const g = withYear.reduce((a, b) => (yearOf(b.appid) > yearOf(a.appid) ? b : a));
+      return { g, why: t('bl.why_new', { year: yearOf(g.appid) }) };
+    },
+    () => {
+      const free = games.filter((g) => freeOf(g.appid));
+      if (!free.length) return null;
+      const g = pickOne(free);
+      return { g, why: t('bl.why_free') };
+    },
+    () => {
+      const cheap = withPrice.filter((g) => priceOf(g.appid) > 0);
+      if (!cheap.length) return null;
+      const g = cheap.reduce((a, b) => (priceOf(b.appid) < priceOf(a.appid) ? b : a));
+      return { g, why: t('bl.why_cheap', { v: cash(priceOf(g.appid), currency) }) };
+    },
+    () => ({ g: pickOne(games), why: t('bl.why_random', { n: num(games.length) }) }),
+  ];
+
+  let last = null;
+  function press() {
+    // Shuffle the rules and take the first that can answer. Two presses in a
+    // row landing on the same game reads as a broken button, so a repeat is
+    // retried once - once, and not until it differs, because a pile of two
+    // games has no third answer to find.
+    const order = RULES.slice().sort(() => Math.random() - 0.5);
+    let got = null;
+    for (const rule of order) {
+      got = rule();
+      if (got && (!last || got.g.appid !== last)) break;
+      if (got && last && got.g.appid === last) got = null;
+    }
+    if (!got) for (const rule of order) { got = rule(); if (got) break; }
+    if (!got) return;
+
+    last = got.g.appid;
+    out.textContent = '';
+    out.append(h('a', { cls: 'pick-card', attr: { href: `/u/${query}/${got.g.appid}` } },
+      h('b', { cls: 'pick-name', text: got.g.name }),
+      h('span', { cls: 'pick-why', text: got.why })));
+    go.textContent = t('bl.pick_again');
+  }
+
+  go.addEventListener('click', press);
 }
 
 /* ── One year ──────────────────────────────────────────────────────────
@@ -1450,6 +1646,21 @@ function renderYear(d, year, query) {
   // date rather than a count.
   if ((pf.member_since || '').slice(0, 4) === year) {
     el('yr-lede').textContent += ` ${t('yr.opened', { date: longDate(pf.member_since) })}`;
+  }
+
+  // The year as a picture, for the one thing a page like this is for: showing
+  // somebody else. Built by the API off the payload already fetched, so the
+  // link costs nothing until it is clicked, and it is only offered for a year
+  // that has something in it - a card of an empty year is an empty card.
+  const card = el('yr-card');
+  if (card) {
+    if (games.length) {
+      card.href = `/api/card.png?q=${encodeURIComponent(query)}&year=${year}`;
+      card.textContent = t('yr.card');
+      card.parentElement.hidden = false;
+    } else {
+      card.parentElement.hidden = true;
+    }
   }
 
   // Every year this library has anything in, so the arrows only ever point at
@@ -1578,8 +1789,9 @@ function renderDashboard(d, query) {
     timer = setTimeout(() => buildMap(d.library, totals.hours, query), 180);
   });
 
+  buildDiscover(d, query);
   buildNow(d.now);
-  buildPlatform(d.platform);
+  buildPlatform(d.platform, d.library);
   buildAccount(pf);
   buildShowcase(pf);
   buildPages(d.top_games, query);
