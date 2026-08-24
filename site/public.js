@@ -77,7 +77,6 @@ function heading(g) {
   return h('header', { cls: 'gp-head' },
     bits.length ? h('p', { cls: 'gp-kicker', text: bits.join('  ·  ') }) : null,
     h('h1', { cls: 'gp-title display', text: g.name }),
-    h('p', { cls: 'gp-what', text: t('gp.what') }),
     h('p', { cls: 'gp-steam' },
       h('a', {
         cls: 'btn-steam',
