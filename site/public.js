@@ -490,8 +490,8 @@ function catalogueBlock(g) {
     wrap.append(grid);
   }
 
-  const about = c.about?.startsWith(c.description || '')
-    ? c.about.slice((c.description || '').length).trim() : c.about;
+  const about = c.description && c.about?.includes(c.description)
+    ? c.about.replace(c.description, '').trim() : c.about;
   if (c.description || about) wrap.append(h('section', { cls: 'gp-cat-about' },
     h('h3', { cls: 'gp-h', text: t('gp.about_game') }),
     c.description ? h('p', { cls: 'gp-cat-lede', text: c.description }) : null,

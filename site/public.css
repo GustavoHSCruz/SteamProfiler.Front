@@ -207,8 +207,8 @@
 .gp-cat-fact { min-width: 0; padding: 16px; border-right: 1px solid var(--line); }
 .gp-cat-fact:last-child { border-right: 0; }
 .gp-cat-fact b {
-  display: block; font-family: var(--mono); font-size: clamp(1.25rem, 3vw, 1.8rem);
-  color: var(--text); overflow-wrap: anywhere;
+  display: block; font-family: var(--mono); font-size: clamp(1.05rem, 2.4vw, 1.8rem);
+  color: var(--text); white-space: nowrap;
 }
 .gp-cat-fact span, .gp-cat-inventory span {
   display: block; margin-top: 5px; color: var(--faint); font-family: var(--label);
