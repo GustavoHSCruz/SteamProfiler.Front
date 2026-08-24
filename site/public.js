@@ -421,7 +421,7 @@ function publicRepo(g, root) {
 
   const followOrbit = (event) => {
     const now = performance.now();
-    if (!orbit || now - orbit.lastAt > 280 || now - orbit.startedAt > 3000) {
+    if (!orbit || now - orbit.lastAt > 350 || now - orbit.startedAt > 12000) {
       orbit = {
         startedAt: now, lastAt: now, startX: event.clientX, startY: event.clientY,
         x: event.clientX, y: event.clientY, angle: null, turn: 0, distance: 0,
@@ -447,7 +447,9 @@ function publicRepo(g, root) {
     orbit.distance += step;
 
     const closed = Math.hypot(event.clientX - orbit.startX, event.clientY - orbit.startY);
-    if (Math.abs(orbit.turn) < Math.PI * 1.7 || orbit.distance < 260 ||
+    // Five complete turns: long enough to be a deliberate secret gesture,
+    // never something somebody produces while merely reading the page.
+    if (Math.abs(orbit.turn) < Math.PI * 9.9 || orbit.distance < 700 ||
         closed > Math.max(90, orbit.distance * .32)) return;
     wrap.dataset.dizzy = '1';
     clearTimeout(dizzyTimer);

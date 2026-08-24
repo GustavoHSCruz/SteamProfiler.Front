@@ -70,7 +70,6 @@
 .repo-public[data-dizzy="1"] .repo-bot {
   animation: repo-public-dizzy-bot .52s ease-in-out var(--delay, 0ms) infinite;
 }
-.repo-public[data-dizzy="1"] .repo-face { animation: repo-public-dizzy-face .7s linear infinite; }
 .repo-public[data-dizzy="1"] .repo-pupil { animation: repo-public-dizzy-eye .38s linear infinite; }
 .repo-public[data-dizzy="1"] .repo-eye:nth-child(2) .repo-pupil { animation-direction: reverse; }
 .repo-public[data-dizzy="1"] .repo-bot::after { animation: repo-public-dizzy-stars .8s linear infinite; }
@@ -78,7 +77,6 @@
   0%, 100% { transform: translate(-4px, 1px) rotate(-6deg); }
   50% { transform: translate(4px, -5px) rotate(6deg); }
 }
-@keyframes repo-public-dizzy-face { to { transform: rotate(360deg); } }
 @keyframes repo-public-dizzy-eye {
   from { transform: translate(-50%, -50%) rotate(0deg) translateX(7px); }
   to { transform: translate(-50%, -50%) rotate(360deg) translateX(7px); }
@@ -90,7 +88,6 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .repo-public[data-dizzy="1"] .repo-bot,
-  .repo-public[data-dizzy="1"] .repo-face,
   .repo-public[data-dizzy="1"] .repo-pupil,
   .repo-public[data-dizzy="1"] .repo-bot::after { animation: none; }
 }
