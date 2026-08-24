@@ -97,6 +97,21 @@ function h(tag, opts = {}, ...kids) {
   return e;
 }
 
+/** append(), without the surprise in it.
+ *
+ *  `Element.append(null)` does not skip the null: it stringifies it, and the
+ *  word "null" lands on the page as text. h() has always skipped falsy
+ *  children - `for (const kid of kids) if (kid)` - so a block built with h()
+ *  was safe and the same helper appended one at a time was not. That is how
+ *  "null" showed up under a price: priceRate() returns null for a game with
+ *  no hours on the clock, and the line below the figure appended it directly.
+ *
+ *  Same courtesy as h(), for the places that append outside of it. */
+function put(parent, ...kids) {
+  for (const kid of kids) if (kid) parent.append(kid);
+  return parent;
+}
+
 const txt = (s) => document.createTextNode(s);
 
 /** A bar that fills to `pct`, measured out once unless stillness was asked for. */

@@ -1695,7 +1695,7 @@ function renderRust(g, root) {
     return h('section', { cls: 'rs-panel' }, h('h2', { cls: 'rs-h', text: title }), box);
   };
 
-  wrap.append(
+  put(wrap,
     ledger(t('g.rs_harvested'), s.harvest, 'rs-list--harvest'),
     ledger(t('g.rs_killed'), s.kills, 'rs-list--kills'),
     ledger(t('g.rs_died_of'), s.deaths_by, 'rs-list--deaths'));
@@ -3307,7 +3307,7 @@ function renderBareReadout(g, root) {
 
 function renderBareScreen(g, root) {
   const wrap = h('div', { cls: 'bscr' });
-  wrap.append(bareArt('bscr-art', g));
+  put(wrap, bareArt('bscr-art', g));
 
   wrap.append(h('section', { cls: 'bscr-in' },
     h('h1', { cls: 'bscr-line', text: bareSays(g) }),
@@ -5394,7 +5394,7 @@ function pricePlain(f) {
   if (f.now) {
     wrap.append(h('p', { cls: 'pz-figure' },
       priceNow('pz-figure-now', f), priceWas('pz-figure-old', f), priceOff('pz-figure-cut', f)));
-    wrap.append(priceRate('pz-figure-rate', f));
+    put(wrap, priceRate('pz-figure-rate', f));
   }
   wrap.append(h('p', { cls: 'pz-says', text: priceSays(f) }));
   if (f.state !== 'absent' && f.state !== 'down') wrap.append(priceLink('pz-go', f));
@@ -5473,7 +5473,7 @@ function renderGame(g, root) {
     // renderEmpty draws the art itself, and larger, because it has less to say.
     renderEmpty(g, root);
   } else {
-    if (!ART_OWN.has(g.theme)) root.append(artBand(g));
+    if (!ART_OWN.has(g.theme)) put(root, artBand(g));
     (LAYOUTS[g.theme] || renderGeneric)(g, root);
   }
   // Last, and after both arms on purpose: what a game costs is true of the game
