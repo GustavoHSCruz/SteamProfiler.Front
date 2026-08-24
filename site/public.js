@@ -30,6 +30,25 @@ const APPID = (() => {
 
 const root = () => el('gp-root');
 
+function themeFromHead() {
+  const tag = document.querySelector('meta[name="sp-game"]');
+  return tag && tag.content.trim() || '';
+}
+
+function waitOpen() {
+  const theme = themeFromHead();
+  if (theme) document.documentElement.dataset.game = theme;
+  const wait = el('gp-wait');
+  wait.dataset.theme = theme || 'generic';
+  const art = el('gp-wait-art');
+  if (art && APPID) {
+    art.src = `/art/${APPID}.jpg`;
+    art.addEventListener('error', () => art.closest('.gpw-art')?.remove(), { once: true });
+  }
+  wait.hidden = false;
+  return performance.now();
+}
+
 function fail(message) {
   el('gp-wait').hidden = true;
   el('gp').hidden = true;
@@ -86,6 +105,51 @@ function heading(g) {
           target: '_blank', rel: 'noopener',
         },
       })));
+}
+
+/** FC's public page keeps the club-card language of the profile page, but every
+ *  number is global. The large number is the median Steam unlock rate, clearly
+ *  labelled; it is not a made-up player rating and there is no implied owner. */
+function eaFcOverview(g) {
+  const set = g.achievements || {};
+  const known = (set.list || []).filter((a) => a.rarity != null)
+    .slice().sort((a, b) => a.rarity - b.rarity);
+  const rare = known[0];
+  const median = known.length ? known[Math.floor(known.length / 2)].rarity : null;
+  const common = known.filter((a) => a.rarity >= 50).length;
+  const storeFacts = g.store || {};
+  const kicker = [storeFacts.year, ...(storeFacts.genres || [])
+    .map((x) => typeof x === 'string' ? x : x?.name).filter(Boolean).slice(0, 2)]
+    .filter(Boolean).join(' · ');
+
+  const art = h('div', { cls: 'gpf-art' },
+    h('img', { attr: { src: g.art, alt: '', 'aria-hidden': 'true', loading: 'eager' } }));
+  const card = h('section', { cls: 'gpf-card' },
+    h('div', { cls: 'gpf-face' },
+      h('b', { cls: 'gpf-rate', text: rarity(median) }),
+      h('span', { cls: 'gpf-rate-label', text: t('gp.fc_median') }),
+      h('p', { cls: 'gpf-name', text: g.name })),
+    h('div', { cls: 'gpf-body' },
+      kicker ? h('p', { cls: 'gpf-kicker', text: kicker }) : null,
+      h('h1', { cls: 'gpf-title', text: t('gp.fc_card') }),
+      h('div', { cls: 'gpf-stats' },
+        h('div', { cls: 'gpf-stat' }, h('b', { text: num(set.total || known.length) }),
+          h('span', { text: t('gp.fc_achievements') })),
+        h('div', { cls: 'gpf-stat' }, h('b', { text: rarity(rare?.rarity) }),
+          h('span', { text: t('gp.fc_rarest') })),
+        h('div', { cls: 'gpf-stat' }, h('b', { text: num(common) }),
+          h('span', { text: t('gp.fc_common') }))),
+      rare ? h('div', { cls: 'gpf-rare' },
+        rare.icon ? h('img', { attr: { src: rare.icon, alt: '', loading: 'eager' } }) : null,
+        h('div', {}, h('span', { cls: 'gpf-rare-label', text: t('gp.rarest') }),
+          h('strong', { text: rare.name })),
+        h('b', { cls: 'gpf-rare-pct', text: rarity(rare.rarity) })) : null,
+      h('div', { cls: 'gpf-actions' },
+        h('a', { cls: 'btn-steam', text: t('gp.on_steam'), attr: {
+          href: `https://store.steampowered.com/app/${g.appid}/`, target: '_blank', rel: 'noopener',
+        }})),
+      h('p', { cls: 'gpf-note', text: t('gp.fc_note') })));
+  return h('div', { cls: 'gpf' }, art, card);
 }
 
 /** The set, rarest first.
@@ -280,7 +344,7 @@ function lookup(g) {
     return;
   }
 
-  el('gp-wait').hidden = false;
+  const waitAt = waitOpen();
 
   let g;
   try {
@@ -296,11 +360,21 @@ function lookup(g) {
   if (g.theme) document.documentElement.dataset.game = g.theme;
   document.title = `${g.name} - steamprofiler.org`;
 
+  // A cached response can return before the browser paints once. A very short
+  // floor lets a themed opening exist without turning a fast page into a wait.
+  const waitFloor = g.theme ? 520 : 0;
+  const remaining = waitFloor - (performance.now() - waitAt);
+  if (remaining > 0) await new Promise((resolve) => setTimeout(resolve, remaining));
+
   el('gp-wait').hidden = true;
   el('gp').hidden = false;
 
   const out = root();
-  put(out, artBand(g), heading(g), ladder(g), priceBlock(g), lookup(g));
+  if (g.theme === 'ea-fc') {
+    put(out, eaFcOverview(g), ladder(g), priceBlock(g), lookup(g));
+  } else {
+    put(out, artBand(g), heading(g), ladder(g), priceBlock(g), lookup(g));
+  }
 
   // "Read from Steam. Fetched ." with nothing after it is what the footer said
   // on every page that failed before it had an answer, so the sentence is held

@@ -67,12 +67,19 @@
   </nav>
 </header>
 
-<!-- The wait. Two calls to Steam on a cold app, so the page says which game it
-     is reading rather than spinning. Deliberately not boot.js: that file draws
-     the treemap skeleton of a library, and there is no library here. -->
+<!-- The wait is the empty shape of the public page that is coming. The server
+     puts the theme in the head before first paint, so known games do not spend
+     their loading time dressed as the generic site. -->
 <section class="gpw" id="gp-wait" hidden>
-  <p class="gpw-head" data-i18n="gp.wait">Reading this game off Steam</p>
-  <div class="gpw-track" role="progressbar" aria-valuemin="0" aria-valuemax="100"><i></i></div>
+  <div class="gpw-art" aria-hidden="true"><img id="gp-wait-art" alt=""></div>
+  <div class="gpw-card" aria-hidden="true">
+    <div class="gpw-card-face"><i></i><i></i><i></i></div>
+    <div class="gpw-card-stats"><i></i><i></i><i></i><i></i></div>
+  </div>
+  <div class="gpw-status">
+    <p class="gpw-head" data-i18n="gp.wait">Reading this game off Steam</p>
+    <div class="gpw-track" role="progressbar" aria-valuemin="0" aria-valuemax="100"><i></i></div>
+  </div>
 </section>
 
 <div class="state state--fail" id="failure" hidden>
