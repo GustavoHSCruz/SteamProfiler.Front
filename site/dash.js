@@ -31,66 +31,9 @@ const TINTS = {
   286570: '#e10600',   // F1 2015
 };
 
-/* ── Treemap ───────────────────────────────────────────────────────
-   Squarified layout (Bruls, Huizing & van Wijk): fill the shorter side of the
-   remaining rectangle with a row of cells, and close the row as soon as adding
-   one more would make its aspect ratios worse. Keeping cells near-square is the
-   only way a map of this many games stays readable. */
-
-function squarify(items, x0, y0, w0, h0) {
-  const out = [];
-  const total = items.reduce((s, i) => s + i.value, 0);
-  if (!total || w0 <= 0 || h0 <= 0) return out;
-
-  const scale = (w0 * h0) / total;
-  let x = x0, y = y0, w = w0, h = h0;
-  const queue = items.slice();
-  let row = [];
-  let rowArea = 0;
-
-  /** Worst aspect ratio in a row of these areas laid along a side of `len`. */
-  const worst = (areas, sum, len) => {
-    if (!areas.length || sum <= 0) return Infinity;
-    let mx = -Infinity, mn = Infinity;
-    for (const a of areas) { if (a > mx) mx = a; if (a < mn) mn = a; }
-    const s2 = sum * sum, l2 = len * len;
-    return Math.max((l2 * mx) / s2, s2 / (l2 * mn));
-  };
-
-  const flush = () => {
-    if (!row.length) return;
-    const len = Math.min(w, h);
-    const thick = rowArea / len;
-    let off = 0;
-    for (const r of row) {
-      const side = (r.area / rowArea) * len;
-      if (w >= h) out.push({ item: r.item, x, y: y + off, w: thick, h: side });
-      else out.push({ item: r.item, x: x + off, y, w: side, h: thick });
-      off += side;
-    }
-    if (w >= h) { x += thick; w = Math.max(0, w - thick); }
-    else { y += thick; h = Math.max(0, h - thick); }
-    row = [];
-    rowArea = 0;
-  };
-
-  while (queue.length) {
-    const it = queue[0];
-    const area = it.value * scale;
-    const len = Math.min(w, h);
-    if (len <= 0) break;
-    const areas = row.map((r) => r.area);
-    if (!row.length || worst(areas, rowArea, len) >= worst(areas.concat(area), rowArea + area, len)) {
-      row.push({ item: it.item, area });
-      rowArea += area;
-      queue.shift();
-    } else {
-      flush();
-    }
-  }
-  flush();
-  return out;
-}
+/* The squarified treemap layout lives in lib.js: this page draws one and so
+   does the landing page, and one of them having its own copy is how the two
+   maps end up disagreeing about what "to scale" means. */
 
 function buildMap(library, totalHours, query) {
   const box = el('map');
@@ -1402,8 +1345,6 @@ function buildBoard(steamid, query, friends, me) {
    three hundred games nobody did would be a hundred megabytes of nothing. */
 
 const PILE_PAGE = 60;
-const HEADER_ART = 'https://cdn.cloudflare.steamstatic.com/steam/apps';
-
 async function renderBacklog(d, query) {
   const games = d.unplayed || [];
   const list = el('bl-list');

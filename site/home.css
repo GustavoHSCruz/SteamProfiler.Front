@@ -418,35 +418,115 @@ a.cell[data-dark="1"]:hover, .cell[data-dark="1"][data-on="1"] {
 }
 
 /* ── Landing ──────────────────────────────────────────────────────────
-   No treemap here yet - there is no profile to draw. The field is the
-   whole page, sitting in the same floating-window chrome the dashboard
-   headline uses so the two read as one site. */
+   Four bands, and each one is a thing rather than a claim about one. The
+   stage is the library itself with the field floating on it. The rail is the
+   covers of the games that have a page, which is what "a page built out of
+   that game's own interface" means. The cards are the sub-pages, each linking
+   to the example profile's own. The three promises stay last, where they were,
+   because they are what somebody scrolls to the bottom to check.
+
+   The grid behind all of it is the same one the dashboard sits on: a tiling
+   workspace, 40px, barely there. */
 
 .land {
-  display: grid;
-  place-items: center;
-  min-height: calc(100vh - 42px - 120px);
-  padding: clamp(30px, 7vh, 90px) var(--edge);
+  padding: 0 0 clamp(40px, 6vh, 80px);
   background-image:
-    radial-gradient(80% 60% at 50% -10%, #ffb4540f 0%, transparent 60%),
+    radial-gradient(90% 55% at 50% -8%, #ffb4540f 0%, transparent 62%),
     repeating-linear-gradient(0deg, #ffffff05 0 1px, transparent 1px 40px),
     repeating-linear-gradient(90deg, #ffffff05 0 1px, transparent 1px 40px);
 }
-.land-in { width: 100%; max-width: 780px; }
-.land .display { font-size: clamp(2.2rem, 6.4vw, 4.4rem); }
-.land .lede { max-width: 62ch; margin-top: 24px; }
 
-.find {
-  margin: clamp(30px, 4vw, 46px) 0 0;
-  padding: clamp(18px, 2.4vw, 26px);
-  background: var(--panel);
+/* Every band below the stage lines up on the same gutter as the status bar. */
+.rail, .turns, .promise { padding-inline: var(--edge); }
+
+/* ── The stage ────────────────────────────────────────────────────────
+   One tile, the height of what is left of the screen under the status bar,
+   holding a map of a real library. The first version of this page put the map
+   in a column next to the headline; this one puts the headline on the map,
+   because a picture with a paragraph beside it is an illustration and a
+   picture with a window on it is a desktop. */
+
+.land-stage {
+  position: relative;
+  margin: var(--edge);
+  height: clamp(520px, calc(100vh - 42px - 2 * var(--edge) - 30px), 840px);
+}
+
+.land-frame {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r);
+  overflow: hidden;
+  /* A floor under the cells: they are amber at an opacity that carries how
+     many hours each one holds, so what is behind them is read as part of their
+     colour. Darker than the page, so the tile reads as a screen inside the
+     screen rather than as the page with rectangles on it. */
+  background: #0d0c12;
+  box-shadow: inset 0 0 0 1px var(--line), 0 30px 80px -50px #000;
+}
+
+.land-map { position: absolute; inset: 0; }
+/* Nothing is written in these, so the rounding that keeps a labelled cell from
+   crowding its own text is just four notches of the floor showing through at
+   every corner - and at seventy-two cells that reads as a dotted grid rather
+   than as a mosaic. Square-ish, with the floor drawn as a hairline inside each
+   one, which is what makes two neighbours of the same weight two rectangles
+   instead of one blob. */
+.land-map .cell {
+  padding: 0;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #0d0c12;
+  transition: none;
+}
+
+/* Laid in from the largest rectangle outwards, which is the order the eye
+   reads it in anyway. The delay per cell is set by search.js, because it
+   depends on how many cells there turned out to be. */
+@keyframes land-cell-in {
+  from { opacity: 0; transform: scale(0.86); }
+  to   { opacity: 1; transform: none; }
+}
+.land-map[data-animate="1"] .cell {
+  animation: land-cell-in 460ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .land-map[data-animate="1"] .cell { animation: none; }
+}
+
+/* ── The window ───────────────────────────────────────────────────────
+   The one element that breaks the tiling, and the only floating thing on the
+   site apart from the dashboard's own. Bottom left, because the map's biggest
+   rectangle is top left and covering the one cell nobody can miss with the one
+   panel nobody can miss is two things fighting for the same corner. */
+
+.land-win {
+  position: absolute;
+  left: clamp(14px, 3vw, 34px);
+  bottom: clamp(14px, 3vw, 34px);
+  z-index: 4;
+  width: min(560px, calc(100% - clamp(28px, 6vw, 68px)));
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(18px) saturate(1.2);
   border: 1px solid var(--line-2);
   border-radius: var(--r);
-  box-shadow: 0 24px 60px -34px #000;
+  box-shadow: 0 28px 70px -22px #000, 0 0 0 1px #00000060;
+  overflow: hidden;
+}
+
+/* The title bar, and the mode switch is in it. Two tabs of one window is what
+   "profile or game" actually is - it changes what the whole panel is for, not
+   one setting inside a form, and it was reading as the latter while it sat
+   above the input like a checkbox. */
+.land-win-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 8px 7px 16px;
+  background: #ffffff06;
+  border-bottom: 1px solid var(--line);
 }
 .find-label {
-  display: block;
-  margin-bottom: 10px;
   font-family: var(--label);
   font-size: 10px;
   font-weight: var(--label-w);
@@ -454,19 +534,32 @@ a.cell[data-dark="1"]:hover, .cell[data-dark="1"][data-on="1"] {
   text-transform: uppercase;
   color: var(--dim);
 }
-.find-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; }
-.find-kind { display: flex; gap: 4px; padding: 3px; border: 1px solid var(--line); border-radius: 999px; }
+.find-kind { display: flex; gap: 3px; padding: 3px; border: 1px solid var(--line); border-radius: 999px; }
 .find-kind-btn {
-  padding: 4px 10px;
+  padding: 3px 11px;
   border: 0;
   border-radius: 999px;
   background: transparent;
   color: var(--faint);
   font: 11px var(--mono);
   cursor: pointer;
+  transition: color 140ms ease;
 }
+.find-kind-btn:hover { color: var(--dim); }
 .find-kind-btn[aria-pressed="true"] { background: var(--panel-2); color: var(--text); }
-.find-row { position: relative; display: flex; gap: 8px; margin-top: 8px; }
+@media (prefers-reduced-motion: reduce) { .find-kind-btn { transition: none; } }
+
+.land-win-body { padding: clamp(18px, 2.4vw, 28px); }
+.land-win-body .eyebrow { margin-top: 0; }
+.land-win .display { font-size: clamp(1.9rem, 3.4vw, 2.9rem); }
+.land-win .lede {
+  margin: 14px 0 0;
+  max-width: none;
+  font-size: clamp(0.9rem, 1vw, 1rem);
+}
+
+.find { margin: 0; }
+.find-row { position: relative; display: flex; gap: 8px; margin-top: clamp(18px, 2vw, 24px); }
 .find-input {
   flex: 1;
   min-width: 0;
@@ -496,17 +589,20 @@ a.cell[data-dark="1"]:hover, .cell[data-dark="1"][data-on="1"] {
 .find-go:hover { filter: brightness(1.08); }
 .find-go:disabled { opacity: 0.6; cursor: progress; }
 
+/* Upwards. The window sits at the bottom of the stage, so a list dropping out
+   of the input would hang off the tile and over the caption under it. */
 .game-results {
   position: absolute;
   z-index: 8;
+  bottom: calc(100% + 5px);
   width: min(560px, calc(100% - 16px));
-  margin: 4px 0 0;
+  margin: 0;
   padding: 5px;
   list-style: none;
   background: var(--panel);
   border: 1px solid var(--line-2);
   border-radius: 9px;
-  box-shadow: 0 18px 36px #0009;
+  box-shadow: 0 -18px 36px #0009;
 }
 .game-result { margin: 0; }
 .game-result a {
@@ -522,15 +618,15 @@ a.cell[data-dark="1"]:hover, .cell[data-dark="1"][data-on="1"] {
 .game-result small { flex: none; color: var(--faint); font: 10px var(--mono); }
 
 .find-help {
-  margin: 14px 0 0;
+  margin: 13px 0 0;
   font-family: var(--mono);
-  font-size: 11.5px;
-  line-height: 1.7;
+  font-size: 11px;
+  line-height: 1.65;
   color: var(--faint);
 }
 .find-help b { color: var(--dim); font-weight: 400; }
 .find-error {
-  margin: 14px 0 0;
+  margin: 13px 0 0;
   padding: 11px 13px;
   background: #ff5f4514;
   border-left: 2px solid #ff7a5c;
@@ -542,11 +638,13 @@ a.cell[data-dark="1"]:hover, .cell[data-dark="1"][data-on="1"] {
 }
 
 /* ── What you looked up before ─────────────────────────────────────────
-   Under the field and above the notes, because it is a shortcut into the field
+   Inside the window, under the field, because it is a shortcut into the field
    rather than a section of the page. Mono and quiet: these are handles, and a
    handle is a string somebody typed, not a title. */
 .recent {
-  margin: clamp(20px, 2.6vw, 30px) 0 0;
+  margin: 16px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -555,7 +653,7 @@ a.cell[data-dark="1"]:hover, .cell[data-dark="1"][data-on="1"] {
 .recent-head {
   margin: 0;
   font-family: var(--mono);
-  font-size: 11.5px;
+  font-size: 10.5px;
   font-weight: 400;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -567,19 +665,19 @@ a.cell[data-dark="1"]:hover, .cell[data-dark="1"][data-on="1"] {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 7px;
 }
 .recent-chip {
   display: inline-block;
-  max-width: 22ch;
+  max-width: 20ch;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding: 5px 11px;
+  padding: 4px 10px;
   border: 1px solid var(--line);
   border-radius: 999px;
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--dim);
   text-decoration: none;
   transition: border-color 140ms ease, color 140ms ease;
@@ -596,7 +694,7 @@ a.cell[data-dark="1"]:hover, .cell[data-dark="1"][data-on="1"] {
   background: none;
   border: 0;
   font-family: var(--mono);
-  font-size: 11.5px;
+  font-size: 11px;
   color: var(--faint);
   cursor: pointer;
   text-decoration: underline;
@@ -604,12 +702,262 @@ a.cell[data-dark="1"]:hover, .cell[data-dark="1"][data-on="1"] {
 }
 .recent-clear:hover, .recent-clear:focus-visible { color: var(--dim); }
 
-.land-notes {
-  margin: clamp(26px, 3.4vw, 40px) 0 0;
+/* ── The caption ──────────────────────────────────────────────────────
+   One line, and it is about the drawing rather than about whose drawing it is.
+   There was a block here - a label, a paragraph, three headline-sized figures
+   and a link to the profile behind them - and what it added up to was the
+   front page of the site advertising one person's account. */
+
+.land-note {
+  margin: clamp(12px, 1.6vw, 18px) var(--edge) 0;
+  max-width: 76ch;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.75;
+  color: var(--faint);
+}
+.land-note b { color: var(--dim); font-weight: 400; }
+
+/* ── The stage, on a phone ────────────────────────────────────────────
+   Nothing floats. The window stops being a window and becomes the top of the
+   page, and the map follows it - reversed in the flex, so the field is the
+   first thing under the status bar and the picture is what you scroll into.
+   The other way round put the search below the fold, which is the one thing
+   this page cannot afford to do. */
+@media (max-width: 860px) {
+  .land-stage {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: var(--gap);
+    height: auto;
+  }
+  .land-frame { position: relative; height: clamp(300px, 46vh, 420px); }
+  .land-win {
+    position: static;
+    width: auto;
+    backdrop-filter: none;
+    background: var(--panel);
+    box-shadow: none;
+  }
+  /* Back to dropping down: the window is at the top of the page here, and a
+     list rising out of it would go under the status bar. */
+  .game-results { bottom: auto; top: calc(100% + 5px); box-shadow: 0 18px 36px #0009; }
+}
+@media (max-width: 560px) {
+  .land-win-bar { flex-wrap: wrap; gap: 8px; padding-right: 14px; }
+  .find-row { flex-direction: column; }
+  .find-go { width: 100%; }
+  .game-results { width: 100%; }
+  .rail-card { width: 186px; }
+}
+
+/* ── The rail ─────────────────────────────────────────────────────────
+   Covers, moving, because a still row of thirty-eight boxes is a grid nobody
+   reads and a moving one is a shelf. It carries no information the paragraph
+   above it does not: anybody who cannot see it, or who asked for less motion,
+   has lost a decoration and not a fact.
+
+   Edge to edge on purpose. It is the one band that is not an argument, and
+   letting it run past the gutter is what says so. */
+
+.rail {
+  padding-block: clamp(36px, 6vh, 66px);
+  border-block: 1px solid var(--line);
+  background: color-mix(in srgb, var(--panel) 55%, transparent);
+}
+.rail-copy { max-width: 68ch; }
+.rail-head {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: var(--display-w);
+  font-size: clamp(1.5rem, 3.2vw, 2.2rem);
+  letter-spacing: var(--display-ls);
+  line-height: 1.02;
+}
+.rail-body {
+  margin: 14px 0 0;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--dim);
+}
+.rail-body b { color: var(--text); font-weight: 600; }
+/* A button and not a link: it does not go anywhere, it moves the field above
+   into its other mode and puts the caret in it. */
+.rail-go {
+  margin: 16px 0 0;
+  padding: 8px 15px;
+  background: transparent;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  color: var(--dim);
+  font-family: var(--mono);
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 140ms ease, color 140ms ease;
+}
+.rail-go:hover, .rail-go:focus-visible { border-color: var(--accent-d); color: var(--text); }
+
+.rail-track {
+  margin: clamp(24px, 3vw, 34px) calc(var(--edge) * -1) 0;
+  padding: 2px 0;
+  overflow: hidden;
+  /* Fades at both ends so the strip reads as continuing rather than as ending
+     in two cut-off cards. */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+.rail-lane {
+  display: flex;
+  width: max-content;
+  gap: 10px;
+  padding-inline: 5px;
+}
+@keyframes rail-run {
+  /* The lane holds the list twice; half of it is one full pass. */
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+.rail-lane[data-animate="1"] { animation: rail-run 90s linear infinite; }
+.rail-track:hover .rail-lane[data-animate="1"],
+.rail-track:focus-within .rail-lane[data-animate="1"] { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .rail-lane[data-animate="1"] { animation: none; }
+  /* Nothing moves on its own, so the strip becomes a thing you push. */
+  .rail-track { overflow-x: auto; }
+}
+
+.rail-card {
+  display: block;
+  flex: none;
+  width: 231px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  text-decoration: none;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+.rail-card:hover, .rail-card:focus-visible {
+  border-color: var(--accent-d);
+  transform: translateY(-3px);
+}
+@media (prefers-reduced-motion: reduce) { .rail-card { transition: none; } }
+.rail-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 231 / 87;
+  object-fit: cover;
+  /* Held back a little, so a row of two dozen storefront capsules sits behind
+     the page instead of in front of it, and released on the one being pointed
+     at - which is the whole of the hover affordance here. */
+  opacity: 0.7;
+  transition: opacity 160ms ease;
+}
+.rail-card:hover img, .rail-card:focus-visible img { opacity: 1; }
+/* An app too old to have a capsule keeps the space anyway: one short card in a
+   row of tall ones reads as a broken layout, not as a game with no picture. */
+.rail-card img:not([src]) { background: var(--panel-2); }
+/* Under the capsule and not over it. A capsule already has the title drawn
+   into the artwork, so a name laid on top is the title twice; underneath it is
+   the caption that says which of them this actually is. */
+.rail-name {
+  display: block;
+  padding: 7px 10px 8px;
+  border-top: 1px solid var(--line);
+  color: var(--dim);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rail-card:hover .rail-name, .rail-card:focus-visible .rail-name { color: var(--text); }
+
+/* ── What one lookup opens ────────────────────────────────────────────
+   Five cards, five real addresses. Every one of them points at the example
+   profile's own page rather than at a screenshot of it, which is the only
+   version of this section worth having. */
+
+.turns { padding-block: clamp(40px, 6vh, 72px) 0; }
+.turns-head {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: var(--display-w);
+  font-size: clamp(1.5rem, 3.2vw, 2.2rem);
+  letter-spacing: var(--display-ls);
+  line-height: 1.02;
+}
+.turns-lede {
+  margin: 12px 0 0;
+  max-width: 64ch;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--dim);
+}
+.turns-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+  gap: var(--gap);
+  margin: clamp(20px, 2.6vw, 30px) 0 0;
   padding: 0;
   list-style: none;
+}
+.turn {
+  position: relative;
   display: grid;
-  gap: 10px;
+  align-content: start;
+  gap: 8px;
+  padding: var(--pad);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+}
+.turn-n {
+  position: absolute;
+  top: var(--pad);
+  right: var(--pad);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  color: var(--line-2);
+}
+.turn-h {
+  max-width: 22ch;
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--text);
+}
+.turn-b {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--dim);
+}
+
+/* ── The three that do not change ─────────────────────────────────────
+   Last, and still the plainest thing on the page. They are checked rather than
+   read, and something styled to be believed is the wrong shape for that. */
+
+.promise { padding-block: clamp(34px, 5vh, 60px) 0; }
+.promise-head {
+  margin: 0;
+  font-family: var(--label);
+  font-size: 10px;
+  font-weight: var(--label-w);
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.land-notes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 10px 26px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
 }
 .land-notes li {
   padding-left: 16px;
@@ -626,8 +974,9 @@ a.cell[data-dark="1"]:hover, .cell[data-dark="1"][data-on="1"] {
   .find-row { flex-direction: column; }
   .find-go { width: 100%; }
   .game-results { width: 100%; }
+  .rail-card { width: 186px; }
+  .demo-frame { height: clamp(260px, 44vh, 360px); }
 }
-
 /* A game without its own layout says so, quietly. */
 .pg-line[data-plain="1"] { color: var(--faint); opacity: 0.75; }
 

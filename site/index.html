@@ -178,50 +178,152 @@
 </header>
 
 <main class="land">
-  <section class="land-in">
-    <p class="eyebrow" data-i18n="land.eyebrow">steam · any public profile</p>
-    <h1 class="display" data-i18n-html="land.h1">Your whole Steam library,<br>drawn to scale.</h1>
-    <p class="lede" data-i18n-html="land.lede">Type in a Steam profile. I read its public library and draw the time: <b>one rectangle per game</b>, area proportional to hours. Every game gets a page of its own, and <b>the most played ones get a themed one</b>.</p>
 
+<!-- ── The stage ─────────────────────────────────────────────────────────
+     The first screen is the shape of a Steam library, and the thing you came
+     here to type in floats over it as a window on a tiled desktop, which is
+     the shape the rest of this site is already built in.
+
+     Third attempt at this page. The first put a headline and a field in a
+     column on the left and hung a map on the right, which is the old front
+     page with an exhibit added to it. The second made the map the screen - and
+     the map was a real profile, so the front of the site became one person's
+     game names and one person's hour counts at full size, which is nobody's
+     business but that person's.
+
+     What is drawn here now is nobody's: seventy-two proportions out of
+     demo.js, no names on them and nothing to click. It says what a library
+     looks like when it is drawn to scale. The one behind a real profile is the
+     page the field leads to, and that is the only place a name belongs. -->
+<section class="land-stage">
+  <div class="land-frame">
+    <!-- Filled by search.js, and decoration in the strict sense: aria-hidden
+         because seventy-two unlabelled rectangles are a picture, and the
+         sentence under the tile is what that picture says. Empty here rather
+         than pre-rendered, because the layout depends on the width this box
+         actually got and percentages written into the file would be right at
+         exactly one size. -->
+    <div class="land-map" id="demo-map" aria-hidden="true"></div>
+  </div>
+
+  <!-- The one element that breaks the tiling, same as on a profile. The mode
+       switch lives in its title bar because that is what it is: two tabs of one
+       window, not a setting inside the form. -->
+  <div class="land-win">
     <form class="find" id="find" novalidate>
-      <div class="find-head">
+      <div class="land-win-bar">
         <label class="find-label" for="q" id="find-label" data-i18n="land.field">steam profile</label>
         <div class="find-kind" role="group" aria-label="Search type">
           <button type="button" class="find-kind-btn" data-kind="profile" aria-pressed="true" data-i18n="land.kind_profile">profile</button>
           <button type="button" class="find-kind-btn" data-kind="game" aria-pressed="false" data-i18n="land.kind_game">game</button>
         </div>
       </div>
-      <div class="find-row">
-        <input class="find-input" id="q" name="q" type="text" autocomplete="off"
-               spellcheck="false" enterkeyhint="go"
-               data-i18n-ph="land.placeholder"
-               aria-describedby="find-help" aria-autocomplete="list"
-               aria-controls="game-results" aria-expanded="false">
-        <button class="find-go" type="submit" id="find-go" data-i18n="land.go">Look it up</button>
+      <div class="land-win-body">
+        <p class="eyebrow" data-i18n="land.eyebrow">steam · any public profile</p>
+        <h1 class="display" data-i18n-html="land.h1">Your whole Steam library,<br>drawn to scale.</h1>
+        <p class="lede" data-i18n-html="land.lede">Type in a Steam profile. I read its public library and draw the time: <b>one rectangle per game</b>, area proportional to hours. Every game gets a page of its own, and <b>the most played ones get a themed one</b>.</p>
+
+        <div class="find-row">
+          <input class="find-input" id="q" name="q" type="text" autocomplete="off"
+                 spellcheck="false" enterkeyhint="go"
+                 data-i18n-ph="land.placeholder"
+                 aria-describedby="find-help" aria-autocomplete="list"
+                 aria-controls="game-results" aria-expanded="false">
+          <button class="find-go" type="submit" id="find-go" data-i18n="land.go">Look it up</button>
+        </div>
+        <ul class="game-results" id="game-results" role="listbox" hidden></ul>
+        <p class="find-help" id="find-help" data-i18n-html="land.help">A vanity name, a steamID64 or the full URL all work. The profile needs <b>Game details</b> set to public - that is the Steam setting that releases the game list.</p>
+        <p class="find-error" id="find-error" hidden role="alert"></p>
+
+        <!-- What you looked up before, from this browser and nowhere else.
+             Hidden until there is one, because an empty list of your own
+             history is a promise of a feature rather than a feature. The button
+             that clears it is beside it and not in a settings page: a list of
+             names that cannot be taken off the screen where it appears is a
+             list you did not agree to. -->
+        <section class="recent" id="recent" hidden>
+          <h2 class="recent-head" id="recent-head" data-i18n="land.recent">looked up before</h2>
+          <ul class="recent-list" id="recent-list" aria-labelledby="recent-head"></ul>
+          <button class="recent-clear" type="button" id="recent-clear"
+                  data-i18n="land.recent_clear">forget these</button>
+        </section>
       </div>
-      <ul class="game-results" id="game-results" role="listbox" hidden></ul>
-      <p class="find-help" id="find-help" data-i18n-html="land.help">A vanity name, a steamID64 or the full URL all work. The profile needs <b>Game details</b> set to public - that is the Steam setting that releases the game list.</p>
-      <p class="find-error" id="find-error" hidden role="alert"></p>
     </form>
+  </div>
+</section>
 
-    <!-- What you looked up before, from this browser and nowhere else. Hidden
-         until there is one, because an empty list of your own history is a
-         promise of a feature rather than a feature. The button that clears it
-         is beside it and not in a settings page: a list of names that cannot be
-         taken off the screen where it appears is a list you did not agree to. -->
-    <section class="recent" id="recent" hidden>
-      <h2 class="recent-head" id="recent-head" data-i18n="land.recent">looked up before</h2>
-      <ul class="recent-list" id="recent-list" aria-labelledby="recent-head"></ul>
-      <button class="recent-clear" type="button" id="recent-clear"
-              data-i18n="land.recent_clear">forget these</button>
-    </section>
+<!-- What the picture is, in one line. It used to be a block: a heading, a
+     paragraph, three figures the size of the headline and a link to the profile
+     they came from - which turned the top of the site into an advertisement for
+     one person's account. The library is here to show the shape, and the shape
+     is all it is being asked to say. Whose account it is belongs in the footer,
+     where it already is. -->
+<p class="land-note" id="land-note" data-i18n-html="land.stage_note">That is the shape of a Steam library drawn to scale: <b>one rectangle per game</b>, area proportional to hours. Type a profile in and the rectangles get names, hours and a page each.</p>
 
-    <ul class="land-notes">
-      <li data-i18n-html="land.note_stored"><b>No profile is stored.</b> Every lookup goes to Steam live and is cached for 15 minutes, that is all.</li>
-      <li data-i18n-html="land.note_public"><b>Only what is public.</b> If a profile hides its game details, Steam returns nothing and the page says so.</li>
-      <li data-i18n-html="land.note_login"><b>No sign-in.</b> The API key stays on the server; your browser never sees it.</li>
-    </ul>
-  </section>
+<!-- ── The rail ──────────────────────────────────────────────────────────
+     "A page built out of that game's own interface" is a claim, and a claim in
+     a paragraph is worth about as much as the paragraph. So the paragraph is
+     followed by the covers, each one the link to the page it is about. -->
+<section class="rail">
+  <div class="rail-copy">
+    <h2 class="rail-head" id="rail-head" data-i18n="land.rail_head">Every game gets a page of its own</h2>
+    <p class="rail-body" data-i18n-html="land.rail_body"><b>157 games</b> have one built out of that game's own interface: the post-match scoreboard for Dota 2, the buy menu for Counter-Strike, motorway signage for Euro Truck Simulator. Everything else gets the generic page, which is still the whole record - achievements by rarity, who is playing right now, reviews, news and what it costs today.</p>
+    <button class="rail-go" type="button" id="rail-go" data-i18n="land.rail_go">look a game up</button>
+  </div>
+  <!-- Filled by search.js from DEMO_RAIL. A strip of covers is decoration in
+       the strict sense: the section says everything it has to say without it,
+       which is why it can be built by a script and lazily loaded. -->
+  <div class="rail-track" id="rail-track"></div>
+</section>
+
+<!-- ── What one lookup opens ────────────────────────────────────────────
+     Descriptions and not links. Every one of these used to point at a real
+     profile so the reader could go and see it, and the only profile there was
+     to point at was the author's - five more links to one person's account on
+     a page that is not about that person. What each page is, is the thing this
+     section was for. -->
+<section class="turns">
+  <h2 class="turns-head" data-i18n="land.turns_head">What a profile turns into</h2>
+  <p class="turns-lede" data-i18n="land.turns_lede">One lookup, and the library comes apart into the pages it was always made of.</p>
+  <ul class="turns-grid">
+    <li class="turn">
+      <span class="turn-n">01</span>
+      <b class="turn-h" data-i18n="land.c_map_h">The whole library, to scale</b>
+      <span class="turn-b" data-i18n="land.c_map_b">Every game that was ever launched, one rectangle each, area proportional to hours. The long tail folds into one block and says how many it holds.</span>
+    </li>
+    <li class="turn">
+      <span class="turn-n">02</span>
+      <b class="turn-h" data-i18n="land.c_game_h">One game, your record of it</b>
+      <span class="turn-b" data-i18n="land.c_game_b">Achievements ranked by how rare they are, the ones still locked, the year each one was unlocked, and the hours split by the system you played on.</span>
+    </li>
+    <li class="turn">
+      <span class="turn-n">03</span>
+      <b class="turn-h" data-i18n="land.c_year_h">One year of it</b>
+      <span class="turn-b" data-i18n="land.c_year_b">What was put down that year and what was unlocked during it, in the order it happened.</span>
+    </li>
+    <li class="turn">
+      <span class="turn-n">04</span>
+      <b class="turn-h" data-i18n="land.c_pile_h">The pile</b>
+      <span class="turn-b" data-i18n="land.c_pile_b">Everything owned and never launched, searchable, with what it cost. The number nobody asks for and everybody reads twice.</span>
+    </li>
+    <li class="turn">
+      <span class="turn-n">05</span>
+      <b class="turn-h" data-i18n="land.c_pub_h">A game with nobody attached</b>
+      <span class="turn-b" data-i18n="land.c_pub_b">The same care, without a profile in it: global achievement rarity, who is playing right now, the review split, the news and the current price.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ── The three that stay true ──────────────────────────────────────── -->
+<section class="promise">
+  <h2 class="promise-head" data-i18n="land.notes_head">And the three that do not change</h2>
+  <ul class="land-notes">
+    <li data-i18n-html="land.note_stored"><b>No profile is stored.</b> Every lookup goes to Steam live and is cached for 15 minutes, that is all.</li>
+    <li data-i18n-html="land.note_public"><b>Only what is public.</b> If a profile hides its game details, Steam returns nothing and the page says so.</li>
+    <li data-i18n-html="land.note_login"><b>No sign-in.</b> The API key stays on the server; your browser never sees it.</li>
+  </ul>
+</section>
+
 </main>
 
 <footer class="foot">
@@ -237,6 +339,7 @@
 <script src="dict.js" defer></script>
 <script src="i18n.js" defer></script>
 <script src="lib.js" defer></script>
+<script src="demo.js" defer></script>
 <script src="search.js" defer></script>
 </body>
 </html>

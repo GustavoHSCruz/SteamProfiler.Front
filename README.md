@@ -38,6 +38,7 @@ it needs the API to change.
 ```
 site/
   index.html      the landing page and the lookup field           search.js
+    demo.js       the library the front page draws, and the games it shows off
   profile.html    every /u/* path                                 router.js
     dash.js       the treemap, the panels, the years, the library
     game.js       one renderer per game, dispatched on `theme`
