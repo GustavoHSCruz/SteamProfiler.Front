@@ -1934,34 +1934,6 @@ function renderPubg(g, root) {
   root.append(wrap);
 }
 
-/* ── EA Sports FC - the club card ─────────────────────────────────────
-   The card is the game's own object, but the numbers on it are the real ones
-   and they carry their own labels: an invented pace rating would be a lie in
-   a very convincing shape. */
-
-function renderEaFc(g, root) {
-  const ach = g.achievements;
-  const wrap = h('div', { cls: 'fc' });
-
-  wrap.append(h('div', { cls: 'fc-card' },
-    h('div', { cls: 'fc-card-l' },
-      h('b', { cls: 'fc-ovr', text: num(ach.completion, 0) }),
-      h('span', { text: t('g.completion') }),
-      h('em', { text: g.name })),
-    h('div', { cls: 'fc-card-r' },
-      cells('fc-attrs', [
-        [num(ach.unlocked), t('g.ach_unlocked')],
-        [num(ach.total), t('g.achievements')],
-        [`${hrs(g.record_hours)} h`, t('g.hours')],
-        [num(g.rank), t('g.lib_position')],
-        [ach.first ? shortDate(ach.first.date) : '-', t('g.first')],
-        [ach.last ? shortDate(ach.last.date) : '-', t('g.last')],
-      ]))));
-
-  wrap.append(h('h2', { cls: 'fc-h', text: t('g.achievements') }), achRows('fc-list', ach.list));
-  root.append(wrap);
-}
-
 /* ── The Binding of Isaac - the collection page ───────────────────────
    641 achievements, which is the largest set on the site by a wide margin, and
    Isaac's own collection page is exactly a grid of everything you might have. */
@@ -4933,7 +4905,6 @@ const LAYOUTS = {
   'vrchat': renderVrchat,
   'palworld': renderPalworld,
   'pubg': renderPubg,
-  'ea-fc': renderEaFc,
   'isaac': renderIsaac,
   'marvel-rivals': renderMarvelRivals,
   'bf6': renderBf6,
@@ -5659,7 +5630,6 @@ const NEEDS = {
   'poe': (g) => g.poe,
   'palworld': (g) => g.achievements?.unlocked,
   'pubg': (g) => g.achievements?.unlocked,
-  'ea-fc': (g) => g.achievements?.unlocked,
   'isaac': (g) => g.achievements?.unlocked,
   'marvel-rivals': (g) => g.achievements?.unlocked,
   'bf6': (g) => g.achievements?.unlocked,

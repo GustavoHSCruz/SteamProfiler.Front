@@ -16,12 +16,10 @@
    owns the game has done that thing. None of that needs a steamid, and none of
    the calls behind it takes one.
 
-   The one thing it deliberately keeps from the profile pages is the palette:
-   `data-game` on <html> swaps the entire token set in games.css, so a game with
-   a theme wears it here too. The layout is not shared, and could not be - the
-   themed renderers in game.js are built on hours, rank and unlock dates, and
-   the <h1> of the fallback among them is literally the hours played. With none
-   of that present they draw a page of dashes. This has its own shape instead. */
+   Games that have a complete visual composition in the profile keep that
+   composition here as well. Their facts are different by design: hours, rank
+   and unlock dates belong to a person, so the public variants fill those same
+   visual systems only with Steam's global achievement and storefront data. */
 
 const APPID = (() => {
   const seg = location.pathname.split('/').filter(Boolean);
@@ -40,11 +38,7 @@ function waitOpen() {
   if (theme) document.documentElement.dataset.game = theme;
   const wait = el('gp-wait');
   wait.dataset.theme = theme || 'generic';
-  const art = el('gp-wait-art');
-  if (art && APPID) {
-    art.src = `/art/${APPID}.jpg`;
-    art.addEventListener('error', () => art.closest('.gpw-art')?.remove(), { once: true });
-  }
+  bootSkeleton(el('gp-wait-shape'), 'game', APPID, theme);
   wait.hidden = false;
   return performance.now();
 }
@@ -107,50 +101,281 @@ function heading(g) {
       })));
 }
 
-/** FC's public page keeps the club-card language of the profile page, but every
- *  number is global. The large number is the median Steam unlock rate, clearly
- *  labelled; it is not a made-up player rating and there is no implied owner. */
-function eaFcOverview(g) {
-  const set = g.achievements || {};
-  const known = (set.list || []).filter((a) => a.rarity != null)
-    .slice().sort((a, b) => a.rarity - b.rarity);
-  const rare = known[0];
-  const median = known.length ? known[Math.floor(known.length / 2)].rarity : null;
-  const common = known.filter((a) => a.rarity >= 50).length;
-  const storeFacts = g.store || {};
-  const kicker = [storeFacts.year, ...(storeFacts.genres || [])
-    .map((x) => typeof x === 'string' ? x : x?.name).filter(Boolean).slice(0, 2)]
-    .filter(Boolean).join(' · ');
+/* ── Public versions of the profile's eight original themed screens ─────
+   These use the same objects and class names as /u/<profile>/<appid>, but not
+   its facts. A public game has no hours, rank or unlock dates. Its honest
+   material is the store record and Steam's global achievement rarity, so each
+   screen recasts those facts in the game's existing visual grammar. */
 
-  const art = h('div', { cls: 'gpf-art' },
-    h('img', { attr: { src: g.art, alt: '', 'aria-hidden': 'true', loading: 'eager' } }));
-  const card = h('section', { cls: 'gpf-card' },
-    h('div', { cls: 'gpf-face' },
-      h('b', { cls: 'gpf-rate', text: rarity(median) }),
-      h('span', { cls: 'gpf-rate-label', text: t('gp.fc_median') }),
-      h('p', { cls: 'gpf-name', text: g.name })),
-    h('div', { cls: 'gpf-body' },
-      kicker ? h('p', { cls: 'gpf-kicker', text: kicker }) : null,
-      h('h1', { cls: 'gpf-title', text: t('gp.fc_card') }),
-      h('div', { cls: 'gpf-stats' },
-        h('div', { cls: 'gpf-stat' }, h('b', { text: num(set.total || known.length) }),
-          h('span', { text: t('gp.fc_achievements') })),
-        h('div', { cls: 'gpf-stat' }, h('b', { text: rarity(rare?.rarity) }),
-          h('span', { text: t('gp.fc_rarest') })),
-        h('div', { cls: 'gpf-stat' }, h('b', { text: num(common) }),
-          h('span', { text: t('gp.fc_common') }))),
-      rare ? h('div', { cls: 'gpf-rare' },
-        rare.icon ? h('img', { attr: { src: rare.icon, alt: '', loading: 'eager' } }) : null,
-        h('div', {}, h('span', { cls: 'gpf-rare-label', text: t('gp.rarest') }),
-          h('strong', { text: rare.name })),
-        h('b', { cls: 'gpf-rare-pct', text: rarity(rare.rarity) })) : null,
-      h('div', { cls: 'gpf-actions' },
-        h('a', { cls: 'btn-steam', text: t('gp.on_steam'), attr: {
-          href: `https://store.steampowered.com/app/${g.appid}/`, target: '_blank', rel: 'noopener',
-        }})),
-      h('p', { cls: 'gpf-note', text: t('gp.fc_note') })));
-  return h('div', { cls: 'gpf' }, art, card);
+const publicKnown = (g) => ((g.achievements || {}).list || [])
+  .filter((a) => a.rarity != null).slice().sort((a, b) => a.rarity - b.rarity);
+const publicMedian = (g) => {
+  const list = publicKnown(g);
+  return list.length ? list[Math.floor(list.length / 2)].rarity : null;
+};
+const publicCommon = (g) => publicKnown(g).filter((a) => a.rarity >= 50).length;
+const publicGenres = (g) => ((g.store || {}).genres || [])
+  .map((x) => typeof x === 'string' ? x : x?.name).filter(Boolean);
+const publicKicker = (g) => [t('gp.global'), (g.store || {}).year, ...publicGenres(g).slice(0, 2)]
+  .filter(Boolean).join('  ·  ');
+const publicFacts = (g) => [
+  [t('gp.total_ach'), num((g.achievements || {}).total || 0)],
+  [t('gp.median'), rarity(publicMedian(g))],
+  [t('gp.common'), num(publicCommon(g))],
+];
+
+function publicDota(g, root) {
+  const wrap = h('div', { cls: 'd' });
+  const hero = h('header', { cls: 'd-hero' });
+  if (g.art) hero.append(h('img', {
+    cls: 'd-hero-art', attr: { src: g.art, alt: '', 'aria-hidden': 'true', loading: 'eager' },
+  }));
+  hero.append(h('div', { cls: 'd-hero-in' },
+    h('p', { cls: 'd-kicker', text: publicKicker(g) }),
+    h('h1', { cls: 'd-title', text: g.name }),
+    h('div', { cls: 'd-tally' },
+      h('div', { cls: 'd-side d-side--r' }, h('b', { text: num((g.achievements || {}).total || 0) }),
+        h('span', { text: t('gp.total_ach') })),
+      h('div', { cls: 'd-scale' }, h('div', { cls: 'd-scale-bar', data: { blank: '1' } },
+        h('i', { cls: 'd-w' }), h('i', { cls: 'd-l' }))),
+      h('div', { cls: 'd-side d-side--d' }, h('b', { text: rarity(publicMedian(g)) }),
+        h('span', { text: t('gp.median') })))));
+  wrap.append(hero);
+
+  const grid = h('div', { cls: 'd-stats' });
+  publicFacts(g).forEach(([label, value]) => grid.append(
+    h('div', { cls: 'd-stat' }, h('b', { text: value }), h('span', { text: label }))));
+  wrap.append(h('section', { cls: 'd-panel' },
+    h('div', { cls: 'd-panel-head' }, h('h2', { text: t('gp.global') })), grid,
+    h('p', { cls: 'd-note', text: t('gp.ach_none') })));
+  root.append(wrap);
 }
+
+function publicCs2(g, root) {
+  const set = g.achievements || {};
+  const list = publicKnown(g);
+  const wrap = h('div', { cls: 'cs' });
+  wrap.append(h('header', { cls: 'cs-top' },
+    h('p', { cls: 'cs-kicker', text: publicKicker(g) }),
+    h('h1', { cls: 'cs-title', text: g.name }),
+    h('p', { cls: 'cs-sub', text: t('gp.rarest_note') }),
+    h('div', { cls: 'cs-hud' }, ...publicFacts(g).map(([label, value], i) =>
+      h('div', { cls: i === 2 ? 'cs-hud-cell cs-hud-cell--money' : 'cs-hud-cell' },
+        h('span', { text: label }), h('b', { text: value }))))));
+
+  const guns = h('div', { cls: 'cs-guns' });
+  list.forEach((a, i) => guns.append(h('article', { cls: 'cs-gun', data: i === 0 ? { lead: '1' } : {} },
+    h('span', { cls: 'cs-gun-name', text: a.name }),
+    h('b', { cls: 'cs-gun-kills', text: rarity(a.rarity) }),
+    h('span', { cls: 'cs-gun-acc', text: a.description || t('gp.of_owners') }),
+    fillBar('cs-gun-bar', a.rarity, i * 30))));
+  wrap.append(h('div', { cls: 'cs-section' },
+    h('h2', { cls: 'cs-h', text: t('gp.ach_head') }),
+    list.length ? h('section', { cls: 'cs-buy' },
+      h('nav', { cls: 'cs-rail' }, h('span', { cls: 'cs-rail-item' },
+        h('span', { text: t('gp.rarity') }), h('em', { text: num(set.total || list.length) }))),
+      h('div', { cls: 'cs-cats' }, h('section', { cls: 'cs-cat' }, guns)))
+      : h('p', { cls: 'cs-note', text: t('gp.ach_none') })));
+  root.append(wrap);
+}
+
+function publicArma3(g, root) {
+  const list = publicKnown(g);
+  const brief = h('section', { cls: 'a3-brief' },
+    h('p', { cls: 'a3-stamp', text: t('g.briefing') }),
+    h('h1', { cls: 'a3-title', text: g.name }));
+  const def = h('dl', { cls: 'a3-def' });
+  publicFacts(g).forEach(([label, value]) => def.append(h('dt', { text: label }), h('dd', { text: value })));
+  const genres = publicGenres(g);
+  if (genres.length) def.append(h('dt', { text: t('gp.genres') }), h('dd', { text: genres.join(' · ') }));
+  brief.append(def);
+  const tasks = h('ul', { cls: 'a3-tasks' });
+  list.slice(0, 12).forEach((a) => {
+    const task = h('li', {},
+      h('i', { cls: 'a3-tick' }),
+      h('div', {},
+        h('b', { text: a.name }),
+        h('span', { cls: 'a3-task-meta',
+          text: `${rarity(a.rarity)} · ${t('gp.of_owners')}` })));
+    tasks.append(task);
+  });
+  brief.append(h('h2', { cls: 'a3-h', text: t('gp.ach_sub') }), tasks);
+  root.append(h('div', { cls: 'a3' }, brief));
+}
+
+function publicWarThunder(g, root) {
+  const list = publicKnown(g);
+  const bands = [[0, 1, '< 1%'], [1, 5, '1–5%'], [5, 20, '5–20%'], [20, 101, '20%+']];
+  const tree = h('section', { cls: 'wt-tree' });
+  bands.forEach(([from, to, label]) => {
+    const entries = list.filter((a) => a.rarity >= from && a.rarity < to);
+    if (!entries.length) return;
+    const nodes = h('div', { cls: 'wt-nodes' });
+    entries.forEach((a) => {
+      const icon = a.icon
+        ? h('img', { cls: 'wt-node-icon', attr: { src: a.icon, alt: '', loading: 'lazy' } })
+        : h('span', { cls: 'wt-node-icon wt-node-icon--none' });
+      nodes.append(h('article', { cls: 'wt-node', attr: { title: a.description || a.name } },
+        icon,
+        h('div', { cls: 'wt-node-text' },
+          h('b', { text: a.name }), h('span', { text: rarity(a.rarity) }))));
+    });
+    tree.append(h('div', { cls: 'wt-rank' },
+      h('div', { cls: 'wt-rank-head' }, h('span', { cls: 'wt-year', text: label }),
+        h('span', { cls: 'wt-count', text: num(entries.length) })), nodes));
+  });
+  root.append(h('div', { cls: 'wt' },
+    h('header', { cls: 'wt-head' }, h('p', { cls: 'wt-kicker', text: publicKicker(g) }),
+      h('h1', { cls: 'wt-title', text: g.name }),
+      h('div', { cls: 'wt-gauges' }, ...publicFacts(g).map(([label, value]) =>
+        h('div', { cls: 'wt-gauge' }, h('b', { text: value }), h('span', { text: label }))))),
+    h('h2', { cls: 'wt-h', text: t('g.research_tree') }), tree));
+}
+
+function publicHash(value) {
+  let x = 2166136261;
+  for (let i = 0; i < value.length; i++) { x ^= value.charCodeAt(i); x = Math.imul(x, 16777619); }
+  return (x >>> 0) / 4294967295;
+}
+
+function publicSkyrim(g, root) {
+  const list = publicKnown(g);
+  const sky = h('figure', { cls: 'sk-sky' }, h('i', { cls: 'sk-aurora', attr: { 'aria-hidden': 'true' } }),
+    h('i', { cls: 'sk-dust', attr: { 'aria-hidden': 'true' } }));
+  list.forEach((a, i) => {
+    const star = h('button', { cls: 'sk-star', attr: { type: 'button', title: `${a.name} · ${rarity(a.rarity)}` },
+      data: a.rarity < 5 ? { bright: '1' } : {} }, h('span', { cls: 'sk-star-label' },
+        h('b', { text: a.name }), h('em', { text: `${rarity(a.rarity)} · ${t('gp.of_owners')}` })));
+    star.style.left = `${8 + publicHash(`${a.key || a.name}:x`) * 84}%`;
+    star.style.top = `${10 + publicHash(`${a.key || a.name}:y`) * 62}%`;
+    star.style.setProperty('--size', `${(6 + Math.max(0, 1 - a.rarity / 30) * 10).toFixed(1)}px`);
+    sky.append(star);
+  });
+  sky.append(h('i', { cls: 'sk-ridge', attr: { 'aria-hidden': 'true' } }));
+  root.append(h('div', { cls: 'sk' },
+    h('header', { cls: 'sk-head' }, h('p', { cls: 'sk-kicker', text: publicKicker(g) }),
+      h('h1', { cls: 'sk-title', text: g.name }), h('p', { cls: 'sk-sub', text: t('gp.ach_sub') })),
+    sky, h('p', { cls: 'sk-note', text: t('gp.rarest_note') })));
+}
+
+function publicGauge(value, max, label, readout) {
+  const radius = 42;
+  const circumference = 2 * Math.PI * radius;
+  const span = 0.75;
+  const frac = Math.max(0, Math.min(1, (value || 0) / max));
+  const ns = 'http://www.w3.org/2000/svg';
+  const dial = document.createElementNS(ns, 'svg');
+  dial.setAttribute('viewBox', '0 0 100 100');
+  dial.setAttribute('class', 'fs-dial');
+  dial.setAttribute('aria-hidden', 'true');
+  for (const [cls, length] of [['fs-dial-track', span], ['fs-dial-fill', span * frac]]) {
+    const circle = document.createElementNS(ns, 'circle');
+    circle.setAttribute('cx', '50');
+    circle.setAttribute('cy', '50');
+    circle.setAttribute('r', String(radius));
+    circle.setAttribute('class', cls);
+    circle.setAttribute('stroke-dasharray', `${(circumference * length).toFixed(2)} ${circumference}`);
+    circle.setAttribute('transform', 'rotate(135 50 50)');
+    dial.append(circle);
+  }
+  for (let i = 0; i <= 10; i += 1) {
+    const angle = (135 + i * 27) * (Math.PI / 180);
+    const tick = document.createElementNS(ns, 'line');
+    tick.setAttribute('x1', String(50 + Math.cos(angle) * 33));
+    tick.setAttribute('y1', String(50 + Math.sin(angle) * 33));
+    tick.setAttribute('x2', String(50 + Math.cos(angle) * (i % 5 === 0 ? 26 : 29)));
+    tick.setAttribute('y2', String(50 + Math.sin(angle) * (i % 5 === 0 ? 26 : 29)));
+    tick.setAttribute('class', 'fs-dial-tick');
+    dial.append(tick);
+  }
+  return h('figure', { cls: 'fs-gauge' }, dial,
+    h('div', { cls: 'fs-gauge-read' }, h('b', { text: readout }), h('span', { text: label })));
+}
+
+function publicMsfs(g, root) {
+  const list = publicKnown(g);
+  const log = h('table', { cls: 'fs-log' }, h('thead', {}, h('tr', {},
+    h('th', { text: t('gp.rarity') }), h('th', { text: t('g.achievement') }), h('th', { text: t('gp.of_owners') }))));
+  const body = h('tbody');
+  list.forEach((a) => body.append(h('tr', {}, h('td', { cls: 'fs-log-date', text: rarity(a.rarity) }),
+    h('td', {}, h('b', { text: a.name }), a.description ? h('span', { text: a.description }) : null),
+    h('td', { cls: 'fs-log-rare', text: rarity(a.rarity) }))));
+  log.append(body);
+  root.append(h('div', { cls: 'fs' },
+    h('header', { cls: 'fs-head' }, h('p', { cls: 'fs-kicker', text: publicKicker(g) }),
+      h('h1', { cls: 'fs-title', text: g.name }), h('p', { cls: 'fs-sub', text: t('gp.rarest_note') })),
+    h('section', { cls: 'fs-panel' },
+      publicGauge((g.achievements || {}).total || 0, 100, t('gp.total_ach'), num((g.achievements || {}).total || 0)),
+      publicGauge(publicMedian(g), 100, t('gp.median'), rarity(publicMedian(g))),
+      publicGauge(publicCommon(g), Math.max(1, list.length), t('gp.common'), num(publicCommon(g)))),
+    h('section', { cls: 'fs-logwrap' }, h('h2', { cls: 'fs-h', text: t('g.logbook') }),
+      h('div', { cls: 'fs-log-scroll' }, log))));
+}
+
+function publicGta(g, root) {
+  const list = publicKnown(g);
+  const rows = [
+    [t('gp.total_ach'), (g.achievements || {}).total || 0, 100, num((g.achievements || {}).total || 0)],
+    [t('gp.median'), publicMedian(g) || 0, 100, rarity(publicMedian(g))],
+    [t('gp.common'), publicCommon(g), Math.max(1, list.length), num(publicCommon(g))],
+  ];
+  const stats = h('div', { cls: 'gta-stats' });
+  rows.forEach(([label, value, max, read]) => {
+    const seg = h('div', { cls: 'gta-seg' });
+    const filled = Math.round((value / max) * 20);
+    for (let i = 0; i < 20; i++) seg.append(h('i', { data: i < filled ? { on: '1' } : {} }));
+    stats.append(h('div', { cls: 'gta-stat' }, h('span', { cls: 'gta-stat-label', text: label }), seg,
+      h('b', { cls: 'gta-stat-val', text: read })));
+  });
+  const cards = h('div', { cls: 'gta-cards' });
+  list.slice(0, 9).forEach((a) => {
+    cards.append(h('article', { cls: 'gta-card' },
+      a.icon ? h('img', { cls: 'gta-card-icon', attr: { src: a.icon, alt: '', loading: 'lazy' } }) : null,
+      h('div', { cls: 'gta-card-text' },
+        h('b', { text: a.name }),
+        a.description ? h('p', { text: a.description }) : null,
+        h('span', { cls: 'gta-card-meta',
+          text: `${rarity(a.rarity)} · ${t('gp.of_owners')}` }))));
+  });
+  root.append(h('div', { cls: 'gta' }, h('div', { cls: 'gta-shell' },
+    h('nav', { cls: 'gta-tabs' }, h('span', { cls: 'gta-tab', data: { on: '1' }, text: t('gp.global') }),
+      h('a', { cls: 'gta-tab', attr: { href: '#gta-global' }, text: t('gp.ach_head') })),
+    h('div', { cls: 'gta-body' }, h('p', { cls: 'gta-kicker', text: publicKicker(g) }),
+      h('h1', { cls: 'gta-title', text: g.name }), stats)),
+    h('h2', { cls: 'gta-h', attr: { id: 'gta-global' }, text: t('gp.ach_sub') }), cards));
+}
+
+function publicCod(g, root) {
+  const list = publicKnown(g);
+  const one = list[0];
+  const total = (g.achievements || {}).total || 0;
+  const wrap = h('div', { cls: 'cod' },
+    h('div', { cls: 'cod-tag' }, h('span', { cls: 'cod-tag-line', text: t('gp.global') }),
+      h('p', { cls: 'cod-hours' }, h('b', { text: num(total) })),
+      h('span', { cls: 'cod-tag-meta', text: g.name })),
+    h('section', { cls: 'cod-face' },
+      h('div', { cls: 'cod-face-cell' }, h('b', { text: num(total) }), h('span', { text: t('gp.total_ach') })),
+      h('div', { cls: 'cod-face-sep', text: '×' }),
+      h('div', { cls: 'cod-face-cell cod-face-cell--hot' }, h('b', { text: rarity(one?.rarity) }),
+        h('span', { text: t('gp.rarest') }))));
+  if (one) wrap.append(h('article', { cls: 'cod-one' },
+    one.icon ? h('img', { cls: 'cod-one-icon', attr: { src: one.icon, alt: '', loading: 'lazy' } }) : null,
+    h('div', {}, h('span', { cls: 'cod-one-label', text: t('gp.rarest') }), h('b', { text: one.name }),
+      one.description ? h('p', { text: one.description }) : null,
+      h('span', { cls: 'cod-one-meta', text: `${rarity(one.rarity)} · ${t('gp.of_owners')}` }))));
+  root.append(wrap);
+}
+
+const PUBLIC_LAYOUTS = {
+  'dota-2': publicDota,
+  'counter-strike-2': publicCs2,
+  'arma-3': publicArma3,
+  'war-thunder': publicWarThunder,
+  'skyrim': publicSkyrim,
+  'msfs': publicMsfs,
+  'gta-v': publicGta,
+  'call-of-duty': publicCod,
+};
 
 /** The set, rarest first.
  *
@@ -358,6 +583,12 @@ function lookup(g) {
   // SSI include in the head, because a dev server without SSI never answered
   // that include and the page should still wear the right colours.
   if (g.theme) document.documentElement.dataset.game = g.theme;
+  // Production knew the theme in the SSI-rendered head. A plain dev server
+  // does not, so redraw the still-visible opening as soon as the API does.
+  if (g.theme && el('gp-wait').dataset.theme !== g.theme) {
+    el('gp-wait').dataset.theme = g.theme;
+    bootSkeleton(el('gp-wait-shape'), 'game', APPID, g.theme);
+  }
   document.title = `${g.name} - steamprofiler.org`;
 
   // A cached response can return before the browser paints once. A very short
@@ -370,8 +601,11 @@ function lookup(g) {
   el('gp').hidden = false;
 
   const out = root();
-  if (g.theme === 'ea-fc') {
-    put(out, eaFcOverview(g), ladder(g), priceBlock(g), lookup(g));
+  const themed = PUBLIC_LAYOUTS[g.theme];
+  if (themed) {
+    if (g.theme !== 'dota-2') put(out, artBand(g));
+    themed(g, out);
+    put(out, priceBlock(g), lookup(g));
   } else {
     put(out, artBand(g), heading(g), ladder(g), priceBlock(g), lookup(g));
   }

@@ -4502,48 +4502,6 @@ a.gta-tab:hover { color: var(--text); background: #ffffff08; }
   font-size: 11px; color: var(--accent);
 }
 
-/* ══ EA Sports FC - the club card ═════════════════════════════════════ */
-:root[data-game="ea-fc"] {
-  --bg: #051208; --panel: #0b1d10; --panel-2: #122a18;
-  --line: #1b3a23; --line-2: #2c5636;
-  --text: #eef6ef; --dim: #9cb8a3; --faint: #6d8a75;
-  --accent: #d8b64a; --link: #7fe3a0;
-  --display: 'Archivo', sans-serif; --display-w: 800; --display-tt: uppercase; --display-ls: -0.02em;
-  --label: 'Archivo', sans-serif; --label-w: 600; --label-ls: 0.16em;
-  --focus-ring: linear-gradient(120deg, #d8b64a, #7fe3a0);
-  --r: 6px;
-}
-.fc { padding: clamp(26px, 4vw, 56px) var(--edge) var(--edge); }
-.fc-card {
-  display: grid; grid-template-columns: minmax(150px, 210px) 1fr; gap: clamp(16px, 3vw, 34px);
-  padding: clamp(20px, 3vw, 36px); border-radius: var(--r);
-  background: linear-gradient(150deg, #3a2f12, var(--panel) 62%);
-  border: 1px solid var(--accent);
-}
-.fc-card-l { display: grid; align-content: center; text-align: center; }
-.fc-ovr {
-  font-family: var(--display); font-size: clamp(48px, 9vw, 92px);
-  line-height: 0.9; color: var(--accent);
-}
-.fc-card-l span {
-  margin-top: 6px; font-family: var(--label); font-size: 10px;
-  letter-spacing: var(--label-ls); text-transform: uppercase; color: var(--dim);
-}
-.fc-card-l em {
-  margin-top: 14px; font-style: normal; font-family: var(--display);
-  text-transform: uppercase; font-size: 17px;
-}
-.fc-attrs { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); align-content: center; }
-.fc-attrs-i b { display: block; font-family: var(--display); font-size: 21px; line-height: 1; }
-.fc-attrs-i span {
-  display: block; margin-top: 5px; font-family: var(--label); font-size: 9px;
-  letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint);
-}
-.fc-h {
-  margin: clamp(28px, 4vw, 44px) 0 14px; font-family: var(--display);
-  text-transform: uppercase; font-size: 22px;
-}
-
 /* ══ The Binding of Isaac - the collection page ═══════════════════════ */
 :root[data-game="isaac"] {
   --bg: #0a0807; --panel: #16110f; --panel-2: #1f1815;

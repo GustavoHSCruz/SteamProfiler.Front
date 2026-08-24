@@ -71,11 +71,7 @@
      puts the theme in the head before first paint, so known games do not spend
      their loading time dressed as the generic site. -->
 <section class="gpw" id="gp-wait" hidden>
-  <div class="gpw-art" aria-hidden="true"><img id="gp-wait-art" alt=""></div>
-  <div class="gpw-card" aria-hidden="true">
-    <div class="gpw-card-face"><i></i><i></i><i></i></div>
-    <div class="gpw-card-stats"><i></i><i></i><i></i><i></i></div>
-  </div>
+  <div class="boot-map" id="gp-wait-shape" aria-hidden="true"></div>
   <div class="gpw-status">
     <p class="gpw-head" data-i18n="gp.wait">Reading this game off Steam</p>
     <div class="gpw-track" role="progressbar" aria-valuemin="0" aria-valuemax="100"><i></i></div>
@@ -110,6 +106,8 @@
 <script src="/dict.js" defer></script>
 <script src="/i18n.js" defer></script>
 <script src="/lib.js" defer></script>
+<script src="/dash.js" defer></script>
+<script src="/boot.js" defer></script>
 <script src="/public.js" defer></script>
 </body>
 </html>

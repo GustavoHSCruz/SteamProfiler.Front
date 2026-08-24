@@ -12,37 +12,17 @@
 
 /* ── The wait ──────────────────────────────────────────────────────── */
 
-.gpw {
-  max-width: 78ch; min-height: min(72vh, 680px);
-  margin: clamp(28px, 8vh, 76px) auto;
-  padding: 0 var(--edge); position: relative;
+.gpw { min-height: min(76vh, 760px); margin: 0; padding: 0; position: relative; }
+.gpw .boot-map {
+  position: relative; inset: auto; width: 100%; min-height: min(68vh, 680px);
+  height: auto; overflow: hidden;
 }
-.gpw-art {
-  height: clamp(150px, 25vh, 250px); overflow: hidden;
-  border: 1px solid var(--line); border-radius: var(--r); background: var(--panel);
-}
-.gpw-art img {
-  width: 100%; height: 100%; object-fit: cover; opacity: .42;
-  filter: saturate(.7); transform: scale(1.03);
-}
-.gpw-card {
-  display: grid; grid-template-columns: minmax(120px, .7fr) 1.3fr; gap: 20px;
-  margin-top: 18px; padding: clamp(18px, 3vw, 30px);
-  border: 1px solid var(--line); border-radius: var(--r); background: var(--panel);
-}
-.gpw-card-face, .gpw-card-stats { display: grid; gap: 12px; align-content: center; }
-.gpw-card-stats { grid-template-columns: 1fr 1fr; }
-.gpw-card i {
-  display: block; height: 13px; border-radius: 3px;
-  background: linear-gradient(90deg, var(--panel-2), var(--line-2), var(--panel-2));
-  background-size: 220% 100%; animation: gpw-pulse 1.8s ease-in-out infinite;
-}
-.gpw-card-face i:first-child { height: 54px; width: 46%; }
-.gpw-card-face i:nth-child(2) { width: 68%; }
-.gpw-card-face i:nth-child(3) { width: 88%; }
-.gpw-card-stats i:nth-child(2n) { animation-delay: -.5s; }
 .gpw-status {
-  max-width: 60ch; margin: 22px auto 0; text-align: center;
+  position: fixed; z-index: 5; left: 50%; bottom: 28px;
+  width: min(60ch, calc(100% - 40px)); transform: translateX(-50%);
+  padding: 13px 16px; text-align: center;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  border: 1px solid var(--line); backdrop-filter: blur(8px);
 }
 .gpw-head {
   font-family: var(--label); font-weight: var(--label-w);
@@ -60,35 +40,14 @@
 @keyframes gpw-slide {
   0% { transform: translateX(-100%); } 100% { transform: translateX(350%); }
 }
-@keyframes gpw-pulse {
-  0%, 100% { background-position: 100% 0; opacity: .45; }
-  50% { background-position: 0 0; opacity: .9; }
-}
-
-/* FC's wait is the club card before its numbers arrive, not the site's generic
-   panel skeleton painted green. The same border and split are used by the
-   finished public card below, so the answer fills the object already on screen. */
-:root[data-game="ea-fc"] .gpw-art { border-color: #6d5c26; }
-:root[data-game="ea-fc"] .gpw-card {
-  background: linear-gradient(150deg, #3a2f12, var(--panel) 62%);
-  border-color: var(--accent); transform: perspective(900px) rotateY(-1.5deg);
-}
-:root[data-game="ea-fc"] .gpw-card-face {
-  padding-right: 20px; border-right: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
-}
-:root[data-game="ea-fc"] .gpw-card-face i:first-child {
-  height: 72px; width: 52%; background: color-mix(in srgb, var(--accent) 75%, var(--panel));
-}
 @media (prefers-reduced-motion: reduce) {
-  .gpw-track i, .gpw-card i { animation: none; opacity: .4; }
+  .gpw-track i { animation: none; opacity: .4; }
   .gpw-track i { width: 100%; }
 }
 
 @media (max-width: 560px) {
-  .gpw-card { grid-template-columns: 1fr; }
-  :root[data-game="ea-fc"] .gpw-card-face {
-    padding: 0 0 18px; border-right: 0; border-bottom: 1px solid var(--line-2);
-  }
+  .gpw .boot-map { min-height: 70vh; }
+  .gpw-status { bottom: 16px; }
 }
 
 /* ── The game ──────────────────────────────────────────────────────── */
@@ -136,71 +95,6 @@
   margin: 0 0 16px; color: var(--text);
 }
 .gp-steam { margin: 0 0 8px; }
-
-/* ── EA Sports FC: the public club card ─────────────────────────────
-   The profile page puts one person's completion on the card. /g/ has no
-   person, so this card uses only global facts Steam publishes: size of the
-   set, rarest unlock and the median unlock rate. */
-.gpf { max-width: 78ch; margin: 0 auto; padding: clamp(28px, 5vw, 58px) var(--edge) 0; }
-.gpf-art {
-  position: relative; height: clamp(190px, 32vh, 330px); overflow: hidden;
-  border: 1px solid #6d5c26; border-bottom: 0; border-radius: var(--r) var(--r) 0 0;
-}
-.gpf-art img { width: 100%; height: 100%; object-fit: cover; }
-.gpf-art::after {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(180deg, transparent 18%, color-mix(in srgb, var(--bg) 88%, transparent));
-}
-.gpf-card {
-  position: relative; display: grid; grid-template-columns: minmax(160px, 220px) 1fr;
-  gap: clamp(18px, 4vw, 42px); margin-top: -42px; padding: clamp(22px, 4vw, 40px);
-  background: linear-gradient(145deg, #4a3b16 0%, #171c10 32%, var(--panel) 75%);
-  border: 1px solid var(--accent); border-radius: var(--r);
-  box-shadow: 0 26px 70px #0008; z-index: 1;
-}
-.gpf-face { display: grid; min-width: 0; align-content: center; justify-items: center; text-align: center; }
-.gpf-rate {
-  font-family: var(--display); font-size: clamp(58px, 10vw, 100px); line-height: .82;
-  color: var(--accent); text-shadow: 0 2px 18px #0008;
-}
-.gpf-rate-label, .gpf-kicker, .gpf-stat span, .gpf-rare-label {
-  font-family: var(--label); font-weight: var(--label-w); text-transform: uppercase;
-  letter-spacing: var(--label-ls); font-size: .62rem; color: var(--dim);
-}
-.gpf-rate-label { margin-top: 10px; }
-.gpf-name {
-  width: 100%; margin: 18px 0 0; font-family: var(--display);
-  font-size: clamp(.95rem, 1.8vw, 1.2rem); line-height: 1.08;
-  overflow-wrap: anywhere; text-transform: uppercase; color: var(--text);
-}
-.gpf-body { min-width: 0; }
-.gpf-kicker { margin: 0 0 9px; color: var(--accent); }
-.gpf-title {
-  margin: 0; font-family: var(--display); font-size: clamp(2rem, 6vw, 4rem);
-  line-height: .94; text-transform: uppercase;
-}
-.gpf-stats { display: grid; grid-template-columns: repeat(3, minmax(90px, 1fr)); gap: 10px; margin-top: 24px; }
-.gpf-stat { padding: 13px 12px; background: #06100999; border: 1px solid var(--line-2); }
-.gpf-stat b { display: block; font-family: var(--display); font-size: 1.35rem; color: var(--text); }
-.gpf-stat span { display: block; margin-top: 5px; line-height: 1.35; }
-.gpf-rare {
-  display: grid; grid-template-columns: 54px 1fr auto; gap: 13px; align-items: center;
-  margin-top: 14px; padding: 12px; border: 1px solid var(--line-2); background: #06100999;
-}
-.gpf-rare img { width: 54px; height: 54px; object-fit: cover; }
-.gpf-rare-label { display: block; margin-bottom: 4px; }
-.gpf-rare strong { display: block; }
-.gpf-rare-pct { font-family: var(--display); font-size: 1.5rem; color: var(--accent); }
-.gpf-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
-.gpf-note { color: var(--dim); font-size: .84rem; line-height: 1.6; margin: 16px 0 0; }
-
-@media (max-width: 680px) {
-  .gpf-card { grid-template-columns: 1fr; margin-top: -24px; }
-  .gpf-face { justify-items: start; text-align: left; grid-template-columns: auto 1fr; gap: 14px; }
-  .gpf-rate-label { align-self: end; margin: 0 0 7px; }
-  .gpf-name { grid-column: 1 / -1; margin-top: 0; }
-  .gpf-stats { grid-template-columns: 1fr 1fr; }
-}
 
 /* ── Panels ────────────────────────────────────────────────────────── */
 

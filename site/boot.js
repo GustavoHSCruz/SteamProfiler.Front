@@ -32,8 +32,9 @@
                            the reload. Pretending nothing is happening is what
                            makes a wait feel like a fault.
 
-   Loaded by profile.html only, and it borrows squarify() from dash.js for the
-   skeleton, which is the same layout the real map is drawn with. */
+   Loaded by profile.html and by the public game shell. It borrows squarify()
+   from dash.js for the skeleton, which is the same layout the real map is
+   drawn with. */
 
 /* Where the bar stands the moment each real event lands, and how fast it
    drifts towards the next one while nothing is happening. The drift is
