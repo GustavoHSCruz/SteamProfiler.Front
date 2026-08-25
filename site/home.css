@@ -589,20 +589,20 @@ a.cell[data-dark="1"]:hover, .cell[data-dark="1"][data-on="1"] {
 .find-go:hover { filter: brightness(1.08); }
 .find-go:disabled { opacity: 0.6; cursor: progress; }
 
-/* Upwards. The window sits at the bottom of the stage, so a list dropping out
-   of the input would hang off the tile and over the caption under it. */
+/* In normal flow. The window is bottom-anchored on a wide screen, so adding
+   results grows it upwards without putting the list outside its clipped,
+   rounded frame. On a phone the same list naturally grows down with the page. */
 .game-results {
-  position: absolute;
-  z-index: 8;
-  bottom: calc(100% + 5px);
-  width: min(560px, calc(100% - 16px));
-  margin: 0;
+  width: 100%;
+  max-height: min(260px, 38vh);
+  overflow-y: auto;
+  margin: 5px 0 0;
   padding: 5px;
   list-style: none;
   background: var(--panel);
   border: 1px solid var(--line-2);
   border-radius: 9px;
-  box-shadow: 0 -18px 36px #0009;
+  box-shadow: 0 18px 36px #0006;
 }
 .game-result { margin: 0; }
 .game-result a {
@@ -739,9 +739,6 @@ a.cell[data-dark="1"]:hover, .cell[data-dark="1"][data-on="1"] {
     background: var(--panel);
     box-shadow: none;
   }
-  /* Back to dropping down: the window is at the top of the page here, and a
-     list rising out of it would go under the status bar. */
-  .game-results { bottom: auto; top: calc(100% + 5px); box-shadow: 0 18px 36px #0009; }
 }
 @media (max-width: 560px) {
   .land-win-bar { flex-wrap: wrap; gap: 8px; padding-right: 14px; }
