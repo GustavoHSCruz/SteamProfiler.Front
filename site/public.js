@@ -787,6 +787,66 @@ function priceBlock(g) {
   return slot;
 }
 
+/* ── The cards ─────────────────────────────────────────────────────────
+   Most games on Steam drop trading cards, and the set is a fact about the game
+   in exactly the way its price is: the same eight cards for everybody, and one
+   number - what one of each costs on the market right now - that otherwise
+   takes fifteen tabs to add up.
+
+   The panel is not drawn at all for a game with no cards, and not drawn while
+   the api has not read the market yet. Neither is an error and neither is
+   worth a paragraph explaining Valve's economy to somebody who came here to
+   read achievements. */
+
+function cardsBlock(g) {
+  const slot = h('section', { cls: 'gp-panel gp-cards' });
+  slot.append(h('h2', { cls: 'gp-h', text: t('gp.cards_head') }));
+  const body = h('p', { cls: 'gp-cards-body' });
+  const strip = h('ul', { cls: 'gp-cards-strip' });
+  const note = h('p', { cls: 'gp-note' });
+  slot.append(body, strip, note);
+
+  (async () => {
+    let c;
+    try {
+      c = await api(`/game/cards?appid=${g.appid}`);
+    } catch {
+      slot.remove();
+      return;
+    }
+    if (!c.count || !(c.cards || []).length) {
+      slot.remove();
+      return;
+    }
+
+    body.textContent = c.cost != null
+      ? t('gp.cards_body', { n: num(c.count), v: cash(c.cost, c.currency) })
+      : t('gp.cards_bare', { n: num(c.count) });
+
+    for (const card of c.cards) {
+      const img = h('img', {
+        cls: 'gp-card-art',
+        attr: {
+          src: card.icon || '', alt: card.name,
+          width: '96', height: '96', loading: 'lazy', decoding: 'async',
+        },
+      });
+      img.addEventListener('error', () => { img.removeAttribute('src'); });
+      strip.append(h('li', { cls: 'gp-card' },
+        img,
+        h('b', { cls: 'gp-card-name', text: card.name }),
+        h('span', {
+          cls: 'gp-card-price',
+          text: card.cents != null ? cash(card.cents, c.currency) : t('cd.no_cards'),
+        })));
+    }
+
+    if (c.checked_at) note.textContent = t('gp.cards_note', { when: stamp(c.checked_at) });
+  })();
+
+  return slot;
+}
+
 /* ── The way back in ───────────────────────────────────────────────────
    This page is the front door and the profile pages are the house. Somebody who
    arrived here from a search has the game in front of them and no reason to
@@ -866,9 +926,10 @@ function lookup(g) {
   if (themed) {
     if (g.theme !== 'dota-2') put(out, artBand(g));
     themed(g, out);
-    put(out, catalogueBlock(g), priceBlock(g), lookup(g));
+    put(out, catalogueBlock(g), priceBlock(g), cardsBlock(g), lookup(g));
   } else {
-    put(out, artBand(g), heading(g), catalogueBlock(g), ladder(g), priceBlock(g), lookup(g));
+    put(out, artBand(g), heading(g), catalogueBlock(g), ladder(g), priceBlock(g),
+      cardsBlock(g), lookup(g));
   }
 
   // "Read from Steam. Fetched ." with nothing after it is what the footer said

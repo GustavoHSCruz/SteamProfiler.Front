@@ -80,6 +80,7 @@ tools/            checks and generators, run with node, never shipped
 | `/g/<appid>` | one game without a profile: catalogue, live audience, reviews, news and global achievements |
 | `/u/<profile>/vs/<other>` | two libraries against each other |
 | `/u/<profile>/backlog` | everything owned and never launched |
+| `/u/<profile>/cards` | the trading-card badges this profile has made, the sets it has not, and what one of each card in those would cost on the market today |
 | `/u/<profile>/year/<year>` | one year of it: what was put down that year, and what was unlocked during it. The word `year` is in the path because an appid is digits too |
 | `/blog`, `/blog/<id>/<title>` | the index and a post. The id resolves it; the title is that post's own title in the language the link was made in, and the page rewrites it to the reader's without reloading |
 | `/feedback` | leave a bug or an idea, and the public board |
@@ -89,6 +90,22 @@ tools/            checks and generators, run with node, never shipped
 Paths under `/u/` are resolved in `router.js` after `profile.html` loads. The
 server hands the same shell to all of them, so a new sub-page is a case in the
 router and nothing else.
+
+### The card page
+
+`/u/<profile>/cards` is drawn in two passes, and that is worth knowing before
+editing it. The badges come from Steam with the answer and are exact. The
+prices come from the Community Market through a cache the api fills a few games
+a minute, so a set with no price yet is drawn without one rather than held
+back - `cd.no_price` is this site still reading, `cd.no_cards` is a set nobody
+is selling a complete run of, and they are not the same sentence. The page asks
+once more fifteen seconds later for whatever landed in the meantime, and never
+again: it is a page somebody reads, not a dashboard that ticks.
+
+The figures on it are in dollars and the note under the list says why: the
+market quotes in the currency of whoever is signed in, nobody is signed in, and
+converting would be inventing a price. Every other number on this site is in
+the reader's own storefront currency.
 
 ## Game pages
 

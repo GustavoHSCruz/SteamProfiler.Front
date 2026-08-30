@@ -77,10 +77,18 @@ const BOOT_PLAN = {
     ['fetched', [['load.s_library', 0], ['load.s_hours', 2600], ['load.s_year', 5600]]],
     ['drawn', [['load.s_page', 0]]],
   ],
+  // The library, and then one more call for the badges on top of it. The
+  // prices are not on this checklist because nothing waits for them: they are
+  // read off the cache the page was drawn from and fill in afterwards.
+  cards: [
+    ['resolved', [['load.s_find', 0]]],
+    ['fetched', [['load.s_library', 0], ['load.s_hours', 2600], ['load.s_badges', 5600]]],
+    ['drawn', [['load.s_page', 0]]],
+  ],
 };
 
 const BOOT_HEAD = {
-  dash: 'load.h_dash', backlog: 'load.h_dash',
+  dash: 'load.h_dash', backlog: 'load.h_dash', cards: 'load.h_dash',
   game: 'load.h_game', versus: 'load.h_versus', year: 'load.h_year',
 };
 
@@ -143,6 +151,8 @@ function bootPanels() {
 const BOOT_SHAPE = {
   dash: () => bootTiles(40, 0, 0, 100, 100),
   backlog: () => bootPile(),
+  // Two lists of rows, which is what the pile already draws.
+  cards: () => bootPile(),
   game: () => bootPanels(),
   versus: () => [...bootTiles(18, 0, 0, 49.4, 100), ...bootTiles(18, 50.6, 0, 49.4, 100)],
 };

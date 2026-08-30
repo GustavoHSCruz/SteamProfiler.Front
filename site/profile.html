@@ -364,6 +364,49 @@
   </section>
 </main>
 
+<!-- ── The card sets ─────────────────────────────────────────────────
+     /u/<perfil>/cards. Two lists and one number: the badges this profile has
+     made, the sets it owns and has not, and what one of each card in those
+     costs on the market today.
+
+     The badges come from Steam and are exact. Everything with a price on it
+     comes from the Community Market through the api's own cache, which is
+     read slowly on purpose - so this page is written to be correct while it is
+     still filling, and says which half of it is still arriving rather than
+     waiting for all of it. -->
+<main id="cards" hidden>
+  <header class="bl-head">
+    <h1 class="display"><span id="cd-count">-</span> <span data-i18n="cd.h1">card badges</span></h1>
+    <p class="lede" id="cd-lede"></p>
+    <p class="lede" id="cd-cost"></p>
+  </header>
+
+  <section class="grid">
+    <article class="panel p-cd">
+      <div class="panel-bar"><span data-i18n="cd.made">made here</span><b id="cd-made-n">-</b></div>
+      <div class="panel-body">
+        <ul class="cdset" id="cd-made"></ul>
+        <p class="note" id="cd-badges-other"></p>
+      </div>
+    </article>
+
+    <article class="panel p-cd">
+      <div class="panel-bar"><span data-i18n="cd.open">still open</span><b id="cd-open-n">-</b></div>
+      <div class="panel-body">
+        <div class="all-tools">
+          <input class="all-find" id="cd-find" type="search" autocomplete="off"
+                 data-i18n-ph="cd.find" data-i18n-title="cd.find">
+        </div>
+        <ul class="cdset" id="cd-open"></ul>
+        <button class="all-more" id="cd-more" type="button" hidden></button>
+        <p class="note" id="cd-shown"></p>
+        <p class="note" id="cd-filling"></p>
+        <p class="note" data-i18n="cd.note">A set is one of each card in it, at the Community Market’s lowest listing. The figures are in dollars, and they are the only ones on this site that are not in your own money: the market quotes in the currency of whoever is signed in, and nobody is signed in here. Foils are a second collection and are not counted.</p>
+      </div>
+    </article>
+  </section>
+</main>
+
 <!-- ── One year ────────────────────────────────────────────────────────
      /u/<perfil>/year/<ano>. Written `year/2019` and not `2019` because an
      appid is digits too, and /u/x/2015 would otherwise be two addresses

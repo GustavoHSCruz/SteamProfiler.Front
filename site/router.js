@@ -4,6 +4,7 @@
      /u/<perfil>              the dashboard
      /u/<perfil>/<appid>      one game
      /u/<perfil>/backlog      everything owned and never launched
+     /u/<perfil>/cards        the badges made, and the sets still open
      /u/<perfil>/year/<ano>   one year of it
 
    <perfil> is whatever the visitor typed - a vanity name or a steamID64 - and it
@@ -21,6 +22,9 @@ const appid = parts[2] && /^\d+$/.test(parts[2]) ? Number(parts[2]) : null;
 // is in that same space for the same reason.
 const rival = parts[2] === 'vs' && parts[3] ? steamHandle(parts[3]) : null;
 const pile = parts[2] === 'backlog';
+// Same path space, same reason: an appid is always digits, so a word can never
+// be mistaken for one.
+const cardset = parts[2] === 'cards';
 // `year/2019` and not `2019`, for the same reason `vs` exists: an appid is
 // digits too, and Steam has apps numbered in the two thousands, so /u/x/2015
 // would be two addresses wearing one path. The word is what tells them apart.
@@ -34,8 +38,9 @@ const year = parts[2] === 'year' && /^(19|20)\d\d$/.test(parts[3] || '') ? parts
 function canonical() {
   const tail = rival ? `/vs/${encodeURIComponent(rival)}`
     : pile ? '/backlog'
-      : year ? `/year/${year}`
-        : appid ? `/${appid}` : '';
+      : cardset ? '/cards'
+        : year ? `/year/${year}`
+          : appid ? `/${appid}` : '';
   return `/u/${encodeURIComponent(query)}${tail}`;
 }
 
@@ -47,6 +52,7 @@ function fail(message, retry) {
   el('dash').hidden = true;
   el('game').hidden = true;
   el('backlog').hidden = true;
+  el('cards').hidden = true;
   el('year').hidden = true;
   failure.hidden = false;
   el('failure-text').textContent = message;
@@ -82,8 +88,8 @@ function showChrome(profileQuery, persona) {
 
   // The wait screen knows which of the four views is coming, because each one
   // waits on different calls and the skeleton it draws is that view's layout.
-  bootStart(rival ? 'versus' : pile ? 'backlog' : year ? 'year' : appid ? 'game' : 'dash',
-    query, appid);
+  bootStart(rival ? 'versus' : pile ? 'backlog' : cardset ? 'cards'
+    : year ? 'year' : appid ? 'game' : 'dash', query, appid);
 
   let steamid;
   try {
@@ -128,6 +134,15 @@ function showChrome(profileQuery, persona) {
       // Its own await: the page is drawn from the profile and then asks the
       // store cache for prices, which it can do without.
       await renderBacklog(d, encodeURIComponent(query));
+    } else if (cardset) {
+      const d = await api(`/profile?id=${steamid}`);
+      bootMark('fetched');
+      el('cards').hidden = false;
+      showChrome(query, d.profile.persona);
+      bootDone();
+      // Its own await, like the pile: the page belongs to the profile, and the
+      // badges and the market prices land on top of a page that is already up.
+      await renderCards(d, steamid, encodeURIComponent(query));
     } else if (year) {
       // Every figure on this page except the unlocks is already in the profile
       // payload, so the page is complete the moment that lands. The unlocks

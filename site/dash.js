@@ -253,6 +253,10 @@ function buildDiscover(d, query) {
   // press it. Pressing costs three calls per game against the owner's quota,
   // and a visitor who did not ask for that should not have it spent for them.
   chip('#raridades', t('go.rare'), t('go.rare_hint'));
+  // Always drawn, unlike the pile: whether this library has a badge in it is
+  // not on this payload, and the page it points at is a real answer either
+  // way - a profile with no badges at all is a list of sets nobody has made.
+  chip(`/u/${query}/cards`, t('go.cards'), t('go.cards_hint'));
 
   rail.textContent = '';
   for (const c of chips) rail.append(c);
@@ -1345,6 +1349,135 @@ function buildBoard(steamid, query, friends, me) {
    three hundred games nobody did would be a hundred megabytes of nothing. */
 
 const PILE_PAGE = 60;
+
+/* ── The card sets ─────────────────────────────────────────────────────
+   /u/<perfil>/cards - the badges this profile has made, the sets it owns and
+   has not, and what one of each card costs today.
+
+   The page is drawn in two passes on purpose. The badges are exact and arrive
+   with the answer; the prices come out of a cache the api fills a few games a
+   minute, so a set with no price yet is drawn without one rather than held
+   back, and the page asks once more a few seconds later for whatever landed in
+   the meantime. Nothing here ever blocks on the market. */
+const CARD_PAGE = 40;
+const CARD_REFILL = 15000;
+
+function cardRow(row, query, done) {
+  const art = h('img', {
+    cls: 'pile-art',
+    attr: {
+      src: `${HEADER_ART}/${row.appid}/header.jpg`, alt: '',
+      width: '460', height: '215', loading: 'lazy', decoding: 'async',
+    },
+  });
+  art.addEventListener('error', () => { art.removeAttribute('src'); });
+
+  const bits = [];
+  if (done) {
+    if (row.level != null) bits.push(t('cd.level', { n: num(row.level) }));
+    if (row.foil) bits.push(t('cd.foil'));
+    if (row.when) bits.push(t('cd.crafted', { when: shortDate(row.when) }));
+    if (!row.owned) bits.push(t('cd.gone'));
+  } else {
+    if (row.count) bits.push(t('cd.cards', { n: num(row.count) }));
+    if (row.hours) bits.push(hoursText(row.hours));
+  }
+
+  // The price is the set's, not the game's, and it is the one number on the
+  // row that may not be there yet. "no price yet" and "not sold" are two
+  // different answers: the first is this site still reading, the second is a
+  // set nobody is selling a complete run of.
+  const price = h('b', {
+    cls: 'cd-price',
+    text: row.cost != null ? cash(row.cost, 'USD')
+      : row.count ? t('cd.no_cards') : t('cd.no_price'),
+  });
+  if (row.cost == null) price.dataset.pending = '1';
+  if (row.stale) price.dataset.stale = '1';
+
+  return h('li', {},
+    h('a', { cls: 'cd-row', attr: { href: `/u/${query}/${row.appid}` } },
+      art,
+      h('span', { cls: 'pile-txt' },
+        h('b', { cls: 'pile-name', text: row.name }),
+        h('span', { cls: 'pile-meta', text: bits.join(' · ') })),
+      price));
+}
+
+async function renderCards(d, steamid, query) {
+  document.title = `${d.profile.persona} - ${t('cd.title')} - steamprofiler.org`;
+  const madeList = el('cd-made');
+  const openList = el('cd-open');
+  const more = el('cd-more');
+  const find = el('cd-find');
+
+  let c;
+  try {
+    c = await api(`/cards?id=${steamid}`);
+  } catch (e) {
+    el('cd-lede').textContent = e.message;
+    return;
+  }
+
+  let shown = CARD_PAGE;
+
+  function draw() {
+    const made = c.crafted || [];
+    const open = c.open || [];
+    el('cd-count').textContent = num(made.length);
+    el('cd-made-n').textContent = num(made.length);
+    el('cd-open-n').textContent = num(open.length);
+
+    el('cd-lede').textContent = made.length
+      ? t('cd.lede', {
+        level: num(c.level), xp: num(c.xp),
+        done: num(made.length), sets: num(made.length + open.length),
+      })
+      : t('cd.lede_bare', { level: num(c.level), xp: num(c.xp) });
+
+    const quoted = c.cost?.quoted || 0;
+    el('cd-cost').textContent = quoted
+      ? t('cd.cost', { n: num(quoted), v: cash(c.cost.open, c.currency) })
+      : open.length ? t('cd.cost_none') : '';
+
+    el('cd-badges-other').textContent = c.badges?.other
+      ? t('cd.badges_other', { n: num(c.badges.other) }) : '';
+    el('cd-filling').textContent = c.filling?.unclassified
+      ? t('cd.filling', { n: num(c.filling.unclassified) }) : '';
+
+    madeList.textContent = '';
+    for (const row of made) madeList.append(cardRow(row, query, true));
+
+    const q = find.value.trim().toLowerCase();
+    const rows = q ? open.filter((g) => g.name.toLowerCase().includes(q)) : open;
+    openList.textContent = '';
+    for (const row of rows.slice(0, shown)) openList.append(cardRow(row, query, false));
+
+    const left = rows.length - shown;
+    more.hidden = left <= 0;
+    more.textContent = left > 0 ? t('cd.more', { n: num(Math.min(left, CARD_PAGE)) }) : '';
+    el('cd-shown').textContent = open.length
+      ? t('cd.shown', { shown: num(Math.min(shown, rows.length)), total: num(rows.length) })
+      : t('cd.empty');
+  }
+
+  more.addEventListener('click', () => { shown += CARD_PAGE; draw(); });
+  find.addEventListener('input', () => { shown = CARD_PAGE; draw(); });
+  draw();
+
+  // One more ask, for the sets the market had not answered about when the page
+  // opened. Once and not on a timer: this is a page somebody reads, not a
+  // dashboard that ticks, and the rest is one reload away.
+  if (c.filling?.unpriced) {
+    setTimeout(async () => {
+      try {
+        c = await api(`/cards?id=${steamid}`);
+        draw();
+      } catch { /* it said what it could */ }
+    }, CARD_REFILL);
+  }
+}
+
 async function renderBacklog(d, query) {
   const games = d.unplayed || [];
   const list = el('bl-list');
