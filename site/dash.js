@@ -1379,7 +1379,7 @@ function cardRow(row, query, done) {
     if (row.when) bits.push(t('cd.crafted', { when: shortDate(row.when) }));
     if (!row.owned) bits.push(t('cd.gone'));
   } else {
-    if (row.count) bits.push(t('cd.cards', { n: num(row.count) }));
+    if (row.count) bits.push(t('cd.cards', { n: num(row.count), raw: row.count }));
     if (row.hours) bits.push(hoursText(row.hours));
   }
 
@@ -1431,17 +1431,18 @@ async function renderCards(d, steamid, query) {
     el('cd-lede').textContent = made.length
       ? t('cd.lede', {
         level: num(c.level), xp: num(c.xp),
-        done: num(made.length), sets: num(made.length + open.length),
+        done: num(made.length), doneRaw: made.length,
+        sets: num(made.length + open.length),
       })
       : t('cd.lede_bare', { level: num(c.level), xp: num(c.xp) });
 
     const quoted = c.cost?.quoted || 0;
     el('cd-cost').textContent = quoted
-      ? t('cd.cost', { n: num(quoted), v: cash(c.cost.open, c.currency) })
+      ? t('cd.cost', { n: num(quoted), raw: quoted, v: cash(c.cost.open, c.currency) })
       : open.length ? t('cd.cost_none') : '';
 
     el('cd-badges-other').textContent = c.badges?.other
-      ? t('cd.badges_other', { n: num(c.badges.other) }) : '';
+      ? t('cd.badges_other', { n: num(c.badges.other), raw: c.badges.other }) : '';
     el('cd-filling').textContent = c.filling?.unclassified
       ? t('cd.filling', { n: num(c.filling.unclassified) }) : '';
 
