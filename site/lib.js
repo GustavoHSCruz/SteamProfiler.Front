@@ -27,6 +27,23 @@ const shortDate = (iso) => { const d = asDate(iso); return d ? SHORT_FMT.format(
  *  difference between a date that fits its column and one that wraps. */
 const DAY_FMT = new Intl.DateTimeFormat(locale(), { day: 'numeric', month: 'short' });
 const dayMonth = (iso) => { const d = asDate(iso); return d ? DAY_FMT.format(d) : null; };
+/** Month and year, without the day. The mirror of the one above: on a shelf
+ *  that spans a decade the year is the half that says something and the day is
+ *  the half that costs the column its width. */
+const MONTH_FMT = new Intl.DateTimeFormat(locale(), { month: 'short', year: 'numeric' });
+const monthYear = (iso) => {
+  const d = asDate(iso);
+  if (!d) return null;
+  // Assembled from the parts rather than taken whole, because Portuguese joins
+  // the two with a preposition - "jan. de 2015" - and those three characters
+  // are the difference between a column that shows the year and one that cuts
+  // it off. Filtering keeps whatever order the locale puts them in, so Russian
+  // still loses only its trailing "г." and nothing else.
+  return MONTH_FMT.formatToParts(d)
+    .filter((p) => p.type === 'month' || p.type === 'year')
+    .map((p) => p.value)
+    .join(' ');
+};
 const longDate = (iso) => { const d = asDate(iso); return d ? LONG_FMT.format(d) : null; };
 const stamp = (iso) => (iso ? STAMP_FMT.format(new Date(iso)) : '');
 

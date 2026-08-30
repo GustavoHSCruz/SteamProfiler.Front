@@ -537,6 +537,109 @@ function buildShowcase(pf) {
   }
 }
 
+/** The showcase and the badges share a row, and either can be absent: a
+ *  profile with nothing written on it, a profile that keeps its badges to
+ *  itself. Whichever one is left then takes the whole width, because a panel
+ *  sitting alone beside eight empty columns is the shape this row was
+ *  rearranged to stop making. Called after both have had their say. */
+function pairRow() {
+  const rig = el('panel-showcase');
+  const badges = el('panel-badges');
+  if (rig && !badges) rig.dataset.wide = '1';
+  else if (badges && !rig) badges.dataset.wide = '1';
+}
+
+/** What one level costs at this level.
+ *
+ *  Steam publishes how much XP is still owed for the next level and never the
+ *  size of the step, so a bar needs the step from somewhere. It is a published
+ *  rule rather than a guess: a hundred XP per level for the first ten, two
+ *  hundred for the next ten, and a hundred more for every ten after that. */
+const levelBand = (level) => 100 * (Math.floor(level / 10) + 1);
+
+/** The badges, as the pictures they are.
+ *
+ *  The account panel already carries the count, and a count is the least
+ *  interesting thing about a badge: two accounts on twenty-two each have a
+ *  different twenty-two, and the artwork is the whole of the difference.
+ *
+ *  What Steam serves is the newest first, so this is a recency shelf rather
+ *  than a hall of fame - which is the honest ordering, because Steam does not
+ *  rank badges and inventing a rank for them would be inventing the fact.
+ *
+ *  Card badges link through to the game's page on this site, and only when the
+ *  library actually has that game: the sale and event badges carry an appid
+ *  too, and it belongs to a storefront event nobody owns. */
+function buildBadges(pf, query, owned) {
+  const list = pf.badges || [];
+  const wrap = el('panel-badges');
+  if (!list.length) {
+    wrap.remove();
+    return;
+  }
+
+  el('badges-head').textContent = pf.badge_count != null
+    ? t('dash.badges_count', { n: num(pf.badge_count), raw: pf.badge_count })
+    : t('dash.badges_count', { n: num(list.length), raw: list.length });
+
+  // Level and the distance to the next one. Steam reports what is still owed
+  // rather than what has been earned toward it, so the bar is worked out from
+  // the two together, and the whole block goes missing when there is no level.
+  if (pf.level != null) {
+    el('badges-xp').hidden = false;
+    el('badges-xp-line').innerHTML = pf.xp_to_next
+      ? t('dash.badges_climb', {
+        n: num(pf.level), xp: num(pf.xp), need: num(pf.xp_to_next),
+        next: num(pf.level + 1), raw: pf.xp_to_next,
+      })
+      : t('dash.badges_level', { n: num(pf.level), xp: num(pf.xp) });
+    if (pf.xp_to_next) {
+      const band = levelBand(pf.level);
+      el('badges-xp').append(fillBar('meter', ((band - pf.xp_to_next) / band) * 100));
+    }
+  }
+
+  const ul = el('badges-list');
+  ul.textContent = '';
+  for (const b of list) {
+    const linkable = b.appid && owned.has(b.appid);
+    const tile = h(linkable ? 'a' : 'div', {
+      cls: 'badge',
+      attr: linkable ? { href: `/u/${query}/${b.appid}` } : {},
+    });
+
+    if (b.icon) {
+      tile.append(h('img', {
+        cls: 'bg-art',
+        attr: {
+          src: b.icon, alt: '', width: 44, height: 44,
+          loading: 'lazy', decoding: 'async',
+        },
+      }));
+    }
+
+    // Level first because it is the badge's own rank, then the day it was
+    // earned. A Steam-issued badge has no level, so that half is simply absent
+    // rather than printed as a zero.
+    const bits = [];
+    if (b.level != null) bits.push(`<span class="lvl">${t('dash.badges_lvl', { n: num(b.level) })}</span>`);
+    const when = monthYear(b.when);
+    if (when) bits.push(when);
+    else if (b.xp != null) bits.push(t('dash.badges_worth', { xp: num(b.xp) }));
+
+    tile.append(h('span', { cls: 'bg-text' },
+      h('span', { cls: 'bg-name', text: b.name, attr: { title: b.tier || b.name } }),
+      bits.length ? h('span', { cls: 'bg-line', html: bits.join(' · ') }) : null));
+
+    ul.append(h('li', {}, tile));
+  }
+
+  const rest = (pf.badge_count || list.length) - list.length;
+  el('badges-note').textContent = rest > 0
+    ? t('dash.badges_note', { n: num(list.length), rest: num(rest), raw: rest })
+    : t('dash.badges_note_all', { n: num(list.length), raw: list.length });
+}
+
 function buildPages(games, query) {
   el('pages-count').textContent = t('dash.pages_count', { n: games.length });
   const ul = el('pages');
@@ -1869,6 +1972,12 @@ function renderDashboard(d, query) {
   buildPlatform(d.platform, d.library);
   buildAccount(pf);
   buildShowcase(pf);
+  // A badge names a game by appid, including the sale and event badges whose
+  // appid belongs to a storefront page nobody owns. Only the ones this library
+  // actually holds get to be links, so the whole library is what decides.
+  buildBadges(pf, query, new Set(
+    [...d.library, ...d.unplayed].map((g) => g.appid)));
+  pairRow();
   buildPages(d.top_games, query);
   buildTable(d.top_games, query);
   buildTimeline(d.library, query);

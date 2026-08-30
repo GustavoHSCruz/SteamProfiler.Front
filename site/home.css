@@ -150,9 +150,17 @@ a.cell[data-dark="1"]:hover, .cell[data-dark="1"][data-on="1"] {
 .p-now   { grid-column: span 4; }
 .p-plat  { grid-column: span 4; }
 .p-acct  { grid-column: span 4; }
-.p-rig   { grid-column: span 5; }
-.p-pages { grid-column: span 7; }
+.p-rig   { grid-column: span 4; }
+.p-badges{ grid-column: span 8; }
+/* Twenty-five cards four across is seven rows, and next to a showcase that is
+   eight lines long it read as a column with a panel beside it rather than as
+   two panels. Full width it is the same twenty-five cards in four rows, which
+   is a band - and the row above it is now two panels that end together. */
+.p-pages { grid-column: span 12; }
 .p-table { grid-column: span 12; }
+/* Set by dash.js on the survivor when the showcase and the badges do not both
+   turn up. See pairRow(). */
+.grid > [data-wide="1"] { grid-column: span 12; }
 
 @media (prefers-reduced-motion: no-preference) {
   .grid > *:nth-child(1) { animation-delay: 40ms; }
@@ -353,6 +361,93 @@ a.cell[data-dark="1"]:hover, .cell[data-dark="1"][data-on="1"] {
   color: var(--faint);
 }
 
+/* ── Badges ───────────────────────────────────────────────────────── */
+
+/* Where the level sits, and how far off the next one is. Steam's own badge
+   page opens with this, and it is the only figure here that moves on its own. */
+.xp { margin: 0 0 15px; }
+.xp-line {
+  margin: 0 0 8px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--dim);
+}
+.xp-line b { color: var(--text); font-weight: 600; }
+.xp-line .hot { color: var(--accent); }
+
+.badges {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(184px, 1fr));
+  gap: var(--gap);
+}
+.badges li { min-width: 0; }
+.badge {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  align-items: center;
+  gap: 11px;
+  height: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel-2);
+  color: inherit;
+  text-decoration: none;
+}
+/* Only the card badges are links: they are the ones whose game has a page on
+   this site. A years-of-service mark is a tile and nothing more, so it does
+   not lift under the cursor and pretend otherwise. */
+a.badge { transition: border-color 140ms ease, transform 140ms ease; }
+a.badge:hover, a.badge:focus-visible {
+  border-color: var(--line-2);
+  transform: translateY(-2px);
+}
+@media (prefers-reduced-motion: reduce) {
+  a.badge { transition: none; }
+  a.badge:hover, a.badge:focus-visible { transform: none; }
+}
+/* Steam draws every badge on an 80px square, card art and sale art alike, so
+   one box fits all of them and `contain` keeps the odd one from being cropped. */
+.bg-art {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  flex: none;
+}
+.bg-text { min-width: 0; }
+/* Two lines, not one with an ellipsis. Half these names are "Steam Replay
+   2024" and "Steam Awards Nominations Committee 2020", where everything that
+   tells one from the next is at the end - so cutting the end is cutting the
+   whole fact, and a second line is cheaper than a tile that says nothing. */
+.bg-name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  font-size: 12.5px;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.bg-line {
+  display: block;
+  margin-top: 3px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  line-height: 1.45;
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bg-line .lvl { color: var(--accent); }
+
 /* ── Ranked table ─────────────────────────────────────────────────── */
 
 .table-scroll { overflow-x: auto; }
@@ -404,7 +499,7 @@ a.cell[data-dark="1"]:hover, .cell[data-dark="1"][data-on="1"] {
 
 @media (max-width: 1080px) {
   .p-now, .p-plat, .p-acct { grid-column: span 6; }
-  .p-rig, .p-pages { grid-column: span 12; }
+  .p-rig, .p-badges, .p-pages { grid-column: span 12; }
 }
 
 @media (max-width: 760px) {
