@@ -71,6 +71,47 @@ function cash(cents, currency) {
   return CASH[cur].format(cents / 100);
 }
 
+/** The same money said again, roughly, in the money the reader counts in.
+ *
+ *  Cards are the only prices on this site that arrive in a currency nobody
+ *  chose: the Community Market's search answers in dollars and ignores every
+ *  request to do otherwise. So the dollar is printed as it came and this goes
+ *  beside it, from the day's rate the api carries in `rates`.
+ *
+ *  It is an approximation and the page says so wherever it appears. A card at
+ *  $0.05 was listed at R$0,22, R$0,24 and R$0,26 on three different games in
+ *  the same minute: each currency has its own queue of listings and its own
+ *  rounding, so no single rate reproduces what the market will actually
+ *  charge. Null when there is no rate, when the reader already counts in
+ *  dollars, or when there is nothing to convert - and then only the dollar is
+ *  shown, which is always correct. */
+function approx(cents, rates) {
+  if (cents == null || !rates) return null;
+  const cur = myMoney();
+  const rate = rates[cur];
+  if (cur === 'USD' || !rate) return null;
+  return cash(Math.round(cents * rate), cur);
+}
+
+/** A dollar figure with that approximation after it, or the dollar alone. */
+function cashApprox(cents, rates) {
+  const usd = cash(cents, 'USD');
+  const near = approx(cents, rates);
+  return near ? `${usd} (≈ ${near})` : usd;
+}
+
+/** Which rate the approximations on a page were made with, and from when.
+ *  Empty for a reader already counting in dollars, and empty when the api sent
+ *  no rate - in both cases nothing on the page was approximated at all. The
+ *  api drops a rate rather than let it go stale, so this is either current or
+ *  absent; see fx.py. */
+function rateNote(rates, at) {
+  const cur = myMoney();
+  const rate = rates?.[cur];
+  if (cur === 'USD' || !rate) return '';
+  return t('cd.rate', { v: num(rate, 2), when: shortDate(at) });
+}
+
 /** What someone typed, reduced to the one thing a /u/ path should carry: a
  *  vanity name or a steamID64. People paste the profile URL far more often than
  *  they read the name out of it, and both Steam shapes hold the handle in the

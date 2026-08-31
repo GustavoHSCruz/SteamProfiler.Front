@@ -18,6 +18,10 @@ const LOCALES = { en: 'en-US', pt: 'pt-BR', ru: 'ru-RU' };
    reading in English sees dollars, which is the trade for not having a second
    control on the page saying almost the same thing. */
 const STORES = { en: 'us', pt: 'br', ru: 'ru' };
+/* The money that storefront quotes in, which is also the money a card price is
+   approximated into. Only cards need this: every other price on the site
+   arrives already in the reader's currency, because it was asked for there. */
+const MONEY = { en: 'USD', pt: 'BRL', ru: 'RUB' };
 const LANG_NAMES = { en: 'EN', pt: 'PT', ru: 'RU' };
 const LANG_KEY = 'sp-lang';
 
@@ -38,6 +42,8 @@ let LANG = pickLang();
 const locale = () => LOCALES[LANG];
 /** The storefront this reader's prices come from. */
 const store = () => STORES[LANG] || 'br';
+/** The money this reader counts in. */
+const myMoney = () => MONEY[LANG] || 'USD';
 
 /** Russian needs three plural forms; English and Portuguese need two. */
 function plural(n, forms) {

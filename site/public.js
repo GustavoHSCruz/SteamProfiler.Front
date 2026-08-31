@@ -820,7 +820,7 @@ function cardsBlock(g) {
     }
 
     body.textContent = c.cost != null
-      ? t('gp.cards_body', { n: num(c.count), v: cash(c.cost, c.currency) })
+      ? t('gp.cards_body', { n: num(c.count), v: cashApprox(c.cost, c.rates) })
       : t('gp.cards_bare', { n: num(c.count) });
 
     for (const card of c.cards) {
@@ -841,7 +841,13 @@ function cardsBlock(g) {
         })));
     }
 
-    if (c.checked_at) note.textContent = t('gp.cards_note', { when: stamp(c.checked_at) });
+    // The strip stays in dollars: a three-cent card is where the approximation
+    // is least useful and most in the way. The set's total carries it, and the
+    // note says which rate that was and from when.
+    if (c.checked_at) {
+      note.textContent = [t('gp.cards_note', { when: stamp(c.checked_at) }),
+        rateNote(c.rates, c.rates_at)].filter(Boolean).join(' ');
+    }
   })();
 
   return slot;

@@ -1465,7 +1465,7 @@ const PILE_PAGE = 60;
 const CARD_PAGE = 40;
 const CARD_REFILL = 15000;
 
-function cardRow(row, query, done) {
+function cardRow(row, query, done, rates) {
   const art = h('img', {
     cls: 'pile-art',
     attr: {
@@ -1495,6 +1495,11 @@ function cardRow(row, query, done) {
     text: row.cost != null ? cash(row.cost, 'USD')
       : row.count ? t('cd.no_cards') : t('cd.no_price'),
   });
+  // The reader's own money, after the dollar and never instead of it. Small
+  // because it is the approximate half of the pair - see approx() in lib.js
+  // for why it can only ever be approximate.
+  const near = approx(row.cost, rates);
+  if (near) price.append(h('small', { cls: 'cd-approx', text: ` ≈ ${near}` }));
   if (row.cost == null) price.dataset.pending = '1';
   if (row.stale) price.dataset.stale = '1';
 
@@ -1541,7 +1546,9 @@ async function renderCards(d, steamid, query) {
 
     const quoted = c.cost?.quoted || 0;
     el('cd-cost').textContent = quoted
-      ? t('cd.cost', { n: num(quoted), raw: quoted, v: cash(c.cost.open, c.currency) })
+      ? [t('cd.cost', {
+        n: num(quoted), raw: quoted, v: cashApprox(c.cost.open, c.rates),
+      }), rateNote(c.rates, c.rates_at)].filter(Boolean).join(' ')
       : open.length ? t('cd.cost_none') : '';
 
     el('cd-badges-other').textContent = c.badges?.other
@@ -1550,12 +1557,14 @@ async function renderCards(d, steamid, query) {
       ? t('cd.filling', { n: num(c.filling.unclassified) }) : '';
 
     madeList.textContent = '';
-    for (const row of made) madeList.append(cardRow(row, query, true));
+    for (const row of made) madeList.append(cardRow(row, query, true, c.rates));
 
     const q = find.value.trim().toLowerCase();
     const rows = q ? open.filter((g) => g.name.toLowerCase().includes(q)) : open;
     openList.textContent = '';
-    for (const row of rows.slice(0, shown)) openList.append(cardRow(row, query, false));
+    for (const row of rows.slice(0, shown)) {
+      openList.append(cardRow(row, query, false, c.rates));
+    }
 
     const left = rows.length - shown;
     more.hidden = left <= 0;
