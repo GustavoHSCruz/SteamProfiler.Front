@@ -2137,26 +2137,113 @@ function renderGeometryDash(g, root) {
   root.append(wrap);
 }
 
-/* ── Cyberpunk 2077 - the shard reader ───────────────────────────────  */
+/* ── Cyberpunk 2077 - the reading ────────────────────────────────────
+   This game names its story achievements after the tarot - The Fool, The
+   Lovers, The Devil, The World, and the four kings that came with Phantom
+   Liberty - and then paints those same cards on the walls of Night City as
+   graffiti you go out and photograph. That is not decoration on top of the
+   achievement list: it is the achievement list, already arranged by the people
+   who made the game. So the page is the reading.
+
+   Underneath it, the eight that ask for every gig and every police call in one
+   district, which between them are a map of the city. Everything else is what
+   Night City calls a shard, and it goes at the bottom in the order it was
+   found. The tables both blocks are dealt from live in lib.js, because the
+   page at /g/1091500 lays out the same two out of public.js. */
 
 function renderCyberpunk(g, root) {
   const ach = g.achievements;
   const wrap = h('div', { cls: 'cp' });
+  const held = new Map(ach.list.map((a) => [a.key, a]));
+  const when = (a) => (a && a.date ? shortDate(a.date) : null);
 
-  wrap.append(h('header', { cls: 'cp-head' },
+  /* The character screen keeps two meters side by side, and both of them are
+     honest here for different reasons. Street cred is the completion figure
+     outright. The level meter has no ceiling to be read against - hours never
+     do - so it is drawn against a hundred, which is roughly what this game and
+     Phantom Liberty cost end to end, and the line under it says so rather than
+     leaving a full bar to imply a finish line Steam never draws. */
+  const meter = (label, value, pct, note) => h('div', { cls: 'cp-bar' },
+    h('span', { cls: 'cp-bar-label', text: label }),
+    h('b', { cls: 'cp-bar-val', text: value }),
+    cpNotch(pct),
+    h('span', { cls: 'cp-bar-note', text: note }));
+
+  wrap.append(h('header', { cls: 'cp-hud' },
     h('p', { cls: 'cp-kicker', text: t('g.cp_kicker') }),
-    h('h1', { cls: 'cp-title', text: t('g.cp_title', { done: num(ach.unlocked), total: num(ach.total) }) }),
-    h('p', { cls: 'cp-sub', text: t('g.cp_sub', { h: hrs(g.record_hours), pct: num(ach.completion, 1) }) })));
+    h('h1', { cls: 'cp-title', text: g.name }),
+    h('div', { cls: 'cp-bars' },
+      meter(t('g.cp_level'), `${hrs(g.record_hours)} h`, g.record_hours,
+        t('g.cp_level_note')),
+      meter(t('g.cp_cred'), `${num(ach.completion, 1)}%`, ach.completion,
+        t('g.cp_cred_note', { done: num(ach.unlocked), total: num(ach.total) }))),
+    cells('cp-stats', [
+      [g.rank != null ? `#${num(g.rank)}` : null, t('g.lib_position')],
+      [ach.first ? shortDate(ach.first.date) : null, t('g.cp_first')],
+      [ach.last ? shortDate(ach.last.date) : null, t('g.cp_last')],
+      [ach.missing != null ? num(ach.missing) : null, t('g.cp_missing')],
+    ])));
 
-  const shards = h('div', { cls: 'cp-shards' });
-  ach.list.forEach((a, i) => {
-    shards.append(h('article', { cls: 'cp-shard' },
-      h('span', { cls: 'cp-idx', text: String(i + 1).padStart(2, '0') }),
-      h('div', {}, h('b', { text: a.name }),
-        a.description ? h('span', { text: a.description }) : null),
-      h('em', { text: a.rarity != null ? rarity(a.rarity) : '-' })));
-  });
-  wrap.append(shards);
+  const spread = h('div', { cls: 'cp-spread' });
+  for (const [key, numeral] of CP_ARCANA) {
+    const a = held.get(key) || null;
+    spread.append(cpCard(numeral, a, when(a)));
+  }
+  wrap.append(h('h2', { cls: 'cp-h', text: t('g.cp_spread') }),
+    h('p', { cls: 'cp-note', text: t('g.cp_spread_note', { n: num(CP_ARCANA.length) }) }),
+    spread);
+
+  const board = h('div', { cls: 'cp-board' });
+  for (const [key, name] of CP_DISTRICTS) {
+    const a = held.get(key) || null;
+    board.append(cpPin(name, a, when(a)));
+  }
+  wrap.append(h('h2', { cls: 'cp-h', text: t('g.cp_map') }),
+    h('p', { cls: 'cp-note', text: t('g.cp_map_note') }), board);
+
+  /* What a hundred percent still costs, which is the one thing an achievement
+     page usually leaves out: the api has sent the rarest and the commonest
+     thing still locked with every game since the day it started counting them,
+     and no page had ever spent them. On a board in Night City they are the two
+     contracts nobody has taken - the one almost nobody manages, and the one
+     almost everybody already has. */
+  const open = [
+    [t('g.cp_hardest'), ach.hardest_missing],
+    [t('g.cp_easiest'), ach.easiest_missing],
+  ].filter(([, a]) => a);
+  if (open.length) {
+    const wall = h('div', { cls: 'cp-wall' });
+    for (const [label, a] of open) {
+      wall.append(h('article', { cls: 'cp-contract' },
+        a.icon ? h('img', { cls: 'cp-contract-art', attr: { src: a.icon, alt: '', loading: 'lazy' } })
+               : h('i', { cls: 'cp-contract-art' }),
+        h('div', { cls: 'cp-contract-text' },
+          h('span', { cls: 'cp-contract-label', text: label }),
+          h('b', { text: a.name }),
+          a.description ? h('p', { text: a.description }) : null),
+        h('em', { text: a.rarity != null ? rarity(a.rarity) : '-' })));
+    }
+    wrap.append(h('h2', { cls: 'cp-h', text: t('g.cp_wall') }), wall);
+  }
+
+  const rest = ach.list.filter((a) => !CP_NAMED.has(a.key));
+  if (rest.length) {
+    const shards = h('div', { cls: 'cp-shards' });
+    rest.forEach((a, i) => {
+      shards.append(h('article', { cls: 'cp-shard' },
+        h('span', { cls: 'cp-idx', text: String(i + 1).padStart(2, '0') }),
+        a.icon ? h('img', { cls: 'cp-shard-art', attr: { src: a.icon, alt: '', loading: 'lazy' } })
+               : h('i', { cls: 'cp-shard-art' }),
+        h('div', { cls: 'cp-shard-text' },
+          h('b', { text: a.name }),
+          a.description ? h('span', { text: a.description }) : null),
+        h('em', { text: [when(a), a.rarity != null ? rarity(a.rarity) : null]
+          .filter(Boolean).join('  ·  ') })));
+    });
+    wrap.append(h('h2', { cls: 'cp-h', text: t('g.cp_shards') }),
+      h('p', { cls: 'cp-note', text: t('g.cp_shards_note') }), shards);
+  }
+
   root.append(wrap);
 }
 

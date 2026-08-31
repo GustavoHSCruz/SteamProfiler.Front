@@ -190,6 +190,85 @@ function fillBar(cls, pct, delay = 0) {
  *  to look at one game. A row of cover thumbnails is 40 KB each and lazy. */
 const HEADER_ART = 'https://cdn.cloudflare.steamstatic.com/steam/apps';
 
+/* ── Cyberpunk 2077's deck ─────────────────────────────────────────────
+   Two tables and three builders that belong to one game and are read on two
+   pages: /u/<profile>/1091500 draws them out of game.js and /g/1091500 draws
+   them again out of public.js, and those two files never load together. Same
+   reason squarify() is up there rather than in the dashboard.
+
+   CD Projekt named this game's story achievements after the tarot, and painted
+   the same cards on the walls of Night City for you to go and find. The keys
+   are Steam's own apiname, misspelling included, and the numeral beside each
+   one is that card's place in the deck rather than anything Steam sends. The
+   four kings are court cards, so they carry their suit instead.
+
+   Written out rather than found in the payload, because a profile carries only
+   what it unlocked: a card nobody drew never arrives, and a spread with the
+   missing cards taken out of it is not a spread. Anything added to the game
+   later that is not in here falls through to the list at the foot of both
+   pages, which is where a new achievement belongs until somebody decides it is
+   a card. */
+const CP_ARCANA = [
+  ['TheFool', '0'], ['TheHightPriestess', 'II'], ['TheLovers', 'VI'],
+  ['TheHermit', 'IX'], ['TheWheelOfFortune', 'X'], ['Temperance', 'XIV'],
+  ['TheDevil', 'XV'], ['TheTower', 'XVI'], ['TheStar', 'XVII'],
+  ['TheSun', 'XIX'], ['TheWorld', 'XXI'],
+  ['KingOfTheCups', '♥'], ['KingOfThePentacles', '♦'],
+  ['KingOfTheWands', '♣'], ['KingOfTheSwords', '♠'],
+];
+
+/* The eight that ask for everything one district has. Steam localises the
+   achievement's own name, so the district beside it is a key here rather than
+   something read back out of a description that changes language. */
+const CP_DISTRICTS = [
+  ['YipMan', 'g.cp_watson'], ['LittleTokyo', 'g.cp_westbrook'],
+  ['LikeFatherLikeSon', 'g.cp_heywood'], ['TradeUnion', 'g.cp_santo'],
+  ['ThisIsPacifica', 'g.cp_pacifica'], ['Bladerunner', 'g.cp_center'],
+  ['NoMansLand', 'g.cp_badlands'], ['DirtyWork', 'g.cp_dogtown'],
+];
+
+/** Everything the two blocks above have already spoken for. */
+const CP_NAMED = new Set([...CP_ARCANA, ...CP_DISTRICTS].map(([key]) => key));
+
+/** The game's own meter: notches rather than a bar, the way the character
+ *  screen draws level and street cred. */
+function cpNotch(pct) {
+  const box = h('div', { cls: 'cp-notch' });
+  const on = Math.round((Math.max(0, Math.min(100, pct || 0)) / 100) * 24);
+  for (let i = 0; i < 24; i++) box.append(h('i', { data: i < on ? { on: '1' } : {} }));
+  return box;
+}
+
+/** One card in the spread. `a` is the achievement when it is known - unlocked,
+ *  on a profile, and always on the page with no profile - and null for a card
+ *  this profile never drew. Steam publishes an achievement's name only to an
+ *  account that has it, so a card nobody here holds is drawn the way a card
+ *  nobody has turned over is drawn: face down, with its numeral and nothing
+ *  else. `meta` is the line under the name, which is a date on a profile and a
+ *  percentage on the page that has none. */
+function cpCard(numeral, a, meta) {
+  const card = h('article', { cls: 'cp-card', data: a ? { on: '1' } : {} });
+  card.append(h('span', { cls: 'cp-card-num', text: numeral }));
+  if (!a) {
+    return put(card, h('i', { cls: 'cp-card-back', attr: { 'aria-hidden': 'true' } }),
+      h('b', { cls: 'cp-card-name', text: t('g.cp_facedown') }));
+  }
+  return put(card,
+    a.icon ? h('img', { cls: 'cp-card-art', attr: { src: a.icon, alt: '', loading: 'lazy' } })
+           : h('i', { cls: 'cp-card-back', attr: { 'aria-hidden': 'true' } }),
+    h('b', { cls: 'cp-card-name', text: a.name }),
+    meta ? h('em', { cls: 'cp-card-meta', text: meta }) : null);
+}
+
+/** One district on the board. Same contract as the card, except that the
+ *  district is named either way: that name comes from here, not from Steam. */
+function cpPin(key, a, meta) {
+  return h('article', { cls: 'cp-pin', data: a ? { on: '1' } : {} },
+    h('b', { cls: 'cp-pin-name', text: t(key) }),
+    h('span', { cls: 'cp-pin-job', text: a ? a.name : t('g.cp_open') }),
+    meta ? h('em', { cls: 'cp-pin-meta', text: meta }) : null);
+}
+
 /* ── Treemap ───────────────────────────────────────────────────────
    Squarified layout (Bruls, Huizing & van Wijk): fill the shorter side of the
    remaining rectangle with a row of cells, and close the row as soon as adding

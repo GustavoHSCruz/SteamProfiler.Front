@@ -101,7 +101,7 @@ function heading(g) {
       })));
 }
 
-/* ── Public versions of the profile's eight original themed screens ─────
+/* ── Public versions of the profile's ten fully themed screens ─────────
    These use the same objects and class names as /u/<profile>/<appid>, but not
    its facts. A public game has no hours, rank or unlock dates. Its honest
    material is the store record and Steam's global achievement rarity, so each
@@ -475,6 +475,88 @@ function publicRepo(g, root) {
   }, { passive: true });
 }
 
+/* Cyberpunk 2077: the same reading, dealt from the whole deck.
+
+   A page with no profile knows every card rather than only the ones somebody
+   turned over, so nothing here is face down - and what sits under each card is
+   the one figure a profile cannot have, which is how many of everyone who owns
+   the game has drawn it. The tables both blocks are dealt from are in lib.js,
+   where the profile's own page reads them too. */
+function publicCyberpunk(g, root) {
+  const all = new Map(((g.achievements || {}).list || []).map((a) => [a.key, a]));
+  const list = publicKnown(g);
+  const total = (g.achievements || {}).total || 0;
+  const median = publicMedian(g);
+  const common = publicCommon(g);
+  // The percentage alone under each card: what it is a percentage of is said
+  // once, in the paragraph over the spread, rather than fifteen times inside it.
+  const meta = (a) => (a && a.rarity != null ? rarity(a.rarity) : null);
+  const wrap = h('div', { cls: 'cp' });
+
+  wrap.append(h('header', { cls: 'cp-hud' },
+    h('p', { cls: 'cp-kicker', text: publicKicker(g) }),
+    h('h1', { cls: 'cp-title', text: g.name }),
+    h('div', { cls: 'cp-bars' },
+      h('div', { cls: 'cp-bar' },
+        h('span', { cls: 'cp-bar-label', text: t('gp.median') }),
+        h('b', { cls: 'cp-bar-val', text: rarity(median) }),
+        cpNotch(median || 0),
+        h('span', { cls: 'cp-bar-note', text: t('gp.half_note', { pct: rarity(median) }) })),
+      h('div', { cls: 'cp-bar' },
+        h('span', { cls: 'cp-bar-label', text: t('gp.common') }),
+        h('b', { cls: 'cp-bar-val', text: num(common) }),
+        cpNotch(list.length ? (common / list.length) * 100 : 0),
+        h('span', { cls: 'cp-bar-note', text: t('gp.cp_common_note', { n: num(total) }) }))),
+    // Not publicFacts(): two of its three counters are the two meters above,
+    // and a page that says 16,7% twice in one panel is saying it once. cells()
+    // lives in game.js, which this page does not load, so the row is written
+    // out rather than moved.
+    h('div', { cls: 'cp-stats' }, ...[
+      [num(total), t('gp.total_ach')],
+      [(g.store || {}).year, t('gp.released')],
+      [list.length ? rarity(list[0].rarity) : null, t('gp.rarest')],
+    ].filter(([value]) => value != null).map(([value, label]) =>
+      h('div', { cls: 'cp-stats-i' }, h('b', { text: value }), h('span', { text: label }))))));
+
+  const spread = h('div', { cls: 'cp-spread' });
+  CP_ARCANA.forEach(([key, numeral]) => {
+    const a = all.get(key) || null;
+    spread.append(cpCard(numeral, a, meta(a)));
+  });
+  wrap.append(h('h2', { cls: 'cp-h', text: t('g.cp_spread') }),
+    h('p', { cls: 'cp-note', text: t('gp.cp_spread_note', { n: num(CP_ARCANA.length) }) }),
+    spread);
+
+  const board = h('div', { cls: 'cp-board' });
+  CP_DISTRICTS.forEach(([key, name]) => {
+    const a = all.get(key) || null;
+    board.append(cpPin(name, a, meta(a)));
+  });
+  wrap.append(h('h2', { cls: 'cp-h', text: t('g.cp_map') }),
+    h('p', { cls: 'cp-note', text: t('gp.cp_map_note') }), board);
+
+  // The rest, rarest first, which is the order this whole page exists to put
+  // an achievement set in.
+  const rest = list.filter((a) => !CP_NAMED.has(a.key));
+  if (rest.length) {
+    const shards = h('div', { cls: 'cp-shards' });
+    rest.forEach((a, i) => {
+      shards.append(h('article', { cls: 'cp-shard' },
+        h('span', { cls: 'cp-idx', text: String(i + 1).padStart(2, '0') }),
+        a.icon ? h('img', { cls: 'cp-shard-art', attr: { src: a.icon, alt: '', loading: 'lazy' } })
+               : h('i', { cls: 'cp-shard-art' }),
+        h('div', { cls: 'cp-shard-text' },
+          h('b', { text: a.name }),
+          a.description ? h('span', { text: a.description }) : null),
+        h('em', { text: rarity(a.rarity) })));
+    });
+    wrap.append(h('h2', { cls: 'cp-h', text: t('g.cp_shards') }),
+      h('p', { cls: 'cp-note', text: t('gp.rarest_note') }), shards);
+  }
+
+  root.append(wrap);
+}
+
 const PUBLIC_LAYOUTS = {
   'dota-2': publicDota,
   'counter-strike-2': publicCs2,
@@ -485,6 +567,7 @@ const PUBLIC_LAYOUTS = {
   'gta-v': publicGta,
   'call-of-duty': publicCod,
   'repo': publicRepo,
+  'cyberpunk': publicCyberpunk,
 };
 
 /** The set, rarest first.

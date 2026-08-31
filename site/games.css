@@ -4811,7 +4811,11 @@ a.gta-tab:hover { color: var(--text); background: #ffffff08; }
   text-transform: uppercase; font-size: 24px;
 }
 
-/* ══ Cyberpunk 2077 - the shard reader ════════════════════════════════ */
+/* ══ Cyberpunk 2077 - the reading ═════════════════════════════════════
+   Yellow on near-black with cyan underneath it, hard edges, and the corner
+   sliced off every panel: the game's whole interface is a cut rectangle. The
+   red is the one this game reserves for a threat, and it is used here for the
+   two contracts nobody has taken and for a district still open. */
 :root[data-game="cyberpunk"] {
   --bg: #0a0a06; --panel: #12120a; --panel-2: #1a1a0e;
   --line: #24240f; --line-2: #3d3d18;
@@ -4821,32 +4825,178 @@ a.gta-tab:hover { color: var(--text); background: #ffffff08; }
   --label: 'IBM Plex Mono', monospace; --label-w: 500; --label-ls: 0.22em;
   --focus-ring: linear-gradient(120deg, #fcee0a, #00f0ff);
   --r: 0px;
+  --cp-red: #ff2b4e;
+  /* The slice, as one number: every panel on this page loses the same corner. */
+  --cp-cut: 16px;
 }
 .cp { padding: clamp(26px, 4vw, 56px) var(--edge) var(--edge); }
-.cp-head { margin-bottom: clamp(24px, 3vw, 40px); }
+
+/* ── The character screen ── */
+.cp-hud {
+  position: relative; margin-bottom: clamp(26px, 3.5vw, 44px);
+  padding: clamp(18px, 2.6vw, 30px);
+  background: var(--panel); border: 1px solid var(--line-2);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cp-cut)),
+                     calc(100% - var(--cp-cut)) 100%, 0 100%);
+}
+/* The scan lines every panel in this game is drawn behind. Kept faint enough
+   to read as texture: over a paragraph it would be a readability problem. */
+.cp-hud::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg,
+    rgba(252, 238, 10, 0.045) 0 1px, transparent 1px 4px);
+}
 .cp-kicker {
-  margin: 0 0 10px; font-family: var(--label); font-size: 10px;
+  margin: 0 0 12px; font-family: var(--label); font-size: 10px;
   letter-spacing: var(--label-ls); text-transform: uppercase; color: var(--link);
 }
 .cp-title {
-  margin: 0; padding: 6px 14px; display: inline-block;
+  margin: 0; padding: 6px 14px 8px; display: inline-block;
   font-family: var(--display); font-weight: var(--display-w);
-  text-transform: var(--display-tt); font-size: clamp(28px, 5.4vw, 56px); line-height: 1;
+  text-transform: var(--display-tt); font-size: clamp(26px, 5vw, 52px); line-height: 1;
   color: #0a0a06; background: var(--accent);
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
 }
-.cp-sub { margin: 14px 0 0; font-family: var(--label); font-size: 12px; color: var(--dim); }
-.cp-shards { display: grid; gap: 4px; }
-.cp-shard {
-  display: grid; grid-template-columns: 40px 1fr auto; gap: 14px;
-  align-items: center; padding: 10px 14px; background: var(--panel);
-  border-left: 2px solid var(--accent);
+
+/* Level and street cred, drawn as the game draws them: notches, not a bar. */
+.cp-bars {
+  margin-top: clamp(20px, 2.6vw, 30px); display: grid; gap: clamp(16px, 2vw, 26px);
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
 }
-.cp-idx { font-family: var(--label); font-size: 12px; color: var(--faint); }
-.cp-shard b { display: block; font-size: 14px; }
-.cp-shard span { display: block; margin-top: 2px; font-size: 12.5px; color: var(--dim); }
+.cp-bar { display: grid; gap: 7px; align-content: start; }
+.cp-bar-label {
+  font-family: var(--label); font-size: 9.5px; letter-spacing: var(--label-ls);
+  text-transform: uppercase; color: var(--faint);
+}
+.cp-bar-val {
+  font-family: var(--display); font-weight: var(--display-w); font-size: clamp(22px, 3vw, 30px);
+  line-height: 1; color: var(--accent);
+}
+.cp-notch { display: flex; gap: 3px; height: 13px; }
+.cp-notch i { flex: 1 1 0; background: var(--line-2); transform: skewX(-16deg); }
+.cp-notch i[data-on] { background: var(--accent); }
+.cp-bar-note { font-size: 12px; line-height: 1.45; color: var(--dim); }
+
+.cp-stats {
+  margin-top: clamp(20px, 2.6vw, 30px); display: grid; gap: 1px;
+  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+  background: var(--line-2); border: 1px solid var(--line-2);
+}
+.cp-stats-i { padding: 12px 14px; background: var(--panel-2); }
+.cp-stats-i b {
+  display: block; font-family: var(--display); font-weight: var(--display-w);
+  font-size: 17px; line-height: 1.15;
+}
+.cp-stats-i span {
+  display: block; margin-top: 5px; font-family: var(--label); font-size: 9px;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint);
+}
+
+.cp-h {
+  margin: clamp(32px, 4.2vw, 52px) 0 8px; font-family: var(--display);
+  font-weight: var(--display-w); text-transform: uppercase;
+  font-size: clamp(20px, 2.6vw, 26px);
+}
+.cp-h::before { content: '// '; color: var(--link); }
+.cp-note { margin: 0 0 18px; max-width: 64ch; font-size: 13px; line-height: 1.6; color: var(--dim); }
+
+/* ── The spread ── */
+.cp-spread {
+  display: grid; gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(122px, 1fr));
+}
+.cp-card {
+  display: grid; gap: 7px; align-content: start;
+  padding: 10px 10px 12px; background: var(--panel); border: 1px solid var(--line-2);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+}
+.cp-card[data-on] { background: var(--panel-2); border-color: var(--accent); }
+.cp-card-num {
+  font-family: var(--label); font-size: 11px; letter-spacing: 0.14em; color: var(--faint);
+}
+.cp-card[data-on] .cp-card-num { color: var(--accent); }
+.cp-card-art { width: 100%; aspect-ratio: 1; object-fit: cover; }
+/* A card nobody turned over: the back of the deck, and no name on it, because
+   Steam does not publish the name of an achievement to somebody who has not
+   unlocked it. */
+.cp-card-back {
+  width: 100%; aspect-ratio: 1; border: 1px solid var(--line);
+  background: repeating-linear-gradient(135deg, #17170d 0 5px, #0d0d07 5px 10px);
+}
+.cp-card-name { font-size: 12.5px; line-height: 1.25; }
+.cp-card:not([data-on]) .cp-card-name {
+  font-family: var(--label); font-weight: 400; font-size: 9.5px;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint);
+}
+.cp-card-meta { font-family: var(--label); font-style: normal; font-size: 10.5px; color: var(--link); }
+
+/* ── The board ── */
+.cp-board {
+  display: grid; gap: 6px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+.cp-pin {
+  display: grid; gap: 5px; align-content: start; padding: 13px 15px;
+  background: var(--panel); border-left: 3px solid var(--line-2);
+}
+.cp-pin[data-on] { background: var(--panel-2); border-left-color: var(--accent); }
+.cp-pin-name {
+  font-family: var(--display); font-weight: var(--display-w);
+  text-transform: uppercase; font-size: 15px;
+}
+.cp-pin-job { font-size: 12.5px; line-height: 1.35; color: var(--dim); }
+.cp-pin:not([data-on]) .cp-pin-job {
+  font-family: var(--label); font-size: 9.5px; letter-spacing: var(--label-ls);
+  text-transform: uppercase; color: var(--cp-red);
+}
+.cp-pin-meta { font-family: var(--label); font-style: normal; font-size: 10.5px; color: var(--link); }
+
+/* ── The two contracts nobody took ── */
+.cp-wall { display: grid; gap: 6px; }
+.cp-contract {
+  display: grid; grid-template-columns: 46px 1fr auto; gap: 15px; align-items: center;
+  padding: 14px 16px; background: var(--panel);
+  border: 1px solid var(--line-2); border-left: 3px solid var(--cp-red);
+}
+.cp-contract-art {
+  width: 46px; height: 46px; object-fit: cover; background: var(--line);
+}
+.cp-contract-label {
+  display: block; font-family: var(--label); font-size: 9px;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--cp-red);
+}
+.cp-contract-text b {
+  display: block; margin-top: 5px; font-family: var(--display);
+  font-weight: var(--display-w); text-transform: uppercase; font-size: 16px;
+}
+.cp-contract-text p { margin: 5px 0 0; font-size: 12.5px; line-height: 1.4; color: var(--dim); }
+.cp-contract em {
+  font-family: var(--label); font-style: normal; font-size: 13px; color: var(--accent);
+}
+
+/* ── The shards ── */
+.cp-shards { display: grid; gap: 3px; }
+.cp-shard {
+  display: grid; grid-template-columns: 28px 34px 1fr auto; gap: 12px; align-items: center;
+  padding: 9px 14px; background: var(--panel); border-left: 2px solid var(--line-2);
+}
+.cp-shard:hover { border-left-color: var(--link); }
+.cp-idx { font-family: var(--label); font-size: 11px; color: var(--faint); }
+.cp-shard-art { width: 34px; height: 34px; object-fit: cover; background: var(--line); }
+.cp-shard-text b { display: block; font-size: 13.5px; }
+.cp-shard-text span { display: block; margin-top: 2px; font-size: 12px; line-height: 1.4; color: var(--dim); }
 .cp-shard em {
-  font-family: var(--label); font-style: normal; font-size: 11px; color: var(--link);
+  font-family: var(--label); font-style: normal; font-size: 10.5px;
+  color: var(--link); white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .cp-shard { grid-template-columns: 24px 30px 1fr; }
+  .cp-shard-art { width: 30px; height: 30px; }
+  .cp-shard em { grid-column: 3; white-space: normal; }
+  .cp-contract { grid-template-columns: 40px 1fr; }
+  .cp-contract-art { width: 40px; height: 40px; }
+  .cp-contract em { grid-column: 2; }
 }
 
 /* ══ Overwatch 2 - the career profile ═════════════════════════════════ */

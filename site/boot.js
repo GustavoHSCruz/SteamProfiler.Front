@@ -356,6 +356,27 @@ function waitCod() {
       h('span', { cls: 'cod-one-meta' }, blank('6em')))));
 }
 
+/** Cyberpunk 2077: the character screen, and the spread under it face down. */
+function waitCyberpunk() {
+  const meter = (w) => h('div', { cls: 'cp-bar' },
+    h('span', { cls: 'cp-bar-label' }, blank('6em')),
+    h('b', { cls: 'cp-bar-val' }, blank(w)),
+    h('div', { cls: 'cp-notch' }, ...rep(24, () => h('i'))),
+    h('span', { cls: 'cp-bar-note' }, blank('15em')));
+  return h('div', { cls: 'cp' },
+    h('header', { cls: 'cp-hud' },
+      h('p', { cls: 'cp-kicker' }, blank('14em')),
+      h('h1', { cls: 'cp-title' }, blank('8em')),
+      h('div', { cls: 'cp-bars' }, meter('4em'), meter('3.5em')),
+      h('div', { cls: 'cp-stats' }, ...rep(4, () => h('div', { cls: 'cp-stats-i' },
+        h('b', {}, blank('4em')), h('span', {}, blank('6em')))))),
+    h('h2', { cls: 'cp-h' }, blank('7em')),
+    h('div', { cls: 'cp-spread' }, ...rep(15, () => h('article', { cls: 'cp-card' },
+      h('span', { cls: 'cp-card-num' }, blank('2em')),
+      h('i', { cls: 'cp-card-back' }),
+      h('b', { cls: 'cp-card-name' }, blank('5em'))))));
+}
+
 const BOOT_WAIT = {
   'gta-v': waitGta,
   'dota-2': waitDota,
@@ -365,6 +386,7 @@ const BOOT_WAIT = {
   'skyrim': waitSkyrim,
   'msfs': waitMsfs,
   'call-of-duty': waitCod,
+  'cyberpunk': waitCyberpunk,
 };
 
 /* ── Whose wait this is ────────────────────────────────────────────────

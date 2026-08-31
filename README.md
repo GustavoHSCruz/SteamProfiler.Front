@@ -112,7 +112,7 @@ the reader's own storefront currency.
 `/g/<appid>` is the indexable, profile-free side of the same idea. Its public
 record is rendered by `public.js`: catalogue facts come from the storefront,
 current players and news from the Steam Web API, review totals from the review
-endpoint and achievement rarity from Steam's global percentages. The eight
+endpoint and achievement rarity from Steam's global percentages. The ten
 games with complete bespoke openings reuse their profile composition with
 global facts; every other app gets the generic public composition.
 
@@ -139,7 +139,7 @@ English is the default and the fallback. Portuguese and Russian are picked up
 from the browser or chosen in the status bar, and the choice lives in
 `localStorage`, so a link is never language-specific.
 
-- `dict.js` holds every string, 1378 keys times three languages, at full
+- `dict.js` holds every string, 1670 keys times three languages, at full
   parity. A key missing from `pt` or `ru` falls back to `en` rather than to
   nothing.
 - `i18n.js` has `t()` for a key, `ts()` for a key that arrived in a payload,
