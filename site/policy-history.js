@@ -20,7 +20,10 @@
    would read as "nothing changed" - a small lie. So that case is detected and
    named rather than drawn. */
 
-const GITHUB = 'https://github.com/GustavoHSCruz/SteamProfiler/commit/';
+// The front repo, not the old combined one: SteamProfiler was split into
+// .Front and .Api and the old name is a 404 now. It never showed while every
+// revision had a null commit, which is how it stayed wrong this long.
+const GITHUB = 'https://github.com/GustavoHSCruz/SteamProfiler.Front/commit/';
 
 /** The archived strings of one revision. POLICY_LOG carries the dates and the
  *  summaries and is small enough for /privacy to load; the text lives apart in
