@@ -18,7 +18,9 @@ the answer for about fifteen minutes, and returns a page: the library as an area
 map, plus a page per game with playtime, achievements and the current storefront
 price in the reader's region. It also reads which trading-card badges a profile
 has made, and what one of each card in the sets it has not made would cost on
-the Community Market today.
+the Community Market today. Where a profile publishes its inventory, it reads
+which of those cards are already in it, so that figure is what is left to buy
+rather than the price of a set from nothing.
 
 Reading is the whole of it. The site never writes anything to a Steam account.
 
@@ -34,11 +36,16 @@ inferred.
 - **No API key from the visitor.** The Steam Web API key belongs to the site's
   owner, stays in the server's environment, and is never sent to the browser.
   Nobody should ever hand their Steam Web API key to a website.
-- **No trades, no inventory, no payments.** The site does not read anybody's
-  inventory, cannot propose a trade and has no checkout. It does read the
-  Community Market's public price list for a game's trading cards - the same
-  eight cards and the same prices for every visitor, a fact about the game and
-  not about a person, and no account of any kind is involved in asking.
+- **No trades, no payments, no custody.** The site cannot propose a trade,
+  cannot list anything for sale, holds no items and has no checkout. It reads
+  two things from the Community Market and writes nothing to it: the public
+  price list for a game's trading cards - the same eight cards and the same
+  prices for every visitor, a fact about the game and not about a person - and,
+  where a profile publishes its inventory, which of those cards are already in
+  it, so a page can say what finishing the set would cost rather than what a
+  whole set costs. Both are read the way any browser reads them, with no account
+  of any kind involved in asking. An inventory set to private is not read, and
+  the page says so instead of guessing.
 - **No giveaways, free items, votes or prizes.** There is nothing to win here,
   which means there is nothing to be lured by.
 

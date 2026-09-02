@@ -499,7 +499,7 @@ a.badge:hover, a.badge:focus-visible {
 
 @media (max-width: 1080px) {
   .p-now, .p-plat, .p-acct { grid-column: span 6; }
-  .p-rig, .p-badges, .p-pages { grid-column: span 12; }
+  .p-rig, .p-badges, .p-pages, .p-wish { grid-column: span 12; }
 }
 
 @media (max-width: 760px) {
@@ -1292,6 +1292,9 @@ a.time-col { text-decoration: none; color: inherit; }
    Each tile goes to the versus page. The private ones are drawn dimmed and
    are not links: their libraries cannot be read, and offering the click
    anyway would only spend a lookup to reach an error. */
+/* Beside the friends strip, and the same width as it: both are lists of things
+   that belong to the person rather than to the library, and both are short. */
+.p-wish { grid-column: span 8; }
 .p-mates { grid-column: span 4; }
 .mates {
   list-style: none; margin: 0; padding: 0;
@@ -1552,6 +1555,10 @@ a.seat:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
    error, so they are dimmed rather than marked. */
 .cd-price[data-pending] { color: var(--faint); font-weight: 400; }
 .cd-price[data-stale] { opacity: 0.7; }
+/* A set that is already complete. The one state on this strip that is not a
+   figure and not a shortfall, so it is the only one that gets the accent at
+   full strength rather than money's monospace. */
+.cd-price[data-done] { font-family: var(--sans); color: var(--accent); }
 
 @media (max-width: 1080px) {
   .p-money, .p-gen, .p-mates { grid-column: span 6; }

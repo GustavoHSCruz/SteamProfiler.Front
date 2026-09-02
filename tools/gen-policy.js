@@ -70,6 +70,16 @@ const REVISIONS = [
       pt: 'A página inicial passou a oferecer os últimos cinco perfis que você consultou, então existe uma segunda coisa no localStorage do seu navegador. É uma lista do que você digitou, fica na sua máquina, e tem um botão que apaga - mas a política dizia que havia uma entrada lá, e agora são duas.',
       ru: 'На главной странице появились последние пять профилей, которые вы искали, поэтому в localStorage вашего браузера теперь вторая запись. Это список того, что вы набрали, он остаётся на вашей машине, и есть кнопка, которая его стирает, - но в политике было сказано, что там одна запись, а теперь их две.',
     },
+  },
+  {
+    version: 6,
+    date: '2026-09-02',
+    commit: null,
+    summary: {
+      en: 'The card pages can now say what finishing a badge would cost you rather than what a set costs from nothing, and the only way to know the difference is to read which of those cards a profile is already holding. So a public trading-card inventory is now among the things read from Steam, and the list of what comes back says so. An inventory set to private is not read. Nothing else changed: no sign-in, no trade, no listing, nothing held, nothing written to disk.',
+      pt: 'As páginas de cartas passaram a poder dizer quanto falta para você fechar um emblema, em vez de quanto custa o conjunto do zero, e o único jeito de saber a diferença é ler quais dessas cartas o perfil já tem. Então o inventário público de cartas passou a estar entre as coisas lidas da Steam, e a lista do que volta passou a dizer isso. Inventário fechado não é lido. Nada mais mudou: sem login, sem troca, sem anúncio de venda, nada guardado, nada gravado em disco.',
+      ru: 'Страницы карточек теперь могут сказать, сколько вам осталось доплатить за значок, а не сколько стоит набор с нуля, и узнать эту разницу можно только одним способом: прочитав, какие из этих карточек у профиля уже есть. Поэтому открытый инвентарь карточек теперь входит в то, что читается из Steam, и список того, что возвращается, об этом говорит. Закрытый инвентарь не читается. Больше ничего не изменилось: без входа, без обменов, без объявлений о продаже, ничего не хранится и ничего не пишется на диск.',
+    },
     text: 'live',
   },
 ];

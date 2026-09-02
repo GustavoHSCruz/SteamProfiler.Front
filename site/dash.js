@@ -457,16 +457,46 @@ function buildAccount(pf) {
   el('acct-level').textContent = pf.level != null ? t('dash.level', { n: num(pf.level) }) : '-';
   if (pf.member_since) el('member-since').textContent = t('dash.opened', { date: longDate(pf.member_since) });
   kvInto(el('acct-kv'), [
+    // Where the level sits against everybody else's. A level on its own is a
+    // number nobody has a scale for; this is the scale, and it costs nothing
+    // because Steam answers it per level rather than per person.
+    [t('dash.percentile'), pf.level_percentile != null
+      ? t('dash.above', { n: num(pf.level_percentile, 2) }) : null],
+    [t('dash.location'), pf.location || null],
     [t('dash.achievements'), pf.achievements_total != null ? num(pf.achievements_total) : null],
     [t('dash.perfect'), pf.perfect_games != null ? num(pf.perfect_games) : null],
     [t('dash.avg_completion'), pf.avg_completion != null ? `${num(pf.avg_completion, 1)}%` : null],
     [t('dash.badges'), pf.badge_count != null ? num(pf.badge_count) : null],
     [t('dash.xp'), pf.xp != null ? num(pf.xp) : null],
     [t('dash.friends'), pf.friends != null ? num(pf.friends) : null],
+    // Steam publishes the group ids and not the names, anywhere it can be
+    // asked without a request per group. So this is a count and says so.
+    [t('dash.groups'), pf.groups != null ? num(pf.groups) : null],
+    [t('dash.workshop'), pf.workshop ? num(pf.workshop) : null],
     [t('dash.screenshots'), pf.screenshots != null ? num(pf.screenshots) : null],
     [t('dash.reviews'), pf.reviews != null ? num(pf.reviews) : null],
+    // Only while they are away. Somebody who is online right now has the
+    // .p-now panel saying so, and "last seen today" under it says nothing.
+    [t('dash.last_seen'), pf.online === 'offline' && pf.last_seen
+      ? shortDate(pf.last_seen) : null],
   ]);
+  buildLimited(pf);
   buildBans(pf.bans);
+}
+
+/** A limited account is one that has never spent the five dollars Steam asks
+ *  for before it will let an account do most things. Drawn only when it is
+ *  true, for the same reason buildBans draws nothing on a clean record: every
+ *  established account is unlimited, and saying so under all of them would
+ *  make the ones where it matters harder to notice rather than easier.
+ *
+ *  It says what the state is and not what it means about the person. A limited
+ *  account is usually somebody new. */
+function buildLimited(pf) {
+  const line = el('acct-limited');
+  if (!line || pf.limited !== true) return;
+  line.textContent = t('dash.limited');
+  line.hidden = false;
 }
 
 /** Steam's own record on this account. Drawn only when there is one: an
@@ -1512,6 +1542,189 @@ function cardRow(row, query, done, rates) {
       price));
 }
 
+// How much of a wishlist the panel shows. It is a panel on a dashboard, beside
+// a friends strip, and not a page of its own: ninety-three rows made a wall
+// that the two panels next to it disappeared behind. The total above the list
+// is over the whole wishlist either way, and the note says how much is shown.
+const WISH_SHOWN = 12;
+
+/** What this profile wants, and what it would cost in the reader's own shop.
+ *
+ *  Its own request rather than another block on the profile payload: the
+ *  wishlist names its own games, so nothing here needs the library, and a
+ *  panel nobody scrolls to should not have made the dashboard slower to
+ *  arrive. The panel starts hidden and is shown only once there is something
+ *  in it - a wishlist can be private or empty, and both are ordinary.
+ *
+ *  Priced from the same store cache the money panel uses, in the same
+ *  storefront, so "what my wishlist costs" and "what my library cost" are two
+ *  numbers a reader can honestly put side by side. */
+async function buildWishlist(steamid) {
+  const wrap = el('panel-wish');
+  if (!wrap) return;
+
+  let w;
+  try {
+    w = await api(`/wishlist?id=${steamid}&cc=${store()}`);
+  } catch {
+    wrap.remove();
+    return;
+  }
+  const items = w.wishlist?.items || [];
+  if (!items.length) {
+    wrap.remove();
+    return;
+  }
+
+  el('wish-head').textContent = t('wish.head', {
+    n: num(w.wishlist.total), raw: w.wishlist.total,
+  });
+  // The money at the top, where it is the point of the panel, and split the way
+  // the money panel beside it splits: the figure alone in display type, and
+  // what it is a figure of in small text under it. A whole sentence set in the
+  // headline face is three lines of shouting.
+  el('wish-money').textContent = w.money.total
+    ? cash(w.money.total, w.money.currency) : '-';
+  el('wish-cover').textContent = t('wish.total', {
+    quoted: num(w.money.quoted), items: num(w.money.items),
+  });
+  // The bar is the price, so the dearest game is the full bar. A game with no
+  // price yet gets no bar rather than a zero-length one, which would read as
+  // "free" instead of "not read yet".
+  rowsInto(el('wish-list'), items.slice(0, WISH_SHOWN).map((g) => ({
+    name: g.name,
+    value: g.price || 0,
+    figure: g.price != null ? cash(g.price, w.money.currency)
+      : g.free ? t('wish.free') : t('wish.unread'),
+  })));
+
+  const said = [];
+  if (w.wishlist.on_sale) said.push(t('wish.on_sale', { n: num(w.wishlist.on_sale) }));
+  if (w.wishlist.total > WISH_SHOWN) {
+    said.push(t('wish.shown', {
+      shown: num(Math.min(WISH_SHOWN, items.length)), total: num(w.wishlist.total),
+    }));
+  }
+  if (w.followed?.total) said.push(t('wish.followed', { n: num(w.followed.total) }));
+  el('wish-note').textContent = said.join(' ');
+  wrap.hidden = false;
+}
+
+/** One game's row in the in-hand panel. Deliberately the same shape as
+ *  cardRow above - same art, same text block, same price strip - because it is
+ *  the same kind of row about the same kind of thing, and giving it a look of
+ *  its own would say the two lists were about different things.
+ *
+ *  What differs is only the figure: this one is what is left to buy, and it
+ *  has one more state than a set price has. "Craft it now" is not zero money
+ *  dressed up, it is the answer. */
+function holdRow(g, query, rates) {
+  const art = h('img', {
+    cls: 'pile-art',
+    attr: {
+      src: `${HEADER_ART}/${g.appid}/header.jpg`, alt: '',
+      width: '460', height: '215', loading: 'lazy', decoding: 'async',
+    },
+  });
+  art.addEventListener('error', () => { art.removeAttribute('src'); });
+
+  const bits = [];
+  if (g.count) bits.push(t('hold.have', { have: num(g.have), of: num(g.count) }));
+  if (g.dupes) bits.push(t('hold.dupes', { n: num(g.dupes), raw: g.dupes }));
+  if (g.sets_held) bits.push(t('hold.sets', { n: num(g.sets_held), raw: g.sets_held }));
+
+  // Four states, and they are four different sentences. None of them may read
+  // as "free": a set nobody has read yet, a set with a card nobody is selling
+  // and a set that is already complete are three separate answers, and only
+  // the last of them means no money is needed.
+  let figure;
+  if (g.set === 'unknown') figure = t('hold.unread');
+  else if (g.need === 0) figure = t('hold.ready');
+  else if (g.cost_to_complete == null) figure = t('hold.unpriced', { n: num(g.unpriced) });
+  else figure = cash(g.cost_to_complete, 'USD');
+
+  const price = h('b', { cls: 'cd-price', text: figure });
+  const near = g.cost_to_complete ? approx(g.cost_to_complete, rates) : null;
+  if (near) price.append(h('small', { cls: 'cd-approx', text: ` ≈ ${near}` }));
+  if (g.set === 'unknown' || (g.need && g.cost_to_complete == null)) {
+    price.dataset.pending = '1';
+  }
+  if (g.stale) price.dataset.stale = '1';
+  if (g.need === 0) price.dataset.done = '1';
+
+  return h('li', {},
+    h('a', { cls: 'cd-row', attr: { href: `/u/${query}/${g.appid}` } },
+      art,
+      h('span', { cls: 'pile-txt' },
+        h('b', { cls: 'pile-name', text: g.name }),
+        h('span', { cls: 'pile-meta', text: bits.join(' · ') })),
+      price));
+}
+
+/** What this profile is already holding, and what finishing each badge would
+ *  therefore cost - which is a different and much smaller number than what a
+ *  set costs from nothing, and the only one anybody can act on.
+ *
+ *  Its own request, made after the two panels above are drawn. The inventory
+ *  comes off the Community host, which the server reads slowly on purpose, so
+ *  making the whole page wait on it would be trading a page that is up for a
+ *  panel that is complete.
+ *
+ *  Three ways this panel is simply not there, and all three are ordinary: the
+ *  inventory is private, the server has not read it yet, or there are no cards
+ *  in it. None of them is an error and none of them gets an empty panel. */
+async function buildCollection(steamid, query) {
+  const wrap = el('panel-hold');
+  if (!wrap) return;
+
+  let col;
+  try {
+    col = await api(`/inventory?id=${steamid}`);
+  } catch {
+    // The rest of the page is already up and correct. A card panel that could
+    // not be drawn is not worth an error line over the two that were.
+    wrap.remove();
+    return;
+  }
+  if (col.state === 'private' || col.state === 'unknown' || !col.games?.length) {
+    wrap.remove();
+    return;
+  }
+
+  const rates = col.rates;
+  el('hold-head').textContent = t('hold.head', { n: num(col.cards.held), raw: col.cards.held });
+
+  // The headline: everything still missing, over the sets there is a full
+  // price for. Never the whole library dressed up as a total - the coverage
+  // travels with it, the way the money panel's does.
+  if (col.totals.complete_all != null) {
+    el('hold-lede').textContent = t('hold.lede', {
+      money: cashApprox(col.totals.complete_all, rates),
+      sets: num(col.totals.quoted), setsRaw: col.totals.quoted,
+      games: num(col.totals.games),
+    });
+  }
+
+  const list = el('hold-list');
+  list.replaceChildren();
+  for (const g of col.games) list.append(holdRow(g, query, rates));
+
+  // Which of the three kinds of incomplete this panel is looking at. They are
+  // separate counts because they are separate answers, and a reader who sees a
+  // total that is missing something deserves to know which kind of missing.
+  const f = col.filling || {};
+  const said = [];
+  if (f.unknown_sets) said.push(t('hold.f_unknown', { n: num(f.unknown_sets) }));
+  if (f.unpriceable) said.push(t('hold.f_unpriced', { n: num(f.unpriceable) }));
+  if (f.stale_sets) said.push(t('hold.f_stale', { n: num(f.stale_sets) }));
+  if (col.state === 'truncated') said.push(t('hold.f_truncated', { n: num(col.read) }));
+  const note = el('hold-filling');
+  note.textContent = said.join(' ');
+  const rate = rateNote(rates, col.rates_at);
+  if (rate) note.textContent = `${note.textContent} ${rate}`.trim();
+}
+
+
 async function renderCards(d, steamid, query) {
   document.title = `${d.profile.persona} - ${t('cd.title')} - steamprofiler.org`;
   const madeList = el('cd-made');
@@ -1553,6 +1766,12 @@ async function renderCards(d, steamid, query) {
 
     el('cd-badges-other').textContent = c.badges?.other
       ? t('cd.badges_other', { n: num(c.badges.other), raw: c.badges.other }) : '';
+    // The Community Badge, which is a checklist rather than a card set. Steam
+    // answers with quest ids and no names for them, so a count is honestly all
+    // this can be, and it sits as a line rather than a panel because of it.
+    el('cd-community').textContent = c.community_badge
+      ? t('cd.community', { done: num(c.community_badge.done),
+        total: num(c.community_badge.total) }) : '';
     el('cd-filling').textContent = c.filling?.unclassified
       ? t('cd.filling', { n: num(c.filling.unclassified) }) : '';
 
@@ -1577,6 +1796,11 @@ async function renderCards(d, steamid, query) {
   more.addEventListener('click', () => { shown += CARD_PAGE; draw(); });
   find.addEventListener('input', () => { shown = CARD_PAGE; draw(); });
   draw();
+
+  // Not awaited. The two panels above are complete and readable now; the third
+  // one arrives when the Community host gets round to it, and until then its
+  // absence is the honest state of the page rather than a spinner over it.
+  buildCollection(steamid, query);
 
   // One more ask, for the sets the market had not answered about when the page
   // opened. Once and not on a timer: this is a page somebody reads, not a
@@ -1997,6 +2221,9 @@ function renderDashboard(d, query) {
   buildMoney(d.money, d.store_coverage);
   buildGenres(d.genres, d.store_coverage);
   buildFriends(d.friend_list, query);
+  // Not awaited, like the collection panel on the cards page: the dashboard is
+  // complete without it and this one costs a call of its own.
+  buildWishlist(d.steamid);
   buildRarities(d.steamid, d.rarity_games || 12);
   buildClose(d.steamid, d.rarity_games || 12);
   buildBoard(d.steamid, query, d.friend_list, pf);

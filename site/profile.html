@@ -171,6 +171,7 @@
              only when there is something on it, which is why it is a line here
              and not a panel: a clean record is the ordinary case and printing
              "no bans" on every profile would be news on none of them. -->
+        <p class="record" id="acct-limited" hidden></p>
         <p class="record" id="acct-ban" hidden></p>
       </div>
     </article>
@@ -197,6 +198,20 @@
 
     <!-- The versus page has existed since the treemap did. This is the first
          thing that makes it clickable rather than typed from memory. -->
+    <!-- What this profile wants, priced in the reader's own shop. Its own
+         request, because the wishlist names its own games and needs no part of
+         the profile payload - so it costs nothing on a page that never scrolls
+         this far. -->
+    <article class="panel p-wish" id="panel-wish" hidden>
+      <div class="panel-bar"><span data-i18n="wish.title">wishlist</span><b id="wish-head">-</b></div>
+      <div class="panel-body">
+        <p class="figure" id="wish-money"></p>
+        <p class="note" id="wish-cover"></p>
+        <ul class="rows" id="wish-list"></ul>
+        <p class="note" id="wish-note"></p>
+      </div>
+    </article>
+
     <article class="panel p-mates" id="panel-mates">
       <div class="panel-bar"><span data-i18n="fr.title">friends</span><b id="fr-head">-</b></div>
       <div class="panel-body">
@@ -402,6 +417,22 @@
       <div class="panel-body">
         <ul class="cdset" id="cd-made"></ul>
         <p class="note" id="cd-badges-other"></p>
+        <p class="note" id="cd-community"></p>
+      </div>
+    </article>
+
+    <!-- What is already in hand, and therefore what finishing actually costs.
+         Its own panel and its own request: the inventory is read from the
+         Community host, which is slow on purpose, so the two panels above are
+         drawn and readable before this one arrives. Absent entirely when the
+         inventory is private, which is a great many of them. -->
+    <article class="panel p-cd" id="panel-hold">
+      <div class="panel-bar"><span data-i18n="hold.title">in hand</span><b id="hold-head">-</b></div>
+      <div class="panel-body">
+        <p class="lede" id="hold-lede"></p>
+        <ul class="cdset" id="hold-list"></ul>
+        <p class="note" id="hold-filling"></p>
+        <p class="note" data-i18n="hold.note">Only normal cards are counted, because only those make the badge the panel above prices. Foils are a second collection with their own prices and their own badge. A duplicate is not progress towards a badge and is counted separately, because it is the thing there is any point trading. What a set costs to finish is the sum of the cards that are missing, and it is left blank rather than guessed when even one of them has no seller today.</p>
       </div>
     </article>
 
