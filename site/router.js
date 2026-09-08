@@ -8,6 +8,10 @@
      /u/<perfil>/year/<ano>   one year of it
      /u/<perfil>/franchises   the ten series, with this profile's hours in them
      /u/<perfil>/franchises/<slug>   one of them
+     /u/<perfil>/publishers   the houses that published this library
+     /u/<perfil>/publishers/<slug>   one of them
+     /u/<perfil>/developers   the houses that made it
+     /u/<perfil>/developers/<slug>   one of them
 
    <perfil> is whatever the visitor typed - a vanity name or a steamID64 - and it
    stays in the URL untouched so the link is shareable and readable. */
@@ -36,6 +40,12 @@ const year = parts[2] === 'year' && /^(19|20)\d\d$/.test(parts[3] || '') ? parts
 // appid and a year, and no third rule is needed to keep them apart.
 const franchises = parts[2] === 'franchises';
 const series = franchises && parts[3] && BY_SLUG.has(parts[3]) ? parts[3] : null;
+// Same path space once more. `publishers` and `developers` are words, an appid
+// is digits, so nothing here can be read as one - and the two are separate
+// paths rather than one with a flag because they are separate shelves: Valve
+// published Garry's Mod and Facepunch made it.
+const axis = houseAxisOf(parts[2] || '');
+const house = axis && parts[3] ? houseBySlug(axis, parts[3]) : null;
 
 /** The address this view should have been reached at. A link built by hand or
  *  held from before this page understood URLs still works, and gets tidied in
@@ -49,7 +59,9 @@ function canonical() {
         : year ? `/year/${year}`
           : series ? `/franchises/${series}`
             : franchises ? '/franchises'
-              : appid ? `/${appid}` : '';
+              : house ? `/${axis.axis}/${house.slug}`
+                : axis ? `/${axis.axis}`
+                  : appid ? `/${appid}` : '';
   return `/u/${encodeURIComponent(query)}${tail}`;
 }
 
@@ -64,6 +76,7 @@ function fail(message, retry) {
   el('cards').hidden = true;
   el('year').hidden = true;
   el('franchises').hidden = true;
+  el('houses').hidden = true;
   failure.hidden = false;
   el('failure-text').textContent = message;
   const again = el('failure-retry');
@@ -99,7 +112,7 @@ function showChrome(profileQuery, persona) {
   // The wait screen knows which of the four views is coming, because each one
   // waits on different calls and the skeleton it draws is that view's layout.
   bootStart(rival ? 'versus' : pile ? 'backlog' : cardset ? 'cards'
-    : year ? 'year' : franchises ? 'franchises'
+    : year ? 'year' : franchises ? 'franchises' : axis ? 'houses'
       : appid ? 'game' : 'dash', query, appid);
 
   let steamid;
@@ -174,6 +187,25 @@ function showChrome(profileQuery, persona) {
       const root = el('fx-root');
       if (series) await renderFranchise(BY_SLUG.get(series), root, ctx);
       else await renderFranchiseIndex(root, ctx);
+    } else if (axis) {
+      // Same bargain as the franchises: the tables shipped with the page, and
+      // the profile is the only thing this waits on. What the library adds is
+      // the one column these screens cannot hold on their own - how much of
+      // each shelf is already in it.
+      const d = await api(`/profile?id=${steamid}`);
+      bootMark('fetched');
+      el('houses').hidden = false;
+      showChrome(query, d.profile.persona);
+      bootDone();
+      const ctx = {
+        query: encodeURIComponent(query),
+        persona: d.profile.persona,
+        library: d.library || [],
+        unplayed: d.unplayed || [],
+      };
+      const root = el('hs-root');
+      if (house) await renderHouse(axis, house, root, ctx);
+      else await renderHouseIndex(axis, root, ctx);
     } else if (year) {
       // Every figure on this page except the unlocks is already in the profile
       // payload, so the page is complete the moment that lands. The unlocks

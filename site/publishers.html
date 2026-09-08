@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n-doc="hs.pub_doc">Publishers, on Steam - steamprofiler.org</title>
+<meta name="description" content="Steam publishers, each with everything it has on the store: the years it was busy, and - with a profile open - how much of that shelf one library holds.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0b0a0e">
+<!-- No robots tag, for the same reason /franchises has none: indexing is the
+     default, this page is meant to be read, and a tag repeating the default
+     only makes a second rule to keep in agreement with the first. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="steamprofiler.org">
+<meta property="og:title" content="The publishers, on Steam">
+<meta property="og:description" content="Steam publishers, each with everything it has on the store: the years it was busy, and - with a profile open - how much of that shelf one library holds.">
+<meta property="og:image" content="https://steamprofiler.org/og-home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A Steam library drawn as a treemap: one amber rectangle per game, sized by hours.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="/fonts/bricolage-grotesque-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts.css">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/houses.css">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+<body>
+
+<header class="bar-top">
+  <a class="wordmark" href="/">steamprofiler<span>.org</span></a>
+  <nav class="bar-mods">
+    <a class="mod" href="/developers" data-i18n="nav.developers">developers</a>
+    <a class="mod" href="/franchises" data-hide-narrow="1" data-i18n="nav.franchises">franchises</a>
+    <a class="mod" href="/about" data-i18n="nav.about">about</a>
+    <a class="mod" href="/feedback" data-i18n="nav.messages">feedback</a>
+    <a class="mod" href="/" data-i18n="nav.lookup_other">look up another profile</a>
+    <span class="langs" id="langs"></span>
+  </nav>
+</header>
+
+<!-- ── The houses, or one of them ──────────────────────────────────────
+     There is no wait screen on this page and that is not an omission. The
+     tables in house-catalogue.js are the whole layout: the screen is drawn on
+     the first frame, out of a file the browser already has, and nothing on it
+     is ever waiting on the network to have a shape.
+
+     The heading below is inside #hs-root and not above it, and that is on
+     purpose. A reader with no script - a crawler, a link preview, a screen
+     reader on a slow line - gets the name of the page and a sentence saying
+     what it is, instead of an empty div. renderHouseIndex clears the same
+     node and puts the real screen there, so a browser never sees both. -->
+<main id="hs">
+  <div id="hs-root">
+    <header class="hs-ix-head">
+      <p class="hs-ix-kicker" data-i18n="hs.pub_kicker">who put it on the shelf</p>
+      <h1 class="display hs-ix-title" data-i18n="hs.pub_title">Publishers</h1>
+      <p class="hs-tile-span" data-i18n="hs.pub_lede">Each house with everything it has published on Steam, and what a library holds of it.</p>
+    </header>
+  </div>
+</main>
+
+<footer class="foot">
+  <p><a href="/feedback" data-i18n="foot.found_bug">found a bug?</a> · <a href="/blog" data-i18n="nav.blog">blog</a> · <a href="/about" data-i18n="nav.about">about</a> · <a href="/privacy" data-i18n="nav.privacy">privacy</a> · <a class="foot-repo" href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener" data-i18n="foot.repo">source code ↗</a></p>
+  <p id="credit-slot"><a href="/u/gordziilla">made with ♥</a></p>
+  <p class="foot-legal" data-i18n="foot.disclaimer">steamprofiler.org is an independent hobby project. It is not affiliated with, endorsed by, or connected to Valve Corporation. Steam and the Steam logo are trademarks of Valve Corporation. Game names and art belong to their respective owners.</p>
+</footer>
+
+<script src="/dict.js" defer></script>
+<script src="/i18n.js" defer></script>
+<script src="/lib.js" defer></script>
+<script src="/house-catalogue.js" defer></script>
+<script src="/houses.js" defer></script>
+<script src="/housepage.js" defer></script>
+</body>
+</html>

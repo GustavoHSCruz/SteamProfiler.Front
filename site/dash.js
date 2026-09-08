@@ -261,6 +261,11 @@ function buildDiscover(d, query) {
   // from any of the ten still gets an answer, and it is a real one - ten
   // shelves, and this reader on none of them.
   chip(`/u/${query}/franchises`, t('go.franchises'), t('go.franchises_hint'));
+  // The two house shelves, always drawn for the same reason: a library with
+  // nothing from any of them is still an answer, and it is the one nobody can
+  // work out from a list of game names.
+  chip(`/u/${query}/publishers`, t('go.publishers'), t('go.publishers_hint'));
+  chip(`/u/${query}/developers`, t('go.developers'), t('go.developers_hint'));
 
   rail.textContent = '';
   for (const c of chips) rail.append(c);

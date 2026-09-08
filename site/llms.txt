@@ -79,6 +79,13 @@ is not this site.
   a screen of its own, listing every game in that series with the year it came
   out beside the year it reached Steam. No profile is involved; the same
   screens under `/u/<name>/franchises` add that library's hours to them.
+- [Publishers](https://steamprofiler.org/publishers) and
+  [Developers](https://steamprofiler.org/developers): the houses behind the
+  games, on two shelves rather than one, because they are two different facts -
+  Valve published Garry's Mod and Facepunch made it. Each house lists every
+  game it has on Steam with the year, banded by decade. `/publishers/<slug>`
+  and `/developers/<slug>` are one house; the same four addresses under
+  `/u/<name>/` add that library's hours and say what it is missing.
 - Profiles live at `/u/<name>`. See the crawling note below.
 
 ## Crawling

@@ -1,0 +1,290 @@
+/* steamprofiler.org - the house screens.
+
+   /publishers and /developers, the index and one house, in the site's own
+   furniture. Deliberately the same vocabulary as franchises.css - the same
+   tile, the same hero, the same row - because a house and a series are the
+   same kind of shelf seen from two different ends, and giving them two
+   different looks would say they were unrelated.
+
+   The one thing this file has that franchises.css does not is the filter
+   bar, which exists because a house can be a hundred and fifty games and a
+   series never is. */
+
+/* ── The index ────────────────────────────────────────────────────────── */
+
+.hs-ix-head {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(28px, 5vw, 60px) var(--edge) clamp(16px, 2.4vw, 26px);
+}
+.hs-ix-kicker {
+  margin: 0 0 10px;
+  font-family: var(--label);
+  font-weight: var(--label-w);
+  font-size: 11px;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.hs-ix-title {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: var(--display-w);
+  font-size: clamp(38px, 7vw, 84px);
+  letter-spacing: var(--display-ls);
+  line-height: var(--display-lh);
+  text-transform: var(--display-tt);
+}
+
+.hs-ix-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(228px, 1fr));
+  gap: var(--gap);
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 var(--edge) clamp(40px, 6vw, 80px);
+}
+
+.hs-tile {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  min-height: 178px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  text-decoration: none;
+  color: inherit;
+  isolation: isolate;
+  transition: border-color .18s ease, transform .18s ease;
+}
+.hs-tile:hover, .hs-tile:focus-visible { border-color: var(--tint); transform: translateY(-2px); }
+@media (prefers-reduced-motion: reduce) {
+  .hs-tile { transition: border-color .18s ease; }
+  .hs-tile:hover { transform: none; }
+}
+
+/* The art is atmosphere, not the subject. Pushed towards the house's own
+   colour so thirty different key arts read as one shelf. */
+.hs-tile-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 30%;
+  opacity: .46;
+  filter: saturate(.32) contrast(1.05);
+  transition: opacity .22s ease, filter .22s ease;
+}
+.hs-tile:hover .hs-tile-art { opacity: .7; filter: saturate(.58) contrast(1.05); }
+.hs-tile-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(0deg, #07060a 6%, #07060ac9 46%, #07060a44 100%),
+    linear-gradient(94deg, color-mix(in srgb, var(--tint) 42%, transparent), transparent 62%);
+}
+.hs-tile-in {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+  min-height: inherit;
+  padding: var(--pad);
+}
+.hs-tile-name {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: var(--display-w);
+  font-size: clamp(19px, 1.9vw, 25px);
+  letter-spacing: var(--display-ls);
+  line-height: 1.04;
+  text-wrap: balance;
+}
+.hs-tile-span { margin: 9px 0 0; font-size: 12.5px; color: var(--dim); }
+.hs-tile-you {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid #ffffff1c;
+}
+.hs-tile-you b { font-family: var(--mono); font-size: 17px; color: var(--tint); }
+.hs-tile-you span { font-size: 12.5px; color: var(--dim); }
+.hs-tile-you[data-none] { color: var(--faint); font-size: 12.5px; font-style: italic; }
+
+/* ── One house ────────────────────────────────────────────────────────── */
+
+.hs-hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: clamp(280px, 44vh, 460px);
+  overflow: hidden;
+  border-bottom: 1px solid var(--line-2);
+}
+.hs-hero-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 32%;
+  opacity: .38;
+  filter: saturate(.5) contrast(1.06);
+}
+.hs-hero-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(0deg, var(--bg) 3%, color-mix(in srgb, var(--bg) 78%, transparent) 44%,
+      color-mix(in srgb, var(--bg) 24%, transparent) 100%),
+    linear-gradient(96deg, color-mix(in srgb, var(--tint) 26%, transparent), transparent 58%);
+}
+.hs-hero-in {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--pad) var(--edge) clamp(18px, 3.4vh, 36px);
+}
+.hs-hero-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-family: var(--label);
+  font-weight: var(--label-w);
+  font-size: 11px;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--tint);
+}
+.hs-hero-kicker i { font-style: normal; color: var(--faint); }
+.hs-hero-name {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: var(--display-w);
+  font-size: clamp(38px, 7.6vw, 96px);
+  letter-spacing: var(--display-ls);
+  line-height: var(--display-lh);
+  text-transform: var(--display-tt);
+}
+.hs-hero-count { margin: 10px 0 0; font-family: var(--mono); font-size: 14px; color: var(--dim); }
+.hs-hero-you {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+  margin: 16px 0 0;
+  padding: 12px 0 0;
+  border-top: 1px solid var(--line-2);
+}
+.hs-hero-you b { font-family: var(--mono); font-size: clamp(20px, 2.6vw, 28px); color: var(--tint); }
+.hs-hero-you span { font-size: 13px; color: var(--dim); }
+.hs-hero-you[data-none] { color: var(--faint); font-style: italic; }
+.hs-hero-top { color: var(--faint); }
+
+.hs-acts { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; }
+.hs-act {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 13px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+  background: color-mix(in srgb, var(--panel) 76%, transparent);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--dim);
+  text-decoration: none;
+}
+.hs-act:hover, .hs-act:focus-visible { border-color: var(--tint); color: var(--text); }
+
+/* ── The filter ───────────────────────────────────────────────────────── */
+
+.hs-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(18px, 2.6vw, 28px) var(--edge) 0;
+}
+.hs-filter-label {
+  font-family: var(--label);
+  font-weight: var(--label-w);
+  font-size: 11px;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.hs-filter-field {
+  flex: 1 1 220px;
+  max-width: 340px;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+  background: var(--panel);
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--text);
+}
+.hs-filter-field:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.hs-filter-field::placeholder { color: var(--faint); }
+/* The clear button Safari and Chrome put in a search field, kept: it is one
+   click to undo a filter, and this page has no other undo for it. */
+.hs-filter-field::-webkit-search-cancel-button { cursor: pointer; }
+
+.hs-filter-only { display: inline-flex; align-items: center; gap: 7px; }
+.hs-filter-only label { font-size: 13px; color: var(--dim); cursor: pointer; }
+.hs-filter-check { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; }
+
+.hs-filter-count {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--faint);
+}
+
+/* ── The shelf ────────────────────────────────────────────────────────── */
+
+.hs-shelf {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(16px, 2.4vw, 26px) var(--edge) clamp(40px, 6vw, 80px);
+}
+.hs-band { margin: 0 0 clamp(18px, 2.6vw, 30px); }
+.hs-rows { margin: 10px 0 0; padding: 0; list-style: none; }
+.hs-row {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 14px;
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color .16s ease;
+}
+.hs-row:hover, .hs-row:focus-visible { border-color: var(--accent); }
+.hs-row[data-on] { border-left: 2px solid var(--accent); }
+.hs-row[data-idle] { border-left: 2px solid var(--line-2); }
+.hs-row-year { font-family: var(--mono); font-size: 13px; color: var(--faint); }
+.hs-row-name { font-weight: 600; font-size: 15px; min-width: 0; }
+.hs-row-you { font-family: var(--mono); font-size: 13px; color: var(--accent); text-align: right; }
+.hs-row[data-idle] .hs-row-you,
+.hs-row:not([data-on]):not([data-idle]) .hs-row-you { color: var(--faint); }
+
+@media (max-width: 560px) {
+  .hs-row { grid-template-columns: 46px minmax(0, 1fr); }
+  .hs-row-you { grid-column: 2; text-align: left; }
+}

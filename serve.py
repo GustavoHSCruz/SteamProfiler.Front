@@ -40,6 +40,8 @@ PAGES = {
     '/blog': '/blog.html',
     '/about': '/about.html',
     '/franchises': '/franchises.html',
+    '/publishers': '/publishers.html',
+    '/developers': '/developers.html',
     '/appeal': '/appeal.html',
     '/appeal/sent': '/appeal-sent.html',
 }
@@ -57,6 +59,11 @@ PROFILE = re.compile(r'^/u/')
 # unknown one lands back on the index - so this only has to be the shape, the
 # same way the live nginx only checks the shape.
 FRANCHISE = re.compile(r'^/franchises/[a-z0-9][a-z0-9-]{0,39}$')
+
+# /publishers/<slug> and /developers/<slug>. Same arrangement as the franchise
+# route above and for the same reason: the slug is checked in the page, an
+# unknown one lands back on that axis' index, so this only has to be the shape.
+HOUSE = re.compile(r'^/(publishers|developers)/[a-z0-9][a-z0-9-]{0,39}$')
 
 # One game with nobody attached to it. The live nginx has two locations here: a
 # strict `^/g/(?<appid>\d{1,8})$` with SSI on, and a loose `/g/` that falls back
@@ -139,6 +146,10 @@ class Handler(SimpleHTTPRequestHandler):
             shell = '/game-public.html'
         if shell is None and FRANCHISE.match(path):
             shell = '/franchises.html'
+        if shell is None:
+            house = HOUSE.match(path)
+            if house:
+                shell = f'/{house.group(1)}.html'
         if shell:
             # The router in the page reads the real URL off location, so only
             # what this server opens on disk changes, never what the page sees.

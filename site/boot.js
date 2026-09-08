@@ -94,12 +94,20 @@ const BOOT_PLAN = {
     ['fetched', [['load.s_library', 0], ['load.s_hours', 2600]]],
     ['drawn', [['load.s_page', 0]]],
   ],
+  // Same bargain as the franchises, and for the same reason: the house tables
+  // shipped with the page, so the only thing being waited on is the library
+  // that says how much of a shelf this reader is holding.
+  houses: [
+    ['resolved', [['load.s_find', 0]]],
+    ['fetched', [['load.s_library', 0], ['load.s_hours', 2600]]],
+    ['drawn', [['load.s_page', 0]]],
+  ],
 };
 
 const BOOT_HEAD = {
   dash: 'load.h_dash', backlog: 'load.h_dash', cards: 'load.h_dash',
   game: 'load.h_game', versus: 'load.h_versus', year: 'load.h_year',
-  franchises: 'load.h_franchises',
+  franchises: 'load.h_franchises', houses: 'load.h_houses',
 };
 
 /* What the window says once the wait stops being short, and when. Three
@@ -176,6 +184,7 @@ const BOOT_SHAPE = {
   game: () => bootPanels(),
   versus: () => [...bootTiles(18, 0, 0, 49.4, 100), ...bootTiles(18, 50.6, 0, 49.4, 100)],
   franchises: () => bootShelf(),
+  houses: () => bootShelf(),
 };
 
 /* ── The wait of one game ──────────────────────────────────────────────
