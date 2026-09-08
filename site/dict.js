@@ -1875,6 +1875,7 @@ const DICT = {
     'go.franchises_hint': 'ten series, and where this library stands in each',
     'load.h_franchises': 'Reading this library off Steam',
     'fx.made_in': 'the game itself is from {year}',
+    'fx.gta_note_all': 'The needle sits on whichever of these has the most people in it right now. With a profile in the address it points at the one with the most hours on it instead.',
   },
 
   pt: {
@@ -3724,6 +3725,7 @@ const DICT = {
     'go.franchises_hint': 'dez séries, e onde esta biblioteca está em cada uma',
     'load.h_franchises': 'Lendo esta biblioteca na Steam',
     'fx.made_in': 'o jogo em si é de {year}',
+    'fx.gta_note_all': 'A agulha para em qual deles tem mais gente dentro agora. Com um perfil no endereço ela aponta para o que tem mais horas.',
   },
 
   ru: {
@@ -5574,5 +5576,6 @@ const DICT = {
     'go.franchises_hint': 'десять серий и место этой библиотеки в каждой',
     'load.h_franchises': 'Читаем эту библиотеку из Steam',
     'fx.made_in': 'сама игра - {year} года',
+    'fx.gta_note_all': 'Стрелка стоит на той части, где сейчас больше всего людей. Если в адресе есть профиль, она показывает на ту, где больше часов.',
   },
 };

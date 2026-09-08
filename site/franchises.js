@@ -1075,6 +1075,16 @@ function sigHead(host, title, meta) {
  *  see the shape of eleven games with four of them opened. */
 const sigPct = (stand, total) => (stand ? (stand.played / total) * 100 : 0);
 
+/** Whether to draw a thing as lit. `on` is what the reader has; with no reader
+ *  in the address everything is lit, because the dim half of these panels
+ *  means "not this person's" and there is no person.
+ *
+ *  It is the rule the line already follows, pulled out and named after the
+ *  first screens shipped without it: nine unlit bonfires and eight briefings
+ *  stamped NO GO, on pages about a series rather than about anybody, which
+ *  reads as somebody having failed at all of it. */
+const sigLit = (stand, on) => (!stand || on ? { on: '1' } : {});
+
 const SIGNATURE = {
   /* The HEV suit's readout. Two segmented meters and a power figure, which is
      what that visor showed and very nearly all it showed. */
@@ -1151,7 +1161,7 @@ const SIGNATURE = {
       const mine = stand && stand.mine.get(a.id);
       room.append(h('a', {
         cls: 'fx-room',
-        data: mine ? { on: '1' } : {},
+        data: sigLit(stand, mine),
         attr: { href: fxGameHref(a.id, ctx) },
       },
       h('span', { cls: 'fx-hole fx-hole-in' }),
@@ -1171,14 +1181,22 @@ const SIGNATURE = {
     const span = fxSpan(fr);
     const width = Math.max(1, span.to - span.from);
     const dial = h('div', { cls: 'fx-dial' });
+
+    // Where the needle stops, and it is two different questions. On a profile
+    // it is the one with the most hours on it. With nobody in the address it
+    // is the one with the most people in it right now - which is a real fact
+    // the api sends, and the honest thing for a dial to point at when there
+    // is no reader to point at.
     let pick = fr.apps[0];
     let best = -1;
     for (const a of fr.apps) {
       const mine = stand && stand.mine.get(a.id);
-      if (mine && (mine.hours || 0) > best) { best = mine.hours || 0; pick = a; }
+      const weight = stand ? (mine ? mine.hours || 0 : -1)
+        : (rows[String(a.id)] || {}).players ?? -1;
+      if (weight > best) { best = weight; pick = a; }
       const station = h('a', {
         cls: 'fx-dial-st',
-        data: mine ? { on: '1' } : {},
+        data: sigLit(stand, mine),
         attr: { href: fxGameHref(a.id, ctx), title: fxName(rows[String(a.id)], a) },
       }, h('i'), h('span', { text: String(a.year) }));
       station.style.left = `${((a.year - span.from) / width) * 100}%`;
@@ -1189,8 +1207,10 @@ const SIGNATURE = {
     dial.append(needle);
     body.append(dial, h('p', { cls: 'fx-dial-tuned' },
       h('b', { text: fxName(rows[String(pick.id)], pick) }),
-      h('span', { text: best > 0 ? t('fx.hours_n', { h: hrs(best) }) : t('fx.gta_untuned') })));
-    body.append(h('p', { cls: 'note', text: t('fx.gta_note') }));
+      h('span', { text: best <= 0 ? (stand ? t('fx.gta_untuned') : String(pick.year))
+        : stand ? t('fx.hours_n', { h: hrs(best) })
+          : t('fx.n_playing', { n: num(best), raw: best }) })));
+    body.append(h('p', { cls: 'note', text: stand ? t('fx.gta_note') : t('fx.gta_note_all') }));
   },
 
   /* The nine provinces, and which game went to which. Arena crossed all of
@@ -1204,7 +1224,7 @@ const SIGNATURE = {
       const hours = here.reduce((s, id) => s + (stand.mine.get(id).hours || 0), 0);
       const plate = h('div', {
         cls: 'fx-tam-plate',
-        data: here.length ? { on: '1' } : {},
+        data: apps.length ? sigLit(stand, here.length) : {},
       },
       h('b', { cls: 'fx-tam-name', text: t(key) }),
       h('span', { cls: 'fx-tam-meta', text: here.length
@@ -1230,7 +1250,7 @@ const SIGNATURE = {
     for (const a of fr.apps) {
       const mine = stand && stand.mine.get(a.id);
       const idle = stand && stand.idle.has(a.id);
-      list.append(h('li', { data: mine ? { on: '1' } : idle ? { idle: '1' } : {} },
+      list.append(h('li', { data: mine || !stand ? { on: '1' } : idle ? { idle: '1' } : {} },
         h('i', { cls: 'fx-pip-mark', attr: { 'aria-hidden': 'true' } }),
         h('a', { cls: 'fx-pip-name', attr: { href: fxGameHref(a.id, ctx) },
           text: fxName(rows[String(a.id)], a) }),
@@ -1252,7 +1272,7 @@ const SIGNATURE = {
       const mine = stand && stand.mine.get(a.id);
       pda.append(h('a', {
         cls: 'fx-pda-mark',
-        data: mine ? { on: '1' } : {},
+        data: sigLit(stand, mine),
         attr: { href: fxGameHref(a.id, ctx) },
       },
       h('i', { attr: { 'aria-hidden': 'true' } }),
@@ -1273,7 +1293,7 @@ const SIGNATURE = {
       const idle = stand && stand.idle.has(a.id);
       board.append(h('a', {
         cls: 'fx-brief-card',
-        data: mine ? { on: '1' } : idle ? { idle: '1' } : {},
+        data: mine || !stand ? { on: '1' } : idle ? { idle: '1' } : {},
         attr: { href: fxGameHref(a.id, ctx) },
       },
       h('span', { cls: 'fx-brief-dtg', text: `01 JAN ${a.year}` }),
@@ -1301,7 +1321,7 @@ const SIGNATURE = {
       const mine = stand && stand.mine.get(a.id);
       row.append(h('a', {
         cls: 'fx-fire',
-        data: mine ? { on: '1' } : {},
+        data: sigLit(stand, mine),
         attr: { href: fxGameHref(a.id, ctx) },
       },
       h('span', { cls: 'fx-fire-flame', attr: { 'aria-hidden': 'true' } },
@@ -1328,7 +1348,7 @@ const SIGNATURE = {
       const wide = mine && (mine.hours || 0) >= most * 0.5;
       grid.append(h('a', {
         cls: 'fx-case-item',
-        data: { ...(mine ? { on: '1' } : {}), ...(wide ? { wide: '1' } : {}) },
+        data: { ...sigLit(stand, mine), ...(wide ? { wide: '1' } : {}) },
         attr: { href: fxGameHref(a.id, ctx) },
       },
       h('b', { cls: 'fx-case-name', text: fxName(rows[String(a.id)], a) }),
