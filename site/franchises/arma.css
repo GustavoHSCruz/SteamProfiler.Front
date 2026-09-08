@@ -8,7 +8,6 @@
 :root[data-franchise="arma"] .fx-hero-in{max-width:1300px;padding-right:50%}
 :root[data-franchise="arma"] .fx-hero-kicker{width:fit-content;background:#c9c9a8;color:#1b1e14;padding:6px 12px;border-left:8px solid #b8452a;box-shadow:4px 5px 0 #0004}
 :root[data-franchise="arma"] .fx-hero-name{font-size:clamp(74px,13vw,178px);line-height:.78;text-shadow:5px 5px 0 #0e100b}
-:root[data-franchise="arma"] .fx-hero-lede{max-width:44ch;padding:14px;background:#c9c9a8;color:#1b1e14;box-shadow:8px 8px 0 #11140e;transform:rotate(-.7deg)}
 :root[data-franchise="arma"] .fx-stand{border:2px solid #b8452a;padding:8px 12px;width:fit-content;background:#22261ae8}
 :root[data-franchise="arma"] .fx-act{background:#c9c9a8;color:#1b1e14;border:0;box-shadow:4px 4px 0 #11140e}
 

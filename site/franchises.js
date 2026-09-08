@@ -423,10 +423,7 @@ async function renderFranchiseIndex(root, ctx) {
 
   const head = h('header', { cls: 'fx-ix-head' },
     h('p', { cls: 'fx-ix-kicker', text: t('fx.kicker') }),
-    h('h1', { cls: 'display fx-ix-title', text: t('fx.title') }),
-    h('p', { cls: 'lede fx-ix-lede', text: ctx.persona
-      ? t('fx.lede_you', { who: ctx.persona, n: num(FRANCHISES.length) })
-      : t('fx.lede', { n: num(FRANCHISES.length) }) }));
+    h('h1', { cls: 'display fx-ix-title', text: t('fx.title') }));
   root.append(head);
 
   const grid = h('div', { cls: 'fx-ix-grid', attr: { role: 'list' } });
@@ -477,8 +474,6 @@ async function renderFranchiseIndex(root, ctx) {
     grid.append(card);
   }
 
-  root.append(h('div', { cls: 'fx-band' },
-    h('p', { cls: 'note fx-ix-note', text: t('fx.index_note') })));
 }
 
 
@@ -596,7 +591,6 @@ async function renderFranchise(fr, root, ctx) {
         h('i', { text: '·' }),
         h('span', { text: t('fx.span_years', { from: span.from, to: span.to }) })),
       h('h1', { cls: 'display fx-hero-name', text: fr.name }),
-      said(`fx.${fxKey(fr)}_line`, 'lede fx-hero-lede'),
       standingInto(fr, stand),
       acts));
   root.append(hero);
@@ -638,16 +632,11 @@ async function renderFranchise(fr, root, ctx) {
     const band = h('section', { cls: 'fx-shelf fx-after' },
       h('div', { cls: 'panel-bar' },
         h('span', { text: t('fx.after_head') }),
-        h('b', { text: num(fr.after.length) })),
-      h('p', { cls: 'note fx-after-note', text: t('fx.after_note') }));
+        h('b', { text: num(fr.after.length) })));
     afterList = h('ol', { cls: 'fx-rows' });
     band.append(afterList);
     root.append(band);
   }
-
-  root.append(h('div', { cls: 'fx-band' },
-    said(`fx.${fxKey(fr)}_note`, 'note fx-note'),
-    h('p', { cls: 'note fx-note', text: t('fx.data_note') })));
 
   // The opening runs over a page that is already built, so skipping it lands
   // on the screen rather than on a wait for one.
@@ -668,22 +657,6 @@ async function renderFranchise(fr, root, ctx) {
   (SIGNATURE[fr.slug] || (() => {}))(sig, fr, rows, ctx, stand);
   if (exclusive && exclusive.ready) exclusive.ready({ hero, root, fr, rows, ctx, stand });
   trailerInto(acts, rows[String(fr.flagship)], fr.name);
-}
-
-/** The slug as an i18n key fragment. Keys cannot carry hyphens as readably as
- *  slugs can, and the slug is in the URL where the hyphen belongs. */
-const fxKey = (fr) => fr.slug.replaceAll('-', '_');
-
-/** A paragraph for a key that may not exist, or nothing.
- *
- *  Some of these series have a line written about them and most do not, and
- *  t() answers a missing key with the key - so without this the hero of a
- *  franchise nobody has written up yet reads `fx.mafia_line`. Checked against
- *  English because English is where a string is written first and the fallback
- *  every other language resolves through. */
-function said(key, cls) {
-  const has = DICT.en[key] != null;
-  return has ? h('p', { cls, text: t(key) }) : null;
 }
 
 /** The reader's own standing in this series, or nothing at all when there is
@@ -802,8 +775,7 @@ function drawLine(host, fr, rows, ctx) {
     }
   }
 
-  host.append(track, read,
-    h('p', { cls: 'note fx-line-note', text: t('fx.line_note') }));
+  host.append(track, read);
 }
 
 /* ── One game on the shelf ─────────────────────────────────────────────
@@ -930,9 +902,7 @@ const SIGNATURE = {
         meter,
         h('b', { cls: 'fx-hev-num', text: `${num(value, 0)}` })));
     }
-    body.append(bars, h('p', { cls: 'note', text: stand
-      ? t('fx.hl_read_you', { n: num(stand.played), total: num(fr.apps.length), h: hrs(stand.hours) })
-      : t('fx.hl_read') }));
+    body.append(bars);
   },
 
   /* The buy menu: the series as a shelf with prices on it, which is the one
@@ -972,9 +942,7 @@ const SIGNATURE = {
           : row.price != null ? cash(row.price, row.currency) : t('fx.reading') }),
       owned ? h('em', { cls: 'fx-buy-have', text: t('fx.cs_owned') }) : null));
     }
-    body.append(grid, h('p', { cls: 'note', text: priced === fr.apps.length
-      ? t('fx.cs_total', { money: cash(total, currency) })
-      : t('fx.cs_partial', { n: num(priced), total: num(fr.apps.length) }) }));
+    body.append(grid);
   },
 
   /* Two chambers, because there are two games. A series of exactly two is a
@@ -997,7 +965,7 @@ const SIGNATURE = {
       h('span', { cls: 'fx-room-meta', text: mine ? t('fx.hours_n', { h: hrs(mine.hours) })
         : String(a.year) })));
     }
-    body.append(room, h('p', { cls: 'note', text: t('fx.pt_note') }));
+    body.append(room);
   },
 
   /* The dial. Every one of these games is remembered partly for its radio, so
@@ -1036,7 +1004,6 @@ const SIGNATURE = {
       h('span', { text: best <= 0 ? (stand ? t('fx.gta_untuned') : String(pick.year))
         : stand ? t('fx.hours_n', { h: hrs(best) })
           : t('fx.n_playing', { n: num(best), raw: best }) })));
-    body.append(h('p', { cls: 'note', text: stand ? t('fx.gta_note') : t('fx.gta_note_all') }));
   },
 
   /* The nine provinces, and which game went to which. Arena crossed all of
@@ -1058,8 +1025,7 @@ const SIGNATURE = {
         : t('fx.games_n', { n: num(apps.length), raw: apps.length }) }));
       map.append(plate);
     }
-    body.append(map, h('p', { cls: 'note', text: stand
-      ? t('fx.tes_note_you') : t('fx.tes_note') }));
+    body.append(map);
   },
 
   /* The Pip-Boy's list. Not a stat sheet: this series never told anybody how
@@ -1084,7 +1050,7 @@ const SIGNATURE = {
           : idle ? t('fx.fo_pending') : String(a.year) })));
     }
     box.append(list);
-    body.append(box, h('p', { cls: 'note', text: t('fx.fo_note') }));
+    body.append(box);
   },
 
   /* The PDA. Each game named the place it happened in, and the Zone is the
@@ -1105,7 +1071,7 @@ const SIGNATURE = {
       h('b', { text: place ? t(place) : fxName(rows[String(a.id)], a) }),
       h('span', { text: mine ? t('fx.hours_n', { h: hrs(mine.hours) }) : String(a.year) })));
     }
-    body.append(pda, h('p', { cls: 'note', text: t('fx.st_note') }));
+    body.append(pda);
   },
 
   /* The briefing. Bohemia has opened every one of these on the same screen for
@@ -1131,7 +1097,7 @@ const SIGNATURE = {
         : idle ? t('fx.ar_standby') : t('fx.ar_nogo') }) : null,
       mine ? h('em', { cls: 'fx-brief-h', text: t('fx.hours_n', { h: hrs(mine.hours) }) }) : null));
     }
-    body.append(board, h('p', { cls: 'note', text: t('fx.ar_note') }));
+    body.append(board);
   },
 
   /* The bonfires. One per game, alight where this reader sat at it - and the
@@ -1157,7 +1123,7 @@ const SIGNATURE = {
       h('span', { cls: 'fx-fire-meta', text: mine ? t('fx.hours_n', { h: hrs(mine.hours) })
         : stand ? t('fx.ds_unlit') : String(a.year) })));
     }
-    body.append(row, h('p', { cls: 'note', text: t('fx.ds_note') }));
+    body.append(row);
   },
 
   /* The attaché case. Everything in this series has been about what fits in
@@ -1181,6 +1147,6 @@ const SIGNATURE = {
       h('span', { cls: 'fx-case-meta', text: mine ? t('fx.hours_n', { h: hrs(mine.hours) })
         : String(a.year) })));
     }
-    body.append(grid, h('p', { cls: 'note', text: t('fx.re_note') }));
+    body.append(grid);
   },
 };

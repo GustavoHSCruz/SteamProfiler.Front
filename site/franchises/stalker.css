@@ -8,7 +8,6 @@
 :root[data-franchise="stalker"] .fx-hero-in{max-width:1320px;padding-right:43%}
 :root[data-franchise="stalker"] .fx-hero-kicker{width:fit-content;padding:5px 9px;background:#a8c43f;color:#090b08;transform:skew(-5deg)}
 :root[data-franchise="stalker"] .fx-hero-name{font-size:clamp(58px,10vw,136px);letter-spacing:.09em;text-shadow:4px 3px 0 #303923,-3px -1px #d8a83f44}
-:root[data-franchise="stalker"] .fx-hero-lede{font-family:'IBM Plex Mono';font-size:13px;background:#090b08b8;padding:12px;border:1px dashed #596547}
 :root[data-franchise="stalker"] .fx-stand{border-left:4px solid #a8c43f;padding-left:14px;background:#0a0c09d9}
 :root[data-franchise="stalker"] .fx-act{border:1px dashed #a8c43f;background:#090b08d9}
 

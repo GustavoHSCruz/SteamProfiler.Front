@@ -21,22 +21,6 @@
 
 #fx, #franchises { padding-bottom: var(--edge); }
 
-/* A footnote sits in the same column the page does, and its line length is
-   capped inside that column rather than by centring a narrow box under a
-   left-aligned page - which reads as a different page starting. Two elements
-   because one cannot both be the column and be narrower than it. */
-.fx-band {
-  max-width: 1180px;
-  margin: clamp(14px, 2.4vh, 22px) auto 0;
-  padding: 0 var(--edge);
-}
-.fx-note, .fx-ix-note {
-  max-width: 78ch;
-  margin: 0 0 6px;
-  color: var(--faint);
-  font-size: 12.5px;
-}
-
 /* ── The index ────────────────────────────────────────────────────────
    Ten tiles, and deliberately not ten equal tiles: the first two are the two
    series Steam was built to sell, and a grid that flattened that would be
@@ -65,7 +49,6 @@
   line-height: var(--display-lh);
   text-transform: var(--display-tt);
 }
-.fx-ix-lede { max-width: 62ch; margin: 14px 0 0; color: var(--dim); }
 
 
 /* Every tile the same size. It was two wide ones and then the rest, back when
@@ -218,7 +201,6 @@
   line-height: var(--display-lh);
   text-transform: var(--display-tt);
 }
-.fx-hero-lede { max-width: 58ch; margin: 16px 0 0; color: var(--dim); }
 
 .fx-stand {
   display: flex;
@@ -420,8 +402,6 @@
   font-size: 12px;
   color: var(--accent);
 }
-.fx-line-note { margin: 4px 0 0; padding: 0; color: var(--faint); font-size: 12.5px; }
-
 @media (max-width: 640px) {
   /* The dots stay to scale and stop being a hit target at that size, so the
      shelf below is the way in and the line is left as the picture it is. */
@@ -503,7 +483,6 @@
 }
 
 .fx-after { opacity: .92; }
-.fx-after-note { margin: 6px 0 0; padding: 0; color: var(--faint); font-size: 12.5px; }
 
 /* ── The signature panel ─────────────────────────────────────────────── */
 

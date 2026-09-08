@@ -8,7 +8,6 @@
 :root[data-franchise="grand-theft-auto"] .fx-hero-in { max-width:1380px;padding-right:48%; }
 :root[data-franchise="grand-theft-auto"] .fx-hero-kicker { display:inline-flex;padding:7px 10px;background:#4ad4e8;color:#09090d;transform:rotate(-2deg); }
 :root[data-franchise="grand-theft-auto"] .fx-hero-name { max-width:6ch;font-size:clamp(72px,13vw,184px);line-height:.77;text-shadow:7px 7px 0 #ff5fa2,12px 12px 0 #4ad4e82e; }
-:root[data-franchise="grand-theft-auto"] .fx-hero-lede { border-left:7px solid #ff5fa2;padding:10px 16px;background:#0b0b10d9;transform:rotate(.6deg); }
 :root[data-franchise="grand-theft-auto"] .fx-stand { width:fit-content;border:0;background:#ff5fa2;color:#0b0b10;padding:8px 14px;transform:rotate(-1deg); }:root[data-franchise="grand-theft-auto"] .fx-stand b,:root[data-franchise="grand-theft-auto"] .fx-stand span,:root[data-franchise="grand-theft-auto"] .fx-stand em{color:#0b0b10}
 :root[data-franchise="grand-theft-auto"] .fx-act { border:2px solid #fff;background:#0b0b10;box-shadow:5px 5px 0 #ff5fa2; }
 

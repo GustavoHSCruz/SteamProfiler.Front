@@ -13,8 +13,7 @@
   column-gap: 12px;
 }
 :root[data-franchise="half-life"] .fx-hero,
-:root[data-franchise="half-life"] .fx-shelf,
-:root[data-franchise="half-life"] .fx-band { grid-column: 1 / -1; width: 100%; }
+:root[data-franchise="half-life"] .fx-shelf { grid-column: 1 / -1; width: 100%; }
 :root[data-franchise="half-life"] .fx-hero {
   min-height: min(720px, 78vh);
   align-items: center;
@@ -38,7 +37,6 @@
 }
 :root[data-franchise="half-life"] .fx-hero-kicker { border-left: 5px solid #ff9b21; padding-left: 12px; }
 :root[data-franchise="half-life"] .fx-hero-name { font-size: clamp(54px, 9vw, 126px); text-shadow: 0 0 35px #ff9b2128; }
-:root[data-franchise="half-life"] .fx-hero-lede { border-top: 1px solid #6fb8d955; padding-top: 12px; }
 :root[data-franchise="half-life"] .fx-stand { border: 1px solid #ff9b2155; padding: 10px 14px; background: #080603d9; }
 :root[data-franchise="half-life"] .fx-act { border-left-width: 4px; background: #0e0b06e8; }
 

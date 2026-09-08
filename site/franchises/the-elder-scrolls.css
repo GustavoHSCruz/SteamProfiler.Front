@@ -8,7 +8,6 @@
 :root[data-franchise="the-elder-scrolls"] .fx-hero-in{max-width:1120px;display:flex;flex-direction:column;align-items:center;padding-top:180px}
 :root[data-franchise="the-elder-scrolls"] .fx-hero-kicker{justify-content:center;color:#c9a83f}
 :root[data-franchise="the-elder-scrolls"] .fx-hero-name{max-width:12ch;font-size:clamp(50px,9vw,118px);line-height:.92;text-shadow:0 4px 22px #000,0 0 50px #c9a83f1f}
-:root[data-franchise="the-elder-scrolls"] .fx-hero-lede{margin-inline:auto;max-width:48ch;font-family:'Cinzel';font-size:14px;line-height:1.8}
 :root[data-franchise="the-elder-scrolls"] .fx-stand{justify-content:center;border:0;border-block:1px solid #c9a83f66;width:min(620px,100%);padding:12px 24px}
 :root[data-franchise="the-elder-scrolls"] .fx-acts{justify-content:center}:root[data-franchise="the-elder-scrolls"] .fx-act{position:relative}
 :root[data-franchise="the-elder-scrolls"] .fx-act{border-color:#c9a83f55;background:#08090dbf;clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 50%,calc(100% - 8px) 100%,8px 100%,0 50%)}

@@ -10,7 +10,6 @@
 :root[data-franchise="fallout"] .fx-hero-kicker{border-bottom:1px dashed #5fe08a88;padding-bottom:8px}
 :root[data-franchise="fallout"] .fx-hero-name{font-size:clamp(58px,10vw,136px);text-shadow:0 0 15px #5fe08a88}
 :root[data-franchise="fallout"] .fx-hero-name::after{content:"_";font-weight:400}
-:root[data-franchise="fallout"] .fx-hero-lede{font-family:'IBM Plex Mono';border-left:3px solid #5fe08a;padding-left:12px}
 :root[data-franchise="fallout"] .fx-stand{border-style:dashed}:root[data-franchise="fallout"] .fx-acts{gap:10px}
 :root[data-franchise="fallout"] .fx-act{background:transparent;border:1px solid #5fe08a;color:#5fe08a}:root[data-franchise="fallout"] .fx-act:hover{background:#5fe08a;color:#041006}
 
@@ -20,7 +19,7 @@
 .fxfo-status{position:absolute;right:6%;top:12%;display:flex;flex-direction:column;align-items:flex-end}.fxfo-status span{font-size:8px;letter-spacing:.2em}.fxfo-status b{font-size:13px;letter-spacing:.08em}
 .fxfo-scan{position:absolute;left:0;right:0;height:90px;background:linear-gradient(transparent,#5fe08a12,transparent)}
 
-:root[data-franchise="fallout"] .fx-line,:root[data-franchise="fallout"] .fx-sig,:root[data-franchise="fallout"] .fx-shelf,:root[data-franchise="fallout"] .fx-band{max-width:1120px}
+:root[data-franchise="fallout"] .fx-line,:root[data-franchise="fallout"] .fx-sig,:root[data-franchise="fallout"] .fx-shelf{max-width:1120px}
 :root[data-franchise="fallout"] .panel-bar{border:1px solid #337a51;border-bottom:0;background:#5fe08a;color:#041006}
 :root[data-franchise="fallout"] .panel-bar b{color:#041006}
 :root[data-franchise="fallout"] .panel-bar::before{content:"["}:root[data-franchise="fallout"] .panel-bar::after{content:"]"}

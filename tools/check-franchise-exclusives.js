@@ -11,11 +11,15 @@ const path = require('path');
 const root = path.resolve(__dirname, '..');
 const site = path.join(root, 'site');
 const source = fs.readFileSync(path.join(site, 'franchise-list.js'), 'utf8');
+const renderer = fs.readFileSync(path.join(site, 'franchises.js'), 'utf8');
 const slugs = [...source.matchAll(/\bslug:\s*'([a-z0-9-]+)'/g)].map((match) => match[1]);
 const failures = [];
 
 if (slugs.length !== 10) failures.push(`expected 10 franchise slugs, found ${slugs.length}`);
 if (new Set(slugs).size !== slugs.length) failures.push('franchise slugs are not unique');
+if (/cls:\s*'[^']*\bnote\b/.test(renderer)) {
+  failures.push('franchise renderer contains explanatory note copy');
+}
 
 for (const slug of slugs) {
   const base = path.join(site, 'franchises', slug);

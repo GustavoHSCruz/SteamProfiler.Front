@@ -10,7 +10,6 @@
 :root[data-franchise="resident-evil"] .fx-hero-kicker{color:#c9a15f;border-bottom:1px solid #c9a15f66;padding-bottom:8px}
 :root[data-franchise="resident-evil"] .fx-hero-name{font-size:clamp(62px,11vw,148px);line-height:.82;text-shadow:5px 0 #3b0a0e,-2px 0 #c1272d55}
 :root[data-franchise="resident-evil"] .fx-hero-name::first-letter{color:#c1272d}
-:root[data-franchise="resident-evil"] .fx-hero-lede{font-family:'IBM Plex Mono';font-size:13px;border-left:2px solid #c1272d;padding-left:14px}
 :root[data-franchise="resident-evil"] .fx-stand{border:1px solid #583033;padding:10px 14px;background:#080506d9}
 :root[data-franchise="resident-evil"] .fx-act{background:#080506;border-color:#6a3337}:root[data-franchise="resident-evil"] .fx-act:hover{background:#c1272d;color:#fff}
 
