@@ -3422,8 +3422,7 @@ function renderBfbc2(g, root) {
         h('span', { text: t('g.bc2_kept_game') })),
       h('div', { cls: 'bc2-side', data: { side: 'steam' } },
         h('b', { text: num(0) }),
-        h('span', { text: t('g.bc2_kept_steam') }))),
-    h('p', { cls: 'bc2-note', text: t('g.bc2_kept_note') }));
+        h('span', { text: t('g.bc2_kept_steam') }))));
 
   // The date, stated as a date, because that is what makes it final.
   wrap.append(h('section', { cls: 'bc2-off' },

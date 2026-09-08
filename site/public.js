@@ -158,7 +158,6 @@ function publicCs2(g, root) {
   wrap.append(h('header', { cls: 'cs-top' },
     h('p', { cls: 'cs-kicker', text: publicKicker(g) }),
     h('h1', { cls: 'cs-title', text: g.name }),
-    h('p', { cls: 'cs-sub', text: t('gp.rarest_note') }),
     h('div', { cls: 'cs-hud' }, ...publicFacts(g).map(([label, value], i) =>
       h('div', { cls: i === 2 ? 'cs-hud-cell cs-hud-cell--money' : 'cs-hud-cell' },
         h('span', { text: label }), h('b', { text: value }))))));
@@ -255,7 +254,7 @@ function publicSkyrim(g, root) {
   root.append(h('div', { cls: 'sk' },
     h('header', { cls: 'sk-head' }, h('p', { cls: 'sk-kicker', text: publicKicker(g) }),
       h('h1', { cls: 'sk-title', text: g.name }), h('p', { cls: 'sk-sub', text: t('gp.ach_sub') })),
-    sky, h('p', { cls: 'sk-note', text: t('gp.rarest_note') })));
+    sky));
 }
 
 function publicGauge(value, max, label, readout) {
@@ -303,7 +302,7 @@ function publicMsfs(g, root) {
   log.append(body);
   root.append(h('div', { cls: 'fs' },
     h('header', { cls: 'fs-head' }, h('p', { cls: 'fs-kicker', text: publicKicker(g) }),
-      h('h1', { cls: 'fs-title', text: g.name }), h('p', { cls: 'fs-sub', text: t('gp.rarest_note') })),
+      h('h1', { cls: 'fs-title', text: g.name })),
     h('section', { cls: 'fs-panel' },
       publicGauge((g.achievements || {}).total || 0, 100, t('gp.total_ach'), num((g.achievements || {}).total || 0)),
       publicGauge(publicMedian(g), 100, t('gp.median'), rarity(publicMedian(g))),
@@ -550,8 +549,7 @@ function publicCyberpunk(g, root) {
           a.description ? h('span', { text: a.description }) : null),
         h('em', { text: rarity(a.rarity) })));
     });
-    wrap.append(h('h2', { cls: 'cp-h', text: t('g.cp_shards') }),
-      h('p', { cls: 'cp-note', text: t('gp.rarest_note') }), shards);
+    wrap.append(h('h2', { cls: 'cp-h', text: t('g.cp_shards') }), shards);
   }
 
   root.append(wrap);
@@ -650,7 +648,6 @@ function ladder(g) {
       h('span', { cls: 'gp-row-pct', text: rarity(a.rarity) })));
   }
   wrap.append(rows);
-  wrap.append(h('p', { cls: 'gp-note', text: t('gp.rarest_note') }));
   return wrap;
 }
 

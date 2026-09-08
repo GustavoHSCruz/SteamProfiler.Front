@@ -6857,11 +6857,6 @@ a.gta-tab:hover { color: var(--text); background: #ffffff08; }
 .bc2-side[data-side="game"] b { color: var(--accent); }
 .bc2-side[data-side="steam"] { background: var(--panel-2); }
 .bc2-side[data-side="steam"] b { color: var(--faint); }
-.bc2-note {
-  margin: 16px var(--edge) 0; max-width: 68ch;
-  font-size: 14px; line-height: 1.65; color: var(--dim);
-}
-
 /* The date. Stated as a date, because that is what makes it final. */
 .bc2-off {
   margin: clamp(30px, 4vw, 48px) var(--edge) 0;
