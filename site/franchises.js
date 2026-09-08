@@ -490,26 +490,37 @@ async function renderFranchiseIndex(root, ctx) {
 
 
 /* ── The real trailer ──────────────────────────────────────────────────
-   Steam stopped putting a file in the store payload: `movies` now carries
-   DASH and HLS manifests, which no browser plays without a player library,
-   and this site has no libraries. What it still carries is the movie's id,
-   and the flat file that id has always had is still served, from the one host
-   the site's media policy already allows. So the id is what the api sends and
-   this builds the address, exactly as lib.js builds a header picture. */
+   Steam has two generations of movie delivery. Old trailers expose flat
+   MP4/WebM files; new ones expose HLS and DASH manifests with separate tracks.
+   player.js handles both behind the same controls and deliberately selects
+   the largest rendition in a modern HLS master. */
 const TRAILER_CDN = 'https://cdn.cloudflare.steamstatic.com/steam/apps';
 
-/* Which file to ask for, in order. Steam keeps no single flat name for these:
-   of ten trailers measured, five had only `movie480_vp9.webm`, two had only
-   `movie480.webm`, two had both, and one had none of the three. `movie480.mp4`
-   was there for nine of the ten, so it goes first - and it is h264, which
-   plays in more browsers than a VP9 webm does anyway.
+/* Which legacy file to ask for, in order. Maximum quality comes first; the
+   480 variants are compatibility fallbacks, never the preferred source.
 
    The order matters for more than taste. A name that is not there answers 404
    with an HTML error page, and Chrome refuses a cross-origin HTML body handed
    to a <video> - that is the ERR_BLOCKED_BY_ORB in the console, and it is the
-   404 talking, not the policy. Asking for the one that usually exists first
-   means most trailers never make the failing request at all. */
-const TRAILER_FILES = ['movie480.mp4', 'movie480_vp9.webm', 'movie480.webm'];
+   404 talking, not the policy. The API normally supplies exact URLs; these
+   conventional names remain for rows cached before that payload grew them. */
+const TRAILER_FILES = [
+  ['movie_max.mp4', 'video/mp4'],
+  ['movie_max_vp9.webm', 'video/webm'],
+  ['movie480.mp4', 'video/mp4'],
+  ['movie480_vp9.webm', 'video/webm'],
+  ['movie480.webm', 'video/webm'],
+];
+
+function trailerFiles(trailer) {
+  const supplied = [
+    [trailer.max_mp4, 'video/mp4'], [trailer.max_webm, 'video/webm'],
+    [trailer.sd_mp4, 'video/mp4'], [trailer.sd_webm, 'video/webm'],
+  ].filter(([url]) => url);
+  if (supplied.length) return supplied;
+  const base = `${TRAILER_CDN}/${trailer.id}`;
+  return TRAILER_FILES.map(([file, type]) => [`${base}/${file}`, type]);
+}
 
 function trailerInto(host, row, name, appid) {
   if (!row || !row.trailer || !row.trailer.id) return null;
@@ -519,28 +530,13 @@ function trailerInto(host, row, name, appid) {
   const video = h('video', {
     cls: 'fx-tr-video',
     attr: {
-      controls: '', preload: 'none', playsinline: '',
+      preload: 'metadata', playsinline: '',
       // Only when there is one. `poster=""` is not "no poster": it resolves
       // against the page's own address, so the browser fetches this HTML and
       // draws the failure to decode it as a broken frame.
       ...(row.trailer.thumb ? { poster: row.trailer.thumb } : {}),
     },
   });
-  // Sources rather than one src: the element walks the list itself and stops
-  // at the first that answers, which is the whole reason <source> exists.
-  let missed = 0;
-  for (const file of TRAILER_FILES) {
-    const source = h('source', { attr: { src: `${TRAILER_CDN}/${id}/${file}` } });
-    // The media element fires `error` at each <source> it cannot use and says
-    // nothing on the element itself, so the count is what tells us the list
-    // ran out rather than any one name failing.
-    source.addEventListener('error', () => {
-      if ((missed += 1) < TRAILER_FILES.length) return;
-      video.remove();
-      gone.hidden = false;
-    }, { once: true });
-    video.append(source);
-  }
   // A trailer whose files Steam simply does not keep. One in ten, measured,
   // and there is no way to know which from here: the store payload gives the
   // movie's id and never says which files that id has. So the button is
@@ -555,11 +551,54 @@ function trailerInto(host, row, name, appid) {
     }));
   gone.hidden = true;
 
-  const close = h('button', { cls: 'fx-tr-close', text: t('fx.trailer_close'), attr: { type: 'button' } });
-  put(dialog,
-    h('p', { cls: 'fx-tr-head' },
-      h('b', { text: row.trailer.name || name })),
-    video, gone, close);
+  const close = h('button', {
+    cls: 'fx-tr-close', text: '×',
+    attr: { type: 'button', 'aria-label': t('fx.trailer_close'), title: t('fx.trailer_close') },
+  });
+  const player = window.SteamProfilerPlayer
+    ? window.SteamProfilerPlayer.mount(video, {
+      title: row.trailer.name || name,
+      labels: {
+        play: t('player.play'), pause: t('player.pause'), replay: t('player.replay'),
+        mute: t('player.mute'), unmute: t('player.unmute'), volume: t('player.volume'),
+        seek: t('player.seek'), fullscreen: t('player.fullscreen'),
+        exit_fullscreen: t('player.exit_fullscreen'), pip: t('player.pip'),
+      },
+    })
+    : { root: video, reveal() {}, setLoading() {}, setQuality() {} };
+  if (!window.SteamProfilerPlayer) video.controls = true;
+  put(dialog, player.root, gone, close);
+
+  let wanted = false;
+  let streamStarted = false;
+  let progressiveStarted = false;
+  let missed = 0;
+  const progressive = trailerFiles(row.trailer);
+
+  const showGone = () => {
+    player.root.remove();
+    gone.hidden = false;
+  };
+  const useProgressive = () => {
+    if (progressiveStarted) return;
+    progressiveStarted = true;
+    video.removeAttribute('src');
+    video.replaceChildren();
+    missed = 0;
+    for (const [url, type] of progressive) {
+      const source = h('source', { attr: { src: url, type } });
+      source.addEventListener('error', () => {
+        if ((missed += 1) >= progressive.length) showGone();
+      }, { once: true });
+      video.append(source);
+    }
+    video.load();
+  };
+
+  const playWhenReady = () => {
+    if (wanted) video.play().catch(() => { /* the play control remains visible */ });
+  };
+  video.addEventListener('canplay', playWhenReady);
 
   const open = h('button', {
     cls: 'fx-act fx-act-tr',
@@ -568,12 +607,30 @@ function trailerInto(host, row, name, appid) {
   });
   open.addEventListener('click', () => {
     dialog.showModal();
-    if (video.isConnected) video.play().catch(() => { /* the controls are right there */ });
+    wanted = true;
+    player.reveal();
+    if (row.trailer.hls && window.SteamProfilerPlayer && !streamStarted) {
+      streamStarted = true;
+      player.setLoading(true);
+      window.SteamProfilerPlayer.attachHls(video, row.trailer.hls)
+        .then((quality) => {
+          player.setLoading(false);
+          player.setQuality(quality.height ? `${quality.height}P` : 'AUTO');
+          playWhenReady();
+        })
+        .catch(() => {
+          player.setLoading(false);
+          useProgressive();
+        });
+    } else {
+      if (!progressiveStarted && !row.trailer.hls) useProgressive();
+      if (video.readyState >= 3) playWhenReady();
+    }
   });
   // Stopping the video on the way out, so closing the box is also closing the
   // sound - a dialog that keeps playing behind itself is a bug people blame
   // on their own tabs.
-  const shut = () => { if (video.isConnected) video.pause(); dialog.close(); };
+  const shut = () => { wanted = false; if (video.isConnected) video.pause(); dialog.close(); };
   close.addEventListener('click', shut);
   dialog.addEventListener('close', () => { if (video.isConnected) video.pause(); });
   dialog.addEventListener('click', (e) => { if (e.target === dialog) shut(); });

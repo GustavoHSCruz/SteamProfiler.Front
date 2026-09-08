@@ -502,12 +502,14 @@
 /* ── The real trailer ────────────────────────────────────────────────── */
 
 .fx-tr {
-  width: min(960px, 92vw);
+  width: min(1120px, 96vw);
   padding: 0;
-  border: 1px solid var(--line-2);
-  border-radius: var(--r);
-  background: var(--panel);
+  overflow: visible;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, #fff0);
+  border-radius: 0;
+  background: #020203;
   color: var(--text);
+  box-shadow: 0 30px 100px #000, 0 0 45px color-mix(in srgb, var(--accent) 15%, transparent);
 }
 .fx-tr::backdrop { background: #05040a; opacity: .86; }
 .fx-tr-head {
@@ -516,22 +518,24 @@
   border-bottom: 1px solid var(--line);
 }
 .fx-tr-head b { font-size: 14px; }
-.fx-tr-video { display: block; width: 100%; max-height: 66vh; background: #000; }
+.fx-tr-video { display: block; width: 100%; background: #000; }
 .fx-tr-close {
-  display: block;
-  width: 100%;
-  padding: 12px;
-  border: 0;
-  border-top: 1px solid var(--line);
-  background: transparent;
-  color: var(--dim);
-  font-family: var(--label);
-  font-size: 11px;
-  letter-spacing: var(--label-ls);
-  text-transform: uppercase;
+  position: absolute;
+  z-index: 9;
+  right: 10px;
+  top: 10px;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid #ffffff35;
+  background: #050309c9;
+  color: #fff;
+  font: 300 25px/1 var(--mono);
   cursor: pointer;
 }
-.fx-tr-close:hover { color: var(--accent); }
+.fx-tr-close:hover { border-color: var(--accent); color: var(--accent); }
 
 /* ══ The shared signature pieces ═══════════════════════════════════════
    One block each, on :root, exactly as games.css does it: tokens declared on
