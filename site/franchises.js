@@ -113,8 +113,8 @@ const INTRO = {
   'half-life': () => [
     h('div', { cls: 'fxi-hl-ring' }),
     fxSvg('0 0 100 100', 'fxi-hl-mark',
-      '<path d="M28 84 L52 20 L60 44 L74 44" fill="none" stroke="currentColor" ' +
-      'stroke-width="7" stroke-linecap="square" stroke-linejoin="miter" ' +
+      '<path d="M24 86 L51 18 L79 86" fill="none" stroke="currentColor" ' +
+      'stroke-width="8" stroke-linecap="square" stroke-linejoin="round" ' +
       'pathLength="100" />'),
     h('p', { cls: 'fxi-hl-org', text: 'BLACK MESA RESEARCH FACILITY' }),
     h('p', { cls: 'fxi-hl-sub', text: 'ANOMALOUS MATERIALS' }),
