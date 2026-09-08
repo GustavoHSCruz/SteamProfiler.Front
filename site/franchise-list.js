@@ -1,10 +1,10 @@
-/* steamprofiler.org - which ten franchises there are.
+/* steamprofiler.org - which featured franchises there are.
 
    The table and nothing else, because three pages want it and only one of
-   them wants the code that draws it: the landing page prints the ten as a way
+   them wants the code that draws it: the landing page prints the list as a way
    in, franchises.js builds the screens, and both of those load on a profile.
-   Splitting it is what keeps the front page from carrying ten renderers and
-   an animation engine to show ten names.
+   Splitting it is what keeps the front page from carrying the renderers and
+   an animation engine to show the names.
 
    This file is the whole editorial content of the franchise screens and is
    meant to be edited: a franchise is an entry, and a game in one is a line.
@@ -211,6 +211,34 @@ const FRANCHISES = [
       { id: 952060, year: 2020, tag: 'fx.tag_remake', name: 'Resident Evil 3' },
       { id: 1196590, year: 2021, name: 'Resident Evil Village' },
       { id: 2050650, year: 2023, tag: 'fx.tag_remake', name: 'Resident Evil 4' },
+    ],
+  },
+  {
+    slug: 'yakuza',
+    name: 'Yakuza',
+    house: 'Ryu Ga Gotoku Studio',
+    born: 2005,
+    flagship: 638970,
+    tint: '#ff1744',
+    apps: [
+      { id: 638970, year: 2018, made: 2015, name: 'Yakuza 0' },
+      { id: 834530, year: 2019, made: 2016, tag: 'fx.tag_legacy', name: 'Yakuza Kiwami (Legacy)' },
+      { id: 927380, year: 2019, made: 2017, tag: 'fx.tag_legacy', name: 'Yakuza Kiwami 2 (Legacy)' },
+      { id: 1235140, year: 2020, name: 'Yakuza: Like a Dragon' },
+      { id: 1088710, year: 2021, made: 2009, tag: 'fx.tag_remaster', name: 'Yakuza 3 Remastered' },
+      { id: 1105500, year: 2021, made: 2010, tag: 'fx.tag_remaster', name: 'Yakuza 4 Remastered' },
+      { id: 1105510, year: 2021, made: 2012, tag: 'fx.tag_remaster', name: 'Yakuza 5 Remastered' },
+      { id: 1388590, year: 2021, made: 2016, name: 'Yakuza 6: The Song of Life' },
+      { id: 2058180, year: 2022, made: 2018, tag: 'fx.tag_spinoff', name: 'Judgment' },
+      { id: 2058190, year: 2022, made: 2021, tag: 'fx.tag_spinoff', name: 'Lost Judgment' },
+      { id: 1805480, year: 2023, tag: 'fx.tag_spinoff', name: 'Like a Dragon: Ishin!' },
+      { id: 2375550, year: 2023, tag: 'fx.tag_spinoff', name: 'Like a Dragon Gaiden: The Man Who Erased His Name' },
+      { id: 2072450, year: 2024, name: 'Like a Dragon: Infinite Wealth' },
+      { id: 3061810, year: 2025, tag: 'fx.tag_spinoff', name: 'Like a Dragon: Pirate Yakuza in Hawaii' },
+      { id: 2988580, year: 2025, tag: 'fx.tag_directors', name: 'Yakuza 0 Director\'s Cut' },
+      { id: 3717330, year: 2025, made: 2016, tag: 'fx.tag_newedition', name: 'Yakuza Kiwami' },
+      { id: 3717340, year: 2025, made: 2017, tag: 'fx.tag_newedition', name: 'Yakuza Kiwami 2' },
+      { id: 3937550, year: 2026, tag: 'fx.tag_remake', name: 'Yakuza Kiwami 3 & Dark Ties' },
     ],
   },
 ];

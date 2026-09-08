@@ -7,11 +7,11 @@
 
    Three things live here and nowhere else on the site:
 
-     the index, which is ten tiles and is the only page here without a
+     the index, which is the only page here without a
      franchise of its own, so it stays in the site's amber;
 
      the line, which is a franchise drawn against its own years - the same
-     component on all ten, because "when" is the one axis every series has;
+     component on all of them, because "when" is the one axis every series has;
 
      the openings, at the foot of this file. Those are the heaviest part of it
      and the only part that is pure decoration, which is why they are last and
@@ -22,9 +22,7 @@
 #fx, #franchises { padding-bottom: var(--edge); }
 
 /* ── The index ────────────────────────────────────────────────────────
-   Ten tiles, and deliberately not ten equal tiles: the first two are the two
-   series Steam was built to sell, and a grid that flattened that would be
-   saying something untrue for the sake of a tidy rectangle. */
+   A catalogue of equal tiles: the reader, not the layout, picks favourites. */
 
 .fx-ix-head {
   max-width: 1180px;
@@ -535,13 +533,13 @@
 }
 .fx-tr-close:hover { color: var(--accent); }
 
-/* ══ The ten palettes ═══════════════════════════════════════════════════
+/* ══ The shared signature pieces ═══════════════════════════════════════
    One block each, on :root, exactly as games.css does it: tokens declared on
    :root resolve against :root, and the site chrome reads them, so the status
    bar and the footer belong to whichever franchise the reader is inside.
 
    The index has no block here on purpose. It is the one screen with no
-   franchise of its own, so it stays in the site's own amber and lets the ten
+   franchise of its own, so it stays in the site's own amber and lets the
    tiles be the colour on it. */
 
 /* Every franchise that has no block of its own. It is not a fallback in the
@@ -559,7 +557,7 @@
    It sets three tokens and not one more, and that is the whole design of it:
    these three are exactly what every written block already declares, so a
    franchise that has a screen of its own overrides all of this and inherits
-   none of it. Adding `--bar-fill` here would have quietly changed ten screens
+   none of it. Adding `--bar-fill` here would have quietly changed every screen
    nobody asked to have changed. */
 :root[data-franchise] {
   --accent: var(--tint);

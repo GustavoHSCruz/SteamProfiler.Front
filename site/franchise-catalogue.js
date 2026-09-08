@@ -1,8 +1,8 @@
 /* steamprofiler.org - every other series.
 
-   franchise-list.js holds the ten that have a screen written for them, one
-   CSS and JS pair each, and it stays at ten because the check that keeps
-   those ten honest counts it. This file is the rest of the shelf: the same
+   franchise-list.js holds the featured series that have a screen written for
+   them, one CSS and JS pair each, and the check that keeps those screens
+   honest counts them. This file is the rest of the shelf: the same
    shape of entry, drawn by the same code, in the site's own furniture with
    that series' colour on it.
 
@@ -21,7 +21,7 @@
    entirely under an appid that looked right.
 
    `year` is the year Steam publishes, not the year the game came out. Those
-   are two different facts and the ten next door carry both, because somebody
+   are two different facts and the featured screens carry both, because somebody
    went through them by hand; nobody has been through these, so the line on
    these screens is the storefront's timeline and says nothing it has not been
    told. Where the two agree - which is most of the last fifteen years - it is
@@ -1704,34 +1704,9 @@ const FRANCHISE_CATALOGUE = [
       { id: 882100, year: 2020, name: 'XCOM®: Chimera Squad' },
     ],
   },
-  {
-    slug: 'yakuza',
-    name: 'Yakuza',
-    house: 'Ryu Ga Gotoku Studio',
-    born: 2005,
-    flagship: 1235140,
-    tint: '#d9a02a',
-    apps: [
-      { id: 638970, year: 2018, name: 'Yakuza 0' },
-      { id: 834530, year: 2019, name: 'Yakuza Kiwami (Legacy)' },
-      { id: 927380, year: 2019, name: 'Yakuza Kiwami 2 (Legacy)' },
-      { id: 1235140, year: 2020, name: 'Yakuza: Like a Dragon' },
-      { id: 1088710, year: 2021, name: 'Yakuza 3 Remastered' },
-      { id: 1105500, year: 2021, name: 'Yakuza 4 Remastered' },
-      { id: 1105510, year: 2021, name: 'Yakuza 5 Remastered' },
-      { id: 1388590, year: 2021, name: 'Yakuza 6: The Song of Life' },
-      { id: 2058180, year: 2022, name: 'Judgment' },
-      { id: 2058190, year: 2022, name: 'Lost Judgment' },
-      { id: 1805480, year: 2023, name: 'Like a Dragon: Ishin!' },
-      { id: 2375550, year: 2023, name: 'Like a Dragon Gaiden: The Man Who Erased His Name' },
-      { id: 2072450, year: 2024, name: 'Like a Dragon: Infinite Wealth' },
-      { id: 2988580, year: 2025, name: 'Yakuza 0 Director\'s Cut' },
-      { id: 3061810, year: 2025, name: 'Like a Dragon: Pirate Yakuza in Hawaii' },
-    ],
-  },
 ];
 
-/* Onto the same list the ten are on, and into the same index. The screens,
+/* Onto the same list the featured series are on, and into the same index. The screens,
    the landing page and the router all read FRANCHISES and BY_SLUG and none of
    them needs to know a series came from here rather than from next door -
    which is the whole reason the split can exist without leaking into the code

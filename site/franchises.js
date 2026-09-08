@@ -1,18 +1,18 @@
 /* steamprofiler.org - the franchise screens.
 
-   Ten series, each with a screen built out of that series' own interface, the
+   Featured series, each with a screen built out of that series' own interface, the
    same way game.js builds one page per game. The difference is what a
    franchise is: not one record but a line of them, drawn across the years
    they were made in.
 
    Four addresses reach the same code:
 
-     /franchises              the ten, with the world's numbers
+     /franchises              the list, with the world's numbers
      /franchises/<slug>       one of them, likewise
-     /u/<who>/franchises      the ten, with that profile's hours on top
+     /u/<who>/franchises      the list, with that profile's hours on top
      /u/<who>/franchises/<slug>
 
-   Which ten there are is not here: franchise-list.js holds the table, because
+   Which featured series there are is not here: franchise-list.js holds the table, because
    the landing page wants that list without wanting any of this. Adding a
    series is an entry there, a palette block in franchises.css and its strings
    in dict.js.
@@ -203,6 +203,19 @@ const INTRO = {
     h('div', { cls: 'fxi-re-key' }),
     h('div', { cls: 'fxi-re-door' }),
   ],
+  /* Kamurocho's gate ignites, the street opens, and the dragon takes it. */
+  yakuza: () => [
+    h('div', { cls: 'fxyki-city' }, ...Array.from({ length: 12 }, () => h('i'))),
+    h('div', { cls: 'fxyki-gate' },
+      h('span', { text: '天下一通り' }),
+      h('b', { text: '神室町' })),
+    h('div', { cls: 'fxyki-slash' }),
+    h('div', { cls: 'fxyki-kanji', text: '龍' }),
+    h('p', { cls: 'fxyki-word' },
+      h('b', { text: 'YAKUZA' }),
+      h('span', { text: '龍が如く' })),
+    h('div', { cls: 'fxyki-rain' }, ...Array.from({ length: 18 }, () => h('i'))),
+  ],
 };
 
 /** An inline SVG. `html` rather than built node by node because these are
@@ -241,6 +254,7 @@ const INTRO_MS = {
   'half-life': 3400, 'counter-strike': 2900, portal: 3000,
   'grand-theft-auto': 3200, 'the-elder-scrolls': 3600, fallout: 3600,
   stalker: 3200, arma: 3000, 'dark-souls': 3800, 'resident-evil': 3400,
+  yakuza: 3900,
 };
 
 /** Play the opening for `fr` over the page, and resolve when it is done or
@@ -401,8 +415,8 @@ const fxName = (row, app) => (row && row.name) || app.name || `app ${app.id}`;
 const fxIndexHref = (fr, ctx) =>
   (ctx.query ? `/u/${ctx.query}/franchises/${fr.slug}` : `/franchises/${fr.slug}`);
 
-/* ── The ten ───────────────────────────────────────────────────────────
-   The index. Ten tiles, each in its own franchise's colour and lettering,
+/* ── The index ─────────────────────────────────────────────────────────
+   Every tile gets its own franchise's colour and lettering,
    ordered as the table is: by how much of Steam they are, which is a judgement
    and is written down in one place rather than computed out of numbers that
    would not support it. */
@@ -569,7 +583,7 @@ function trailerInto(host, row, name, appid) {
 }
 
 /* ── One franchise ─────────────────────────────────────────────────────
-   The screen. Its spine is the same on all ten - an opening, the years, one
+   The screen. Its spine is the same on all featured series - an opening, the years, one
    panel that belongs to this series and to no other, and the shelf of what is
    on Steam - and everything inside that spine is this franchise's own: its
    colours, its lettering, its opening, and a panel built out of something only
@@ -589,7 +603,7 @@ async function renderFranchise(fr, root, ctx) {
   document.title = `${fr.name} - steamprofiler.org`;
   root.textContent = '';
 
-  // Each of the ten full-page identities lives in its own CSS and JS pair.
+  // Each full-page identity lives in its own CSS and JS pair.
   // Loading is done before the first franchise node is drawn, which prevents
   // a flash of the shared skeleton on the way into the exclusive screen.
   const exclusive = window.FranchiseExclusives
@@ -891,7 +905,7 @@ function gameRow(app, row, ctx, stand) {
    no entry here gets a screen without this section, which is a screen that
    still works - so a new franchise can be added before its panel is drawn. */
 
-/** The head every signature panel wears, so ten different insides still sit
+/** The head every signature panel wears, so different insides still sit
  *  in one page. */
 function sigHead(host, title, meta) {
   host.append(h('div', { cls: 'panel-bar' },
@@ -1181,5 +1195,30 @@ const SIGNATURE = {
         : String(a.year) })));
     }
     body.append(grid);
+  },
+
+  /* Kamurocho as a night directory: each Steam release occupies its own
+     illuminated floor, and a profile lights only the places it has entered. */
+  yakuza: (host, fr, rows, ctx, stand) => {
+    const body = sigHead(host, t('fx.yk_directory'),
+      t('fx.yk_floors', { n: num(fr.apps.length), raw: fr.apps.length }));
+    const district = h('div', { cls: 'fxyk-directory' });
+    for (const [index, a] of fr.apps.entries()) {
+      const mine = stand && stand.mine.get(a.id);
+      const row = rows[String(a.id)];
+      const live = row && typeof row.players === 'number' ? row.players : null;
+      district.append(h('a', {
+        cls: 'fxyk-venue',
+        data: { ...sigLit(stand, mine), side: index % 2 ? 'east' : 'west' },
+        attr: { href: fxGameHref(a.id, ctx) },
+      },
+      h('span', { cls: 'fxyk-floor', text: index < 3 ? `0${index + 1}F` : `${index + 1}F` }),
+      h('span', { cls: 'fxyk-lamp', attr: { 'aria-hidden': 'true' } }),
+      h('b', { cls: 'fxyk-venue-name', text: fxName(row, a) }),
+      h('span', { cls: 'fxyk-venue-meta', text: mine
+        ? t('fx.hours_n', { h: hrs(mine.hours) })
+        : live != null ? t('fx.n_playing', { n: num(live), raw: live }) : String(a.year) })));
+    }
+    body.append(district);
   },
 };

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* The ten franchise pages are intentionally ten implementations, not ten
+/* The featured franchise pages are intentionally separate implementations, not
  * palettes on one implementation. Keep that architectural promise testable:
  * every editorial slug must own a CSS/JS pair, register itself, contain its
  * own animation and respect reduced motion. */
@@ -15,7 +15,7 @@ const renderer = fs.readFileSync(path.join(site, 'franchises.js'), 'utf8');
 const slugs = [...source.matchAll(/\bslug:\s*'([a-z0-9-]+)'/g)].map((match) => match[1]);
 const failures = [];
 
-if (slugs.length !== 10) failures.push(`expected 10 franchise slugs, found ${slugs.length}`);
+if (slugs.length !== 11) failures.push(`expected 11 franchise slugs, found ${slugs.length}`);
 if (new Set(slugs).size !== slugs.length) failures.push('franchise slugs are not unique');
 if (/cls:\s*'[^']*\bnote\b/.test(renderer)) {
   failures.push('franchise renderer contains explanatory note copy');

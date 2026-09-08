@@ -1,4 +1,4 @@
-/* One tiny dispatcher for ten deliberately separate franchise experiences.
+/* One tiny dispatcher for deliberately separate franchise experiences.
  *
  * A franchise page downloads only its own stylesheet and script. The theme
  * files do not import one another and every selector is rooted in the slug,
