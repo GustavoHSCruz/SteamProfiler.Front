@@ -8,14 +8,18 @@
       scene.setAttribute('aria-hidden', 'true');
       scene.innerHTML =
         '<div class="fxyk-sky"><i></i><i></i><i></i><i></i><i></i></div>' +
+        '<div class="fxyk-fighter fxyk-fighter-majima"></div>' +
+        '<div class="fxyk-fighter fxyk-fighter-kiryu"></div>' +
         '<div class="fxyk-tower fxyk-tower-a"><i></i><i></i><i></i><i></i><i></i><i></i></div>' +
         '<div class="fxyk-tower fxyk-tower-b"><i></i><i></i><i></i><i></i><i></i></div>' +
         '<div class="fxyk-road"><i></i><i></i><i></i><i></i><i></i><i></i></div>' +
-        '<div class="fxyk-gate"><span>天下一通り</span><b>神室町</b></div>' +
         '<div class="fxyk-sign fxyk-sign-a"><small>24時間</small><b>龍</b></div>' +
         '<div class="fxyk-sign fxyk-sign-b"><small>KARAOKE</small><b>カラオケ</b></div>' +
         '<div class="fxyk-sign fxyk-sign-c"><small>CLUB</small><b>セレナ</b></div>' +
         '<div class="fxyk-sign fxyk-sign-d"><small>ARCADE</small><b>劇場前</b></div>' +
+        '<div class="fxyk-name fxyk-name-majima"><small>THE MAD DOG</small><b>真島 吾朗</b></div>' +
+        '<div class="fxyk-name fxyk-name-kiryu"><small>THE DRAGON</small><b>桐生 一馬</b></div>' +
+        '<div class="fxyk-clash"><i></i><b>VS</b><i></i></div>' +
         '<div class="fxyk-kanji">龍</div>' +
         '<div class="fxyk-district"><i></i><span>KAMUROCHO</span><b>01:47</b></div>' +
         '<div class="fxyk-heat"><span>HEAT</span><div><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>' +

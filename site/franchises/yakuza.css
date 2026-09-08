@@ -99,3 +99,37 @@
 @media(max-width:430px){
   :root[data-franchise="yakuza"] .fx-hero{min-height:680px}:root[data-franchise="yakuza"] .fx-hero-name{font-size:70px}:root[data-franchise="yakuza"] .fx-acts{margin-top:48px}:root[data-franchise="yakuza"] .fx-act{padding:8px 10px;font-size:9px}:root[data-franchise="yakuza"] .fx-rows{grid-template-columns:1fr}:root[data-franchise="yakuza"] .fx-row{min-height:170px}.fxyki-word b{font-size:68px}.fxyki-word span{font-size:12px;letter-spacing:.35em}.fxyki-gate{width:65vw;height:42vh}
 }
+
+/* Duel cut: the panoramic Yakuza 0 art already contains the composition the
+   screen needs. Preserve both fighters, then build the city behind them. */
+:root[data-franchise="yakuza"] .fx-hero{min-height:min(820px,88vh)}
+:root[data-franchise="yakuza"] .fx-hero-art{z-index:3;inset:7% 0 auto;width:100%;height:70%;object-fit:contain;object-position:50% 50%;opacity:.96;filter:drop-shadow(0 28px 35px #000) saturate(.84) contrast(1.16) brightness(.8);transform:translate3d(var(--fxyk-art-x,0),var(--fxyk-art-y,0),0) scale(1.025);-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 4% 96%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 4% 96%,transparent 100%)}
+:root[data-franchise="yakuza"] .fx-hero-veil{z-index:4;background:radial-gradient(ellipse at 50% 33%,transparent 0 31%,#02010518 58%,#02010580 100%),linear-gradient(0deg,#050309 0,transparent 20% 75%,#030207b8 100%)}
+:root[data-franchise="yakuza"] .fx-hero-in{position:absolute;z-index:9;left:50%;bottom:22px;width:min(760px,62vw);max-width:none;margin:0;padding:0;transform:translateX(-50%);text-align:center}
+:root[data-franchise="yakuza"] .fx-hero-kicker{width:fit-content;margin:0 auto 17px;padding:6px 12px;border-left:0;border-inline:4px solid #00e5ff;background:#040208ec;box-shadow:0 0 26px #00e5ff22}
+:root[data-franchise="yakuza"] .fx-hero-name{margin-inline:auto;font-size:clamp(84px,10vw,154px)}
+:root[data-franchise="yakuza"] .fx-stand{margin:48px auto 0}
+:root[data-franchise="yakuza"] .fx-acts{justify-content:center;margin-top:52px}
+
+.fxyk-scene{z-index:5;transform-style:flat}
+.fxyk-fighter{display:none}
+.fxyk-sky,.fxyk-tower,.fxyk-road,.fxyk-kanji,.fxyk-splash{display:none}
+.fxyk-sign{z-index:6}.fxyk-sign-a{left:34%;top:12%}.fxyk-sign-b{right:34%;top:14%}.fxyk-sign-c{right:27%;top:39%}.fxyk-sign-d{left:27%;top:41%}
+.fxyk-name{position:absolute;z-index:7;top:18%;display:flex;align-items:center;gap:8px;color:#fff;text-shadow:0 0 12px #000,0 0 12px currentColor}.fxyk-name b{font:700 18px serif;letter-spacing:.25em;writing-mode:vertical-rl}.fxyk-name small{font-size:7px;letter-spacing:.24em;writing-mode:vertical-rl}.fxyk-name-majima{left:4%;color:#ff1744}.fxyk-name-kiryu{right:4%;color:#00e5ff}
+.fxyk-clash{position:absolute;z-index:7;left:50%;top:34%;display:flex;align-items:center;gap:10px;transform:translate(-50%,-50%) rotate(-8deg);color:#fff}.fxyk-clash i{width:70px;height:2px;background:linear-gradient(90deg,transparent,#ff1744);box-shadow:0 0 12px #ff1744}.fxyk-clash i:last-child{background:linear-gradient(90deg,#00e5ff,transparent);box-shadow:0 0 12px #00e5ff}.fxyk-clash b{font-size:12px;font-style:italic;letter-spacing:.14em;text-shadow:-2px 0 #ff1744,2px 0 #00e5ff}
+.fxyk-district{z-index:8;right:3%;bottom:4%}.fxyk-heat{z-index:8;right:3%}.fxyk-rain{z-index:8}.fxyk-splash{z-index:7}
+
+@media(prefers-reduced-motion:no-preference){
+  .fxyk-clash{animation:fxykClash 2.4s ease-in-out infinite}
+  @keyframes fxykClash{50%{filter:brightness(1.8);transform:translate(-50%,-50%) rotate(-8deg) scaleX(1.12)}}
+}
+
+@media(max-width:920px){
+  :root[data-franchise="yakuza"] .fx-hero{min-height:760px}:root[data-franchise="yakuza"] .fx-hero-art{inset:7% 0 auto;width:100%;height:66%;opacity:.9}:root[data-franchise="yakuza"] .fx-hero-in{width:min(720px,78vw);padding:0;bottom:24px}:root[data-franchise="yakuza"] .fx-hero-name{font-size:clamp(74px,15vw,125px)}.fxyk-name{top:17%}
+}
+@media(max-width:680px){
+  :root[data-franchise="yakuza"] .fx-hero{min-height:700px}:root[data-franchise="yakuza"] .fx-hero-art{display:none}:root[data-franchise="yakuza"] .fx-hero-in{width:94vw;padding:0;bottom:22px}:root[data-franchise="yakuza"] .fx-hero-name{font-size:clamp(64px,22vw,96px)}:root[data-franchise="yakuza"] .fx-hero-name::after{font-size:13px}:root[data-franchise="yakuza"] .fx-acts{margin-top:48px}.fxyk-fighter{position:absolute;z-index:3;display:block;top:7%;width:62%;height:51%;background-image:url('/art/638970.jpg');background-repeat:no-repeat;background-size:auto 100%;filter:drop-shadow(0 22px 22px #000) saturate(.85) contrast(1.12)}.fxyk-fighter-majima{left:-4%;background-position:left center;-webkit-mask-image:linear-gradient(90deg,#000 72%,transparent 100%);mask-image:linear-gradient(90deg,#000 72%,transparent 100%)}.fxyk-fighter-kiryu{right:-4%;background-position:right center;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 28%);mask-image:linear-gradient(90deg,transparent 0,#000 28%)}.fxyk-name{top:11%}.fxyk-name b{font-size:14px}.fxyk-name-majima{left:3%}.fxyk-name-kiryu{right:3%}.fxyk-clash{top:26%}.fxyk-clash i{width:32px}.fxyk-sign{display:none}
+}
+@media(max-width:430px){
+  :root[data-franchise="yakuza"] .fx-hero{min-height:660px}:root[data-franchise="yakuza"] .fx-hero-name{font-size:68px}:root[data-franchise="yakuza"] .fx-hero-kicker{font-size:8px}:root[data-franchise="yakuza"] .fx-acts{margin-top:46px}.fxyk-fighter{top:8%;width:66%;height:48%}.fxyk-name small{display:none}.fxyk-clash{display:none}
+}
