@@ -1126,7 +1126,11 @@ const SIGNATURE = {
         attr: { href: fxGameHref(a.id, ctx) },
       },
       h('span', { cls: 'fx-buy-key', text: String(fr.apps.indexOf(a) + 1) }),
-      h('b', { cls: 'fx-buy-name', text: fxName(row, a) }),
+      h('b', { cls: 'fx-buy-name' },
+        txt(fxName(row, a)),
+        // Steam sells Condition Zero and its Deleted Scenes under one name,
+        // so without this the menu has two identical slots at one price.
+        a.tag ? h('i', { cls: 'fx-buy-tag', text: t(a.tag) }) : null),
       h('span', { cls: 'fx-buy-cost', text: !row ? '·'
         : row.free ? t('fx.free')
           : row.price != null ? cash(row.price, row.currency) : t('fx.reading') }),
@@ -1205,7 +1209,7 @@ const SIGNATURE = {
       h('b', { cls: 'fx-tam-name', text: t(key) }),
       h('span', { cls: 'fx-tam-meta', text: here.length
         ? t('fx.hours_n', { h: hrs(hours) })
-        : t('fx.tes_games_n', { n: num(apps.length), raw: apps.length }) }));
+        : t('fx.games_n', { n: num(apps.length), raw: apps.length }) }));
       map.append(plate);
     }
     body.append(map, h('p', { cls: 'note', text: stand
@@ -1274,8 +1278,11 @@ const SIGNATURE = {
       },
       h('span', { cls: 'fx-brief-dtg', text: `01 JAN ${a.year}` }),
       h('b', { cls: 'fx-brief-name', text: fxName(rows[String(a.id)], a) }),
-      h('span', { cls: 'fx-brief-stamp', text: mine ? t('fx.ar_done')
-        : idle ? t('fx.ar_standby') : t('fx.ar_nogo') }),
+      // The stamp says whether this reader went, so with no reader in the
+      // address there is nothing for it to say. "No go" on a screen about
+      // nobody reads as somebody having failed.
+      stand ? h('span', { cls: 'fx-brief-stamp', text: mine ? t('fx.ar_done')
+        : idle ? t('fx.ar_standby') : t('fx.ar_nogo') }) : null,
       mine ? h('em', { cls: 'fx-brief-h', text: t('fx.hours_n', { h: hrs(mine.hours) }) }) : null));
     }
     body.append(board, h('p', { cls: 'note', text: t('fx.ar_note') }));
@@ -1285,9 +1292,10 @@ const SIGNATURE = {
      flame moves only on those, because a lit bonfire and a dead one looking
      the same would take the only thing this panel is about. */
   'dark-souls': (host, fr, rows, ctx, stand) => {
-    const body = sigHead(host, t('fx.ds_fires'), t('fx.ds_lit', {
-      n: num(stand ? stand.played : 0), total: num(fr.apps.length + (fr.after?.length || 0)),
-    }));
+    const all = fr.apps.length + (fr.after?.length || 0);
+    const body = sigHead(host, t('fx.ds_fires'), stand
+      ? t('fx.ds_lit', { n: num(stand.played), total: num(all) })
+      : t('fx.games_n', { n: num(all), raw: all }));
     const row = h('div', { cls: 'fx-fires' });
     for (const a of [...fr.apps, ...(fr.after || [])]) {
       const mine = stand && stand.mine.get(a.id);
@@ -1301,7 +1309,7 @@ const SIGNATURE = {
       h('span', { cls: 'fx-fire-sword', attr: { 'aria-hidden': 'true' } }),
       h('b', { cls: 'fx-fire-name', text: fxName(rows[String(a.id)], a) }),
       h('span', { cls: 'fx-fire-meta', text: mine ? t('fx.hours_n', { h: hrs(mine.hours) })
-        : t('fx.ds_unlit') })));
+        : stand ? t('fx.ds_unlit') : String(a.year) })));
     }
     body.append(row, h('p', { cls: 'note', text: t('fx.ds_note') }));
   },
