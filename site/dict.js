@@ -1876,6 +1876,9 @@ const DICT = {
     'load.h_franchises': 'Reading this library off Steam',
     'fx.made_in': 'the game itself is from {year}',
     'fx.gta_note_all': 'The needle sits on whichever of these has the most people in it right now. With a profile in the address it points at the one with the most hours on it instead.',
+    'land.fx_head': 'And ten franchises, a screen each',
+    'land.fx_body': 'The same idea one level up: not one game’s record but a whole series, drawn against the years it was made across - and against the years it took to reach Steam, which are almost never the same. Each gets its own screen, its own opening, and a panel built out of something only that series has. <b>No profile needed.</b>',
+    'land.fx_go': 'open the ten',
   },
 
   pt: {
@@ -3726,6 +3729,9 @@ const DICT = {
     'load.h_franchises': 'Lendo esta biblioteca na Steam',
     'fx.made_in': 'o jogo em si é de {year}',
     'fx.gta_note_all': 'A agulha para em qual deles tem mais gente dentro agora. Com um perfil no endereço ela aponta para o que tem mais horas.',
+    'land.fx_head': 'E dez franquias, uma tela cada',
+    'land.fx_body': 'A mesma ideia um nível acima: não o registro de um jogo, mas uma série inteira, desenhada contra os anos que ela atravessa - e contra os anos que ela levou para chegar à Steam, que quase nunca são os mesmos. Cada uma ganha tela própria, abertura própria, e um painel feito de algo que só ela tem. <b>Não precisa de perfil.</b>',
+    'land.fx_go': 'abrir as dez',
   },
 
   ru: {
@@ -5577,5 +5583,8 @@ const DICT = {
     'load.h_franchises': 'Читаем эту библиотеку из Steam',
     'fx.made_in': 'сама игра - {year} года',
     'fx.gta_note_all': 'Стрелка стоит на той части, где сейчас больше всего людей. Если в адресе есть профиль, она показывает на ту, где больше часов.',
+    'land.fx_head': 'И десять франшиз, у каждой свой экран',
+    'land.fx_body': 'Та же мысль уровнем выше: не запись об одной игре, а целая серия, нарисованная против годов, через которые она прошла, - и против годов, которые ей понадобились, чтобы попасть в Steam, а это почти никогда не одно и то же. У каждой свой экран, своя заставка и панель, собранная из того, что есть только у неё. <b>Профиль не нужен.</b>',
+    'land.fx_go': 'открыть все десять',
   },
 };

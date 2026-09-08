@@ -45,7 +45,8 @@ site/
     lib.js        helpers shared by both, the API calls, the footer
   game-public.html  every /g/<appid>                              public.js
   franchises.html   /franchises and /franchises/<slug>            fxpage.js
-    franchises.js   the ten series, their openings and their screens
+    franchises.js   the openings, the screens and the signature panels
+    franchise-list.js  which ten franchises there are, and what is in them
   blog.html       the index                    blog.js
   post.html       one post                     post.js
   feedback.html   the form and the public board                   feedback.js
@@ -146,13 +147,17 @@ panel built out of something only that series has - the suit readout, the buy
 menu, a test chamber, the radio dial, the provinces of Tamriel, the Pip-Boy's
 quest list, the Zone, a briefing board, the bonfires, the attaché case.
 
-The whole editorial content is the table at the top of `franchises.js`: a
-franchise is an entry and a game in one is a line. Adding a series means an
-entry there, a palette block in `franchises.css`, and its strings in `dict.js`
-- a screen with no signature panel yet still works, so the panel can come
-later. Every appid in that table was checked against the storefront rather than
-remembered, because a wrong one is a page about the wrong game with the wrong
-art on it.
+The whole editorial content is `franchise-list.js`: a franchise is an entry
+and a game in one is a line. Adding a series means an entry there, a palette
+block in `franchises.css`, and its strings in `dict.js` - a screen with no
+signature panel yet still works, so the panel can come later. Every appid in
+that table was checked against the storefront rather than remembered, because
+a wrong one is a page about the wrong game with the wrong art on it.
+
+The table is its own file because three pages want it and only one of them
+wants the code that draws it. The landing page prints the ten as a way in, and
+it should not have to carry ten renderers and an animation engine to show ten
+names.
 
 Two dates per game, and that is what the screens are actually about. `year` in
 the table is when the game came out; the storefront's own date comes from the
@@ -163,6 +168,19 @@ screen draws both, with the distance between them as a hairline.
 The table also carries each game's name, so the screens read properly before
 the api answers and with it down entirely. Steam's name wins when it arrives,
 because that is the one on the shop today.
+
+### On the front page
+
+The ten are on the landing page as well, under the rail, as ten plates in
+their own colours. It is the only block on that page whose links go somewhere
+without a profile, which is why it is above the list of what a lookup opens
+rather than inside it: somebody who never types a name into the field can
+still open all ten.
+
+Drawn by `search.js` out of the same table the screens use, so a franchise
+added there appears there. The picture on each plate is the storefront capsule
+and not the key art the screens use - `library_hero.jpg` is around 400 KB and
+there would be ten of them above the fold.
 
 ### The openings
 

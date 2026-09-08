@@ -309,6 +309,59 @@ function railDraw() {
   track.append(lane);
 }
 
+/* ── The ten ───────────────────────────────────────────────────────────
+   The franchise screens, on the front page, as ten plates in their own
+   colours. Built out of franchise-list.js rather than written into this file:
+   that table is what the screens themselves are drawn from, so a franchise
+   added there appears here without anybody having to remember this place.
+
+   Not another rail. The rail is a strip that loops because the thing it shows
+   has 157 members and no end worth reaching; this has ten, they fit, and a
+   grid says "ten" the way a moving strip cannot.
+
+   The picture is the storefront capsule and not the key art the screens use:
+   `library_hero.jpg` is around 400 KB and there would be ten of them on the
+   front page. A capsule is about fifteen. */
+
+function fxsDraw() {
+  const grid = el('fxs-grid');
+  if (!grid || typeof FRANCHISES === 'undefined') return;
+
+  grid.textContent = '';
+  grid.setAttribute('role', 'list');
+  grid.setAttribute('aria-labelledby', 'fxs-head');
+
+  for (const fr of FRANCHISES) {
+    const last = Math.max(...[...fr.apps, ...(fr.after || [])].map((a) => a.year));
+    const total = fr.apps.length + (fr.after?.length || 0);
+
+    const art = h('img', {
+      cls: 'fxs-art',
+      attr: {
+        src: `${HEADER_ART}/${fr.flagship}/capsule_231x87.jpg`, alt: '',
+        width: '231', height: '87', loading: 'lazy', decoding: 'async',
+        fetchpriority: 'low',
+      },
+    });
+    // A plate with no capsule keeps its frame and its colour, which is most of
+    // what it was carrying anyway.
+    art.addEventListener('error', () => art.remove(), { once: true });
+
+    const plate = h('a', {
+      cls: 'fxs-plate',
+      attr: { href: `/franchises/${fr.slug}`, role: 'listitem' },
+      style: { '--tint': fr.tint },
+    });
+    put(plate, art, h('span', { cls: 'fxs-veil' }),
+      h('span', { cls: 'fxs-in' },
+        h('b', { cls: 'fxs-name', text: fr.name }),
+        h('span', { cls: 'fxs-span', text: t('fx.span', {
+          from: fr.born, to: last, n: num(total), raw: total,
+        }) })));
+    grid.append(plate);
+  }
+}
+
 /* The button under the rail does not go anywhere. It puts the field above into
    its other mode and hands it the caret, which is the whole of what "look a
    game up" means on this page. */
@@ -320,6 +373,7 @@ el('rail-go')?.addEventListener('click', () => {
 
 demoDraw();
 railDraw();
+fxsDraw();
 demoWidth = el('demo-map')?.clientWidth || 0;
 addEventListener('resize', demoResize);
 
