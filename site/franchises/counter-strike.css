@@ -14,31 +14,20 @@
 :root[data-franchise="counter-strike"] .fx-act { min-width: 150px; justify-content: center; clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%); }
 
 .fxcs-scene { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; font-family: 'Chakra Petch'; }
-.fxcs-map {
-  position: absolute;
-  left: 5vw;
-  top: 7%;
-  width: min(17vw, 190px);
-  aspect-ratio: 1;
-  border: 1px solid #5b8fc988;
-  background:
-    linear-gradient(32deg, transparent 0 43%, #5b8fc93d 44% 47%, transparent 48%),
-    linear-gradient(145deg, transparent 0 38%, #5b8fc92d 39% 43%, transparent 44%),
-    linear-gradient(90deg, transparent 47%, #5b8fc92d 48% 52%, transparent 53%),
-    linear-gradient(#142333, #0b141e);
-  clip-path: polygon(12% 0, 78% 0, 78% 12%, 100% 12%, 100% 70%, 86% 70%, 86% 100%, 28% 100%, 28% 87%, 0 87%, 0 25%, 12% 25%);
-  box-shadow: inset 0 0 32px #5b8fc91f, 0 10px 28px #0006;
-  transform: rotate(-2deg);
-}
-.fxcs-map::before, .fxcs-map::after { content: ""; position: absolute; border: 8px solid #263c50; }
-.fxcs-map::before { left: 20%; top: 18%; width: 43%; height: 28%; border-right: 0; }
-.fxcs-map::after { right: 12%; bottom: 14%; width: 48%; height: 34%; border-left: 0; }
-.fxcs-map span { position: absolute; z-index: 2; display: grid; place-items: center; width: 30px; height: 30px; border: 2px solid; border-radius: 50%; font-size: 17px; font-weight: 700; }
-.fxcs-map span:first-child { right: 8%; top: 9%; border-color: #c7a468; color: #c7a468; }
-.fxcs-map span:nth-child(2) { left: 7%; bottom: 8%; border-color: #5b8fc9; color: #5b8fc9; }
-.fxcs-map i { position: absolute; z-index: 3; width: 7px; height: 7px; border-radius: 50%; background: #7fb2e0; box-shadow: 0 0 0 3px #5b8fc929, 0 0 9px #5b8fc9; }
-.fxcs-map i:nth-of-type(1){left:31%;top:24%}.fxcs-map i:nth-of-type(2){left:48%;top:39%}.fxcs-map i:nth-of-type(3){left:58%;top:66%;background:#f0a92e}.fxcs-map i:nth-of-type(4){left:72%;top:73%;background:#f0a92e}
-.fxcs-map > b { position: absolute; z-index: 4; left: 46%; top: 53%; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 18px solid #fff; transform: rotate(34deg); filter: drop-shadow(0 0 5px #fff); }
+.fxcs-teams { position: absolute; left: 5vw; top: 11%; width: 174px; border: 1px solid #33434f; background: #080c11e8; box-shadow: 0 8px 24px #0007; }
+.fxcs-teams > div { display: grid; grid-template-columns: 34px 1fr 24px; align-items: center; height: 31px; padding: 0 8px 0 0; }
+.fxcs-teams > div + div { border-top: 1px solid #33434f; }
+.fxcs-teams b { display: grid; place-items: center; align-self: stretch; background: #5b8fc944; color: #9bc4e9; font-size: 12px; }
+.fxcs-teams > div:nth-child(2) b { background: #c7a46844; color: #e4bd70; }
+.fxcs-teams span { display: flex; gap: 5px; padding-left: 10px; }
+.fxcs-teams i { width: 6px; height: 6px; border-radius: 50%; background: #78a9d4; box-shadow: 0 0 5px #5b8fc9; }
+.fxcs-teams > div:nth-child(2) i { background: #d5a447; box-shadow: 0 0 5px #c7a468; }
+.fxcs-teams span i:last-child, .fxcs-teams > div:nth-child(2) span i:nth-last-child(-n+2) { opacity: .18; box-shadow: none; }
+.fxcs-teams strong { color: #dce5eb; font: 600 12px 'IBM Plex Mono'; text-align: right; }
+.fxcs-c4 { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; height: 32px; margin: 0; padding-right: 8px; border-top: 1px solid #72591f; background: #171207; }
+.fxcs-c4 span { align-self: stretch; display: grid; place-items: center; padding: 0; background: #f0a92e; color: #111; font-size: 11px; font-weight: 700; }
+.fxcs-c4 code { padding-left: 10px; color: #f0a92e; font: 600 13px 'IBM Plex Mono'; letter-spacing: .08em; }
+.fxcs-c4 em { color: #c7a468; font: normal 8px 'IBM Plex Mono'; letter-spacing: .08em; }
 .fxcs-score { position: absolute; left: 50%; top: 9%; transform: translateX(-50%); display: grid; grid-template-columns: 54px 72px 54px; height: 44px; text-align: center; background: #080c11e8; border: 1px solid #33434f; }
 .fxcs-score b { display: grid; place-items: center; color: #e8edf0; font-size: 24px; }.fxcs-score b:first-child { background: #5b8fc944; }.fxcs-score b:last-child { background: #c7a46844; }
 .fxcs-score span { display: grid; place-items: center; color: #f0a92e; font: 600 14px 'IBM Plex Mono'; }
@@ -61,14 +50,11 @@
 :root[data-franchise="counter-strike"] .fx-row:hover { transform: translateX(3px); background: linear-gradient(100deg, #5b8fc92c, #1a242c 44%, #c7a46818); }
 
 @media (prefers-reduced-motion: no-preference) {
-  .fxcs-map i { animation: fxcsPing 1.8s ease-out infinite; }
-  .fxcs-map i:nth-of-type(2n) { animation-delay: -.9s; }
   .fxcs-cross { animation: fxcsAim 3.4s cubic-bezier(.7,0,.3,1) infinite alternate; }
-  @keyframes fxcsPing { 50% { transform: scale(1.7); opacity: .35; } }
   @keyframes fxcsAim { to { translate: 22px -12px; } }
 }
 @media (max-width: 760px) {
   :root[data-franchise="counter-strike"] .fx-rows { grid-template-columns: 1fr; }
-  .fxcs-map, .fxcs-site { display:none; }
+  .fxcs-teams, .fxcs-site { display:none; }
   :root[data-franchise="counter-strike"] .fx-hero { min-height: 580px; }
 }
