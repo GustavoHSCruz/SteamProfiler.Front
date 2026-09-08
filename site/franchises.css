@@ -1,0 +1,1652 @@
+/* steamprofiler.org - the franchise screens.
+
+   Same arrangement as games.css one level up: a short shared skeleton, then
+   one block per franchise that sets its own palette on :root and its own
+   insides. The chrome inherits those tokens, so the status bar and the footer
+   change with the screen.
+
+   Three things live here and nowhere else on the site:
+
+     the index, which is ten tiles and is the only page here without a
+     franchise of its own, so it stays in the site's amber;
+
+     the line, which is a franchise drawn against its own years - the same
+     component on all ten, because "when" is the one axis every series has;
+
+     the openings, at the foot of this file. Those are the heaviest part of it
+     and the only part that is pure decoration, which is why they are last and
+     why every one of them is inside a prefers-reduced-motion guard. */
+
+/* ── The shared skeleton ─────────────────────────────────────────────── */
+
+#fx, #franchises { padding-bottom: var(--edge); }
+
+/* A footnote sits in the same column the page does, and its line length is
+   capped inside that column rather than by centring a narrow box under a
+   left-aligned page - which reads as a different page starting. Two elements
+   because one cannot both be the column and be narrower than it. */
+.fx-band {
+  max-width: 1180px;
+  margin: clamp(14px, 2.4vh, 22px) auto 0;
+  padding: 0 var(--edge);
+}
+.fx-note, .fx-ix-note {
+  max-width: 78ch;
+  margin: 0 0 6px;
+  color: var(--faint);
+  font-size: 12.5px;
+}
+
+/* ── The index ────────────────────────────────────────────────────────
+   Ten tiles, and deliberately not ten equal tiles: the first two are the two
+   series Steam was built to sell, and a grid that flattened that would be
+   saying something untrue for the sake of a tidy rectangle. */
+
+.fx-ix-head {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(28px, 6vh, 64px) var(--edge) clamp(18px, 3vh, 30px);
+}
+.fx-ix-kicker {
+  margin: 0 0 12px;
+  font-family: var(--label);
+  font-weight: var(--label-w);
+  font-size: 11px;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.fx-ix-title {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: var(--display-w);
+  font-size: clamp(38px, 7vw, 76px);
+  letter-spacing: var(--display-ls);
+  line-height: var(--display-lh);
+  text-transform: var(--display-tt);
+}
+.fx-ix-lede { max-width: 62ch; margin: 14px 0 0; color: var(--dim); }
+
+
+/* Four across, and the first two tiles taking half a row each. Counted rather
+   than left to auto-fit: there are ten of these, two of them wide, and 2 + 4 +
+   4 is the only arrangement of that which closes every row. auto-fit picked
+   three columns at this width and left a hole beside Half-Life, which is what
+   a grid that does not know how many things it is holding does. */
+.fx-ix-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--gap);
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 var(--edge);
+}
+.fx-ix-grid > :nth-child(-n+2) { grid-column: span 2; }
+/* Two across: the wide pair takes a whole row each, the other eight pair off,
+   and 1 + 1 + 4 rows of two still closes. */
+@media (max-width: 980px) {
+  .fx-ix-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .fx-ix-grid { grid-template-columns: minmax(0, 1fr); }
+  .fx-ix-grid > :nth-child(-n+2) { grid-column: auto; }
+}
+
+.fx-tile {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  min-height: 230px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  text-decoration: none;
+  color: inherit;
+  isolation: isolate;
+  transition: border-color .18s ease, transform .18s ease;
+}
+.fx-ix-grid > :nth-child(-n+2).fx-tile { min-height: 300px; }
+.fx-tile:hover, .fx-tile:focus-visible { border-color: var(--tint); transform: translateY(-2px); }
+@media (prefers-reduced-motion: reduce) { .fx-tile { transition: border-color .18s ease; } .fx-tile:hover { transform: none; } }
+
+/* The art is atmosphere, not the subject. Pushed towards the franchise's own
+   colour so ten different key arts read as one shelf rather than ten posters. */
+.fx-tile-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 30%;
+  opacity: .5;
+  filter: saturate(.35) contrast(1.05);
+  transition: opacity .22s ease, filter .22s ease;
+}
+.fx-tile:hover .fx-tile-art { opacity: .72; filter: saturate(.6) contrast(1.05); }
+.fx-tile-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(0deg, #07060a 6%, #07060ac9 46%, #07060a44 100%),
+    linear-gradient(94deg, color-mix(in srgb, var(--tint) 42%, transparent), transparent 62%);
+}
+.fx-tile-in {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+  min-height: inherit;
+  padding: var(--pad);
+}
+.fx-tile-house {
+  margin: 0 0 8px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--tint);
+}
+.fx-tile-name {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: var(--display-w);
+  font-size: clamp(26px, 3.4vw, 44px);
+  letter-spacing: var(--display-ls);
+  line-height: 1;
+}
+.fx-tile-span { margin: 10px 0 0; font-size: 13px; color: var(--dim); }
+.fx-tile-you {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid #ffffff1c;
+}
+.fx-tile-you b { font-family: var(--mono); font-size: 19px; color: var(--tint); }
+.fx-tile-you span { font-size: 12.5px; color: var(--dim); }
+.fx-tile-you[data-none] span { color: var(--faint); font-style: italic; }
+.fx-tile-live {
+  margin: 8px 0 0;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--faint);
+}
+
+/* ── One franchise: the opening block ────────────────────────────────── */
+
+.fx-hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: clamp(320px, 56vh, 560px);
+  overflow: hidden;
+  border-bottom: 1px solid var(--line-2);
+}
+.fx-hero-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 32%;
+  opacity: .42;
+  filter: saturate(.55) contrast(1.06);
+}
+.fx-hero-veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, var(--bg) 3%, color-mix(in srgb, var(--bg) 78%, transparent) 44%,
+    color-mix(in srgb, var(--bg) 24%, transparent) 100%);
+}
+.fx-hero-in {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--pad) var(--edge) clamp(20px, 4vh, 42px);
+}
+.fx-hero-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-family: var(--label);
+  font-weight: var(--label-w);
+  font-size: 11px;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.fx-hero-kicker i { font-style: normal; color: var(--faint); }
+.fx-hero-name {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: var(--display-w);
+  font-size: clamp(42px, 9vw, 120px);
+  letter-spacing: var(--display-ls);
+  line-height: var(--display-lh);
+  text-transform: var(--display-tt);
+}
+.fx-hero-lede { max-width: 58ch; margin: 16px 0 0; color: var(--dim); }
+
+.fx-stand {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+  margin: 18px 0 0;
+  padding: 12px 0 0;
+  border-top: 1px solid var(--line-2);
+}
+.fx-stand b { font-family: var(--mono); font-size: clamp(22px, 3vw, 32px); color: var(--accent); }
+.fx-stand span { font-size: 13px; color: var(--dim); }
+.fx-stand em { font-style: normal; font-size: 12.5px; color: var(--faint); }
+.fx-stand[data-none] span { font-style: italic; color: var(--faint); }
+
+.fx-acts { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; }
+.fx-act {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 15px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+  background: color-mix(in srgb, var(--panel) 82%, transparent);
+  color: var(--text);
+  font-family: var(--label);
+  font-weight: var(--label-w);
+  font-size: 11px;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+}
+.fx-act:hover { border-color: var(--accent); color: var(--accent); }
+.fx-act-tr { border-color: var(--accent); color: var(--accent); }
+
+/* ── The line ──────────────────────────────────────────────────────────
+   A franchise against its own years. The track is the whole span, the dots
+   sit where each game's year puts them, and the hairlines under the spine run
+   from a game's year to the year Steam got it. Everything is placed by
+   percentage, so it stays to scale at any width without a script watching the
+   viewport. */
+
+.fx-line {
+  max-width: 1180px;
+  margin: clamp(20px, 4vh, 38px) auto 0;
+  padding: 0 var(--edge);
+}
+/* Four bands, and none of them may touch: the dots and the spine at 74, the
+   storefront's marks just under it, the silences at 36, and the decade ticks
+   at the floor. Written as numbers rather than as flow because everything on
+   this track is positioned by year and nothing can be laid out by order. */
+.fx-track {
+  position: relative;
+  height: 200px;
+  margin: 22px 0 0;
+  padding: 0 22px;
+  border-bottom: 1px solid var(--line-2);
+}
+/* The spine. Drawn on the element rather than as a child, so a dot's absolute
+   position and the line it sits on share one coordinate system. */
+.fx-track::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 74px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line-2) 6%, var(--line-2) 94%, transparent);
+}
+
+.fx-tick {
+  position: absolute;
+  bottom: 6px;
+  transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--faint);
+}
+.fx-tick::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  width: 1px;
+  height: 8px;
+  background: var(--line);
+}
+
+/* A silence long enough to be a fact about the series, in its own band under
+   the spine. A dashed rule with the count sitting on it - the first version
+   filled the whole span with hatching and printed the number on top of it,
+   which made the one thing this element exists to say the hardest thing on
+   the track to read. */
+.fx-gap {
+  position: absolute;
+  bottom: 36px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.fx-gap::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  border-top: 1px dashed color-mix(in srgb, var(--accent) 46%, transparent);
+}
+.fx-gap b {
+  position: relative;
+  padding: 0 8px;
+  background: var(--bg);
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: 10px;
+  letter-spacing: .04em;
+  color: var(--accent);
+  white-space: nowrap;
+}
+/* Its own ends, so a span reads as a measurement and not as a stray rule. */
+.fx-gap::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  top: calc(50% - 4px);
+  height: 9px;
+  border-left: 1px solid color-mix(in srgb, var(--accent) 46%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--accent) 46%, transparent);
+}
+
+.fx-dot {
+  position: absolute;
+  bottom: 74px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 5px;
+  padding-bottom: 0;
+  text-decoration: none;
+  /* Games in the same year stand on each other's shoulders rather than on the
+     same spot. `--stack` is which one this is, counted from the spine up. */
+  margin-bottom: calc(var(--stack, 0) * 26px);
+}
+.fx-dot i {
+  display: block;
+  width: 11px;
+  height: 11px;
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  background: var(--bg);
+  transition: transform .16s ease, background-color .16s ease;
+}
+.fx-dot[data-on] i { background: var(--accent); }
+.fx-dot b {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--faint);
+  opacity: 0;
+  transition: opacity .16s ease;
+}
+.fx-dot:hover i, .fx-dot:focus-visible i { transform: scale(1.5); }
+.fx-dot:hover b, .fx-dot:focus-visible b { opacity: 1; color: var(--accent); }
+/* Stacked dots carry a stem down to the spine, so a column of three reads as
+   three things in one year and not as three things floating. */
+.fx-dot[data-stacked]::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 1px;
+  height: calc(var(--stack, 0) * 26px);
+  background: var(--line-2);
+}
+
+/* Where the storefront got it, and the distance from where it was made. */
+.fx-arrived {
+  position: absolute;
+  bottom: 66px;
+  width: 7px;
+  height: 7px;
+  transform: translateX(-50%) rotate(45deg);
+  border: 1px solid var(--line-2);
+  background: var(--bg);
+}
+.fx-arrived-line {
+  position: absolute;
+  bottom: 69px;
+  height: 1px;
+  background: repeating-linear-gradient(90deg, var(--line-2) 0 2px, transparent 2px 5px);
+}
+
+.fx-track-read {
+  display: block;
+  min-height: 1.5em;
+  margin: 10px 0 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--accent);
+}
+.fx-line-note { margin: 4px 0 0; padding: 0; color: var(--faint); font-size: 12.5px; }
+
+@media (max-width: 640px) {
+  /* The dots stay to scale and stop being a hit target at that size, so the
+     shelf below is the way in and the line is left as the picture it is. */
+  .fx-track { height: 168px; }
+  .fx-dot b { display: none; }
+}
+
+/* ── The shelf ─────────────────────────────────────────────────────────
+   Every app in the series, oldest first. Three states per row, and they are
+   three different things rather than one number that happens to be zero. */
+
+.fx-shelf {
+  max-width: 1180px;
+  margin: clamp(18px, 3.4vh, 32px) auto 0;
+  padding: 0 var(--edge);
+}
+.fx-rows { margin: 10px 0 0; padding: 0; list-style: none; }
+.fx-row {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 4px 14px;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  margin-bottom: 6px;
+  color: inherit;
+  text-decoration: none;
+  background: color-mix(in srgb, var(--panel) 70%, transparent);
+}
+.fx-row:hover, .fx-row:focus-visible { border-color: var(--accent); }
+.fx-row[data-on] { border-left: 2px solid var(--accent); }
+.fx-row[data-idle] { border-left: 2px solid var(--line-2); }
+.fx-row-year { font-family: var(--mono); font-size: 13px; color: var(--faint); }
+.fx-row-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; min-width: 0; }
+.fx-row-name { font-weight: 600; font-size: 15px; }
+.fx-row-tag {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--faint);
+  border: 1px solid var(--line-2);
+  border-radius: 2px;
+  padding: 1px 5px;
+}
+.fx-row-you { font-family: var(--mono); font-size: 13px; color: var(--accent); text-align: right; }
+.fx-row[data-idle] .fx-row-you, .fx-row:not([data-on]):not([data-idle]) .fx-row-you {
+  color: var(--faint);
+}
+.fx-row-facts { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
+.fx-row-facts > * { font-family: var(--mono); font-size: 11.5px; color: var(--dim); white-space: nowrap; }
+.fx-row-live { color: var(--accent); }
+.fx-row-price[data-wait] { color: var(--faint); font-style: italic; }
+.fx-row-arrived {
+  grid-column: 2 / -1;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--faint);
+}
+@media (max-width: 720px) {
+  .fx-row { grid-template-columns: 46px minmax(0, 1fr); }
+  .fx-row-you, .fx-row-facts { grid-column: 2; justify-content: flex-start; text-align: left; }
+}
+
+.fx-after { opacity: .92; }
+.fx-after-note { margin: 6px 0 0; padding: 0; color: var(--faint); font-size: 12.5px; }
+
+/* ── The signature panel ─────────────────────────────────────────────── */
+
+.fx-sig {
+  max-width: 1180px;
+  margin: clamp(18px, 3.4vh, 32px) auto 0;
+  padding: 0 var(--edge);
+}
+.fx-sig:empty { display: none; }
+.fx-sig-body {
+  padding: var(--pad);
+  border: 1px solid var(--line);
+  border-top: 0;
+  border-radius: 0 0 var(--r) var(--r);
+  background: color-mix(in srgb, var(--panel) 74%, transparent);
+}
+.fx-sig-body .note { margin: 16px 0 0; color: var(--faint); font-size: 12.5px; }
+
+/* ── The real trailer ────────────────────────────────────────────────── */
+
+.fx-tr {
+  width: min(960px, 92vw);
+  padding: 0;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+  background: var(--panel);
+  color: var(--text);
+}
+.fx-tr::backdrop { background: #05040a; opacity: .86; }
+.fx-tr-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0;
+  padding: 14px var(--pad);
+  border-bottom: 1px solid var(--line);
+}
+.fx-tr-head b { font-size: 14px; }
+.fx-tr-head span { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+.fx-tr-video { display: block; width: 100%; max-height: 66vh; background: #000; }
+.fx-tr-close {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: transparent;
+  color: var(--dim);
+  font-family: var(--label);
+  font-size: 11px;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.fx-tr-close:hover { color: var(--accent); }
+
+/* ══ The ten palettes ═══════════════════════════════════════════════════
+   One block each, on :root, exactly as games.css does it: tokens declared on
+   :root resolve against :root, and the site chrome reads them, so the status
+   bar and the footer belong to whichever franchise the reader is inside.
+
+   The index has no block here on purpose. It is the one screen with no
+   franchise of its own, so it stays in the site's own amber and lets the ten
+   tiles be the colour on it. */
+
+/* Half-Life - the HEV suit: one orange, one blue, and a black nobody lit. */
+:root[data-franchise="half-life"] {
+  --bg: #08070a; --panel: #100e0c; --panel-2: #181510;
+  --line: #221d16; --line-2: #372e20;
+  --text: #f0e6d4; --dim: #a99a80; --faint: #7d6f5c;
+  --accent: #ff9b21; --link: #6fb8d9;
+  --display: 'IBM Plex Mono', monospace; --display-w: 600; --display-tt: uppercase; --display-ls: .06em;
+  --label: 'IBM Plex Mono', monospace; --label-w: 500; --label-ls: .22em;
+  --focus-ring: linear-gradient(120deg, #ff9b21, #6fb8d9);
+  --r: 0px;
+}
+
+/* Counter-Strike - the buy menu: gunmetal, one gold, and the two sides. */
+:root[data-franchise="counter-strike"] {
+  --bg: #0b1015; --panel: #131b22; --panel-2: #1a242c;
+  --line: #232f39; --line-2: #33434f;
+  --text: #dfe5e9; --dim: #8b9aa6; --faint: #5f6e7a;
+  --accent: #f0a92e; --link: #7fb2e0;
+  --ct: #5b8fc9; --t: #c7a468;
+  --display: 'Chakra Petch', sans-serif; --display-w: 700; --display-tt: uppercase; --display-ls: 0;
+  --label: 'Chakra Petch', sans-serif; --label-w: 600; --label-ls: .16em;
+  --focus-ring: linear-gradient(120deg, #5b8fc9, #f0a92e 60%, #c7a468);
+  --r: 2px;
+}
+
+/* Portal - the one lit screen on this site. Every other page here is a room
+   at 2am; a test chamber is white panels under a light nobody can find the
+   source of, and dimming it to match the rest would be drawing a different
+   game. So this block turns the site over: light ground, dark type, and the
+   two colours the whole series is about. */
+:root[data-franchise="portal"] {
+  color-scheme: light;
+  --bg: #e8e9ec; --panel: #f4f5f7; --panel-2: #fbfbfc;
+  --line: #cfd2d8; --line-2: #b3b8c2;
+  --text: #16181d; --dim: #4e535d; --faint: #767c87;
+  --accent: #f79b2c; --link: #1f7fd4;
+  --pt-blue: #38a5ea; --pt-orange: #f79b2c;
+  --display: 'Jost', sans-serif; --display-w: 500; --display-tt: uppercase; --display-ls: .18em;
+  --label: 'Jost', sans-serif; --label-w: 500; --label-ls: .3em;
+  --focus-ring: linear-gradient(120deg, #38a5ea, #f79b2c);
+  --r: 2px;
+}
+:root[data-franchise="portal"] .fx-hero-art { opacity: .2; filter: saturate(.3) contrast(1.1) brightness(1.5); }
+:root[data-franchise="portal"] .fx-tile-veil { background: none; }
+
+/* Grand Theft Auto - the box art: flat blocks, hot pink, one cyan. */
+:root[data-franchise="grand-theft-auto"] {
+  --bg: #0b0b10; --panel: #131319; --panel-2: #1b1b22;
+  --line: #282832; --line-2: #3b3b47;
+  --text: #f2efe9; --dim: #918d99; --faint: #67636f;
+  --accent: #ff5fa2; --link: #4ad4e8;
+  --display: 'Anton', sans-serif; --display-w: 400; --display-tt: uppercase; --display-ls: 0;
+  --label: 'Chakra Petch', sans-serif; --label-w: 600; --label-ls: .18em;
+  --focus-ring: linear-gradient(120deg, #ff5fa2, #ff8a3d 55%, #4ad4e8);
+  --r: 0px;
+}
+
+/* The Elder Scrolls - gold leaf on a night sky, and a serif old enough. */
+:root[data-franchise="the-elder-scrolls"] {
+  --bg: #08090d; --panel: #101218; --panel-2: #171a22;
+  --line: #1f242e; --line-2: #2f3642;
+  --text: #e9e3d3; --dim: #a49c88; --faint: #786f5e;
+  --accent: #c9a83f; --link: #6f9bb8;
+  --display: 'Cinzel', serif; --display-w: 900; --display-tt: uppercase; --display-ls: .03em;
+  --label: 'Cinzel', serif; --label-w: 700; --label-ls: .24em;
+  --focus-ring: linear-gradient(120deg, #c9a83f, #6f9bb8);
+  --r: 0px;
+}
+
+/* Fallout - a Pip-Boy: one phosphor green, and the tube it is on. */
+:root[data-franchise="fallout"] {
+  --bg: #050806; --panel: #0a100c; --panel-2: #0f1811;
+  --line: #16241a; --line-2: #21382a;
+  --text: #7bf0a4; --dim: #4aa870; --faint: #337a51;
+  --accent: #5fe08a; --link: #5fe08a;
+  --display: 'IBM Plex Mono', monospace; --display-w: 600; --display-tt: uppercase; --display-ls: .1em;
+  --label: 'IBM Plex Mono', monospace; --label-w: 500; --label-ls: .24em;
+  --focus-ring: linear-gradient(120deg, #5fe08a, #7bf0a4);
+  --r: 0px;
+}
+
+/* S.T.A.L.K.E.R. - the Zone: rust, moss, and a sky that has not cleared. */
+:root[data-franchise="stalker"] {
+  --bg: #0a0c09; --panel: #11140e; --panel-2: #191d14;
+  --line: #20251a; --line-2: #303628;
+  --text: #dfe3d6; --dim: #9ba48d; --faint: #717a66;
+  --accent: #a8c43f; --link: #d8a83f;
+  --display: 'Oswald', sans-serif; --display-w: 700; --display-tt: uppercase; --display-ls: .05em;
+  --label: 'IBM Plex Mono', monospace; --label-w: 600; --label-ls: .2em;
+  --focus-ring: linear-gradient(120deg, #a8c43f, #d8a83f);
+  --r: 0px;
+}
+
+/* Arma - the briefing: a paper map, olive drab, and one grease-pencil red. */
+:root[data-franchise="arma"] {
+  --bg: #191c14; --panel: #22261a; --panel-2: #2b3021;
+  --line: #3a4029; --line-2: #565d3c;
+  --text: #e3e4cf; --dim: #a6a889; --faint: #7d8065;
+  --accent: #b8452a; --link: #93a86a;
+  --display: 'Oswald', sans-serif; --display-w: 500; --display-tt: uppercase; --display-ls: .04em;
+  --label: 'Oswald', sans-serif; --label-w: 500; --label-ls: .2em;
+  --focus-ring: linear-gradient(120deg, #b8452a, #93a86a);
+  --r: 0px;
+}
+
+/* Dark Souls - ash, and one ember. */
+:root[data-franchise="dark-souls"] {
+  --bg: #080806; --panel: #100e0b; --panel-2: #171410;
+  --line: #201c16; --line-2: #322b21;
+  --text: #ddd5c6; --dim: #948c7c; --faint: #6a6355;
+  --accent: #c9a227; --link: #b8763a;
+  --display: 'Cinzel', serif; --display-w: 400; --display-tt: uppercase; --display-ls: .3em;
+  --label: 'Cinzel', serif; --label-w: 400; --label-ls: .3em;
+  --focus-ring: linear-gradient(120deg, #c9a227, #b8763a);
+  --r: 0px;
+}
+
+/* Resident Evil - the ink ribbon and what gets spilled on it. */
+:root[data-franchise="resident-evil"] {
+  --bg: #0a0708; --panel: #120d0e; --panel-2: #1a1213;
+  --line: #241819; --line-2: #3a2426;
+  --text: #e8dedc; --dim: #a08f8d; --faint: #756563;
+  --accent: #c1272d; --link: #c9a15f;
+  --display: 'Oswald', sans-serif; --display-w: 700; --display-tt: uppercase; --display-ls: .12em;
+  --label: 'IBM Plex Mono', monospace; --label-w: 500; --label-ls: .22em;
+  --focus-ring: linear-gradient(120deg, #c1272d, #c9a15f);
+  --r: 0px;
+}
+
+/* ══ The signatures ═════════════════════════════════════════════════════
+   One panel per franchise, built out of something only that series has. Each
+   block below belongs to exactly one screen and is never loaded by another,
+   which is what keeps ten designs from settling into one design with ten
+   colour schemes.
+
+   Every class in this file is prefixed `fx-`, including the ones inside these
+   panels, and that is not tidiness. This stylesheet and games.css load
+   together on a profile, and games.css is a hundred and twenty-eight themes
+   deep in short names: the suit readout below was written as `.hev`, which is
+   what the Half-Life game page already calls its own, and it inherited that
+   page's padding and drew itself eighty pixels down its own panel. The prefix
+   is what stops the next one of those from happening quietly. */
+
+/* ── Half-Life: the suit readout ─────────────────────────────────────── */
+
+.fx-hev { display: grid; gap: 14px; }
+.fx-hev-row { display: grid; grid-template-columns: 92px minmax(0, 1fr) 54px; align-items: center; gap: 14px; }
+.fx-hev-label {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.fx-hev-bar { display: flex; gap: 3px; }
+.fx-hev-bar i {
+  flex: 1;
+  height: 22px;
+  background: #1c1610;
+  border-top: 1px solid #2a2118;
+}
+.fx-hev-bar[data-kind="health"] i[data-on] { background: #ff9b21; box-shadow: 0 0 8px #ff9b2166; }
+.fx-hev-bar[data-kind="armour"] i[data-on] { background: #6fb8d9; box-shadow: 0 0 8px #6fb8d966; }
+.fx-hev-num { font-family: var(--mono); font-size: 22px; color: var(--accent); text-align: right; }
+@media (max-width: 560px) { .fx-hev-row { grid-template-columns: 1fr; gap: 6px; } .fx-hev-num { text-align: left; } }
+
+/* ── Counter-Strike: the buy menu ────────────────────────────────────── */
+
+.fx-buy { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 4px; }
+.fx-buy-slot {
+  position: relative;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: center;
+  gap: 4px 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  color: inherit;
+  text-decoration: none;
+}
+.fx-buy-slot:hover, .fx-buy-slot:focus-visible { border-color: var(--accent); background: var(--panel-2); }
+.fx-buy-slot[data-owned] { border-left: 2px solid var(--ct); }
+.fx-buy-key {
+  display: grid;
+  place-items: center;
+  width: 22px; height: 22px;
+  border: 1px solid var(--line-2);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+}
+.fx-buy-name { font-size: 14px; font-weight: 600; }
+.fx-buy-cost { grid-column: 2; font-family: var(--mono); font-size: 12px; color: var(--accent); }
+.fx-buy-have {
+  position: absolute;
+  top: 10px; right: 12px;
+  font-style: normal;
+  font-family: var(--label);
+  font-size: 9.5px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--ct);
+}
+
+/* ── Portal: two chambers ────────────────────────────────────────────── */
+
+.fx-rooms { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--gap); }
+.fx-room {
+  position: relative;
+  display: block;
+  min-height: 190px;
+  padding: 18px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+  color: inherit;
+  text-decoration: none;
+  /* The chamber wall: white panels with the seams showing, which is the one
+     texture this whole series is built out of. */
+  background:
+    linear-gradient(90deg, #0000000a 1px, transparent 1px) 0 0 / 44px 44px,
+    linear-gradient(180deg, #0000000a 1px, transparent 1px) 0 0 / 44px 44px,
+    var(--panel-2);
+  overflow: hidden;
+}
+.fx-room:hover, .fx-room:focus-visible { border-color: var(--pt-blue); }
+.fx-hole {
+  position: absolute;
+  width: 46px; height: 74px;
+  border-radius: 50%;
+  opacity: .9;
+}
+.fx-hole-in { left: -14px; top: 34px; border: 4px solid var(--pt-orange); box-shadow: 0 0 22px #f79b2c66; }
+.fx-hole-out { right: -14px; bottom: 30px; border: 4px solid var(--pt-blue); box-shadow: 0 0 22px #38a5ea66; }
+.fx-cube {
+  position: absolute;
+  left: 50%; top: 46%;
+  width: 26px; height: 26px;
+  margin: -13px 0 0 -13px;
+  border: 2px solid var(--dim);
+  background: var(--panel);
+  transform: rotate(45deg);
+}
+.fx-room[data-on] .fx-cube { border-color: var(--pt-orange); }
+.fx-room-name { position: relative; display: block; font-size: 17px; font-weight: 600; }
+.fx-room-meta {
+  position: relative;
+  display: block;
+  margin-top: 4px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--dim);
+}
+
+/* ── Grand Theft Auto: the dial ──────────────────────────────────────── */
+
+.fx-dial {
+  position: relative;
+  height: 78px;
+  margin: 6px 0 0;
+  border-bottom: 2px solid var(--line-2);
+}
+.fx-dial::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #ff5fa2, #ff8a3d 40%, #4ad4e8);
+  opacity: .5;
+}
+.fx-dial-st {
+  position: absolute;
+  bottom: 0;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding-bottom: 6px;
+  text-decoration: none;
+}
+.fx-dial-st i { display: block; width: 2px; height: 16px; background: var(--line-2); }
+.fx-dial-st[data-on] i { height: 30px; background: var(--accent); }
+.fx-dial-st span { font-family: var(--mono); font-size: 10px; color: var(--faint); }
+.fx-dial-st:hover span, .fx-dial-st:focus-visible span { color: var(--accent); }
+.fx-dial-needle {
+  position: absolute;
+  bottom: -6px;
+  width: 2px; height: 74px;
+  transform: translateX(-50%);
+  background: var(--link);
+  box-shadow: 0 0 12px var(--link);
+}
+.fx-dial-tuned { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; margin: 16px 0 0; }
+.fx-dial-tuned b { font-family: var(--display); font-size: 22px; letter-spacing: 0; }
+.fx-dial-tuned span { font-family: var(--mono); font-size: 13px; color: var(--accent); }
+
+/* ── The Elder Scrolls: the provinces ────────────────────────────────── */
+
+.fx-tamriel { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 4px; }
+.fx-tam-plate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 78px;
+  padding: 16px 14px;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(120% 100% at 50% 0%, #c9a83f0f, transparent 70%),
+    var(--panel);
+  text-align: center;
+}
+.fx-tam-plate[data-on] {
+  border-color: var(--accent);
+  background: radial-gradient(120% 100% at 50% 0%, #c9a83f26, transparent 70%), var(--panel-2);
+}
+.fx-tam-name {
+  display: block;
+  font-family: var(--display);
+  font-size: 13px;
+  letter-spacing: .1em;
+  color: var(--dim);
+}
+.fx-tam-plate[data-on] .fx-tam-name { color: var(--accent); }
+.fx-tam-meta { display: block; font-family: var(--mono); font-size: 11.5px; color: var(--faint); }
+
+/* ── Fallout: the Pip-Boy ────────────────────────────────────────────── */
+
+.fx-pip {
+  padding: 16px;
+  border: 1px solid var(--line-2);
+  background: #060a07;
+  /* The tube: scanlines, and a corner that never quite focuses. */
+  background-image:
+    repeating-linear-gradient(180deg, #5fe08a0e 0 1px, transparent 1px 3px),
+    radial-gradient(120% 120% at 50% 50%, transparent 55%, #0004 100%);
+}
+.fx-pip-tabs { display: flex; flex-wrap: wrap; gap: 18px; margin: 0 0 14px; padding-bottom: 10px; border-bottom: 1px solid var(--line-2); }
+.fx-pip-tabs span { font-family: var(--mono); font-size: 11px; letter-spacing: .2em; color: var(--faint); }
+.fx-pip-tabs span[data-on] { color: var(--accent); border-bottom: 2px solid var(--accent); }
+.fx-pip-list { margin: 0; padding: 0; list-style: none; }
+.fx-pip-list li { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 7px 0; }
+.fx-pip-mark { width: 9px; height: 9px; border: 1px solid var(--faint); }
+.fx-pip-list li[data-on] .fx-pip-mark { background: var(--accent); border-color: var(--accent); }
+.fx-pip-list li[data-idle] .fx-pip-mark { background: repeating-linear-gradient(45deg, var(--faint) 0 2px, transparent 2px 4px); }
+.fx-pip-name { font-family: var(--mono); font-size: 13.5px; color: var(--dim); text-decoration: none; }
+.fx-pip-list li[data-on] .fx-pip-name { color: var(--text); }
+.fx-pip-name:hover { color: var(--accent); text-decoration: underline; }
+.fx-pip-meta { font-family: var(--mono); font-size: 11.5px; color: var(--faint); }
+
+/* ── S.T.A.L.K.E.R.: the PDA ─────────────────────────────────────────── */
+
+.fx-pda {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 4px;
+  padding: 14px;
+  border: 1px solid var(--line-2);
+  /* The map screen: a grid, and a haze over it that never lifts. */
+  background:
+    linear-gradient(90deg, #a8c43f0d 1px, transparent 1px) 0 0 / 26px 26px,
+    linear-gradient(180deg, #a8c43f0d 1px, transparent 1px) 0 0 / 26px 26px,
+    radial-gradient(90% 80% at 30% 20%, #a8c43f14, transparent 70%),
+    #0c0f0a;
+}
+.fx-pda-mark {
+  display: block;
+  padding: 12px;
+  border: 1px solid transparent;
+  color: inherit;
+  text-decoration: none;
+}
+.fx-pda-mark:hover, .fx-pda-mark:focus-visible { border-color: var(--accent); }
+.fx-pda-mark i {
+  display: block;
+  width: 10px; height: 10px;
+  margin-bottom: 8px;
+  border: 1px solid var(--faint);
+  border-radius: 50%;
+}
+.fx-pda-mark[data-on] i {
+  border-color: var(--accent);
+  background: var(--accent);
+  box-shadow: 0 0 0 4px #a8c43f22, 0 0 14px #a8c43f66;
+}
+.fx-pda-mark b { display: block; font-family: var(--display); font-size: 14px; color: var(--dim); }
+.fx-pda-mark[data-on] b { color: var(--text); }
+.fx-pda-mark span { display: block; margin-top: 3px; font-family: var(--mono); font-size: 11.5px; color: var(--faint); }
+
+/* ── Arma: the briefing board ────────────────────────────────────────── */
+
+.fx-brief { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: var(--gap); }
+.fx-brief-card {
+  position: relative;
+  display: block;
+  padding: 14px;
+  border: 1px solid var(--line-2);
+  /* Paper, on a board. The one light surface on a dark screen, because that
+     is what a briefing has always been in these games. */
+  background: #c9c9a8;
+  color: #1b1e14;
+  text-decoration: none;
+}
+.fx-brief-card:hover, .fx-brief-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.fx-brief-dtg { display: block; font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; color: #5a5c41; }
+.fx-brief-name { display: block; margin: 6px 0 0; font-family: var(--display); font-size: 15px; }
+.fx-brief-stamp {
+  display: inline-block;
+  margin: 10px 0 0;
+  padding: 2px 8px;
+  border: 2px solid #8e8f6c;
+  color: #6f7154;
+  font-family: var(--label);
+  font-size: 10px;
+  letter-spacing: .2em;
+  transform: rotate(-3deg);
+}
+.fx-brief-card[data-on] .fx-brief-stamp { border-color: var(--accent); color: var(--accent); }
+.fx-brief-h { display: block; margin-top: 8px; font-style: normal; font-family: var(--mono); font-size: 12px; color: #3d4030; }
+
+/* ── Dark Souls: the bonfires ────────────────────────────────────────── */
+
+.fx-fires { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--gap); }
+.fx-fire {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 26px 12px 16px;
+  border: 1px solid var(--line);
+  color: inherit;
+  text-decoration: none;
+  text-align: center;
+  background: radial-gradient(80% 60% at 50% 100%, #1a1206, transparent 70%), var(--panel);
+}
+.fx-fire:hover, .fx-fire:focus-visible { border-color: var(--accent); }
+.fx-fire-flame { position: relative; display: block; width: 34px; height: 44px; }
+.fx-fire-flame i {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 10px;
+  height: 18px;
+  margin-left: -5px;
+  border-radius: 50% 50% 42% 42%;
+  background: #3a3128;
+  opacity: .5;
+}
+.fx-fire[data-on] .fx-fire-flame i { background: linear-gradient(0deg, #c9a227, #f2d477); opacity: .9; }
+.fx-fire[data-on] { border-color: #4a3c1c; box-shadow: inset 0 -30px 40px -30px #c9a22755; }
+.fx-fire-flame i:nth-child(1) { transform: translateX(-9px) scale(.7); }
+.fx-fire-flame i:nth-child(2) { transform: translateX(-3px) scale(1); }
+.fx-fire-flame i:nth-child(3) { transform: translateX(3px) scale(.86); }
+.fx-fire-flame i:nth-child(4) { transform: translateX(9px) scale(.62); }
+/* The sword in the coals. Present on every bonfire, lit or not: it is what
+   makes the shape a bonfire rather than a fire. */
+.fx-fire-sword {
+  display: block;
+  width: 2px; height: 30px;
+  margin-top: -12px;
+  background: linear-gradient(180deg, var(--faint), transparent);
+}
+.fx-fire-name { font-family: var(--display); font-size: 12px; letter-spacing: .12em; color: var(--dim); }
+.fx-fire[data-on] .fx-fire-name { color: var(--text); }
+.fx-fire-meta { font-family: var(--mono); font-size: 11.5px; color: var(--faint); letter-spacing: 0; }
+
+/* ── Resident Evil: the attaché case ─────────────────────────────────── */
+
+.fx-case {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-auto-rows: 96px;
+  gap: 4px;
+  padding: 10px;
+  border: 1px solid var(--line-2);
+  background:
+    repeating-linear-gradient(45deg, #ffffff05 0 6px, transparent 6px 12px),
+    #14100f;
+}
+.fx-case-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 3px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  background: #0e0b0b;
+  color: inherit;
+  text-decoration: none;
+}
+.fx-case-item[data-wide] { grid-column: span 2; }
+.fx-case-item[data-on] { border-color: var(--accent); background: linear-gradient(180deg, #1a1011, #0e0b0b); }
+.fx-case-item:hover, .fx-case-item:focus-visible { border-color: var(--link); }
+.fx-case-name { font-size: 13px; font-weight: 600; color: var(--dim); }
+.fx-case-item[data-on] .fx-case-name { color: var(--text); }
+.fx-case-meta { font-family: var(--mono); font-size: 11.5px; color: var(--faint); }
+@media (max-width: 560px) { .fx-case-item[data-wide] { grid-column: auto; } }
+
+/* ══ The openings ═══════════════════════════════════════════════════════
+   A few seconds of each franchise, drawn rather than played. No video file,
+   nothing fetched, nothing that can fail to load: shapes, type, and keyframes
+   over a screen that was already built underneath.
+
+   Three things are true of all ten, and they are the reason this section can
+   exist at all on a site otherwise this careful about weight:
+
+     they are skippable from the first frame - franchises.js puts the button
+     up with the overlay, and a click anywhere or any key ends it;
+
+     they play once per franchise per visit;
+
+     they do not run for a reader who asked for less motion. The script never
+     builds the overlay in that case, and every animation below is inside the
+     guard as well, because a rule that depends on a script agreeing with it
+     is a rule that is one edit away from being wrong.
+
+   Nothing here is on the page's critical path: the screen underneath is
+   complete before the overlay appears, so skipping lands on the page rather
+   than on a wait for one. */
+
+.fx-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #000;
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity .34s ease;
+}
+.fx-intro[data-play="1"] { opacity: 1; }
+.fx-intro[data-play="2"] { opacity: 0; pointer-events: none; }
+.fx-intro > * { grid-area: 1 / 1; }
+
+.fx-skip {
+  position: fixed;
+  right: clamp(14px, 3vw, 34px);
+  bottom: clamp(14px, 3vh, 34px);
+  z-index: 2;
+  padding: 9px 16px;
+  border: 1px solid #ffffff3d;
+  border-radius: 4px;
+  background: #0000006b;
+  color: #ffffffc4;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.fx-skip:hover { border-color: #fff; color: #fff; }
+/* Portal opens on a white test chamber, and a pale button on a dark plate is
+   the one skip on the site that would be hard to find. Inverted for it, and
+   for it only. */
+.fx-intro[data-intro="portal"] .fx-skip {
+  border-color: #16181d5c;
+  background: #ffffffcc;
+  color: #16181d;
+}
+.fx-intro[data-intro="portal"] .fx-skip:hover { border-color: #16181d; color: #000; }
+
+@media (prefers-reduced-motion: no-preference) {
+
+/* ── Half-Life: the suit comes up ────────────────────────────────────── */
+
+.fx-intro[data-intro="half-life"] { background: #050403; color: #ff9b21; }
+.fxi-hl-ring {
+  width: 300px; height: 300px;
+  border: 2px solid #ff9b21;
+  border-radius: 50%;
+  opacity: 0;
+}
+.fxi-hl-mark { width: 150px; height: 150px; color: #ff9b21; }
+.fxi-hl-mark path { stroke-dasharray: 100; stroke-dashoffset: 100; }
+.fxi-hl-org, .fxi-hl-sub {
+  align-self: end;
+  margin: 0 0 clamp(70px, 16vh, 150px);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(11px, 1.5vw, 15px);
+  letter-spacing: .42em;
+  text-align: center;
+  color: #ff9b21;
+  opacity: 0;
+}
+.fxi-hl-sub { margin-bottom: clamp(44px, 11vh, 108px); font-size: 10px; color: #6fb8d9; letter-spacing: .55em; }
+.fxi-hl-scan {
+  align-self: stretch;
+  justify-self: stretch;
+  background: repeating-linear-gradient(180deg, #ff9b2114 0 1px, transparent 1px 4px);
+  opacity: .5;
+}
+.fx-intro[data-play="1"][data-intro="half-life"] .fxi-hl-ring { animation: hlRing 1.1s ease-out forwards; }
+.fx-intro[data-play="1"][data-intro="half-life"] .fxi-hl-mark path { animation: hlDraw .95s .35s ease-in-out forwards; }
+.fx-intro[data-play="1"][data-intro="half-life"] .fxi-hl-org { animation: hlType .8s 1.35s ease-out forwards; }
+.fx-intro[data-play="1"][data-intro="half-life"] .fxi-hl-sub { animation: hlType .8s 2s ease-out forwards; }
+.fx-intro[data-play="1"][data-intro="half-life"] .fxi-hl-scan { animation: hlFlick 2.6s steps(2) infinite; }
+
+@keyframes hlRing {
+  0% { transform: scale(.2); opacity: 0; }
+  40% { opacity: .85; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+@keyframes hlDraw { to { stroke-dashoffset: 0; } }
+@keyframes hlType {
+  from { opacity: 0; letter-spacing: .9em; }
+  to { opacity: 1; }
+}
+@keyframes hlFlick { 0%, 100% { opacity: .45; } 50% { opacity: .62; } }
+
+/* ── Counter-Strike: the half second before the round ────────────────── */
+
+.fx-intro[data-intro="counter-strike"] { background: #0b1015; }
+.fxi-cs-side { align-self: stretch; width: 50vw; }
+.fxi-cs-ct { justify-self: start; background: linear-gradient(90deg, #5b8fc9, #5b8fc900); transform: translateX(-100%); }
+.fxi-cs-t { justify-self: end; background: linear-gradient(270deg, #c7a468, #c7a46800); transform: translateX(100%); }
+.fxi-cs-mid { display: grid; justify-items: center; gap: 18px; }
+.fxi-cs-timer {
+  font-family: 'Chakra Petch', sans-serif;
+  font-weight: 700;
+  font-size: clamp(46px, 9vw, 96px);
+  color: #f0a92e;
+  opacity: 0;
+}
+.fxi-cs-word {
+  font-family: 'Chakra Petch', sans-serif;
+  font-weight: 700;
+  font-size: clamp(20px, 4vw, 46px);
+  letter-spacing: .18em;
+  color: #dfe5e9;
+  opacity: 0;
+}
+/* Not a flashbang. A wash rather than a white frame: half a second of full
+   white is a real hazard and would be a strange thing to put in front of
+   somebody who came here to look at a list of games. */
+.fxi-cs-flash {
+  align-self: stretch;
+  justify-self: stretch;
+  background: radial-gradient(60% 60% at 50% 50%, #ffffff, #ffffff00 72%);
+  opacity: 0;
+}
+.fx-intro[data-play="1"][data-intro="counter-strike"] .fxi-cs-ct { animation: csIn .7s cubic-bezier(.2,.8,.3,1) forwards; }
+.fx-intro[data-play="1"][data-intro="counter-strike"] .fxi-cs-t { animation: csInR .7s cubic-bezier(.2,.8,.3,1) forwards; }
+.fx-intro[data-play="1"][data-intro="counter-strike"] .fxi-cs-timer { animation: csTick 1.3s .55s steps(1) forwards; }
+.fx-intro[data-play="1"][data-intro="counter-strike"] .fxi-cs-word { animation: csWord .5s 1.5s ease-out forwards; }
+.fx-intro[data-play="1"][data-intro="counter-strike"] .fxi-cs-flash { animation: csWash .55s 1.35s ease-out forwards; }
+
+@keyframes csIn { to { transform: translateX(-58%); } }
+@keyframes csInR { to { transform: translateX(58%); } }
+@keyframes csTick {
+  0% { opacity: 0; }
+  10%, 40%, 70% { opacity: 1; }
+  25%, 55%, 85% { opacity: .25; }
+  100% { opacity: 0; }
+}
+@keyframes csWord {
+  from { opacity: 0; transform: scale(1.3); letter-spacing: .5em; }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes csWash { 0% { opacity: 0; } 30% { opacity: .42; } 100% { opacity: 0; } }
+
+/* ── Portal: in one and out the other ────────────────────────────────── */
+
+.fx-intro[data-intro="portal"] { background: #edeef0; }
+.fxi-pt-hole {
+  width: clamp(70px, 9vw, 120px);
+  height: clamp(120px, 15vw, 200px);
+  border-radius: 50%;
+  transform: scale(0);
+}
+.fxi-pt-orange { justify-self: start; margin-left: 10vw; border: 6px solid #f79b2c; box-shadow: 0 0 42px #f79b2c66; }
+.fxi-pt-blue { justify-self: end; margin-right: 10vw; border: 6px solid #38a5ea; box-shadow: 0 0 42px #38a5ea66; }
+.fxi-pt-cube {
+  width: 46px; height: 46px;
+  border: 3px solid #6b7078;
+  background: #fbfbfc;
+  opacity: 0;
+}
+.fxi-pt-word {
+  align-self: end;
+  margin: 0 0 clamp(60px, 14vh, 130px);
+  font-family: 'Jost', sans-serif;
+  font-weight: 500;
+  font-size: clamp(28px, 6vw, 68px);
+  letter-spacing: .5em;
+  color: #16181d;
+  opacity: 0;
+}
+.fx-intro[data-play="1"][data-intro="portal"] .fxi-pt-orange { animation: ptOpen .5s .2s cubic-bezier(.2,1.4,.4,1) forwards; }
+.fx-intro[data-play="1"][data-intro="portal"] .fxi-pt-blue { animation: ptOpen .5s .7s cubic-bezier(.2,1.4,.4,1) forwards; }
+.fx-intro[data-play="1"][data-intro="portal"] .fxi-pt-cube { animation: ptFall 1.1s 1.15s cubic-bezier(.4,0,.6,1) forwards; }
+.fx-intro[data-play="1"][data-intro="portal"] .fxi-pt-word { animation: ptWord .7s 2.1s ease-out forwards; }
+
+@keyframes ptOpen { from { transform: scale(0) rotate(-12deg); } to { transform: scale(1) rotate(0); } }
+/* Out of the left portal, across, and into the right one - which is the only
+   thing this game ever asked anybody to understand. */
+@keyframes ptFall {
+  0% { transform: translate(-38vw, 0) scale(.4) rotate(0); opacity: 0; }
+  18% { opacity: 1; }
+  82% { opacity: 1; }
+  100% { transform: translate(38vw, 0) scale(.4) rotate(200deg); opacity: 0; }
+}
+@keyframes ptWord { from { opacity: 0; letter-spacing: 1.1em; } to { opacity: 1; } }
+
+/* ── Grand Theft Auto: the loading screen ────────────────────────────── */
+
+.fx-intro[data-intro="grand-theft-auto"] { background: #0b0b10; }
+.fxi-gta-band {
+  align-self: stretch;
+  justify-self: stretch;
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+.fxi-gta-band[data-era="1"] { background: #ff4fa3; }
+.fxi-gta-band[data-era="2"] { background: #4ad46a; }
+.fxi-gta-band[data-era="3"] { background: #4a86d4; }
+.fxi-gta-band[data-era="4"] { background: #f2b23c; }
+.fxi-gta-word {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  text-align: center;
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(34px, 8vw, 96px);
+  line-height: .92;
+  text-transform: uppercase;
+  color: #f2efe9;
+}
+.fxi-gta-word span { opacity: 0; transform: translateY(24px); }
+.fx-intro[data-play="1"][data-intro="grand-theft-auto"] .fxi-gta-band[data-era="1"] { animation: gtaWipe .95s 0s ease-in-out forwards; }
+.fx-intro[data-play="1"][data-intro="grand-theft-auto"] .fxi-gta-band[data-era="2"] { animation: gtaWipe .95s .3s ease-in-out forwards; }
+.fx-intro[data-play="1"][data-intro="grand-theft-auto"] .fxi-gta-band[data-era="3"] { animation: gtaWipe .95s .6s ease-in-out forwards; }
+.fx-intro[data-play="1"][data-intro="grand-theft-auto"] .fxi-gta-band[data-era="4"] { animation: gtaWipe .95s .9s ease-in-out forwards; }
+.fx-intro[data-play="1"][data-intro="grand-theft-auto"] .fxi-gta-word span:nth-child(1) { animation: gtaDrop .4s 1.85s cubic-bezier(.2,.9,.3,1) forwards; }
+.fx-intro[data-play="1"][data-intro="grand-theft-auto"] .fxi-gta-word span:nth-child(2) { animation: gtaDrop .4s 2.05s cubic-bezier(.2,.9,.3,1) forwards; }
+.fx-intro[data-play="1"][data-intro="grand-theft-auto"] .fxi-gta-word span:nth-child(3) { animation: gtaDrop .4s 2.25s cubic-bezier(.2,.9,.3,1) forwards; }
+
+@keyframes gtaWipe {
+  0% { transform: scaleX(0); transform-origin: left center; }
+  45% { transform: scaleX(1); transform-origin: left center; }
+  55% { transform: scaleX(1); transform-origin: right center; }
+  100% { transform: scaleX(0); transform-origin: right center; }
+}
+@keyframes gtaDrop { to { opacity: 1; transform: translateY(0); } }
+
+/* ── The Elder Scrolls: the ring lights ──────────────────────────────── */
+
+.fx-intro[data-intro="the-elder-scrolls"] { background: #06070a; }
+.fxi-tes-glow {
+  width: 60vmin; height: 60vmin;
+  border-radius: 50%;
+  background: radial-gradient(circle, #c9a83f55, transparent 62%);
+  opacity: 0;
+}
+.fxi-tes-ring { width: 62vmin; height: 62vmin; color: #c9a83f; }
+.fxi-tes-circle { stroke-dasharray: 100; stroke-dashoffset: 100; }
+.fxi-tes-glyphs { opacity: 0; }
+.fxi-tes-word {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  text-align: center;
+  color: #e9e3d3;
+}
+.fxi-tes-word b {
+  font-family: 'Cinzel', serif;
+  font-weight: 900;
+  font-size: clamp(19px, 3.6vw, 44px);
+  letter-spacing: .16em;
+  opacity: 0;
+}
+.fxi-tes-word span {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(10px, 1.4vw, 14px);
+  letter-spacing: .7em;
+  color: #c9a83f;
+  opacity: 0;
+}
+.fx-intro[data-play="1"][data-intro="the-elder-scrolls"] .fxi-tes-glow { animation: tesGlow 3.4s ease-out forwards; }
+.fx-intro[data-play="1"][data-intro="the-elder-scrolls"] .fxi-tes-ring { animation: tesSpin 26s linear infinite; }
+.fx-intro[data-play="1"][data-intro="the-elder-scrolls"] .fxi-tes-circle { animation: tesDraw 1.5s .2s ease-in-out forwards; }
+.fx-intro[data-play="1"][data-intro="the-elder-scrolls"] .fxi-tes-glyphs { animation: tesFade 1.2s 1.1s ease-out forwards; }
+.fx-intro[data-play="1"][data-intro="the-elder-scrolls"] .fxi-tes-word b { animation: tesRise .9s 2s ease-out forwards; }
+.fx-intro[data-play="1"][data-intro="the-elder-scrolls"] .fxi-tes-word span { animation: tesRise .9s 2.5s ease-out forwards; }
+
+@keyframes tesGlow { 0% { opacity: 0; transform: scale(.7); } 55% { opacity: 1; } 100% { opacity: .55; transform: scale(1); } }
+@keyframes tesSpin { to { transform: rotate(360deg); } }
+@keyframes tesDraw { to { stroke-dashoffset: 0; } }
+@keyframes tesFade { to { opacity: .85; } }
+@keyframes tesRise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Fallout: the tube warms up ──────────────────────────────────────── */
+
+.fx-intro[data-intro="fallout"] { background: #040604; }
+.fxi-fo-tube {
+  align-self: stretch;
+  justify-self: stretch;
+  background: radial-gradient(120% 120% at 50% 50%, #5fe08a1f, transparent 62%);
+  transform: scaleY(0);
+}
+.fxi-fo-rom {
+  justify-self: start;
+  margin: 0 0 0 clamp(18px, 8vw, 120px);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(9px, 1.25vw, 13px);
+  line-height: 1.9;
+  color: #5fe08a;
+}
+.fxi-fo-rom span { display: block; opacity: 0; }
+.fxi-fo-word {
+  align-self: end;
+  margin: 0 0 clamp(56px, 13vh, 120px);
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  font-size: clamp(30px, 7vw, 78px);
+  letter-spacing: .3em;
+  color: #7bf0a4;
+  opacity: 0;
+}
+.fxi-fo-lines {
+  align-self: stretch;
+  justify-self: stretch;
+  background: repeating-linear-gradient(180deg, #5fe08a12 0 1px, transparent 1px 3px);
+}
+.fx-intro[data-play="1"][data-intro="fallout"] .fxi-fo-tube { animation: foOn .6s cubic-bezier(.2,1,.3,1) forwards; }
+.fx-intro[data-play="1"][data-intro="fallout"] .fxi-fo-rom span { animation: foLine .01s ease-out forwards; }
+.fx-intro[data-play="1"][data-intro="fallout"] .fxi-fo-rom span:nth-child(1) { animation-delay: .7s; }
+.fx-intro[data-play="1"][data-intro="fallout"] .fxi-fo-rom span:nth-child(2) { animation-delay: .95s; }
+.fx-intro[data-play="1"][data-intro="fallout"] .fxi-fo-rom span:nth-child(3) { animation-delay: 1.2s; }
+.fx-intro[data-play="1"][data-intro="fallout"] .fxi-fo-rom span:nth-child(4) { animation-delay: 1.4s; }
+.fx-intro[data-play="1"][data-intro="fallout"] .fxi-fo-rom span:nth-child(5) { animation-delay: 1.6s; }
+.fx-intro[data-play="1"][data-intro="fallout"] .fxi-fo-rom span:nth-child(6) { animation-delay: 1.8s; }
+.fx-intro[data-play="1"][data-intro="fallout"] .fxi-fo-rom span:nth-child(7) { animation-delay: 2s; }
+.fx-intro[data-play="1"][data-intro="fallout"] .fxi-fo-word { animation: foWord .9s 2.4s ease-out forwards; }
+
+@keyframes foOn {
+  0% { transform: scaleY(.004); opacity: .2; }
+  55% { transform: scaleY(.03); opacity: 1; }
+  100% { transform: scaleY(1); opacity: 1; }
+}
+@keyframes foLine { to { opacity: 1; } }
+@keyframes foWord { from { opacity: 0; letter-spacing: .9em; } to { opacity: 1; } }
+
+/* ── S.T.A.L.K.E.R.: the count that will not settle ──────────────────── */
+
+.fx-intro[data-intro="stalker"] { background: #080a07; }
+.fxi-st-noise {
+  align-self: stretch;
+  justify-self: stretch;
+  background:
+    repeating-linear-gradient(0deg, #a8c43f0f 0 1px, transparent 1px 2px),
+    repeating-linear-gradient(90deg, #ffffff08 0 1px, transparent 1px 3px);
+  opacity: .9;
+}
+.fxi-st-anomaly {
+  width: 40vmin; height: 40vmin;
+  border: 1px solid #a8c43f;
+  border-radius: 50%;
+  opacity: 0;
+}
+.fxi-st-geiger { align-self: end; display: flex; gap: 3px; margin-bottom: clamp(60px, 15vh, 130px); }
+.fxi-st-geiger i { display: block; width: 4px; height: 16px; background: #2c3520; }
+.fxi-st-word { display: grid; gap: 14px; margin: 0; text-align: center; }
+.fxi-st-word b {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: clamp(22px, 5vw, 62px);
+  letter-spacing: .06em;
+  color: #dfe3d6;
+  opacity: 0;
+}
+.fxi-st-word span {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(10px, 1.3vw, 13px);
+  letter-spacing: .3em;
+  color: #a8c43f;
+  opacity: 0;
+}
+.fx-intro[data-play="1"][data-intro="stalker"] .fxi-st-noise { animation: stNoise .28s steps(3) infinite; }
+.fx-intro[data-play="1"][data-intro="stalker"] .fxi-st-anomaly { animation: stRipple 2.4s .3s ease-out infinite; }
+.fx-intro[data-play="1"][data-intro="stalker"] .fxi-st-geiger i { animation: stTick 1.1s steps(2) infinite; }
+.fx-intro[data-play="1"][data-intro="stalker"] .fxi-st-geiger i:nth-child(2n) { animation-delay: .18s; }
+.fx-intro[data-play="1"][data-intro="stalker"] .fxi-st-geiger i:nth-child(3n) { animation-delay: .42s; }
+.fx-intro[data-play="1"][data-intro="stalker"] .fxi-st-geiger i:nth-child(5n) { animation-delay: .66s; }
+.fx-intro[data-play="1"][data-intro="stalker"] .fxi-st-word b { animation: stIn .8s 1.5s ease-out forwards; }
+.fx-intro[data-play="1"][data-intro="stalker"] .fxi-st-word span { animation: stIn .8s 2.1s ease-out forwards; }
+
+@keyframes stNoise { 0% { opacity: .5; } 50% { opacity: .85; } 100% { opacity: .62; } }
+@keyframes stRipple {
+  0% { transform: scale(.3); opacity: 0; }
+  25% { opacity: .5; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+@keyframes stTick { 0%, 100% { background: #2c3520; } 50% { background: #a8c43f; } }
+@keyframes stIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Arma: the briefing ──────────────────────────────────────────────── */
+
+.fx-intro[data-intro="arma"] { background: #191c14; }
+.fxi-ar-map {
+  align-self: stretch;
+  justify-self: stretch;
+  background:
+    linear-gradient(90deg, #93a86a26 1px, transparent 1px) 0 0 / 60px 60px,
+    linear-gradient(180deg, #93a86a26 1px, transparent 1px) 0 0 / 60px 60px,
+    radial-gradient(80% 70% at 40% 45%, #2b3021, #14170f);
+}
+.fxi-ar-cross i { position: absolute; background: #b8452a; }
+.fxi-ar-cross { position: relative; width: 60vmin; height: 60vmin; }
+.fxi-ar-cross i:first-child { left: 50%; top: 0; width: 1px; height: 100%; transform: scaleY(0); }
+.fxi-ar-cross i:last-child { top: 50%; left: 0; height: 1px; width: 100%; transform: scaleX(0); }
+.fxi-ar-grid {
+  align-self: start;
+  justify-self: start;
+  margin: clamp(24px, 8vh, 80px) 0 0 clamp(20px, 8vw, 110px);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(12px, 1.6vw, 18px);
+  letter-spacing: .3em;
+  color: #93a86a;
+  opacity: 0;
+}
+.fxi-ar-word {
+  margin: 0;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 500;
+  font-size: clamp(40px, 11vw, 130px);
+  letter-spacing: .16em;
+  color: #e3e4cf;
+  opacity: 0;
+}
+.fxi-ar-stamp {
+  align-self: end;
+  margin: 0 0 clamp(60px, 15vh, 140px);
+  padding: 6px 20px;
+  border: 3px solid #b8452a;
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(13px, 2vw, 22px);
+  letter-spacing: .3em;
+  color: #b8452a;
+  opacity: 0;
+  transform: rotate(-7deg) scale(2.6);
+}
+.fx-intro[data-play="1"][data-intro="arma"] .fxi-ar-map { animation: arPan 6s ease-out forwards; }
+.fx-intro[data-play="1"][data-intro="arma"] .fxi-ar-cross i:first-child { animation: arV .6s .35s ease-out forwards; }
+.fx-intro[data-play="1"][data-intro="arma"] .fxi-ar-cross i:last-child { animation: arH .6s .55s ease-out forwards; }
+.fx-intro[data-play="1"][data-intro="arma"] .fxi-ar-grid { animation: arIn .4s 1.2s ease-out forwards; }
+.fx-intro[data-play="1"][data-intro="arma"] .fxi-ar-word { animation: arIn .6s 1.6s ease-out forwards; }
+.fx-intro[data-play="1"][data-intro="arma"] .fxi-ar-stamp { animation: arStamp .32s 2.2s cubic-bezier(.3,1.6,.4,1) forwards; }
+
+@keyframes arPan { from { background-position: 0 0, 0 0, 50% 50%; } to { background-position: -120px -70px, -120px -70px, 46% 52%; } }
+@keyframes arV { to { transform: scaleY(1); } }
+@keyframes arH { to { transform: scaleX(1); } }
+@keyframes arIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes arStamp { to { opacity: 1; transform: rotate(-7deg) scale(1); } }
+
+/* ── Dark Souls: one ember ───────────────────────────────────────────── */
+
+.fx-intro[data-intro="dark-souls"] { background: #030302; }
+.fxi-ds-dark {
+  align-self: stretch;
+  justify-self: stretch;
+  background: radial-gradient(40% 40% at 50% 56%, #c9a2271f, transparent 70%);
+  opacity: 0;
+}
+.fxi-ds-fire { position: relative; width: 120px; height: 90px; margin-top: 8vh; }
+.fxi-ds-fire i {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 16px; height: 26px;
+  margin-left: -8px;
+  border-radius: 50% 50% 40% 40%;
+  background: linear-gradient(0deg, #b8763a, #f2d477);
+  opacity: 0;
+  transform-origin: 50% 100%;
+}
+.fxi-ds-fire i:nth-child(1) { transform: translateX(-26px) scale(.55); }
+.fxi-ds-fire i:nth-child(2) { transform: translateX(-13px) scale(.8); }
+.fxi-ds-fire i:nth-child(3) { transform: translateX(0) scale(1.05); }
+.fxi-ds-fire i:nth-child(4) { transform: translateX(13px) scale(.8); }
+.fxi-ds-fire i:nth-child(5) { transform: translateX(26px) scale(.55); }
+.fxi-ds-sword {
+  width: 3px; height: 150px;
+  margin-top: -6vh;
+  background: linear-gradient(180deg, #948c7c, #3a3128);
+  transform: translateY(-60vh);
+  opacity: 0;
+}
+.fxi-ds-word {
+  align-self: end;
+  margin: 0 0 clamp(70px, 17vh, 160px);
+  font-family: 'Cinzel', serif;
+  font-size: clamp(22px, 5.5vw, 68px);
+  letter-spacing: .38em;
+  color: #ddd5c6;
+  opacity: 0;
+}
+.fx-intro[data-play="1"][data-intro="dark-souls"] .fxi-ds-dark { animation: dsGlow 2.4s .5s ease-out forwards; }
+.fx-intro[data-play="1"][data-intro="dark-souls"] .fxi-ds-fire i { animation: dsLight .9s .4s ease-out forwards, dsFlicker 1.7s 1.3s ease-in-out infinite; }
+.fx-intro[data-play="1"][data-intro="dark-souls"] .fxi-ds-fire i:nth-child(2) { animation-delay: .55s, 1.5s; }
+.fx-intro[data-play="1"][data-intro="dark-souls"] .fxi-ds-fire i:nth-child(3) { animation-delay: .7s, 1.35s; }
+.fx-intro[data-play="1"][data-intro="dark-souls"] .fxi-ds-fire i:nth-child(4) { animation-delay: .85s, 1.6s; }
+.fx-intro[data-play="1"][data-intro="dark-souls"] .fxi-ds-fire i:nth-child(5) { animation-delay: 1s, 1.45s; }
+.fx-intro[data-play="1"][data-intro="dark-souls"] .fxi-ds-sword { animation: dsPlunge .5s 1.15s cubic-bezier(.5,0,.9,.6) forwards; }
+.fx-intro[data-play="1"][data-intro="dark-souls"] .fxi-ds-word { animation: dsWord 1.5s 2s ease-out forwards; }
+
+@keyframes dsGlow { to { opacity: 1; } }
+@keyframes dsLight { to { opacity: .95; } }
+/* The flame keeps its own translate, so the flicker is scale and nothing
+   else: animating transform wholesale here would snap every tongue of it
+   back to the middle on the first frame. */
+@keyframes dsFlicker { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.45); } }
+@keyframes dsPlunge { from { transform: translateY(-60vh); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes dsWord { from { opacity: 0; letter-spacing: .8em; } to { opacity: 1; } }
+
+/* ── Resident Evil: the typewriter ───────────────────────────────────── */
+
+.fx-intro[data-intro="resident-evil"] { background: #0a0708; }
+.fxi-re-paper {
+  display: grid;
+  gap: 16px;
+  justify-items: center;
+  padding: clamp(24px, 5vw, 50px) clamp(28px, 7vw, 80px);
+  background: #16100f;
+  border: 1px solid #2a1c1b;
+}
+.fxi-re-type {
+  margin: 0;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: clamp(22px, 5.5vw, 64px);
+  letter-spacing: .18em;
+  color: #e8dedc;
+  white-space: nowrap;
+  clip-path: inset(0 100% 0 0);
+  border-right: 3px solid #c1272d;
+}
+.fxi-re-sub {
+  margin: 0;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(10px, 1.4vw, 14px);
+  letter-spacing: .2em;
+  color: #a08f8d;
+  opacity: 0;
+}
+.fxi-re-key {
+  align-self: end;
+  justify-self: center;
+  width: 60px; height: 6px;
+  margin-bottom: clamp(60px, 14vh, 130px);
+  background: #3a2426;
+}
+/* The door. Every one of these games loaded the next room behind one, and
+   this is the one moment on the site where a transition is the subject. */
+.fxi-re-door {
+  align-self: stretch;
+  justify-self: stretch;
+  background: linear-gradient(100deg, #0a0708, #1a1213 60%, #0a0708);
+  transform-origin: left center;
+  transform: perspective(1400px) rotateY(0deg);
+  opacity: 0;
+}
+.fx-intro[data-play="1"][data-intro="resident-evil"] .fxi-re-type { animation: reType 1.5s .35s steps(13) forwards; }
+.fx-intro[data-play="1"][data-intro="resident-evil"] .fxi-re-sub { animation: reIn .5s 2s ease-out forwards; }
+.fx-intro[data-play="1"][data-intro="resident-evil"] .fxi-re-key { animation: reKey .16s .35s steps(2) 13; }
+.fx-intro[data-play="1"][data-intro="resident-evil"] .fxi-re-door { animation: reDoor 1s 2.4s cubic-bezier(.4,0,.5,1) forwards; }
+
+@keyframes reType { to { clip-path: inset(0 0 0 0); } }
+@keyframes reIn { to { opacity: 1; } }
+@keyframes reKey { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+@keyframes reDoor {
+  0% { opacity: 0; transform: perspective(1400px) rotateY(0deg); }
+  20% { opacity: 1; transform: perspective(1400px) rotateY(0deg); }
+  100% { opacity: 1; transform: perspective(1400px) rotateY(-105deg); }
+}
+
+}

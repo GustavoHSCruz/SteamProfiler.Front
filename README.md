@@ -44,6 +44,8 @@ site/
     game.js       one renderer per game, dispatched on `theme`
     lib.js        helpers shared by both, the API calls, the footer
   game-public.html  every /g/<appid>                              public.js
+  franchises.html   /franchises and /franchises/<slug>            fxpage.js
+    franchises.js   the ten series, their openings and their screens
   blog.html       the index                    blog.js
   post.html       one post                     post.js
   feedback.html   the form and the public board                   feedback.js
@@ -56,6 +58,7 @@ site/
   style.css       tokens, reset, chrome, shared primitives
   home.css        the landing page
   games.css       every game page, one block each
+  franchises.css  the ten franchise screens, one block each
   extras.css      blog, feedback, support, privacy, appeal
   fonts.css       the vendored faces, generated
 
@@ -78,6 +81,8 @@ tools/            checks and generators, run with node, never shipped
 | `/u/<profile>` | that profile's dashboard |
 | `/u/<profile>/<appid>` | one game |
 | `/g/<appid>` | one game without a profile: catalogue, live audience, reviews, news and global achievements |
+| `/franchises`, `/franchises/<slug>` | ten Steam series, and one of them. Every game in it against the years it was made across, and against the years it took to reach Steam |
+| `/u/<profile>/franchises`, `/u/<profile>/franchises/<slug>` | the same screens with that library's hours in them |
 | `/u/<profile>/vs/<other>` | two libraries against each other |
 | `/u/<profile>/backlog` | everything owned and never launched |
 | `/u/<profile>/cards` | the trading-card badges this profile has made, the sets it has not, and what one of each card in those would cost on the market today |
@@ -132,6 +137,57 @@ that theme's class, and its strings in `dict.js`. Nothing else changes.
 A game page reuses its own page's classes rather than the shared ones. That is
 what keeps 158 designs from collapsing into one design copied 158 times, and
 `tools/check-prices.js` enforces it for the price block.
+
+## The franchise screens
+
+`/franchises` is ten series, and each of them gets a screen the way each game
+gets one: its own palette, its own lettering, an opening drawn for it, and one
+panel built out of something only that series has - the suit readout, the buy
+menu, a test chamber, the radio dial, the provinces of Tamriel, the Pip-Boy's
+quest list, the Zone, a briefing board, the bonfires, the attaché case.
+
+The whole editorial content is the table at the top of `franchises.js`: a
+franchise is an entry and a game in one is a line. Adding a series means an
+entry there, a palette block in `franchises.css`, and its strings in `dict.js`
+- a screen with no signature panel yet still works, so the panel can come
+later. Every appid in that table was checked against the storefront rather than
+remembered, because a wrong one is a page about the wrong game with the wrong
+art on it.
+
+Two dates per game, and that is what the screens are actually about. `year` in
+the table is when the game came out; the storefront's own date comes from the
+api. They disagree constantly - Arena is from 1994 and reached Steam in 2022,
+GTA III is from 2001 and arrived in 2008 - and the line at the top of each
+screen draws both, with the distance between them as a hairline.
+
+The table also carries each game's name, so the screens read properly before
+the api answers and with it down entirely. Steam's name wins when it arrives,
+because that is the one on the shop today.
+
+### The openings
+
+Every franchise screen opens on a few seconds of that franchise, drawn rather
+than played: shapes, type and keyframes at the foot of `franchises.css`, no
+video file and nothing fetched. They are skippable from the first frame, they
+play once per franchise per visit, and they do not run at all for a reader who
+asked for less motion - the script does not build the overlay and the CSS is
+inside the guard as well.
+
+The real trailer is behind a button, and it weighs about twenty megabytes:
+`preload="none"` is the whole contract, so nothing crosses the network until
+somebody presses play. Steam stopped putting a file in the store payload -
+`movies` now carries DASH and HLS manifests, which need a player library, and
+this site has none - but the flat file each movie id has always had is still
+served from the one host the media policy allows, so the api sends the id and
+the page builds the address.
+
+### One prefix, for a reason
+
+Every class in `franchises.css` starts with `fx-`, including the ones inside
+the signature panels. This stylesheet and `games.css` load together on a
+profile, and `games.css` is 128 themes deep in short names: the Half-Life suit
+readout was written as `.hev`, which is what that game's own page already
+calls its own, and it silently inherited that page's padding.
 
 ## Three languages
 

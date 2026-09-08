@@ -39,6 +39,7 @@ PAGES = {
     '/privacy/history': '/policy-history.html',
     '/blog': '/blog.html',
     '/about': '/about.html',
+    '/franchises': '/franchises.html',
     '/appeal': '/appeal.html',
     '/appeal/sent': '/appeal-sent.html',
 }
@@ -51,6 +52,11 @@ REDIRECTS = {'/apoiar': '/support', '/recados': '/feedback'}
 # pattern as the live nginx, which is the point of this file.
 BLOG_POST = re.compile(r'^/blog/[a-z0-9][a-z0-9-]{0,79}(?:/[a-z0-9][a-z0-9-]{0,79})?$')
 PROFILE = re.compile(r'^/u/')
+
+# /franchises/<slug>. The slug is checked in the page rather than here, and an
+# unknown one lands back on the index - so this only has to be the shape, the
+# same way the live nginx only checks the shape.
+FRANCHISE = re.compile(r'^/franchises/[a-z0-9][a-z0-9-]{0,39}$')
 
 # One game with nobody attached to it. The live nginx has two locations here: a
 # strict `^/g/(?<appid>\d{1,8})$` with SSI on, and a loose `/g/` that falls back
@@ -131,6 +137,8 @@ class Handler(SimpleHTTPRequestHandler):
             shell = '/post.html' if path.startswith('/blog/') else '/profile.html'
         if shell is None and PUBLIC_GAME.match(path):
             shell = '/game-public.html'
+        if shell is None and FRANCHISE.match(path):
+            shell = '/franchises.html'
         if shell:
             # The router in the page reads the real URL off location, so only
             # what this server opens on disk changes, never what the page sees.

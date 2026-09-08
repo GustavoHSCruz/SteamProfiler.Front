@@ -75,6 +75,10 @@ is not this site.
   payment.
 - [Feedback](https://steamprofiler.org/feedback): the public message board.
 - [Blog](https://steamprofiler.org/blog): notes on how the site is built.
+- [Franchises](https://steamprofiler.org/franchises): ten Steam series, each on
+  a screen of its own, listing every game in that series with the year it came
+  out beside the year it reached Steam. No profile is involved; the same
+  screens under `/u/<name>/franchises` add that library's hours to them.
 - Profiles live at `/u/<name>`. See the crawling note below.
 
 ## Crawling

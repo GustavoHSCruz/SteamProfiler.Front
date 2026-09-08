@@ -257,6 +257,10 @@ function buildDiscover(d, query) {
   // not on this payload, and the page it points at is a real answer either
   // way - a profile with no badges at all is a list of sets nobody has made.
   chip(`/u/${query}/cards`, t('go.cards'), t('go.cards_hint'));
+  // Always drawn, for the same reason the badges are: a library with nothing
+  // from any of the ten still gets an answer, and it is a real one - ten
+  // shelves, and this reader on none of them.
+  chip(`/u/${query}/franchises`, t('go.franchises'), t('go.franchises_hint'));
 
   rail.textContent = '';
   for (const c of chips) rail.append(c);

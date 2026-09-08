@@ -6,6 +6,8 @@
      /u/<perfil>/backlog      everything owned and never launched
      /u/<perfil>/cards        the badges made, and the sets still open
      /u/<perfil>/year/<ano>   one year of it
+     /u/<perfil>/franchises   the ten series, with this profile's hours in them
+     /u/<perfil>/franchises/<slug>   one of them
 
    <perfil> is whatever the visitor typed - a vanity name or a steamID64 - and it
    stays in the URL untouched so the link is shareable and readable. */
@@ -29,6 +31,11 @@ const cardset = parts[2] === 'cards';
 // digits too, and Steam has apps numbered in the two thousands, so /u/x/2015
 // would be two addresses wearing one path. The word is what tells them apart.
 const year = parts[2] === 'year' && /^(19|20)\d\d$/.test(parts[3] || '') ? parts[3] : null;
+// Same path space again, and the same reason. `franchises` optionally carries
+// a slug after it, which is a word too - so this pair can never be read as an
+// appid and a year, and no third rule is needed to keep them apart.
+const franchises = parts[2] === 'franchises';
+const series = franchises && parts[3] && BY_SLUG.has(parts[3]) ? parts[3] : null;
 
 /** The address this view should have been reached at. A link built by hand or
  *  held from before this page understood URLs still works, and gets tidied in
@@ -40,7 +47,9 @@ function canonical() {
     : pile ? '/backlog'
       : cardset ? '/cards'
         : year ? `/year/${year}`
-          : appid ? `/${appid}` : '';
+          : series ? `/franchises/${series}`
+            : franchises ? '/franchises'
+              : appid ? `/${appid}` : '';
   return `/u/${encodeURIComponent(query)}${tail}`;
 }
 
@@ -54,6 +63,7 @@ function fail(message, retry) {
   el('backlog').hidden = true;
   el('cards').hidden = true;
   el('year').hidden = true;
+  el('franchises').hidden = true;
   failure.hidden = false;
   el('failure-text').textContent = message;
   const again = el('failure-retry');
@@ -89,7 +99,8 @@ function showChrome(profileQuery, persona) {
   // The wait screen knows which of the four views is coming, because each one
   // waits on different calls and the skeleton it draws is that view's layout.
   bootStart(rival ? 'versus' : pile ? 'backlog' : cardset ? 'cards'
-    : year ? 'year' : appid ? 'game' : 'dash', query, appid);
+    : year ? 'year' : franchises ? 'franchises'
+      : appid ? 'game' : 'dash', query, appid);
 
   let steamid;
   try {
@@ -143,6 +154,26 @@ function showChrome(profileQuery, persona) {
       // Its own await, like the pile: the page belongs to the profile, and the
       // badges and the market prices land on top of a page that is already up.
       await renderCards(d, steamid, encodeURIComponent(query));
+    } else if (franchises) {
+      // The screens are drawn from the table in franchises.js, so the profile
+      // is the only thing this waits on: the library it carries is what turns
+      // the ten into this reader's ten. The api's own numbers land afterwards,
+      // on a page that is already up, exactly as they do with no profile.
+      const d = await api(`/profile?id=${steamid}`);
+      bootMark('fetched');
+      el('franchises').hidden = false;
+      showChrome(query, d.profile.persona);
+      bootDone();
+      const ctx = {
+        query: encodeURIComponent(query),
+        persona: d.profile.persona,
+        library: d.library || [],
+        unplayed: d.unplayed || [],
+        owns: new Set(),
+      };
+      const root = el('fx-root');
+      if (series) await renderFranchise(BY_SLUG.get(series), root, ctx);
+      else await renderFranchiseIndex(root, ctx);
     } else if (year) {
       // Every figure on this page except the unlocks is already in the profile
       // payload, so the page is complete the moment that lands. The unlocks

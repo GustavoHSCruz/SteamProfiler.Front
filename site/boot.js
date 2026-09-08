@@ -85,11 +85,21 @@ const BOOT_PLAN = {
     ['fetched', [['load.s_library', 0], ['load.s_hours', 2600], ['load.s_badges', 5600]]],
     ['drawn', [['load.s_page', 0]]],
   ],
+  // The shortest checklist here, because these screens are drawn from a table
+  // that shipped with the page: the only thing being waited on is the library
+  // that says which of the ten this reader is on. The prices and the live
+  // counts are not on it - nothing waits for those, they land afterwards.
+  franchises: [
+    ['resolved', [['load.s_find', 0]]],
+    ['fetched', [['load.s_library', 0], ['load.s_hours', 2600]]],
+    ['drawn', [['load.s_page', 0]]],
+  ],
 };
 
 const BOOT_HEAD = {
   dash: 'load.h_dash', backlog: 'load.h_dash', cards: 'load.h_dash',
   game: 'load.h_game', versus: 'load.h_versus', year: 'load.h_year',
+  franchises: 'load.h_franchises',
 };
 
 /* What the window says once the wait stops being short, and when. Three
@@ -137,6 +147,16 @@ function bootPile() {
   return out;
 }
 
+/** The ten shelves: a header band, then a grid of tiles two across, which is
+ *  what the index is about to be at any width worth drawing a skeleton for. */
+function bootShelf() {
+  const out = [{ x: 0, y: 0, w: 100, h: 16 }];
+  for (let i = 0; i < 10; i++) {
+    out.push({ x: (i % 2) * 50, y: 19 + Math.floor(i / 2) * 16.4, w: 50, h: 16.4 });
+  }
+  return out;
+}
+
 /** A game page: the key art across the top, three figures under it, then the
  *  grid of panels that carries whatever that game happens to publish. */
 function bootPanels() {
@@ -155,6 +175,7 @@ const BOOT_SHAPE = {
   cards: () => bootPile(),
   game: () => bootPanels(),
   versus: () => [...bootTiles(18, 0, 0, 49.4, 100), ...bootTiles(18, 50.6, 0, 49.4, 100)],
+  franchises: () => bootShelf(),
 };
 
 /* ── The wait of one game ──────────────────────────────────────────────
