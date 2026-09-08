@@ -45,8 +45,10 @@ site/
     lib.js        helpers shared by both, the API calls, the footer
   game-public.html  every /g/<appid>                              public.js
   franchises.html   /franchises and /franchises/<slug>            fxpage.js
-    franchises.js   the openings, the screens and the signature panels
-    franchise-list.js  which ten franchises there are, and what is in them
+    franchises.js   the screens, and what every franchise has in common
+    franchise-list.js      the ten with a screen written for them
+    franchise-catalogue.js every other series
+    franchises/<slug>.css|.js  one pair per written screen, loaded on demand
   blog.html       the index                    blog.js
   post.html       one post                     post.js
   feedback.html   the form and the public board                   feedback.js
@@ -147,17 +149,31 @@ panel built out of something only that series has - the suit readout, the buy
 menu, a test chamber, the radio dial, the provinces of Tamriel, the Pip-Boy's
 quest list, the Zone, a briefing board, the bonfires, the attaché case.
 
-The whole editorial content is `franchise-list.js`: a franchise is an entry
-and a game in one is a line. Adding a series means an entry there, a palette
-block in `franchises.css`, and its strings in `dict.js` - a screen with no
-signature panel yet still works, so the panel can come later. Every appid in
-that table was checked against the storefront rather than remembered, because
-a wrong one is a page about the wrong game with the wrong art on it.
+Which series exist is written in two files and nothing else. `franchise-list.js`
+holds the ten that have a screen written for them - a CSS and JS pair each
+under `site/franchises/`, loaded on demand by `exclusive-loader.js` and kept
+honest by `tools/check-franchise-exclusives.js`. `franchise-catalogue.js` holds
+every other series, drawn by the shared code in the site's own furniture with
+that series' colour on it.
 
-The table is its own file because three pages want it and only one of them
-wants the code that draws it. The landing page prints the ten as a way in, and
-it should not have to carry ten renderers and an animation engine to show ten
-names.
+It is the same split the game pages already have, one level up: a page built
+out of the game's own interface against the generic one. A series moves from
+the catalogue to the list the day somebody writes its screen - cut the entry
+across and add the pair.
+
+Every appid in both files was checked against the storefront rather than
+remembered, because a wrong one is a page about the wrong game with the wrong
+art on it. One candidate turned out to be a different game entirely under an
+appid that looked right, and eleven more never came back as a released game
+with a date, so they are not there.
+
+The ten carry the year each game came out; the catalogue carries the year
+Steam publishes, because nobody has been through those by hand. So the
+two-date line and its hairline appear on the ten and stay quiet elsewhere,
+which is the honest shape of "we only know one of them".
+
+The landing page loads `franchise-list.js` alone: it prints ten plates as a
+way in, and should not carry six hundred rows to do it.
 
 Two dates per game, and that is what the screens are actually about. `year` in
 the table is when the game came out; the storefront's own date comes from the
