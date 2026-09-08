@@ -1838,6 +1838,8 @@ const DICT = {
     'land.fx_head': 'And whole series, not just games',
     'land.fx_body': 'A series drawn against the years it was made across - and against the years it took to reach Steam, which are almost never the same. Every game in it, what it costs today, and who is playing right now. <b>No profile needed.</b>',
     'land.fx_go': 'see all of them',
+    'fx.trailer_gone': 'Steam keeps no file for this one. ',
+    'fx.trailer_store': 'It plays on the store page.',
   },
 
   pt: {
@@ -3650,6 +3652,8 @@ const DICT = {
     'land.fx_head': 'E séries inteiras, não só jogos',
     'land.fx_body': 'Uma série desenhada contra os anos que ela atravessa - e contra os anos que ela levou para chegar à Steam, que quase nunca são os mesmos. Todo jogo dela, o que custa hoje, e quem está jogando agora. <b>Não precisa de perfil.</b>',
     'land.fx_go': 'ver todas',
+    'fx.trailer_gone': 'A Steam não guarda arquivo deste aqui. ',
+    'fx.trailer_store': 'Ele toca na página da loja.',
   },
 
   ru: {
@@ -5463,5 +5467,7 @@ const DICT = {
     'land.fx_head': 'И целые серии, а не только игры',
     'land.fx_body': 'Серия, нарисованная против годов, через которые она прошла, - и против годов, которые ей понадобились, чтобы попасть в Steam, а это почти никогда не одно и то же. Все её игры, во что они обходятся сегодня и кто играет прямо сейчас. <b>Профиль не нужен.</b>',
     'land.fx_go': 'посмотреть все',
+    'fx.trailer_gone': 'Для этого Steam не хранит файла. ',
+    'fx.trailer_store': 'Он проигрывается на странице магазина.',
   },
 };

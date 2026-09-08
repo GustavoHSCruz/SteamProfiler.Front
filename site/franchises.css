@@ -1670,3 +1670,14 @@
 }
 
 }
+
+/* The trailer that has no file. One in ten, and the player is taken out
+   rather than left showing a broken frame with controls that do nothing. */
+.fx-tr-gone {
+  margin: 0;
+  padding: clamp(28px, 5vw, 48px) var(--pad);
+  text-align: center;
+  font-size: 14px;
+  color: var(--dim);
+}
+.fx-tr-gone a { color: var(--accent); }

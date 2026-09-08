@@ -484,7 +484,20 @@ async function renderFranchiseIndex(root, ctx) {
    this builds the address, exactly as lib.js builds a header picture. */
 const TRAILER_CDN = 'https://cdn.cloudflare.steamstatic.com/steam/apps';
 
-function trailerInto(host, row, name) {
+/* Which file to ask for, in order. Steam keeps no single flat name for these:
+   of ten trailers measured, five had only `movie480_vp9.webm`, two had only
+   `movie480.webm`, two had both, and one had none of the three. `movie480.mp4`
+   was there for nine of the ten, so it goes first - and it is h264, which
+   plays in more browsers than a VP9 webm does anyway.
+
+   The order matters for more than taste. A name that is not there answers 404
+   with an HTML error page, and Chrome refuses a cross-origin HTML body handed
+   to a <video> - that is the ERR_BLOCKED_BY_ORB in the console, and it is the
+   404 talking, not the policy. Asking for the one that usually exists first
+   means most trailers never make the failing request at all. */
+const TRAILER_FILES = ['movie480.mp4', 'movie480_vp9.webm', 'movie480.webm'];
+
+function trailerInto(host, row, name, appid) {
   if (!row || !row.trailer || !row.trailer.id) return null;
   const id = row.trailer.id;
 
@@ -493,18 +506,46 @@ function trailerInto(host, row, name) {
     cls: 'fx-tr-video',
     attr: {
       controls: '', preload: 'none', playsinline: '',
-      src: `${TRAILER_CDN}/${id}/movie480_vp9.webm`,
       // Only when there is one. `poster=""` is not "no poster": it resolves
       // against the page's own address, so the browser fetches this HTML and
       // draws the failure to decode it as a broken frame.
       ...(row.trailer.thumb ? { poster: row.trailer.thumb } : {}),
     },
   });
+  // Sources rather than one src: the element walks the list itself and stops
+  // at the first that answers, which is the whole reason <source> exists.
+  let missed = 0;
+  for (const file of TRAILER_FILES) {
+    const source = h('source', { attr: { src: `${TRAILER_CDN}/${id}/${file}` } });
+    // The media element fires `error` at each <source> it cannot use and says
+    // nothing on the element itself, so the count is what tells us the list
+    // ran out rather than any one name failing.
+    source.addEventListener('error', () => {
+      if ((missed += 1) < TRAILER_FILES.length) return;
+      video.remove();
+      gone.hidden = false;
+    }, { once: true });
+    video.append(source);
+  }
+  // A trailer whose files Steam simply does not keep. One in ten, measured,
+  // and there is no way to know which from here: the store payload gives the
+  // movie's id and never says which files that id has. So the button is
+  // offered either way and this is what it opens onto - a sentence and the
+  // store page, rather than a dead player.
+  const gone = h('p', { cls: 'fx-tr-gone' },
+    txt(t('fx.trailer_gone')),
+    h('a', {
+      text: t('fx.trailer_store'),
+      attr: { href: `https://store.steampowered.com/app/${appid}`,
+              target: '_blank', rel: 'noopener' },
+    }));
+  gone.hidden = true;
+
   const close = h('button', { cls: 'fx-tr-close', text: t('fx.trailer_close'), attr: { type: 'button' } });
   put(dialog,
     h('p', { cls: 'fx-tr-head' },
       h('b', { text: row.trailer.name || name })),
-    video, close);
+    video, gone, close);
 
   const open = h('button', {
     cls: 'fx-act fx-act-tr',
@@ -513,14 +554,14 @@ function trailerInto(host, row, name) {
   });
   open.addEventListener('click', () => {
     dialog.showModal();
-    video.play().catch(() => { /* the controls are right there */ });
+    if (video.isConnected) video.play().catch(() => { /* the controls are right there */ });
   });
   // Stopping the video on the way out, so closing the box is also closing the
   // sound - a dialog that keeps playing behind itself is a bug people blame
   // on their own tabs.
-  const shut = () => { video.pause(); dialog.close(); };
+  const shut = () => { if (video.isConnected) video.pause(); dialog.close(); };
   close.addEventListener('click', shut);
-  dialog.addEventListener('close', () => video.pause());
+  dialog.addEventListener('close', () => { if (video.isConnected) video.pause(); });
   dialog.addEventListener('click', (e) => { if (e.target === dialog) shut(); });
 
   host.append(open, dialog);
@@ -648,7 +689,7 @@ async function renderFranchise(fr, root, ctx) {
   }
   (SIGNATURE[fr.slug] || (() => {}))(sig, fr, rows, ctx, stand);
   if (exclusive && exclusive.ready) exclusive.ready({ hero, root, fr, rows, ctx, stand });
-  trailerInto(acts, rows[String(fr.flagship)], fr.name);
+  trailerInto(acts, rows[String(fr.flagship)], fr.name, fr.flagship);
 }
 
 /** The reader's own standing in this series, or nothing at all when there is
