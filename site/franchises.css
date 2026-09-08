@@ -513,17 +513,11 @@
 }
 .fx-tr::backdrop { background: #05040a; opacity: .86; }
 .fx-tr-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
   margin: 0;
   padding: 14px var(--pad);
   border-bottom: 1px solid var(--line);
 }
 .fx-tr-head b { font-size: 14px; }
-.fx-tr-head span { font-family: var(--mono); font-size: 11px; color: var(--faint); }
 .fx-tr-video { display: block; width: 100%; max-height: 66vh; background: #000; }
 .fx-tr-close {
   display: block;

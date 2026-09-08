@@ -478,11 +478,6 @@ async function renderFranchiseIndex(root, ctx) {
 
 
 /* ── The real trailer ──────────────────────────────────────────────────
-   Behind a button, and it weighs what it weighs: about twenty megabytes at
-   480p. `preload="none"` is the whole contract - nothing crosses the network
-   until somebody presses play, so the screen itself is still the drawn
-   opening and a few kilobytes of markup.
-
    Steam stopped putting a file in the store payload: `movies` now carries
    DASH and HLS manifests, which no browser plays without a player library,
    and this site has no libraries. What it still carries is the movie's id,
@@ -510,8 +505,7 @@ function trailerInto(host, row, name) {
   const close = h('button', { cls: 'fx-tr-close', text: t('fx.trailer_close'), attr: { type: 'button' } });
   put(dialog,
     h('p', { cls: 'fx-tr-head' },
-      h('b', { text: row.trailer.name || name }),
-      h('span', { text: t('fx.trailer_weight') })),
+      h('b', { text: row.trailer.name || name })),
     video, close);
 
   const open = h('button', {
