@@ -68,35 +68,29 @@
 .fx-ix-lede { max-width: 62ch; margin: 14px 0 0; color: var(--dim); }
 
 
-/* Four across, and the first two tiles taking half a row each. Counted rather
-   than left to auto-fit: there are ten of these, two of them wide, and 2 + 4 +
-   4 is the only arrangement of that which closes every row. auto-fit picked
-   three columns at this width and left a hole beside Half-Life, which is what
-   a grid that does not know how many things it is holding does. */
+/* Every tile the same size. It was two wide ones and then the rest, back when
+   there were ten and the first two were the two the shop was built on - and
+   that is a ranking, drawn. On a page that lists all of them it would be the
+   page picking favourites in a place where the reader is meant to be picking,
+   so it is gone and they are a catalogue now.
+
+   auto-fill and not auto-fit: with a long list the last row should keep the
+   column width the rest of the grid has, rather than stretching two survivors
+   across the whole page. */
 .fx-ix-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(228px, 1fr));
   gap: var(--gap);
   max-width: 1180px;
   margin: 0 auto;
   padding: 0 var(--edge);
-}
-.fx-ix-grid > :nth-child(-n+2) { grid-column: span 2; }
-/* Two across: the wide pair takes a whole row each, the other eight pair off,
-   and 1 + 1 + 4 rows of two still closes. */
-@media (max-width: 980px) {
-  .fx-ix-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media (max-width: 560px) {
-  .fx-ix-grid { grid-template-columns: minmax(0, 1fr); }
-  .fx-ix-grid > :nth-child(-n+2) { grid-column: auto; }
 }
 
 .fx-tile {
   position: relative;
   display: block;
   overflow: hidden;
-  min-height: 230px;
+  min-height: 186px;
   border: 1px solid var(--line);
   border-radius: var(--r);
   text-decoration: none;
@@ -104,7 +98,6 @@
   isolation: isolate;
   transition: border-color .18s ease, transform .18s ease;
 }
-.fx-ix-grid > :nth-child(-n+2).fx-tile { min-height: 300px; }
 .fx-tile:hover, .fx-tile:focus-visible { border-color: var(--tint); transform: translateY(-2px); }
 @media (prefers-reduced-motion: reduce) { .fx-tile { transition: border-color .18s ease; } .fx-tile:hover { transform: none; } }
 
@@ -151,9 +144,10 @@
   margin: 0;
   font-family: var(--display);
   font-weight: var(--display-w);
-  font-size: clamp(26px, 3.4vw, 44px);
+  font-size: clamp(21px, 2.1vw, 28px);
   letter-spacing: var(--display-ls);
-  line-height: 1;
+  line-height: 1.02;
+  text-wrap: balance;
 }
 .fx-tile-span { margin: 10px 0 0; font-size: 13px; color: var(--dim); }
 .fx-tile-you {
@@ -167,12 +161,6 @@
 .fx-tile-you b { font-family: var(--mono); font-size: 19px; color: var(--tint); }
 .fx-tile-you span { font-size: 12.5px; color: var(--dim); }
 .fx-tile-you[data-none] span { color: var(--faint); font-style: italic; }
-.fx-tile-live {
-  margin: 8px 0 0;
-  font-family: var(--mono);
-  font-size: 11.5px;
-  color: var(--faint);
-}
 
 /* ── One franchise: the opening block ────────────────────────────────── */
 
@@ -568,6 +556,30 @@
    The index has no block here on purpose. It is the one screen with no
    franchise of its own, so it stays in the site's own amber and lets the ten
    tiles be the colour on it. */
+
+/* Every franchise that has no block of its own. It is not a fallback in the
+   sense of a thing that will be replaced: most of these series will never
+   have a hand-drawn screen, the same way most of the 158 game pages will
+   never be more than renderGeneric, and this is what that looks like done on
+   purpose. The site's own ground, and the series' own colour on it, which
+   franchises.js sets from the table.
+
+   First in this section, and deliberately: the written blocks below carry the
+   same specificity as this one - `:root[data-franchise]` against
+   `:root[data-franchise="portal"]` is (0,2,0) either way - so source order is
+   what lets a written block win.
+
+   It sets three tokens and not one more, and that is the whole design of it:
+   these three are exactly what every written block already declares, so a
+   franchise that has a screen of its own overrides all of this and inherits
+   none of it. Adding `--bar-fill` here would have quietly changed ten screens
+   nobody asked to have changed. */
+:root[data-franchise] {
+  --accent: var(--tint);
+  --link: var(--tint);
+  --focus-ring: linear-gradient(120deg,
+    var(--tint), color-mix(in srgb, var(--tint) 40%, #ffffff));
+}
 
 /* Half-Life - the HEV suit: one orange, one blue, and a black nobody lit. */
 :root[data-franchise="half-life"] {

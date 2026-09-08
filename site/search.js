@@ -331,7 +331,10 @@ function fxsDraw() {
   grid.setAttribute('role', 'list');
   grid.setAttribute('aria-labelledby', 'fxs-head');
 
-  for (const fr of FRANCHISES) {
+  // A slice and not the whole table. There are enough of these that the grid
+  // would be the front page rather than a way into it; the button under the
+  // copy is what leads to all of them.
+  for (const fr of FRANCHISES.slice(0, 10)) {
     const last = Math.max(...[...fr.apps, ...(fr.after || [])].map((a) => a.year));
     const total = fr.apps.length + (fr.after?.length || 0);
 

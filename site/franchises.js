@@ -250,6 +250,10 @@ const INTRO_MS = {
  *  for less motion or when this visit has already seen this one and `force`
  *  was not passed. */
 function playIntro(fr, { force = false } = {}) {
+  // Not every franchise has one, and a franchise without one opens on its
+  // screen rather than on three seconds of black. INTRO is the whole test:
+  // writing an opening is what gives a series one.
+  if (!INTRO[fr.slug]) return Promise.resolve(false);
   // Not a shorter opening for a reader who asked for less motion, and not a
   // still frame either. The replay button is not drawn for them at all, so
   // `force` cannot get past this line - which is the point of putting it
@@ -262,7 +266,7 @@ function playIntro(fr, { force = false } = {}) {
     data: { intro: fr.slug },
     attr: { role: 'presentation' },
   });
-  put(shot, ...(INTRO[fr.slug] || (() => []))());
+  put(shot, ...INTRO[fr.slug]());
 
   const skip = h('button', {
     cls: 'fx-skip',
@@ -393,8 +397,6 @@ function fxGameHref(appid, ctx) {
  *  the live one should win. */
 const fxName = (row, app) => (row && row.name) || app.name || `app ${app.id}`;
 
-/** The table entry for the game a franchise leads with. */
-const fxFlagship = (fr) => fr.apps.find((a) => a.id === fr.flagship) || { id: fr.flagship };
 
 /** Where a tile leads. Inside a profile the franchise screens stay inside it,
  *  so the reader's own hours do not fall off the moment they open one. */
@@ -407,6 +409,14 @@ const fxIndexHref = (fr, ctx) =>
    and is written down in one place rather than computed out of numbers that
    would not support it. */
 
+/* Every tile is drawn from the table and from the profile's own library, so
+   this page makes no request at all: no wait, nothing to fail, and none of the
+   catalogue read for a page that is a list of names. The live counts used to
+   be here, for the flagships only, and stopped being worth it the moment the
+   list stopped being ten - the api caps a live request at a dozen, so it would
+   have been twelve arbitrary tiles carrying a number and the rest not.
+   Those counts are on each franchise's own screen, where they cover every
+   game in it. */
 async function renderFranchiseIndex(root, ctx) {
   document.title = `${t('fx.title')} - steamprofiler.org`;
   root.textContent = '';
@@ -422,7 +432,6 @@ async function renderFranchiseIndex(root, ctx) {
   const grid = h('div', { cls: 'fx-ix-grid', attr: { role: 'list' } });
   root.append(grid);
 
-  const cards = new Map();
   for (const fr of FRANCHISES) {
     const span = fxSpan(fr);
     const stand = ctx.library ? fxStanding(fr, ctx.library, ctx.unplayed) : null;
@@ -464,31 +473,12 @@ async function renderFranchiseIndex(root, ctx) {
             : t('fx.none_here') })));
     }
 
-    const live = h('p', { cls: 'fx-tile-live' });
-    live.hidden = true;
-    body.append(live);
     card.append(body);
     grid.append(card);
-    cards.set(fr.slug, { live });
   }
 
   root.append(h('div', { cls: 'fx-band' },
     h('p', { cls: 'note fx-ix-note', text: t('fx.index_note') })));
-
-  // The live counts land on a page that is already up, on one call, and only
-  // for the ten flagships. A number nobody waited for is worth having; ten
-  // people waiting on ten counts is not.
-  const rows = await fxApps(FRANCHISES.map((f) => f.flagship),
-    FRANCHISES.map((f) => f.flagship));
-  for (const fr of FRANCHISES) {
-    const row = rows[String(fr.flagship)];
-    const slot = cards.get(fr.slug);
-    if (!slot || !row || row.players == null) continue;
-    slot.live.textContent = t('fx.playing_now', {
-      n: num(row.players), raw: row.players, game: fxName(row, fxFlagship(fr)),
-    });
-    slot.live.hidden = false;
-  }
 }
 
 
@@ -558,9 +548,25 @@ function trailerInto(host, row, name) {
    this series has. Which is the same bargain game.js makes, one level up. */
 
 async function renderFranchise(fr, root, ctx) {
+  if (window.__fxExclusiveCleanup) {
+    window.__fxExclusiveCleanup();
+    window.__fxExclusiveCleanup = null;
+  }
+  // The slug picks the palette block in franchises.css where one exists. The
+  // tint goes on regardless: it is what the generic block resolves against,
+  // so a series with no block of its own still arrives in its own colour
+  // rather than in the site's amber.
   document.documentElement.dataset.franchise = fr.slug;
+  document.documentElement.style.setProperty('--tint', fr.tint);
   document.title = `${fr.name} - steamprofiler.org`;
   root.textContent = '';
+
+  // Each of the ten full-page identities lives in its own CSS and JS pair.
+  // Loading is done before the first franchise node is drawn, which prevents
+  // a flash of the shared skeleton on the way into the exclusive screen.
+  const exclusive = window.FranchiseExclusives
+    ? await window.FranchiseExclusives.load(fr.slug)
+    : null;
 
   const span = fxSpan(fr);
   const apps = [...fr.apps, ...(fr.after || [])];
@@ -590,16 +596,19 @@ async function renderFranchise(fr, root, ctx) {
         h('i', { text: '·' }),
         h('span', { text: t('fx.span_years', { from: span.from, to: span.to }) })),
       h('h1', { cls: 'display fx-hero-name', text: fr.name }),
-      h('p', { cls: 'lede fx-hero-lede', text: t(`fx.${fxKey(fr)}_line`) }),
+      said(`fx.${fxKey(fr)}_line`, 'lede fx-hero-lede'),
       standingInto(fr, stand),
       acts));
   root.append(hero);
+  if (exclusive && exclusive.mount) {
+    window.__fxExclusiveCleanup = exclusive.mount({ hero, root, fr, span, ctx, stand }) || null;
+  }
 
-  // Replaying it is only offered where it can happen at all. A button that
-  // does nothing for a reader who asked for less motion is worse than no
-  // button, because it reads as something broken rather than as a choice
-  // this page already made for them.
-  if (!still()) {
+  // Replaying it is only offered where it can happen at all: where there is
+  // an opening to replay, and to a reader who did not ask for less motion. A
+  // button that does nothing is worse than no button, because it reads as
+  // something broken rather than as a choice this page already made.
+  if (INTRO[fr.slug] && !still()) {
     const again = h('button', { cls: 'fx-act', text: t('fx.replay'), attr: { type: 'button' } });
     again.addEventListener('click', () => playIntro(fr, { force: true }));
     acts.append(again);
@@ -637,14 +646,19 @@ async function renderFranchise(fr, root, ctx) {
   }
 
   root.append(h('div', { cls: 'fx-band' },
-    h('p', { cls: 'note fx-note', text: t(`fx.${fxKey(fr)}_note`) }),
+    said(`fx.${fxKey(fr)}_note`, 'note fx-note'),
     h('p', { cls: 'note fx-note', text: t('fx.data_note') })));
 
   // The opening runs over a page that is already built, so skipping it lands
   // on the screen rather than on a wait for one.
   playIntro(fr);
 
-  const rows = await fxApps(apps.map((a) => a.id), fr.apps.map((a) => a.id));
+  // The api answers a live count for a dozen apps at most, and a long series
+  // has more than that. The dozen are the newest, because a count of nought in
+  // a game from 2004 says less than a count in the one that came out last
+  // year - and a row without one simply does not carry the line.
+  const newest = [...fr.apps].sort((a, b) => b.year - a.year).map((a) => a.id);
+  const rows = await fxApps(apps.map((a) => a.id), newest);
 
   drawLine(line, fr, rows, ctx);
   put(list, ...fr.apps.map((a) => gameRow(a, rows[String(a.id)], ctx, stand)));
@@ -652,12 +666,25 @@ async function renderFranchise(fr, root, ctx) {
     put(afterList, ...fr.after.map((a) => gameRow(a, rows[String(a.id)], ctx, stand)));
   }
   (SIGNATURE[fr.slug] || (() => {}))(sig, fr, rows, ctx, stand);
+  if (exclusive && exclusive.ready) exclusive.ready({ hero, root, fr, rows, ctx, stand });
   trailerInto(acts, rows[String(fr.flagship)], fr.name);
 }
 
 /** The slug as an i18n key fragment. Keys cannot carry hyphens as readably as
  *  slugs can, and the slug is in the URL where the hyphen belongs. */
 const fxKey = (fr) => fr.slug.replaceAll('-', '_');
+
+/** A paragraph for a key that may not exist, or nothing.
+ *
+ *  Some of these series have a line written about them and most do not, and
+ *  t() answers a missing key with the key - so without this the hero of a
+ *  franchise nobody has written up yet reads `fx.mafia_line`. Checked against
+ *  English because English is where a string is written first and the fallback
+ *  every other language resolves through. */
+function said(key, cls) {
+  const has = DICT.en[key] != null;
+  return has ? h('p', { cls, text: t(key) }) : null;
+}
 
 /** The reader's own standing in this series, or nothing at all when there is
  *  no profile in the address. */
