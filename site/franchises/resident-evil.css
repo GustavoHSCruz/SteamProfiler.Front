@@ -1,0 +1,38 @@
+/* RESIDENT EVIL: survival-horror status screen, inventory geometry and a door
+   that never feels safe. */
+:root[data-franchise="resident-evil"]{--ground:linear-gradient(120deg,#c1272d08,transparent 32%),repeating-linear-gradient(90deg,#ffffff018 0 1px,transparent 1px 9px)}
+:root[data-franchise="resident-evil"] .bar-top{background:#080506f2;border-bottom:1px solid #5c282b}
+:root[data-franchise="resident-evil"] .fx-hero{min-height:780px;align-items:center;border:0;background:#050304}
+:root[data-franchise="resident-evil"] .fx-hero::before{content:"";position:absolute;inset:5% 4%;border:1px solid #4c2d2f;background:linear-gradient(108deg,#0a0708 0 48%,transparent 48%);clip-path:polygon(0 0,100% 0,100% 92%,96% 100%,0 100%)}
+:root[data-franchise="resident-evil"] .fx-hero-art{left:46%;width:54%;opacity:.43;filter:grayscale(.75) contrast(1.45) brightness(.7);-webkit-mask-image:linear-gradient(90deg,transparent,#000 24%);mask-image:linear-gradient(90deg,transparent,#000 24%)}
+:root[data-franchise="resident-evil"] .fx-hero-veil{background:linear-gradient(90deg,#080506 0 42%,#080506bf 56%,transparent 80%),linear-gradient(0deg,#080506 0,transparent 32%)}
+:root[data-franchise="resident-evil"] .fx-hero-in{max-width:1280px;padding-right:48%}
+:root[data-franchise="resident-evil"] .fx-hero-kicker{color:#c9a15f;border-bottom:1px solid #c9a15f66;padding-bottom:8px}
+:root[data-franchise="resident-evil"] .fx-hero-name{font-size:clamp(62px,11vw,148px);line-height:.82;text-shadow:5px 0 #3b0a0e,-2px 0 #c1272d55}
+:root[data-franchise="resident-evil"] .fx-hero-name::first-letter{color:#c1272d}
+:root[data-franchise="resident-evil"] .fx-hero-lede{font-family:'IBM Plex Mono';font-size:13px;border-left:2px solid #c1272d;padding-left:14px}
+:root[data-franchise="resident-evil"] .fx-stand{border:1px solid #583033;padding:10px 14px;background:#080506d9}
+:root[data-franchise="resident-evil"] .fx-act{background:#080506;border-color:#6a3337}:root[data-franchise="resident-evil"] .fx-act:hover{background:#c1272d;color:#fff}
+
+.fxre-scene{position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none;font-family:'IBM Plex Mono';color:#c1272d}
+.fxre-scene::after{content:"";position:absolute;left:var(--fxre-x,75%);top:var(--fxre-y,45%);width:280px;height:280px;transform:translate(-50%,-50%);background:radial-gradient(circle,#c9a15f0f,transparent 66%);transition:left .4s ease,top .4s ease}
+.fxre-door{position:absolute;right:10%;top:15%;width:150px;height:320px;border:10px solid #171011;background:linear-gradient(90deg,#120c0d,#25191a 48%,#0d090a 50%);box-shadow:0 0 0 1px #4d3032,15px 20px 35px #000}.fxre-door::before{content:"";position:absolute;inset:15px;border:1px solid #402527}.fxre-door i{position:absolute;right:18px;top:52%;width:12px;height:12px;border-radius:50%;background:#c9a15f;box-shadow:0 0 10px #c9a15f}.fxre-door b{position:absolute;left:50%;top:22px;transform:translateX(-50%);font-size:10px;color:#806e60;letter-spacing:.2em}
+.fxre-health{position:absolute;right:4%;bottom:8%;width:270px;padding:10px 12px;border:1px solid #4d3032;background:#080506da}.fxre-health span{display:block;color:#69b777;font-size:11px;letter-spacing:.22em}.fxre-health>div{height:35px;display:flex;align-items:center}.fxre-health i{display:block;width:36px;height:2px;background:#69b777;transform:rotate(0)}.fxre-health i:nth-child(3){width:18px;transform:rotate(-62deg)}.fxre-health i:nth-child(4){width:18px;transform:rotate(62deg)}
+.fxre-ribbon{position:absolute;right:4%;top:8%;padding:8px 12px;border-left:4px solid #5255a8;background:#080506d9;color:#a6a9df;font-size:10px;letter-spacing:.15em}.fxre-ribbon b{color:#fff}
+.fxre-alert{position:absolute;left:0;right:0;top:0;height:3px;background:#c1272d;box-shadow:0 0 18px #c1272d}
+
+:root[data-franchise="resident-evil"] .fx-line,:root[data-franchise="resident-evil"] .fx-sig,:root[data-franchise="resident-evil"] .fx-shelf{max-width:1180px}
+:root[data-franchise="resident-evil"] .panel-bar{background:#110b0c;border-left:5px solid #c1272d;border-bottom:1px solid #3a2426}
+:root[data-franchise="resident-evil"] .fx-track{height:175px;border:1px solid #3a2426;background:repeating-linear-gradient(90deg,#c1272d08 0 1px,transparent 1px 48px),#080506}
+:root[data-franchise="resident-evil"] .fx-track::after{height:2px;background:#c1272d;box-shadow:0 0 12px #c1272d66}
+:root[data-franchise="resident-evil"] .fx-dot i{border-radius:0;width:14px;height:14px;background:#080506;border-color:#c9a15f}:root[data-franchise="resident-evil"] .fx-dot[data-on] i{background:#c1272d;border-color:#c1272d}
+:root[data-franchise="resident-evil"] .fx-sig-body{border:10px solid #1c1414;background:repeating-linear-gradient(45deg,#ffffff05 0 6px,transparent 6px 12px),#0e0b0b;box-shadow:inset 0 0 0 1px #3a2426}
+:root[data-franchise="resident-evil"] .fx-rows{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(150px,auto);gap:5px;counter-reset:slot}
+:root[data-franchise="resident-evil"] .fx-row{counter-increment:slot;position:relative;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;height:100%;margin:0;padding:38px 13px 13px;border:1px solid #3a2426;background:#0d090a;overflow:hidden}
+:root[data-franchise="resident-evil"] .fx-row::before{content:"SLOT " counter(slot,decimal-leading-zero);position:absolute;left:10px;top:9px;font:9px 'IBM Plex Mono';letter-spacing:.15em;color:#756563}
+:root[data-franchise="resident-evil"] .fx-row:nth-child(5n+1){grid-column:span 2}:root[data-franchise="resident-evil"] .fx-row[data-on]{background:linear-gradient(145deg,#251113,#0d090a);box-shadow:inset 0 0 20px #c1272d16}:root[data-franchise="resident-evil"] .fx-row:hover{border-color:#c9a15f}
+:root[data-franchise="resident-evil"] .fx-row-year{order:1;color:#c9a15f}:root[data-franchise="resident-evil"] .fx-row-head{order:0}:root[data-franchise="resident-evil"] .fx-row-name{font-family:'Oswald';font-size:16px}:root[data-franchise="resident-evil"] .fx-row-facts{order:2;justify-content:flex-start}:root[data-franchise="resident-evil"] .fx-row-arrived{order:3}
+
+@media(prefers-reduced-motion:no-preference){.fxre-alert{animation:fxreAlarm 3.4s ease-in-out infinite}.fxre-health>div{animation:fxrePulse 1.1s steps(2) infinite}.fxre-door{animation:fxreDoor 5s ease-in-out infinite alternate}@keyframes fxreAlarm{50%{opacity:.2}}@keyframes fxrePulse{50%{filter:brightness(1.8)}}@keyframes fxreDoor{to{transform:perspective(700px) rotateY(-5deg)}}}
+@media(max-width:860px){:root[data-franchise="resident-evil"] .fx-rows{grid-template-columns:repeat(2,minmax(0,1fr))}:root[data-franchise="resident-evil"] .fx-hero-in{padding-right:var(--edge)}:root[data-franchise="resident-evil"] .fx-hero-art{left:24%;width:76%;opacity:.24}.fxre-door{right:-50px;opacity:.35}.fxre-health{display:none}}
+@media(max-width:520px){:root[data-franchise="resident-evil"] .fx-rows{grid-template-columns:1fr}:root[data-franchise="resident-evil"] .fx-row:nth-child(n){grid-column:auto}}

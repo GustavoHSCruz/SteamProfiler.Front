@@ -1,0 +1,39 @@
+/* THE ELDER SCROLLS: a ceremonial codex with a living brass astrolabe. */
+:root[data-franchise="the-elder-scrolls"] { --ground: radial-gradient(circle at 50% 0,#c9a83f0c,transparent 38%),repeating-linear-gradient(118deg,#ffffff018 0 1px,transparent 1px 7px); }
+:root[data-franchise="the-elder-scrolls"] .bar-top{background:#08090de8;border-bottom:1px solid #c9a83f55}
+:root[data-franchise="the-elder-scrolls"] .fx-hero{min-height:840px;align-items:center;border:0;background:#08090d;text-align:center}
+:root[data-franchise="the-elder-scrolls"] .fx-hero::before{content:"";position:absolute;inset:6% 8%;border:1px solid #c9a83f52;clip-path:polygon(40px 0,calc(100% - 40px) 0,100% 40px,100% calc(100% - 40px),calc(100% - 40px) 100%,40px 100%,0 calc(100% - 40px),0 40px)}
+:root[data-franchise="the-elder-scrolls"] .fx-hero-art{inset:8%;width:84%;height:84%;opacity:.31;filter:grayscale(.55) sepia(.35) contrast(1.24);-webkit-mask-image:radial-gradient(ellipse,#000 20%,transparent 72%);mask-image:radial-gradient(ellipse,#000 20%,transparent 72%)}
+:root[data-franchise="the-elder-scrolls"] .fx-hero-veil{background:radial-gradient(ellipse at center,transparent 5%,#08090d66 48%,#08090d 76%)}
+:root[data-franchise="the-elder-scrolls"] .fx-hero-in{max-width:1120px;display:flex;flex-direction:column;align-items:center;padding-top:180px}
+:root[data-franchise="the-elder-scrolls"] .fx-hero-kicker{justify-content:center;color:#c9a83f}
+:root[data-franchise="the-elder-scrolls"] .fx-hero-name{max-width:12ch;font-size:clamp(50px,9vw,118px);line-height:.92;text-shadow:0 4px 22px #000,0 0 50px #c9a83f1f}
+:root[data-franchise="the-elder-scrolls"] .fx-hero-lede{margin-inline:auto;max-width:48ch;font-family:'Cinzel';font-size:14px;line-height:1.8}
+:root[data-franchise="the-elder-scrolls"] .fx-stand{justify-content:center;border:0;border-block:1px solid #c9a83f66;width:min(620px,100%);padding:12px 24px}
+:root[data-franchise="the-elder-scrolls"] .fx-acts{justify-content:center}:root[data-franchise="the-elder-scrolls"] .fx-act{position:relative}
+:root[data-franchise="the-elder-scrolls"] .fx-act{border-color:#c9a83f55;background:#08090dbf;clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 50%,calc(100% - 8px) 100%,8px 100%,0 50%)}
+
+.fxtes-scene{position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none;color:#c9a83f;font-family:'Cinzel'}
+.fxtes-seal{position:absolute;left:50%;top:8%;width:230px;height:230px;transform:translateX(-50%) rotate(var(--fxtes-turn,0deg));border:1px solid #c9a83f66;border-radius:50%;box-shadow:0 0 60px #c9a83f17,inset 0 0 40px #c9a83f12;transition:transform .35s ease-out}
+.fxtes-seal::before,.fxtes-seal::after{content:"";position:absolute;border:1px solid #c9a83f55;border-radius:50%}.fxtes-seal::before{inset:18px}.fxtes-seal::after{inset:54px;border-style:dashed}
+.fxtes-seal i{position:absolute;left:50%;top:50%;width:2px;height:10px;background:#c9a83f;transform-origin:1px -100px;transform:translateY(100px) rotate(calc(var(--n) * 15deg))}
+.fxtes-seal b{position:absolute;inset:0;display:grid;place-items:center;font:400 70px 'Cinzel';text-shadow:0 0 22px #c9a83f88}
+.fxtes-compass{position:absolute;left:50%;bottom:7%;transform:translateX(-50%);display:flex;align-items:center;gap:45px;color:#786f5e;font-size:10px;letter-spacing:.2em}.fxtes-compass b{color:#c9a83f;font-size:18px}.fxtes-compass::before{content:"";position:absolute;left:50%;bottom:28px;width:1px;height:55px;background:linear-gradient(#c9a83f,transparent)}
+.fxtes-rule{display:none}
+
+:root[data-franchise="the-elder-scrolls"] .fx-line{max-width:920px;margin-top:54px}
+:root[data-franchise="the-elder-scrolls"] .panel-bar{justify-content:center;gap:24px;border:0;border-bottom:1px solid #c9a83f66;background:transparent;font-family:'Cinzel'}
+:root[data-franchise="the-elder-scrolls"] .fx-track{height:210px;border:1px solid #302b20;background:radial-gradient(ellipse at center,#c9a83f0d,transparent 60%)}
+:root[data-franchise="the-elder-scrolls"] .fx-track::after{height:1px;background:#c9a83f99}
+:root[data-franchise="the-elder-scrolls"] .fx-dot i{width:15px;height:15px;border:1px solid #c9a83f;border-radius:0;transform:rotate(45deg);background:#08090d;box-shadow:0 0 0 4px #08090d}
+:root[data-franchise="the-elder-scrolls"] .fx-sig{max-width:1080px;margin-top:60px}
+:root[data-franchise="the-elder-scrolls"] .fx-sig-body{border:1px solid #c9a83f4d;background:linear-gradient(135deg,#c9a83f0b,transparent 25% 75%,#c9a83f0b),#0d0f14;padding:34px;clip-path:polygon(20px 0,calc(100% - 20px) 0,100% 20px,100% calc(100% - 20px),calc(100% - 20px) 100%,20px 100%,0 calc(100% - 20px),0 20px)}
+:root[data-franchise="the-elder-scrolls"] .fx-shelf{max-width:940px;margin-top:64px}
+:root[data-franchise="the-elder-scrolls"] .fx-rows{counter-reset:chapter}
+:root[data-franchise="the-elder-scrolls"] .fx-row{counter-increment:chapter;grid-template-columns:80px minmax(0,1fr) auto auto;min-height:82px;margin:0;border:0;border-bottom:1px solid #2f2b23;background:transparent;padding:18px 22px}
+:root[data-franchise="the-elder-scrolls"] .fx-row::before{content:"CHAPTER " counter(chapter,upper-roman);grid-column:1/-1;font:400 8px 'Cinzel';letter-spacing:.25em;color:#c9a83f77}
+:root[data-franchise="the-elder-scrolls"] .fx-row:hover{background:linear-gradient(90deg,transparent,#c9a83f0d,transparent)}
+:root[data-franchise="the-elder-scrolls"] .fx-row-name{font-family:'Cinzel';font-weight:700;color:#d9d0bb}:root[data-franchise="the-elder-scrolls"] .fx-row-tag{font-family:'Cinzel'}
+
+@media(prefers-reduced-motion:no-preference){.fxtes-seal{animation:fxtesTurn 40s linear infinite}.fxtes-seal::after{animation:fxtesTurn 16s linear infinite reverse}.fxtes-seal b{animation:fxtesGlow 3s ease-in-out infinite alternate}@keyframes fxtesTurn{to{rotate:360deg}}@keyframes fxtesGlow{to{text-shadow:0 0 38px #c9a83fcc}}}
+@media(max-width:720px){:root[data-franchise="the-elder-scrolls"] .fx-hero{min-height:720px}:root[data-franchise="the-elder-scrolls"] .fx-hero-in{padding-top:160px}.fxtes-seal{width:180px;height:180px}.fxtes-seal i{transform-origin:1px -76px;transform:translateY(76px) rotate(calc(var(--n)*15deg))}.fxtes-rule{display:none}:root[data-franchise="the-elder-scrolls"] .fx-row{grid-template-columns:58px minmax(0,1fr)}}

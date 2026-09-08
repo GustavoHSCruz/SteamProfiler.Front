@@ -1,0 +1,53 @@
+/* COUNTER-STRIKE: a live tactical broadcast made out of opposing halves. */
+:root[data-franchise="counter-strike"] { --ground: linear-gradient(115deg, #5b8fc907 0 50%, #c7a46807 50%); }
+:root[data-franchise="counter-strike"] .bar-top { background: #0a1016f2; border-bottom: 2px solid; border-image: linear-gradient(90deg, #5b8fc9 50%, #c7a468 50%) 1; }
+:root[data-franchise="counter-strike"] .fx-hero { min-height: 690px; align-items: center; background: linear-gradient(112deg, #101b27 0 49.8%, #211a11 50.2% 100%); border: 0; }
+:root[data-franchise="counter-strike"] .fx-hero::after { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: #f0a92e; box-shadow: 0 0 24px #f0a92e66; transform: skew(-8deg); }
+:root[data-franchise="counter-strike"] .fx-hero-art { opacity: .32; filter: grayscale(.7) contrast(1.35); mix-blend-mode: luminosity; }
+:root[data-franchise="counter-strike"] .fx-hero-veil { background: linear-gradient(90deg, #0b1015d4 0 18%, transparent 45% 55%, #0b1015cc 82%); }
+:root[data-franchise="counter-strike"] .fx-hero-in { max-width: 1340px; text-align: center; }
+:root[data-franchise="counter-strike"] .fx-hero-kicker { justify-content: center; color: #f0a92e; }
+:root[data-franchise="counter-strike"] .fx-hero-name { font-size: clamp(55px, 10vw, 145px); text-shadow: 4px 4px 0 #0b1015, -2px 0 #5b8fc966, 2px 0 #c7a46866; }
+:root[data-franchise="counter-strike"] .fx-hero-lede { margin-inline: auto; padding: 10px 18px; background: #0b1015c7; border: 1px solid #33434f; }
+:root[data-franchise="counter-strike"] .fx-stand { justify-content: center; width: fit-content; margin-inline: auto; padding-inline: 18px; background: #0b1015d9; }
+:root[data-franchise="counter-strike"] .fx-acts { justify-content: center; }
+:root[data-franchise="counter-strike"] .fx-act { min-width: 150px; justify-content: center; clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%); }
+
+.fxcs-scene { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; font-family: 'Chakra Petch'; }
+.fxcs-radar { position: absolute; left: 4vw; top: 12%; width: min(24vw, 250px); aspect-ratio: 1; border: 1px solid #5b8fc988; border-radius: 50%; background: repeating-radial-gradient(circle, transparent 0 24%, #5b8fc92c 25% 25.8%, transparent 26% 49%, #5b8fc92c 50% 50.8%, transparent 51%), conic-gradient(from 20deg, #5b8fc940, transparent 22%); }
+.fxcs-radar::before, .fxcs-radar::after { content: ""; position: absolute; background: #5b8fc944; }.fxcs-radar::before { top: 50%; left: 0; right: 0; height: 1px; }.fxcs-radar::after { left: 50%; top: 0; bottom: 0; width: 1px; }
+.fxcs-radar i { position: absolute; width: 7px; height: 7px; border-radius: 50%; background: #f0a92e; box-shadow: 0 0 10px #f0a92e; }.fxcs-radar i:nth-child(1){left:30%;top:24%}.fxcs-radar i:nth-child(2){left:66%;top:43%}.fxcs-radar i:nth-child(3){left:48%;top:72%}.fxcs-radar i:nth-child(4){left:73%;top:68%;background:#c7a468}
+.fxcs-score { position: absolute; left: 50%; top: 9%; transform: translateX(-50%); display: grid; grid-template-columns: 54px 72px 54px; height: 44px; text-align: center; background: #080c11e8; border: 1px solid #33434f; }
+.fxcs-score b { display: grid; place-items: center; color: #e8edf0; font-size: 24px; }.fxcs-score b:first-child { background: #5b8fc944; }.fxcs-score b:last-child { background: #c7a46844; }
+.fxcs-score span { display: grid; place-items: center; color: #f0a92e; font: 600 14px 'IBM Plex Mono'; }
+.fxcs-site { position: absolute; right: 5vw; bottom: 12%; display: grid; place-items: center; width: 84px; height: 84px; border: 4px solid #c7a46888; border-radius: 50%; color: #c7a468; font-size: 54px; font-weight: 700; opacity: .5; }
+.fxcs-cross { position: absolute; left: 50%; top: 52%; width: 54px; height: 54px; transform: translate(-50%,-50%); }.fxcs-cross i { position: absolute; background: #f0a92e99; }.fxcs-cross i:first-child{left:50%;top:0;bottom:0;width:1px}.fxcs-cross i:last-child{top:50%;left:0;right:0;height:1px}
+
+:root[data-franchise="counter-strike"] .fx-line { max-width: 1340px; }
+:root[data-franchise="counter-strike"] .fx-line .panel-bar { justify-content: center; gap: 20px; background: linear-gradient(90deg, #18283a 0 49.8%, #302519 50.2%); border: 0; }
+:root[data-franchise="counter-strike"] .fx-track { height: 156px; border: 1px solid #33434f; background: linear-gradient(90deg, #5b8fc90d 50%, #c7a4680d 50%); }
+:root[data-franchise="counter-strike"] .fx-track::after { bottom: 74px; height: 2px; background: linear-gradient(90deg, #5b8fc9, #f0a92e 50%, #c7a468); }
+:root[data-franchise="counter-strike"] .fx-dot i { width: 14px; height: 14px; border: 2px solid #f0a92e; background: #111923; }
+:root[data-franchise="counter-strike"] .fx-sig-body { background: repeating-linear-gradient(135deg, #ffffff05 0 1px, transparent 1px 8px), #101820; border: 0; box-shadow: inset 0 0 0 1px #33434f; }
+:root[data-franchise="counter-strike"] .fx-shelf { max-width: 1340px; }
+:root[data-franchise="counter-strike"] .fx-rows { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 6px; counter-reset: round; }
+:root[data-franchise="counter-strike"] .fx-rows > li { min-width: 0; }
+:root[data-franchise="counter-strike"] .fx-row { counter-increment: round; height: 100%; margin: 0; grid-template-columns: 44px minmax(0,1fr) auto auto; background: linear-gradient(100deg, #5b8fc912, #131b22 38%, #c7a4680b); border-color: #33434f; }
+:root[data-franchise="counter-strike"] .fx-row::before { content: counter(round, decimal-leading-zero); grid-row: 1 / 3; font: 700 23px 'Chakra Petch'; color: #f0a92e; }
+:root[data-franchise="counter-strike"] .fx-row-year { display: none; }
+:root[data-franchise="counter-strike"] .fx-row-arrived { grid-column: 2 / -1; }
+:root[data-franchise="counter-strike"] .fx-row:hover { transform: translateX(3px); background: linear-gradient(100deg, #5b8fc92c, #1a242c 44%, #c7a46818); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .fxcs-radar { animation: fxcsRadar 4s linear infinite; }
+  .fxcs-radar i { animation: fxcsPing 1.8s ease-out infinite; }
+  .fxcs-cross { animation: fxcsAim 3.4s cubic-bezier(.7,0,.3,1) infinite alternate; }
+  @keyframes fxcsRadar { to { transform: rotate(360deg); } }
+  @keyframes fxcsPing { 50% { transform: scale(1.7); opacity: .35; } }
+  @keyframes fxcsAim { to { translate: 22px -12px; } }
+}
+@media (max-width: 760px) {
+  :root[data-franchise="counter-strike"] .fx-rows { grid-template-columns: 1fr; }
+  .fxcs-radar { width: 150px; opacity: .35; }.fxcs-site { display:none; }
+  :root[data-franchise="counter-strike"] .fx-hero { min-height: 580px; }
+}

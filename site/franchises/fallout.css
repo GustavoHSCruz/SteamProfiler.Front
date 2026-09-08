@@ -1,0 +1,37 @@
+/* FALLOUT: the entire document is a phosphor terminal inside a battered case. */
+:root[data-franchise="fallout"]{--ground:repeating-linear-gradient(180deg,#5fe08a08 0 1px,transparent 1px 4px),radial-gradient(ellipse at 50% 20%,#173522 0,#050806 68%)}
+:root[data-franchise="fallout"] body::after{content:"";position:fixed;inset:0;z-index:8000;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,#0007 100%);mix-blend-mode:multiply}
+:root[data-franchise="fallout"] .bar-top{background:#050806;border-bottom:2px solid #5fe08a;box-shadow:0 0 22px #5fe08a44}
+:root[data-franchise="fallout"] .fx-hero{min-height:680px;margin:22px auto 0;width:min(1260px,calc(100% - 28px));border:14px solid #202a20;border-radius:48px;background:#030604;box-shadow:inset 0 0 0 3px #3d4b3a,inset 0 0 80px #000,0 20px 60px #0008;overflow:hidden}
+:root[data-franchise="fallout"] .fx-hero::before{content:"PIP-BOY 3000 Mk IV";position:absolute;right:32px;top:16px;z-index:4;color:#71806a;font:600 10px 'IBM Plex Mono';letter-spacing:.2em}
+:root[data-franchise="fallout"] .fx-hero-art{opacity:.17;filter:grayscale(1) sepia(1) hue-rotate(70deg) saturate(2) contrast(1.4)}
+:root[data-franchise="fallout"] .fx-hero-veil{background:repeating-linear-gradient(180deg,#5fe08a09 0 1px,transparent 1px 4px),linear-gradient(90deg,#030604 8%,#030604b8 62%,transparent)}
+:root[data-franchise="fallout"] .fx-hero-in{max-width:1160px;padding-right:38%}
+:root[data-franchise="fallout"] .fx-hero-kicker{border-bottom:1px dashed #5fe08a88;padding-bottom:8px}
+:root[data-franchise="fallout"] .fx-hero-name{font-size:clamp(58px,10vw,136px);text-shadow:0 0 15px #5fe08a88}
+:root[data-franchise="fallout"] .fx-hero-name::after{content:"_";font-weight:400}
+:root[data-franchise="fallout"] .fx-hero-lede{font-family:'IBM Plex Mono';border-left:3px solid #5fe08a;padding-left:12px}
+:root[data-franchise="fallout"] .fx-stand{border-style:dashed}:root[data-franchise="fallout"] .fx-acts{gap:10px}
+:root[data-franchise="fallout"] .fx-act{background:transparent;border:1px solid #5fe08a;color:#5fe08a}:root[data-franchise="fallout"] .fx-act:hover{background:#5fe08a;color:#041006}
+
+.fxfo-scene{position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none;color:#5fe08a;font-family:'IBM Plex Mono'}
+.fxfo-dial{position:absolute;right:8%;top:23%;width:190px;height:190px;border:3px solid #337a51;border-radius:50%;box-shadow:inset 0 0 28px #5fe08a22,0 0 18px #5fe08a18}.fxfo-dial::before{content:"";position:absolute;inset:18px;border:1px dashed #5fe08a66;border-radius:50%}.fxfo-dial i{position:absolute;left:50%;bottom:50%;width:3px;height:72px;background:#5fe08a;transform-origin:bottom;transform:rotate(-36deg);box-shadow:0 0 8px #5fe08a}.fxfo-dial b{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);font-size:13px}.fxfo-dial span{position:absolute;inset:0;display:grid;place-items:center;font-size:34px;text-shadow:0 0 12px #5fe08a}
+.fxfo-wave{position:absolute;right:5%;bottom:15%;width:250px;height:64px;display:flex;align-items:center;gap:4px;border-block:1px solid #337a51}.fxfo-wave i{flex:1;height:calc(12px + (var(--i,1) * 2px));background:#5fe08a;opacity:.65}.fxfo-wave i:nth-child(3n){height:46px}.fxfo-wave i:nth-child(4n){height:28px}
+.fxfo-status{position:absolute;right:6%;top:12%;display:flex;flex-direction:column;align-items:flex-end}.fxfo-status span{font-size:8px;letter-spacing:.2em}.fxfo-status b{font-size:13px;letter-spacing:.08em}
+.fxfo-scan{position:absolute;left:0;right:0;height:90px;background:linear-gradient(transparent,#5fe08a12,transparent)}
+
+:root[data-franchise="fallout"] .fx-line,:root[data-franchise="fallout"] .fx-sig,:root[data-franchise="fallout"] .fx-shelf,:root[data-franchise="fallout"] .fx-band{max-width:1120px}
+:root[data-franchise="fallout"] .panel-bar{border:1px solid #337a51;border-bottom:0;background:#5fe08a;color:#041006}
+:root[data-franchise="fallout"] .panel-bar b{color:#041006}
+:root[data-franchise="fallout"] .panel-bar::before{content:"["}:root[data-franchise="fallout"] .panel-bar::after{content:"]"}
+:root[data-franchise="fallout"] .fx-track{height:165px;border:1px solid #337a51;background:repeating-linear-gradient(180deg,#5fe08a09 0 1px,transparent 1px 4px),#050806}
+:root[data-franchise="fallout"] .fx-track::after{height:2px;background:#5fe08a;box-shadow:0 0 10px #5fe08a}
+:root[data-franchise="fallout"] .fx-dot i{width:13px;height:13px;border-radius:0;border:2px solid #5fe08a;background:#050806}
+:root[data-franchise="fallout"] .fx-sig-body{border:1px solid #337a51;background:repeating-linear-gradient(180deg,#5fe08a08 0 1px,transparent 1px 4px),#050806}
+:root[data-franchise="fallout"] .fx-rows{counter-reset:quest}
+:root[data-franchise="fallout"] .fx-row{counter-increment:quest;margin:0;border:0;border-bottom:1px dashed #337a51;background:transparent;grid-template-columns:34px 58px minmax(0,1fr) auto auto}
+:root[data-franchise="fallout"] .fx-row::before{content:"[" counter(quest,decimal-leading-zero) "]";font:11px 'IBM Plex Mono';color:#337a51}
+:root[data-franchise="fallout"] .fx-row:hover{background:#5fe08a;color:#041006}:root[data-franchise="fallout"] .fx-row:hover *{color:#041006}
+
+@media(prefers-reduced-motion:no-preference){.fxfo-scan{animation:fxfoScan 4s linear infinite}.fxfo-dial i{animation:fxfoNeedle 2.8s steps(5) infinite alternate}.fxfo-wave i{animation:fxfoWave .7s steps(2) infinite alternate}.fxfo-wave i:nth-child(2n){animation-delay:-.3s}:root[data-franchise="fallout"] .fx-hero-name::after{animation:fxfoCursor .9s steps(1) infinite}@keyframes fxfoScan{from{transform:translateY(-100px)}to{transform:translateY(700px)}}@keyframes fxfoNeedle{to{transform:rotate(48deg)}}@keyframes fxfoWave{to{scale:1 .45}}@keyframes fxfoCursor{50%{opacity:0}}}
+@media(max-width:760px){:root[data-franchise="fallout"] .fx-hero{width:calc(100% - 16px);border-width:7px;border-radius:24px}:root[data-franchise="fallout"] .fx-hero-in{padding-right:var(--edge)}.fxfo-dial{right:-75px;opacity:.32}.fxfo-wave,.fxfo-status{display:none}:root[data-franchise="fallout"] .fx-row{grid-template-columns:30px 46px minmax(0,1fr)}}

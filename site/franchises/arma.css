@@ -1,0 +1,35 @@
+/* ARMA: an operations folder on a topographic briefing table. */
+:root[data-franchise="arma"]{--ground:linear-gradient(90deg,#93a86a0c 1px,transparent 1px) 0 0/30px 30px,linear-gradient(#93a86a0c 1px,transparent 1px) 0 0/30px 30px,#191c14}
+:root[data-franchise="arma"] .bar-top{background:#191c14f2;border-bottom:3px double #93a86a88}
+:root[data-franchise="arma"] .fx-hero{min-height:720px;align-items:center;border:0;background:#22261a}
+:root[data-franchise="arma"] .fx-hero::before{content:"";position:absolute;inset:38px;background:repeating-linear-gradient(90deg,#2f3425 0 1px,transparent 1px 40px),repeating-linear-gradient(#2f3425 0 1px,transparent 1px 40px);border:1px solid #565d3c;transform:rotate(-.6deg)}
+:root[data-franchise="arma"] .fx-hero-art{inset:7% 4% 7% 45%;width:51%;height:86%;opacity:.44;filter:grayscale(.55) sepia(.3) contrast(1.2);border:8px solid #c7c7a7;box-shadow:10px 14px 30px #0007;transform:rotate(1.2deg)}
+:root[data-franchise="arma"] .fx-hero-veil{background:linear-gradient(90deg,#22261a 5%,#22261adf 42%,transparent 68%),linear-gradient(0deg,#22261a 0,transparent 30%)}
+:root[data-franchise="arma"] .fx-hero-in{max-width:1300px;padding-right:50%}
+:root[data-franchise="arma"] .fx-hero-kicker{width:fit-content;background:#c9c9a8;color:#1b1e14;padding:6px 12px;border-left:8px solid #b8452a;box-shadow:4px 5px 0 #0004}
+:root[data-franchise="arma"] .fx-hero-name{font-size:clamp(74px,13vw,178px);line-height:.78;text-shadow:5px 5px 0 #0e100b}
+:root[data-franchise="arma"] .fx-hero-lede{max-width:44ch;padding:14px;background:#c9c9a8;color:#1b1e14;box-shadow:8px 8px 0 #11140e;transform:rotate(-.7deg)}
+:root[data-franchise="arma"] .fx-stand{border:2px solid #b8452a;padding:8px 12px;width:fit-content;background:#22261ae8}
+:root[data-franchise="arma"] .fx-act{background:#c9c9a8;color:#1b1e14;border:0;box-shadow:4px 4px 0 #11140e}
+
+.fxar-scene{position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none;font-family:'IBM Plex Mono';color:#93a86a}
+.fxar-topo{position:absolute;right:9%;top:15%;width:280px;height:250px;border:1px solid #93a86a44;border-radius:45% 55% 48% 52%}.fxar-topo i{position:absolute;border:1px solid #93a86a66;border-radius:48% 52% 44% 56%;inset:25px}.fxar-topo i:nth-child(2){inset:62px}.fxar-topo i:nth-child(3){inset:98px}
+.fxar-target{position:absolute;left:var(--fxar-x,72%);top:var(--fxar-y,48%);width:90px;height:90px;transform:translate(-50%,-50%);border:1px solid #b8452a;border-radius:50%;transition:left .1s linear,top .1s linear}.fxar-target i{position:absolute;background:#b8452a}.fxar-target i:first-child{left:50%;top:-22px;bottom:-22px;width:1px}.fxar-target i:nth-child(2){top:50%;left:-22px;right:-22px;height:1px}.fxar-target b{position:absolute;inset:30px;border:2px solid #b8452a;border-radius:50%}
+.fxar-north{position:absolute;right:4%;top:9%;display:flex;flex-direction:column;align-items:center;font-size:18px}.fxar-north i{width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:38px solid #93a86a}
+.fxar-coords{position:absolute;right:5%;bottom:7%;padding:6px 10px;background:#191c14d9;border:1px solid #93a86a;font-size:11px;letter-spacing:.12em}
+.fxar-order{position:absolute;right:22%;top:14%;padding:13px 18px;border:3px solid #b8452a;color:#b8452a;font:500 11px 'Oswald';letter-spacing:.2em;transform:rotate(-8deg);opacity:.68}.fxar-order b{font-size:20px}.fxar-order span{display:block;border-top:1px solid;margin-top:5px;padding-top:4px}
+
+:root[data-franchise="arma"] .fx-line,:root[data-franchise="arma"] .fx-sig,:root[data-franchise="arma"] .fx-shelf{max-width:1240px}
+:root[data-franchise="arma"] .panel-bar{background:#c9c9a8;color:#1b1e14;border-left:10px solid #b8452a;font-family:'Oswald'}
+:root[data-franchise="arma"] .fx-track{height:178px;border:8px solid #303524;background:linear-gradient(90deg,#1b1e1422 1px,transparent 1px) 0 0/25px 25px,linear-gradient(#1b1e1422 1px,transparent 1px) 0 0/25px 25px,#b6b696;color:#1b1e14;box-shadow:8px 10px 24px #0005;transform:rotate(.25deg)}
+:root[data-franchise="arma"] .fx-track::after{height:2px;background:#4c5437}:root[data-franchise="arma"] .fx-tick{color:#4d513d}:root[data-franchise="arma"] .fx-dot i{border-radius:0;border:2px solid #b8452a;background:#c9c9a8}:root[data-franchise="arma"] .fx-gap b{background:#b6b696;color:#7e2d1c}
+:root[data-franchise="arma"] .fx-sig-body{border:12px solid #303524;background:#25291d;box-shadow:9px 11px 24px #0006}
+:root[data-franchise="arma"] .fx-rows{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;counter-reset:mission}
+:root[data-franchise="arma"] .fx-row{counter-increment:mission;position:relative;display:flex;flex-direction:column;align-items:flex-start;min-height:190px;height:100%;margin:0;padding:58px 17px 17px;border:0;background:#c9c9a8;color:#1b1e14;box-shadow:7px 9px 0 #0f110c;transform:rotate(-.45deg)}
+:root[data-franchise="arma"] .fx-row:nth-child(3n+2){transform:rotate(.65deg);background:#d1d1b4}:root[data-franchise="arma"] .fx-row::before{content:"OPORD / " counter(mission,decimal-leading-zero);position:absolute;top:13px;left:15px;right:15px;padding-bottom:7px;border-bottom:2px solid #8d8d70;font:600 10px 'IBM Plex Mono';letter-spacing:.12em}
+:root[data-franchise="arma"] .fx-row::after{content:"APPROVED";position:absolute;right:13px;bottom:13px;padding:2px 5px;border:2px solid #96331b;color:#96331b;font:600 9px 'Oswald';letter-spacing:.18em;transform:rotate(-7deg);opacity:.55}
+:root[data-franchise="arma"] .fx-row *{color:#35382b}:root[data-franchise="arma"] .fx-row-name{font-family:'Oswald';font-size:17px}:root[data-franchise="arma"] .fx-row-head{order:0}:root[data-franchise="arma"] .fx-row-year{order:1;color:#96331b}:root[data-franchise="arma"] .fx-row-facts{order:2;justify-content:flex-start}:root[data-franchise="arma"] .fx-row-arrived{order:3}
+
+@media(prefers-reduced-motion:no-preference){.fxar-target{animation:fxarLock 3.8s ease-in-out infinite alternate}.fxar-topo i{animation:fxarTopo 5s ease-in-out infinite alternate}.fxar-order{animation:fxarStamp .45s cubic-bezier(.3,1.5,.4,1) both}@keyframes fxarLock{to{scale:.82}}@keyframes fxarTopo{to{transform:translate(8px,-5px)}}@keyframes fxarStamp{from{opacity:0;scale:1.5}}}
+@media(max-width:880px){:root[data-franchise="arma"] .fx-rows{grid-template-columns:1fr 1fr}:root[data-franchise="arma"] .fx-hero-in{padding-right:var(--edge)}:root[data-franchise="arma"] .fx-hero-art{left:25%;width:70%;opacity:.24}.fxar-order{display:none}}
+@media(max-width:560px){:root[data-franchise="arma"] .fx-rows{grid-template-columns:1fr}:root[data-franchise="arma"] .fx-row:nth-child(n){transform:none}.fxar-topo{opacity:.25}}

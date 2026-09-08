@@ -54,6 +54,7 @@ done < <(find . -name '*.py' -not -path './.git/*' -not -path './__pycache__/*' 
 step "shells match dict.js"     node tools/gen-shell.js --check
 step "policy archive is intact" node tools/check-policy.js
 step "price blocks are distinct" node tools/check-prices.js
+step "franchise screens are isolated" node tools/check-franchise-exclusives.js
 step "html, keys and routes"    python3 tools/check-html.py
 
 # ── Is it the file a crawler expects ─────────────────────────────────

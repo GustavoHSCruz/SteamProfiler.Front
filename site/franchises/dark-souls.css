@@ -1,0 +1,42 @@
+/* DARK SOULS: a vertical pilgrimage from eclipse to bonfire, sparse and slow. */
+:root[data-franchise="dark-souls"]{--ground:radial-gradient(ellipse at 50% 12%,#6b3d1712,transparent 35%),linear-gradient(90deg,transparent 49.9%,#c9a2270a 50%,transparent 50.1%)}
+:root[data-franchise="dark-souls"] .bar-top{background:#050504e8;border-bottom:1px solid #352917}
+:root[data-franchise="dark-souls"] .fx-hero{min-height:920px;align-items:center;border:0;background:#030302;text-align:center}
+:root[data-franchise="dark-souls"] .fx-hero-art{inset:0 12%;width:76%;opacity:.38;filter:grayscale(.72) sepia(.35) contrast(1.32);-webkit-mask-image:radial-gradient(ellipse at center,#000 8%,transparent 70%);mask-image:radial-gradient(ellipse at center,#000 8%,transparent 70%)}
+:root[data-franchise="dark-souls"] .fx-hero-veil{background:radial-gradient(ellipse at 50% 44%,transparent,#030302 72%),linear-gradient(0deg,#030302 0,transparent 40%,#030302aa 100%)}
+:root[data-franchise="dark-souls"] .fx-hero-in{max-width:1050px;display:flex;flex-direction:column;align-items:center;padding-top:360px}
+:root[data-franchise="dark-souls"] .fx-hero-kicker{justify-content:center;color:#8d7240}
+:root[data-franchise="dark-souls"] .fx-hero-name{font-size:clamp(48px,9vw,110px);line-height:1.05;letter-spacing:.28em;text-shadow:0 4px 18px #000,0 0 36px #c9a22722}
+:root[data-franchise="dark-souls"] .fx-hero-lede{max-width:45ch;margin-inline:auto;font-family:'Cinzel';font-size:13px;line-height:1.9;color:#9a907d}
+:root[data-franchise="dark-souls"] .fx-stand{justify-content:center;width:min(600px,100%);border:0;border-block:1px solid #4a3c1c;padding:13px}
+:root[data-franchise="dark-souls"] .fx-acts{justify-content:center}
+:root[data-franchise="dark-souls"] .fx-act{border:0;border-bottom:1px solid #6d5520;background:linear-gradient(90deg,transparent,#151007,transparent);padding-inline:24px}
+
+.fxds-scene{position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none;color:#c9a227;font-family:'Cinzel'}
+.fxds-scene::before{content:"";position:absolute;left:var(--fxds-x,50%);top:var(--fxds-y,45%);width:240px;height:240px;transform:translate(-50%,-50%);background:radial-gradient(circle,#c9a22715,transparent 65%);transition:left .5s ease,top .5s ease}
+.fxds-eclipse{position:absolute;left:50%;top:8%;width:260px;height:260px;transform:translateX(-50%);border-radius:50%;background:#020202;box-shadow:0 0 0 1px #9a6f28,0 0 35px #c77b28,0 0 100px #7b351844}
+.fxds-eclipse::after{content:"";position:absolute;inset:42%;border-radius:50%;background:#d69c36;box-shadow:0 0 30px #e5a342}
+.fxds-greatsword{position:absolute;left:50%;top:19%;width:70px;height:310px;transform:translateX(-50%)}.fxds-greatsword i{position:absolute;left:34px;top:0;width:3px;height:240px;background:linear-gradient(#777,#2a261f);box-shadow:0 0 5px #c9a22766}.fxds-greatsword i::after{content:"";position:absolute;left:-22px;bottom:22px;width:47px;height:5px;background:#4b4031}.fxds-greatsword b{position:absolute;left:26px;bottom:0;width:18px;height:72px;background:linear-gradient(#3b3023,#15110c);clip-path:polygon(50% 0,100% 30%,75% 100%,25% 100%,0 30%)}
+.fxds-embers{position:absolute;inset:0}.fxds-embers i{position:absolute;left:calc((var(--n) * 37 + 13) * 1% / 6);bottom:-10px;width:3px;height:3px;border-radius:50%;background:#d99332;box-shadow:0 0 8px #d99332}
+.fxds-oath{position:absolute;left:50%;bottom:6%;transform:translateX(-50%);font-size:9px;letter-spacing:.45em;color:#6e5c3d;white-space:nowrap}
+
+:root[data-franchise="dark-souls"] .fx-line{max-width:760px;margin-top:70px}
+:root[data-franchise="dark-souls"] .panel-bar{justify-content:center;gap:30px;border:0;background:transparent;border-bottom:1px solid #4a3c1c}
+:root[data-franchise="dark-souls"] .fx-track{height:360px;width:110px;margin:30px auto;border:0;border-inline:1px solid #241e15;background:radial-gradient(ellipse at 50% 50%,#c9a2270c,transparent)}
+:root[data-franchise="dark-souls"] .fx-track::after{left:50%;right:auto;top:0;bottom:0;width:1px;height:auto;background:linear-gradient(transparent,#c9a227,#c9a227,transparent)}
+:root[data-franchise="dark-souls"] .fx-dot{left:50%!important;bottom:auto;top:calc((var(--stack,0) * 0px) + 50%);margin:0}:root[data-franchise="dark-souls"] .fx-dot b{white-space:nowrap}
+:root[data-franchise="dark-souls"] .fx-dot:nth-of-type(1){top:5%}:root[data-franchise="dark-souls"] .fx-dot:nth-of-type(2){top:24%}:root[data-franchise="dark-souls"] .fx-dot:nth-of-type(3){top:43%}:root[data-franchise="dark-souls"] .fx-dot:nth-of-type(4){top:62%}:root[data-franchise="dark-souls"] .fx-dot:nth-of-type(5){top:81%}
+:root[data-franchise="dark-souls"] .fx-dot i{width:18px;height:26px;border:0;border-radius:50% 50% 42% 42%;background:linear-gradient(#f0cd69,#b76c22);box-shadow:0 0 18px #c9a227}
+:root[data-franchise="dark-souls"] .fx-tick,:root[data-franchise="dark-souls"] .fx-gap,:root[data-franchise="dark-souls"] .fx-arrived,:root[data-franchise="dark-souls"] .fx-arrived-line{display:none}
+:root[data-franchise="dark-souls"] .fx-track-read{text-align:center}
+:root[data-franchise="dark-souls"] .fx-sig{max-width:1120px;margin-top:70px}
+:root[data-franchise="dark-souls"] .fx-sig-body{border:0;background:radial-gradient(ellipse at 50% 100%,#4b321333,transparent 55%);padding:34px 0}
+:root[data-franchise="dark-souls"] .fx-shelf{max-width:780px;margin-top:80px}
+:root[data-franchise="dark-souls"] .fx-rows{counter-reset:soul}
+:root[data-franchise="dark-souls"] .fx-row{counter-increment:soul;position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;min-height:170px;margin:0 0 32px;padding:34px 20px;border:0;background:radial-gradient(ellipse at 50% 100%,#2d201044,transparent 68%)}
+:root[data-franchise="dark-souls"] .fx-row::before{content:"";position:absolute;left:50%;bottom:0;width:84%;height:1px;transform:translateX(-50%);background:linear-gradient(90deg,transparent,#6b5425,transparent)}
+:root[data-franchise="dark-souls"] .fx-row::after{content:"0" counter(soul);position:absolute;left:50%;top:-8px;transform:translateX(-50%);font:400 10px 'Cinzel';color:#705e3d;letter-spacing:.25em}
+:root[data-franchise="dark-souls"] .fx-row-name{font-family:'Cinzel';font-size:18px;font-weight:400;letter-spacing:.12em}:root[data-franchise="dark-souls"] .fx-row-year{order:1;color:#c9a227}:root[data-franchise="dark-souls"] .fx-row-head{order:0;justify-content:center}:root[data-franchise="dark-souls"] .fx-row-facts{order:2;justify-content:center}:root[data-franchise="dark-souls"] .fx-row-arrived{order:3}
+
+@media(prefers-reduced-motion:no-preference){.fxds-embers i{animation:fxdsRise calc(4s + var(--n)*.18s) calc(var(--n)*-.37s) linear infinite}.fxds-eclipse{animation:fxdsHalo 4s ease-in-out infinite alternate}.fxds-greatsword{animation:fxdsSword 5s ease-in-out infinite alternate}@keyframes fxdsRise{to{transform:translate(calc((var(--n) - 8)*3px),-850px);opacity:0}}@keyframes fxdsHalo{to{box-shadow:0 0 0 1px #d69635,0 0 55px #c77b28,0 0 145px #7b351866}}@keyframes fxdsSword{to{translate:0 8px}}}
+@media(max-width:680px){:root[data-franchise="dark-souls"] .fx-hero{min-height:790px}:root[data-franchise="dark-souls"] .fx-hero-in{padding-top:320px}:root[data-franchise="dark-souls"] .fx-hero-name{letter-spacing:.14em}.fxds-eclipse{width:200px;height:200px}.fxds-greatsword{top:16%}}
