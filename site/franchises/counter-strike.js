@@ -5,7 +5,8 @@
       const scene = document.createElement('div');
       scene.className = 'fxcs-scene';
       scene.setAttribute('aria-hidden', 'true');
-      scene.innerHTML = '<div class="fxcs-radar"><i></i><i></i><i></i><i></i></div>' +
+      scene.innerHTML = '<div class="fxcs-map"><span>A</span><span>B</span>' +
+        '<i></i><i></i><i></i><i></i><b></b></div>' +
         '<div class="fxcs-score"><b>12</b><span class="fxcs-clock">0:45</span><b>09</b></div>' +
         '<div class="fxcs-site">A</div><div class="fxcs-cross"><i></i><i></i></div>';
       hero.append(scene);

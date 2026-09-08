@@ -14,9 +14,31 @@
 :root[data-franchise="counter-strike"] .fx-act { min-width: 150px; justify-content: center; clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%); }
 
 .fxcs-scene { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; font-family: 'Chakra Petch'; }
-.fxcs-radar { position: absolute; left: 4vw; top: 12%; width: min(24vw, 250px); aspect-ratio: 1; border: 1px solid #5b8fc988; border-radius: 50%; background: repeating-radial-gradient(circle, transparent 0 24%, #5b8fc92c 25% 25.8%, transparent 26% 49%, #5b8fc92c 50% 50.8%, transparent 51%), conic-gradient(from 20deg, #5b8fc940, transparent 22%); }
-.fxcs-radar::before, .fxcs-radar::after { content: ""; position: absolute; background: #5b8fc944; }.fxcs-radar::before { top: 50%; left: 0; right: 0; height: 1px; }.fxcs-radar::after { left: 50%; top: 0; bottom: 0; width: 1px; }
-.fxcs-radar i { position: absolute; width: 7px; height: 7px; border-radius: 50%; background: #f0a92e; box-shadow: 0 0 10px #f0a92e; }.fxcs-radar i:nth-child(1){left:30%;top:24%}.fxcs-radar i:nth-child(2){left:66%;top:43%}.fxcs-radar i:nth-child(3){left:48%;top:72%}.fxcs-radar i:nth-child(4){left:73%;top:68%;background:#c7a468}
+.fxcs-map {
+  position: absolute;
+  left: 5vw;
+  top: 7%;
+  width: min(17vw, 190px);
+  aspect-ratio: 1;
+  border: 1px solid #5b8fc988;
+  background:
+    linear-gradient(32deg, transparent 0 43%, #5b8fc93d 44% 47%, transparent 48%),
+    linear-gradient(145deg, transparent 0 38%, #5b8fc92d 39% 43%, transparent 44%),
+    linear-gradient(90deg, transparent 47%, #5b8fc92d 48% 52%, transparent 53%),
+    linear-gradient(#142333, #0b141e);
+  clip-path: polygon(12% 0, 78% 0, 78% 12%, 100% 12%, 100% 70%, 86% 70%, 86% 100%, 28% 100%, 28% 87%, 0 87%, 0 25%, 12% 25%);
+  box-shadow: inset 0 0 32px #5b8fc91f, 0 10px 28px #0006;
+  transform: rotate(-2deg);
+}
+.fxcs-map::before, .fxcs-map::after { content: ""; position: absolute; border: 8px solid #263c50; }
+.fxcs-map::before { left: 20%; top: 18%; width: 43%; height: 28%; border-right: 0; }
+.fxcs-map::after { right: 12%; bottom: 14%; width: 48%; height: 34%; border-left: 0; }
+.fxcs-map span { position: absolute; z-index: 2; display: grid; place-items: center; width: 30px; height: 30px; border: 2px solid; border-radius: 50%; font-size: 17px; font-weight: 700; }
+.fxcs-map span:first-child { right: 8%; top: 9%; border-color: #c7a468; color: #c7a468; }
+.fxcs-map span:nth-child(2) { left: 7%; bottom: 8%; border-color: #5b8fc9; color: #5b8fc9; }
+.fxcs-map i { position: absolute; z-index: 3; width: 7px; height: 7px; border-radius: 50%; background: #7fb2e0; box-shadow: 0 0 0 3px #5b8fc929, 0 0 9px #5b8fc9; }
+.fxcs-map i:nth-of-type(1){left:31%;top:24%}.fxcs-map i:nth-of-type(2){left:48%;top:39%}.fxcs-map i:nth-of-type(3){left:58%;top:66%;background:#f0a92e}.fxcs-map i:nth-of-type(4){left:72%;top:73%;background:#f0a92e}
+.fxcs-map > b { position: absolute; z-index: 4; left: 46%; top: 53%; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 18px solid #fff; transform: rotate(34deg); filter: drop-shadow(0 0 5px #fff); }
 .fxcs-score { position: absolute; left: 50%; top: 9%; transform: translateX(-50%); display: grid; grid-template-columns: 54px 72px 54px; height: 44px; text-align: center; background: #080c11e8; border: 1px solid #33434f; }
 .fxcs-score b { display: grid; place-items: center; color: #e8edf0; font-size: 24px; }.fxcs-score b:first-child { background: #5b8fc944; }.fxcs-score b:last-child { background: #c7a46844; }
 .fxcs-score span { display: grid; place-items: center; color: #f0a92e; font: 600 14px 'IBM Plex Mono'; }
@@ -39,15 +61,14 @@
 :root[data-franchise="counter-strike"] .fx-row:hover { transform: translateX(3px); background: linear-gradient(100deg, #5b8fc92c, #1a242c 44%, #c7a46818); }
 
 @media (prefers-reduced-motion: no-preference) {
-  .fxcs-radar { animation: fxcsRadar 4s linear infinite; }
-  .fxcs-radar i { animation: fxcsPing 1.8s ease-out infinite; }
+  .fxcs-map i { animation: fxcsPing 1.8s ease-out infinite; }
+  .fxcs-map i:nth-of-type(2n) { animation-delay: -.9s; }
   .fxcs-cross { animation: fxcsAim 3.4s cubic-bezier(.7,0,.3,1) infinite alternate; }
-  @keyframes fxcsRadar { to { transform: rotate(360deg); } }
   @keyframes fxcsPing { 50% { transform: scale(1.7); opacity: .35; } }
   @keyframes fxcsAim { to { translate: 22px -12px; } }
 }
 @media (max-width: 760px) {
   :root[data-franchise="counter-strike"] .fx-rows { grid-template-columns: 1fr; }
-  .fxcs-radar { width: 150px; opacity: .35; }.fxcs-site { display:none; }
+  .fxcs-map, .fxcs-site { display:none; }
   :root[data-franchise="counter-strike"] .fx-hero { min-height: 580px; }
 }

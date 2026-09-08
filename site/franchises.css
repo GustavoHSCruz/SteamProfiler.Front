@@ -473,9 +473,23 @@
 .fx-row[data-idle] .fx-row-you, .fx-row:not([data-on]):not([data-idle]) .fx-row-you {
   color: var(--faint);
 }
-.fx-row-facts { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
-.fx-row-facts > * { font-family: var(--mono); font-size: 11.5px; color: var(--dim); white-space: nowrap; }
-.fx-row-live { color: var(--accent); }
+.fx-row-facts { display: flex; flex-wrap: wrap; gap: 5px; justify-content: flex-end; }
+/* Live audience, review score and price are three unrelated facts. Give each
+   one a box of its own instead of letting the numbers run together into a
+   sentence such as "746 playing 97% of 163,937 R$ 20.69". */
+.fx-row-facts > * {
+  display: inline-flex;
+  align-items: center;
+  min-height: 25px;
+  padding: 3px 7px;
+  border: 1px solid var(--line-2);
+  background: color-mix(in srgb, var(--panel-2) 72%, transparent);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--dim);
+  white-space: nowrap;
+}
+.fx-row-live { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); color: var(--accent); }
 .fx-row-price[data-wait] { color: var(--faint); font-style: italic; }
 .fx-row-arrived {
   grid-column: 2 / -1;
