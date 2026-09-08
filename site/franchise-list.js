@@ -58,6 +58,7 @@ const FRANCHISES = [
       { id: 80, year: 2004, name: 'Counter-Strike: Condition Zero' },
       { id: 100, year: 2004, tag: 'fx.tag_deleted', name: 'Counter-Strike: Condition Zero' },
       { id: 240, year: 2004, tag: 'fx.tag_port', name: 'Counter-Strike: Source' },
+      { id: 4465480, year: 2012, tag: 'fx.tag_restored', name: 'Counter-Strike: Global Offensive' },
       { id: 273110, year: 2014, tag: 'fx.tag_spinoff', name: 'Counter-Strike Nexon' },
       { id: 730, year: 2023, name: 'Counter-Strike 2' },
     ],
