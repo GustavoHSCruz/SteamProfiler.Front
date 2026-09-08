@@ -42,7 +42,7 @@
   gap: var(--gap);
   max-width: 1180px;
   margin: 0 auto;
-  padding: 0 var(--edge) clamp(40px, 6vw, 80px);
+  padding: 0 var(--edge) clamp(20px, 3vw, 32px);
 }
 
 .hs-tile {
@@ -287,4 +287,16 @@
 @media (max-width: 560px) {
   .hs-row { grid-template-columns: 46px minmax(0, 1fr); }
   .hs-row-you { grid-column: 2; text-align: left; }
+}
+
+/* The tail of the index. There are more houses than anybody scrolls through,
+   so the grid grows as somebody gets near the end of it; this is the marker
+   that says so, and the button is what a browser with no IntersectionObserver
+   gets instead. */
+.hs-more {
+  display: flex;
+  justify-content: center;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 var(--edge) clamp(40px, 6vw, 80px);
 }

@@ -45,7 +45,10 @@ const series = franchises && parts[3] && BY_SLUG.has(parts[3]) ? parts[3] : null
 // paths rather than one with a flag because they are separate shelves: Valve
 // published Garry's Mod and Facepunch made it.
 const axis = houseAxisOf(parts[2] || '');
-const house = axis && parts[3] ? houseBySlug(axis, parts[3]) : null;
+// O slug e so o que veio no endereco. Qual casa ele e depende da tabela, que
+// e meia mega e so e buscada se alguem pedir uma destas telas - entao a
+// resolucao acontece la embaixo, depois do await.
+const houseSlug = axis && parts[3] ? parts[3] : null;
 
 /** The address this view should have been reached at. A link built by hand or
  *  held from before this page understood URLs still works, and gets tidied in
@@ -59,7 +62,7 @@ function canonical() {
         : year ? `/year/${year}`
           : series ? `/franchises/${series}`
             : franchises ? '/franchises'
-              : house ? `/${axis.axis}/${house.slug}`
+              : houseSlug ? `/${axis.axis}/${houseSlug}`
                 : axis ? `/${axis.axis}`
                   : appid ? `/${appid}` : '';
   return `/u/${encodeURIComponent(query)}${tail}`;
@@ -192,7 +195,13 @@ function showChrome(profileQuery, persona) {
       // the profile is the only thing this waits on. What the library adds is
       // the one column these screens cannot hold on their own - how much of
       // each shelf is already in it.
-      const d = await api(`/profile?id=${steamid}`);
+      // A biblioteca e a tabela das casas ao mesmo tempo: uma vem da api e a
+      // outra do disco, nenhuma depende da outra, e esperar as duas em fila
+      // custaria a mais lenta somada a mais rapida sem motivo.
+      const [d] = await Promise.all([
+        api(`/profile?id=${steamid}`),
+        loadHouseCatalogue(),
+      ]);
       bootMark('fetched');
       el('houses').hidden = false;
       showChrome(query, d.profile.persona);
@@ -204,6 +213,13 @@ function showChrome(profileQuery, persona) {
         unplayed: d.unplayed || [],
       };
       const root = el('hs-root');
+      const house = houseSlug ? houseBySlug(axis, houseSlug) : null;
+      // Um slug que nao e casa nenhuma nao merece uma pagina de erro: o
+      // indice esta ali e e a resposta para "quais existem".
+      if (houseSlug && !house) {
+        location.replace(`/u/${encodeURIComponent(query)}/${axis.axis}`);
+        return;
+      }
       if (house) await renderHouse(axis, house, root, ctx);
       else await renderHouseIndex(axis, root, ctx);
     } else if (year) {
