@@ -109,13 +109,11 @@ function fxMarkSeen(slug) {
  *  animation written half in a stylesheet and half in a script is an
  *  animation nobody can retime. */
 const INTRO = {
-  /* The lambda drawn stroke by stroke, the way the suit's display comes up. */
+  /* Use the actual lowercase Greek lambda rather than approximating its glyph
+     with a path. The Half-Life mark is λ, not the uppercase Λ. */
   'half-life': () => [
     h('div', { cls: 'fxi-hl-ring' }),
-    fxSvg('0 0 100 100', 'fxi-hl-mark',
-      '<path d="M24 86 L51 18 L79 86" fill="none" stroke="currentColor" ' +
-      'stroke-width="8" stroke-linecap="square" stroke-linejoin="round" ' +
-      'pathLength="100" />'),
+    h('span', { cls: 'fxi-hl-mark', text: 'λ' }),
     h('p', { cls: 'fxi-hl-org', text: 'BLACK MESA RESEARCH FACILITY' }),
     h('p', { cls: 'fxi-hl-sub', text: 'ANOMALOUS MATERIALS' }),
     h('div', { cls: 'fxi-hl-scan' }),
