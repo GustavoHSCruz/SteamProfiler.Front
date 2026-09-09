@@ -1,111 +1,150 @@
-/* WATCH DOGS: the city seen through ctOS.
- *
- * The series' one idea is that everybody around you is already a record, and
- * that a phone turns the street into a list of them. So the hero is not key
- * art with a name over it: it is a surveillance grid with people standing in
- * it, and the profiler walking from one to the next, resolving a stranger
- * into a name, a job, an income and one line nobody should know.
- *
- * The profiles below are invented on purpose and read as invented - the joke
- * the games make is that the trivial detail is the invasive part, and a real
- * person's would not be funny. */
+/* WATCH DOGS: an operating system stretched over three cities. */
 (function () {
   'use strict';
 
-  /* Deterministic, so the same citizen is standing in the same place on every
-     visit. The coordinates sit in the lower half on purpose: that is where the
-     street plane is, and a pedestrian above the horizon is a pedestrian in the
-     sky. A crowd that reshuffles on reload is a screensaver; this one is a
-     city block that happens to be under a scanner. */
-  const CITIZENS = [
-    { x: 14, y: 74, name: 'M. ALVAREZ', job: 'DOCK DISPATCHER', note: 'SELLS THE SAME BIKE TWICE A YEAR', money: '$41,200' },
-    { x: 31, y: 62, name: 'J. OKONKWO', job: 'PAEDIATRIC NURSE', note: 'HAS NOT DELETED AN EMAIL SINCE 2011', money: '$67,900' },
-    { x: 49, y: 80, name: 'R. LINDQVIST', job: 'CLAIMS ADJUSTER', note: 'FOUR HUNDRED HOURS IN ONE FARMING GAME', money: '$58,400' },
-    { x: 66, y: 58, name: 'D. PARK', job: 'NIGHT SECURITY', note: 'NAMED THE ROUTER AFTER AN EX', money: '$33,750' },
-    { x: 82, y: 71, name: 'T. BOUCHARD', job: 'PENSIONED, 31 YEARS TRANSIT', note: 'STILL PAYS FOR A FAX LINE', money: '$29,110' },
-  ];
+  const make = (tag, cls, text) => {
+    const item = document.createElement(tag);
+    if (cls) item.className = cls;
+    if (text != null) item.textContent = text;
+    return item;
+  };
+
+  const LOCATIONS = ['WACKER DRIVE', 'THE LOOP', 'OAKLAND PORT', 'CAMDEN HIGH ST', 'BLUME CAMPUS'];
 
   window.FranchiseExclusives.register('watch-dogs', {
     mount({ hero }) {
-      const scene = document.createElement('div');
-      scene.className = 'fxwd-scene';
+      const title = hero.querySelector('.fx-hero-name');
+      if (title) title.dataset.copy = title.textContent;
+
+      const scene = make('div', 'fxwd-scene');
       scene.setAttribute('aria-hidden', 'true');
-
-      const grid = '<div class="fxwd-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>';
-      const skyline = `<div class="fxwd-skyline">${
-        Array.from({ length: 14 }, (_, i) =>
-          `<i style="--h:${28 + ((i * 37) % 52)}%;--w:${4 + (i % 3)}vw"></i>`).join('')
-      }</div>`;
-
-      // One node per citizen, positioned by the table above. The card is a
-      // sibling rather than a child so it can sit outside the node's own
-      // clipping and still travel with it.
-      const nodes = CITIZENS.map((who, i) => `
-        <div class="fxwd-node" data-n="${i}" style="--x:${who.x}%;--y:${who.y}%">
-          <i class="fxwd-ping"></i>
-          <i class="fxwd-body"></i>
-          <div class="fxwd-card">
-            <b>${who.name}</b>
-            <span>${who.job}</span>
-            <em>${who.note}</em>
-            <u>${who.money}</u>
-          </div>
-        </div>`).join('');
-
-      const feed = `<div class="fxwd-feed">${
-        ['CTOS NODE 0x4A ONLINE', 'JUNCTION 14 SIGNAL HELD', 'CAMERA 0x117 PIVOTED',
-         'BLUME UPLINK RESOLVED', 'PROFILER PASS 3 OF 3'].map((line, i) =>
-          `<p style="--i:${i}"><i></i>${line}</p>`).join('')
-      }</div>`;
-
-      const hack = '<div class="fxwd-hack"><svg viewBox="0 0 120 120">'
-        + '<circle class="fxwd-ring-back" cx="60" cy="60" r="52"></circle>'
-        + '<circle class="fxwd-ring" cx="60" cy="60" r="52"></circle></svg>'
-        + '<b class="fxwd-pct">00</b><span>PROFILING</span></div>';
-
-      scene.innerHTML = grid + skyline + '<div class="fxwd-mesh"></div>' + nodes
-        + feed + hack + '<div class="fxwd-glitch"></div>';
+      scene.innerHTML =
+        '<div class="fxwd-city"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>' +
+        '<div class="fxwd-perspective"></div>' +
+        '<svg class="fxwd-links" viewBox="0 0 1000 620" preserveAspectRatio="none">' +
+          '<path d="M70 420 L230 300 L410 390 L590 225 L770 335 L940 195"/>' +
+          '<path d="M230 300 L330 150 L590 225 L690 95 M410 390 L520 520 L770 335 L900 500"/>' +
+        '</svg>' +
+        '<div class="fxwd-target fxwd-target-a"><i></i><b>CAM_014</b><span>OPTICAL NODE</span></div>' +
+        '<div class="fxwd-target fxwd-target-b"><i></i><b>GRID_31</b><span>TRAFFIC CONTROL</span></div>' +
+        '<div class="fxwd-target fxwd-target-c"><i></i><b>BLM_404</b><span>PRIVATE NETWORK</span></div>' +
+        '<div class="fxwd-target fxwd-target-d"><i></i><b>PWR_09</b><span>POWER RELAY</span></div>' +
+        '<div class="fxwd-profile"><small>ctOS PROFILER // LIVE</small><b>AIDEN PEARCE</b><span>VIGILANTE</span><dl>' +
+          '<div><dt>THREAT</dt><dd>CRITICAL</dd></div><div><dt>ACCESS</dt><dd>ROOT</dd></div>' +
+          '<div><dt>TRACE</dt><dd class="fxwd-trace">00%</dd></div></dl></div>' +
+        '<div class="fxwd-status"><i></i><span class="fxwd-place">WACKER DRIVE</span><b>41.8781° N / 87.6298° W</b></div>' +
+        '<div class="fxwd-breach"><span>NETWORK BREACH</span><b class="fxwd-percent">00</b><i></i></div>' +
+        '<div class="fxwd-sweep"></div><div class="fxwd-noise"></div>';
       hero.append(scene);
 
       const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const nodeEls = [...scene.querySelectorAll('.fxwd-node')];
-      const pct = scene.querySelector('.fxwd-pct');
+      const targets = [...scene.querySelectorAll('.fxwd-target')];
+      const place = scene.querySelector('.fxwd-place');
+      const percent = scene.querySelector('.fxwd-percent');
+      const trace = scene.querySelector('.fxwd-trace');
+      let active = 0;
+      let value = 0;
+      let timer = 0;
 
-      // Still: the profiler stops on one person, resolved, and nothing moves.
-      // A shortened sweep would still be a sweep, and the request was for none.
-      if (reduced) {
-        nodeEls[1].dataset.on = '1';
-        pct.textContent = '100';
-        return null;
-      }
-
-      let at = 0;
-      let count = 0;
-      let step = 0;
-      let ticker = 0;
-
-      const walk = () => {
-        for (const node of nodeEls) delete node.dataset.on;
-        nodeEls[at].dataset.on = '1';
-        at = (at + 1) % nodeEls.length;
-        count = 0;
-        // The number climbs to a hundred over the time the card is up, so the
-        // reading and the arrival are the same event rather than two.
-        window.clearInterval(step);
-        step = window.setInterval(() => {
-          count = Math.min(100, count + 7);
-          pct.textContent = String(count).padStart(2, '0');
-          if (count >= 100) window.clearInterval(step);
-        }, 130);
+      const tick = () => {
+        targets.forEach((target, index) => { target.dataset.on = index === active ? '1' : '0'; });
+        place.textContent = LOCATIONS[active % LOCATIONS.length];
+        value = (value + 13) % 101;
+        percent.textContent = String(value).padStart(2, '0');
+        trace.textContent = `${String((value * 7) % 100).padStart(2, '0')}%`;
+        active = (active + 1) % targets.length;
       };
+      tick();
+      if (!reduced) timer = window.setInterval(tick, 1450);
 
-      walk();
-      ticker = window.setInterval(walk, 2600);
+      const move = (event) => {
+        const box = hero.getBoundingClientRect();
+        const x = (event.clientX - box.left) / box.width - .5;
+        const y = (event.clientY - box.top) / box.height - .5;
+        hero.style.setProperty('--fxwd-x', `${x * 22}px`);
+        hero.style.setProperty('--fxwd-y', `${y * 14}px`);
+        hero.style.setProperty('--fxwd-rx', `${50 + x * 18}%`);
+        hero.style.setProperty('--fxwd-ry', `${48 + y * 18}%`);
+      };
+      if (!reduced) hero.addEventListener('pointermove', move);
 
       return () => {
-        window.clearInterval(ticker);
-        window.clearInterval(step);
+        window.clearInterval(timer);
+        hero.removeEventListener('pointermove', move);
+        for (const key of ['--fxwd-x', '--fxwd-y', '--fxwd-rx', '--fxwd-ry']) hero.style.removeProperty(key);
       };
+    },
+
+    ready({ root, fr, rows, ctx, stand }) {
+      const host = root.querySelector('.fx-sig');
+      if (!host) return;
+      host.textContent = '';
+
+      const owned = (app) => !stand || stand.mine.has(app.id) || stand.idle.has(app.id);
+      const bar = make('div', 'panel-bar fxwd-panel-bar');
+      bar.append(make('span', '', 'ctOS // CITY OPERATING SYSTEM'),
+        make('b', '', `${stand ? fr.apps.filter(owned).length : fr.apps.length} / ${fr.apps.length} NODES`));
+
+      const consoleBox = make('div', 'fx-sig-body fxwd-console');
+      const head = make('div', 'fxwd-console-head');
+      head.innerHTML = '<span><i></i>SYSTEM ONLINE</span><span>ENCRYPTION // AES-256</span><b>ADMIN ACCESS</b>';
+
+      const graph = make('div', 'fxwd-graph');
+      graph.innerHTML =
+        '<svg viewBox="0 0 1000 430" preserveAspectRatio="none" aria-hidden="true">' +
+          '<path class="fxwd-wire" d="M130 230 C260 70 350 70 500 190"/>' +
+          '<path class="fxwd-wire" d="M500 190 C650 50 770 75 875 205"/>' +
+          '<path class="fxwd-wire" d="M130 230 C320 410 690 400 875 205"/>' +
+          '<path class="fxwd-packet fxwd-packet-a" d="M130 230 C260 70 350 70 500 190"/>' +
+          '<path class="fxwd-packet fxwd-packet-b" d="M500 190 C650 50 770 75 875 205"/>' +
+          '<path class="fxwd-packet fxwd-packet-c" d="M130 230 C320 410 690 400 875 205"/>' +
+        '</svg>' +
+        '<div class="fxwd-core"><i></i><b>ctOS</b><span>ROOT</span></div>';
+
+      const cities = ['CHICAGO', 'SAN FRANCISCO', 'LONDON'];
+      const nodeClasses = ['fxwd-game-a', 'fxwd-game-b', 'fxwd-game-c'];
+      const readout = make('output', 'fxwd-readout');
+      readout.setAttribute('aria-live', 'polite');
+      const nodes = [];
+
+      const describe = (app, index) => {
+        const row = rows[String(app.id)] || {};
+        const mine = stand && stand.mine.get(app.id);
+        const signal = mine ? `${Number(mine.hours || 0).toLocaleString()} H CONNECTED`
+          : typeof row.players === 'number' ? `${row.players.toLocaleString()} LIVE CONNECTIONS` : 'NODE READY';
+        readout.textContent = `${cities[index]} // ${row.name || app.name} // ${signal}`;
+      };
+
+      fr.apps.forEach((app, index) => {
+        const row = rows[String(app.id)] || {};
+        const link = make('a', `fxwd-game-node ${nodeClasses[index]}`);
+        link.href = ctx.query && ctx.owns.has(app.id) ? `/u/${ctx.query}/${app.id}` : `/g/${app.id}`;
+        link.dataset.on = owned(app) ? '1' : '0';
+        link.append(make('small', '', `NODE_0${index + 1} // ${cities[index]}`),
+          make('b', '', row.name || app.name), make('span', '', String(app.year)), make('i'));
+        link.addEventListener('pointerenter', () => describe(app, index));
+        link.addEventListener('focus', () => describe(app, index));
+        graph.append(link);
+        nodes.push(link);
+      });
+      describe(fr.apps[0], 0);
+
+      const breach = make('button', 'fxwd-breach-all', 'EXECUTE NETWORK BREACH');
+      breach.type = 'button';
+      breach.addEventListener('click', () => {
+        consoleBox.dataset.breach = '1';
+        nodes.forEach((node) => { node.dataset.hit = '1'; });
+        readout.textContent = 'ROOT ACCESS // ALL CITY NODES COMPROMISED';
+        window.setTimeout(() => {
+          delete consoleBox.dataset.breach;
+          nodes.forEach((node) => { delete node.dataset.hit; });
+        }, 1800);
+      });
+
+      const foot = make('div', 'fxwd-console-foot');
+      foot.append(readout, breach);
+      consoleBox.append(head, graph, foot);
+      host.append(bar, consoleBox);
     },
   });
 }());
