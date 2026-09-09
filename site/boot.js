@@ -102,12 +102,19 @@ const BOOT_PLAN = {
     ['fetched', [['load.s_library', 0], ['load.s_hours', 2600]]],
     ['drawn', [['load.s_page', 0]]],
   ],
+  // The library, and then one read of a local cache. Nothing on this screen
+  // waits on ProtonDB: what is not known yet is queued behind the reader.
+  deck: [
+    ['resolved', [['load.s_find', 0]]],
+    ['fetched', [['load.s_library', 0], ['load.s_hours', 2600]]],
+    ['drawn', [['load.s_page', 0]]],
+  ],
 };
 
 const BOOT_HEAD = {
   dash: 'load.h_dash', backlog: 'load.h_dash', cards: 'load.h_dash',
   game: 'load.h_game', versus: 'load.h_versus', year: 'load.h_year',
-  franchises: 'load.h_franchises', houses: 'load.h_houses',
+  franchises: 'load.h_franchises', houses: 'load.h_houses', deck: 'load.h_deck',
 };
 
 /* What the window says once the wait stops being short, and when. Three
@@ -185,6 +192,7 @@ const BOOT_SHAPE = {
   versus: () => [...bootTiles(18, 0, 0, 49.4, 100), ...bootTiles(18, 50.6, 0, 49.4, 100)],
   franchises: () => bootShelf(),
   houses: () => bootShelf(),
+  deck: () => bootShelf(),
 };
 
 /* ── The wait of one game ──────────────────────────────────────────────

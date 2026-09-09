@@ -12,6 +12,7 @@
      /u/<perfil>/publishers/<slug>   one of them
      /u/<perfil>/developers   the houses that made it
      /u/<perfil>/developers/<slug>   one of them
+     /u/<perfil>/deck         what this library would run on linux
 
    <perfil> is whatever the visitor typed - a vanity name or a steamID64 - and it
    stays in the URL untouched so the link is shareable and readable. */
@@ -49,6 +50,10 @@ const axis = houseAxisOf(parts[2] || '');
 // api responde - sao noventa mil - entao ela vai como veio e a resposta dela
 // e que diz se a casa existe.
 const houseSlug = axis && parts[3] ? parts[3] : null;
+// Same path space, same reason as the rest: a word can never be read as an
+// appid. The screen is about the Deck and the Linux clock behind it, which is
+// one question and so one address without a tail.
+const deck = parts[2] === 'deck';
 
 /** The address this view should have been reached at. A link built by hand or
  *  held from before this page understood URLs still works, and gets tidied in
@@ -64,6 +69,7 @@ function canonical() {
             : franchises ? '/franchises'
               : houseSlug ? `/${axis.axis}/${houseSlug}`
                 : axis ? `/${axis.axis}`
+                  : deck ? '/deck'
                   : appid ? `/${appid}` : '';
   return `/u/${encodeURIComponent(query)}${tail}`;
 }
@@ -80,6 +86,7 @@ function fail(message, retry) {
   el('year').hidden = true;
   el('franchises').hidden = true;
   el('houses').hidden = true;
+  el('deck').hidden = true;
   failure.hidden = false;
   el('failure-text').textContent = message;
   const again = el('failure-retry');
@@ -115,7 +122,7 @@ function showChrome(profileQuery, persona) {
   // The wait screen knows which of the four views is coming, because each one
   // waits on different calls and the skeleton it draws is that view's layout.
   bootStart(rival ? 'versus' : pile ? 'backlog' : cardset ? 'cards'
-    : year ? 'year' : franchises ? 'franchises' : axis ? 'houses'
+    : year ? 'year' : franchises ? 'franchises' : axis ? 'houses' : deck ? 'deck'
       : appid ? 'game' : 'dash', query, appid);
 
   let steamid;
@@ -214,6 +221,20 @@ function showChrome(profileQuery, persona) {
       const root = el('hs-root');
       if (houseSlug) await renderHouse(axis, houseSlug, root, ctx);
       else await renderHouseIndex(axis, root, ctx);
+    } else if (deck) {
+      // The profile is the only thing this waits on. The verdicts come from a
+      // local cache and whatever is missing is queued for a worker, so the
+      // screen is drawn now and is fuller the next time somebody opens it.
+      const d = await api(`/profile?id=${steamid}`);
+      bootMark('fetched');
+      el('deck').hidden = false;
+      showChrome(query, d.profile.persona);
+      bootDone();
+      await renderDeck(el('dk-root'), {
+        query: encodeURIComponent(query),
+        steamid,
+        persona: d.profile.persona,
+      });
     } else if (year) {
       // Every figure on this page except the unlocks is already in the profile
       // payload, so the page is complete the moment that lands. The unlocks

@@ -1,0 +1,170 @@
+/* steamprofiler.org - the Deck screen.
+
+   The site's own furniture, with one addition: a tier has a colour, and the
+   colour is the same one everywhere it appears. That is the whole visual
+   idea here - the strip at the top, the border on a row and the word at the
+   end of it are three views of one verdict, so they cannot be read as three
+   different facts. */
+
+:root {
+  --dk-platinum: #b9d5e8;
+  --dk-gold: #e0b44a;
+  --dk-silver: #9fa7ae;
+  --dk-bronze: #b5763f;
+  --dk-borked: #b4423c;
+}
+
+.dk-head {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(26px, 5vw, 56px) var(--edge) clamp(14px, 2.2vw, 24px);
+}
+.dk-kicker {
+  margin: 0 0 10px;
+  font-family: var(--label);
+  font-weight: var(--label-w);
+  font-size: 11px;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.dk-title {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: var(--display-w);
+  font-size: clamp(32px, 6vw, 74px);
+  letter-spacing: var(--display-ls);
+  line-height: var(--display-lh);
+  text-transform: var(--display-tt);
+}
+
+.dk-clocks { display: flex; flex-wrap: wrap; gap: 10px 30px; margin: 20px 0 0; }
+.dk-clock { display: flex; align-items: baseline; gap: 9px; }
+.dk-clock b { font-family: var(--mono); font-size: clamp(22px, 3vw, 32px); color: var(--accent); }
+.dk-clock span {
+  font-family: var(--label);
+  font-size: 11px;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--faint);
+}
+/* A clock at zero is the point of the screen rather than a gap in it, so it
+   stays on the page and stops shouting. */
+.dk-clock[data-zero] b { color: var(--faint); }
+
+.dk-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 var(--edge);
+}
+.dk-chip {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 8px 13px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--dk-silver);
+  border-radius: var(--r);
+  background: var(--panel);
+}
+.dk-chip b { font-family: var(--mono); font-size: 17px; }
+.dk-chip span {
+  font-family: var(--label);
+  font-size: 10.5px;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.dk-chip[data-tier="platinum"] { border-left-color: var(--dk-platinum); }
+.dk-chip[data-tier="gold"] { border-left-color: var(--dk-gold); }
+.dk-chip[data-tier="silver"] { border-left-color: var(--dk-silver); }
+.dk-chip[data-tier="bronze"] { border-left-color: var(--dk-bronze); }
+.dk-chip[data-tier="borked"] { border-left-color: var(--dk-borked); }
+
+.dk-verdict {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(20px, 3vw, 32px) var(--edge) 0;
+}
+.dk-verdict b {
+  font-family: var(--display);
+  font-weight: var(--display-w);
+  font-size: clamp(34px, 6vw, 64px);
+  line-height: 1;
+  color: var(--accent);
+}
+.dk-verdict span { font-size: 14.5px; line-height: 1.6; color: var(--dim); max-width: 44ch; }
+
+.dk-band {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(20px, 3vw, 34px) var(--edge) 0;
+}
+.dk-rows { margin: 10px 0 0; padding: 0; list-style: none; }
+.dk-row {
+  display: grid;
+  grid-template-columns: 60px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 4px 14px;
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--dk-silver);
+  border-radius: var(--r);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color .16s ease;
+}
+.dk-row:hover, .dk-row:focus-visible { border-color: var(--accent); }
+.dk-row[data-tier="platinum"] { border-left-color: var(--dk-platinum); }
+.dk-row[data-tier="gold"] { border-left-color: var(--dk-gold); }
+.dk-row[data-tier="silver"] { border-left-color: var(--dk-silver); }
+.dk-row[data-tier="bronze"] { border-left-color: var(--dk-bronze); }
+.dk-row[data-tier="borked"] { border-left-color: var(--dk-borked); }
+.dk-row-icon {
+  width: 60px;
+  height: 28px;
+  object-fit: cover;
+  border-radius: 2px;
+  background: var(--panel-2);
+}
+.dk-row-name { font-weight: 600; font-size: 15px; min-width: 0; }
+.dk-row-tier {
+  font-family: var(--label);
+  font-size: 10px;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.dk-row[data-tier="platinum"] .dk-row-tier { color: var(--dk-platinum); }
+.dk-row[data-tier="gold"] .dk-row-tier { color: var(--dk-gold); }
+.dk-row[data-tier="bronze"] .dk-row-tier { color: var(--dk-bronze); }
+.dk-row[data-tier="borked"] .dk-row-tier { color: var(--dk-borked); }
+.dk-row-hours { font-family: var(--mono); font-size: 13px; color: var(--faint); text-align: right; }
+
+.dk-empty, .dk-fail, .dk-coverage {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 14px var(--edge) 0;
+  font-size: 13px;
+  color: var(--faint);
+}
+.dk-coverage {
+  padding-bottom: clamp(40px, 6vw, 80px);
+  font-family: var(--mono);
+}
+.dk-fail { padding-top: clamp(24px, 4vw, 40px); }
+
+@media (max-width: 620px) {
+  .dk-row { grid-template-columns: 48px minmax(0, 1fr) auto; }
+  .dk-row-icon { width: 48px; height: 22px; }
+  .dk-row-tier { grid-column: 2; }
+  .dk-row-hours { grid-column: 3; }
+}

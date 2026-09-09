@@ -266,6 +266,7 @@ function buildDiscover(d, query) {
   // work out from a list of game names.
   chip(`/u/${query}/publishers`, t('go.publishers'), t('go.publishers_hint'));
   chip(`/u/${query}/developers`, t('go.developers'), t('go.developers_hint'));
+  chip(`/u/${query}/deck`, t('go.deck'), t('go.deck_hint'));
 
   rail.textContent = '';
   for (const c of chips) rail.append(c);

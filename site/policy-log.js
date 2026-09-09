@@ -87,4 +87,14 @@ const POLICY_LOG = [
       ru: "Список внешних сторон был из четырёх, стал из шести. Ни одна из двух добавленных не нова: файл с курсом валют читается раз в сутки с тех пор, как ценам карточек понадобился приблизительный пересчёт рядом, а из списка того, кто издал и кто сделал каждую игру в Steam, собраны новые экраны издателей и разработчиков. Обеих не было в списке, который называл себя полным. Ни к одной не обращаются по вашему запросу: это задания по таймеру, так что видят они сервер по расписанию и никогда - что кто-то заходил.",
     },
   },
+  {
+    version: 8,
+    date: "2026-09-09",
+    commit: null,
+    summary: {
+      en: "A seventh outside party, and the first one added because a screen needed it rather than because the list was incomplete. The Deck screen answers whether a game in a library would run on Linux, which is the one half of that question Steam does not publish; the people who ran it do, at ProtonDB. Opening that screen queues the appids of that library here and a worker drains the queue afterwards, a game every couple of seconds, mixed with every other library queued since - so what leaves is an appid, never a profile or an address, at a time that says nothing about when anybody looked. The opening line of the section changed with it: it used to split the list into a lookup and a timer, and this one is neither.",
+      pt: "Um sétimo terceiro, e o primeiro que entra porque uma tela precisou dele e não porque a lista estava incompleta. A tela do Deck responde se um jogo da biblioteca rodaria no Linux, que é a metade dessa pergunta que a Steam não publica; quem publica é quem rodou, no ProtonDB. Abrir essa tela enfileira aqui os appids daquela biblioteca e um trabalhador esvazia a fila depois, um jogo a cada dois segundos, misturado com todas as outras enfileiradas desde então - então o que sai é um appid, nunca um perfil ou um endereço, num momento que não diz nada sobre quando alguém olhou. A abertura da seção mudou junto: ela dividia a lista entre consulta e temporizador, e este caso não é nem um nem outro.",
+      ru: "Седьмая внешняя сторона - и первая, добавленная потому, что её потребовал экран, а не потому, что список был неполным. Экран Deck отвечает, пошла бы игра из библиотеки на Linux; именно этой половины вопроса Steam не публикует, а публикуют те, кто её запускал, - на ProtonDB. Открытие этого экрана ставит appid-ы той библиотеки в очередь здесь, а воркер разбирает очередь потом, по игре раз в пару секунд, вперемешку со всеми другими, попавшими в неё с тех пор: наружу уходит appid, никогда профиль или адрес, и в момент, который ничего не говорит о том, когда кто-то смотрел. Вступление раздела изменилось вместе с этим: оно делило список на поиск и таймер, а этот случай - ни то, ни другое.",
+    },
+  },
 ];
