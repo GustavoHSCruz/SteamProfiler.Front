@@ -77,4 +77,14 @@ const POLICY_LOG = [
       ru: "Страницы карточек теперь могут сказать, сколько вам осталось доплатить за значок, а не сколько стоит набор с нуля, и узнать эту разницу можно только одним способом: прочитав, какие из этих карточек у профиля уже есть. Поэтому открытый инвентарь карточек теперь входит в то, что читается из Steam, и список того, что возвращается, об этом говорит. Закрытый инвентарь не читается. Больше ничего не изменилось: без входа, без обменов, без объявлений о продаже, ничего не хранится и ничего не пишется на диск.",
     },
   },
+  {
+    version: 7,
+    date: "2026-09-09",
+    commit: null,
+    summary: {
+      en: "The list of outside parties was four and is six. Neither of the two that were added is new - a currency file has been read once a day since card prices needed an approximation beside them, and a catalogue of who published and who developed every game on Steam is what the new publisher and developer screens are built from. Both were missing from a list that called itself complete. Neither is reached on your request: they are jobs on a timer, so what they see is this server on a schedule and never that anybody visited.",
+      pt: "A lista de terceiros era quatro e passou a ser seis. Nenhum dos dois que entraram é novo - um arquivo de câmbio é lido uma vez por dia desde que o preço das cartas precisou de uma aproximação ao lado, e o cadastro de quem publicou e quem fez cada jogo da Steam é do que as telas novas de publishers e developers são feitas. Os dois faltavam numa lista que se dizia completa. Nenhum deles é consultado na sua requisição: são rotinas no temporizador, então o que eles veem é este servidor num horário e nunca que alguém visitou.",
+      ru: "Список внешних сторон был из четырёх, стал из шести. Ни одна из двух добавленных не нова: файл с курсом валют читается раз в сутки с тех пор, как ценам карточек понадобился приблизительный пересчёт рядом, а из списка того, кто издал и кто сделал каждую игру в Steam, собраны новые экраны издателей и разработчиков. Обеих не было в списке, который называл себя полным. Ни к одной не обращаются по вашему запросу: это задания по таймеру, так что видят они сервер по расписанию и никогда - что кто-то заходил.",
+    },
+  },
 ];

@@ -179,14 +179,16 @@
 
   <!-- ── Third parties the browser reaches ─────────────────────────── -->
   <article class="panel">
-    <div class="panel-bar"><span data-i18n="priv.third">who else sees anything</span><b data-i18n="priv.third_tag">four, and that is all</b></div>
+    <div class="panel-bar"><span data-i18n="priv.third">who else sees anything</span><b data-i18n="priv.third_tag">six, and that is all</b></div>
     <div class="panel-body">
-      <p class="card-body" data-i18n="priv.third_intro">A site that draws from Steam cannot be a closed room. These are every outside party involved and exactly what each one sees:</p>
+      <p class="card-body" data-i18n="priv.third_intro">A site that draws from Steam cannot be a closed room. These are every outside party involved and exactly what each one sees. The first four are involved in a lookup; the last two are jobs on a timer that no visit ever triggers:</p>
       <ul class="plist">
         <li data-i18n-html="priv.third_valve"><b>Valve.</b> The lookup leaves this server for the Steam Web API under my key, and opening a game page also asks the Valve shop your language belongs to - the American, the Brazilian or the Russian one - what that game costs there today. Steam prices each region separately, so nothing here is converted: the number shown is the one that shop quotes. Both go out from here, so Valve sees this server asking and never you. The price block links out to the store, but nothing from Valve loads until you follow that link.</li>
         <li data-i18n-html="priv.third_cdn"><b>Steam's image CDN.</b> Avatars and key art load straight from Valve's servers into your browser, because mirroring a thousand images per lookup does not hold up. That means Valve's CDN sees your address, the same way it would if you opened the Steam store. It is the one place where something of yours reaches a third party.</li>
         <li data-i18n-html="priv.third_tunnel"><b>Cloudflare.</b> The site is published through a Cloudflare tunnel, so your request travels through their network and is subject to their handling on the way here. They are also the ones who report the country and the region, so besides carrying the request they locate it - which is how this server can count where traffic comes from without ever holding an address.</li>
         <li data-i18n-html="priv.third_pay"><b>Ko-fi, only if you click it.</b> The support page links out; nothing of theirs loads until you follow the link, and from there you are on their site under their terms. The crypto addresses involve nobody at all.</li>
+        <li data-i18n-html="priv.third_rates"><b>The exchange rate source.</b> Once a day this server fetches the day's dollar rates from a public currency file, so a card price quoted in cents of a dollar can carry an approximation in your money beside it. It runs on a timer and never on your request, so that source sees this server on a schedule and never learns that anybody visited.</li>
+        <li data-i18n-html="priv.third_index"><b>SteamSpy.</b> Once a week this server reads the catalogue of who published and who developed every game on Steam, which is what the publisher and developer screens are built from. What goes out is a page number - no appid, no profile, no address - and it runs on a timer, so that source cannot tell this site has a visitor, let alone which one.</li>
       </ul>
     </div>
   </article>
