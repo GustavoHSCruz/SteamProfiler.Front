@@ -1933,6 +1933,7 @@ const DICT = {
     'go.developers': 'developers',
     'go.publishers_hint': 'the houses that published this library',
     'go.developers_hint': 'the houses that made it',
+    'gp.categories': 'categories',
   },
 
   pt: {
@@ -3840,6 +3841,7 @@ const DICT = {
     'go.developers': 'developers',
     'go.publishers_hint': 'as casas que publicaram esta biblioteca',
     'go.developers_hint': 'as casas que a fizeram',
+    'gp.categories': 'categorias',
   },
 
   ru: {
@@ -5748,5 +5750,6 @@ const DICT = {
     'go.developers': 'разработчики',
     'go.publishers_hint': 'компании, которые издали эту библиотеку',
     'go.developers_hint': 'компании, которые её сделали',
+    'gp.categories': 'категории',
   },
 };

@@ -760,7 +760,18 @@ function catalogueBlock(g) {
     wrap.append(dl);
   }
 
+  // Três grupos e não dois. Os gêneros da loja - Ação, RPG, Indie - só
+  // apareciam nas páginas temáticas que os desenham à mão, então na página
+  // genérica o leitor via "recursos e modos" e "idiomas" e nada dizendo do
+  // que o jogo é. Vêm primeiro porque são o mais largo dos três: o gênero
+  // situa, o resto detalha.
+  //
+  // `genres` e `categories` são campos diferentes da Steam e é por isso que
+  // são dois grupos: gênero é o que o jogo é, categoria é o que ele tem -
+  // Ação contra Conquistas da Steam. Juntar os dois numa fileira de tags
+  // faria "RPG" e "Suporte a controle" parecerem a mesma espécie de fato.
   const groups = [
+    [t('gp.categories'), (c.genres || []).map((item) => item.name)],
     [t('gp.features'), (c.categories || []).map((item) => item.name)],
     [t('gp.languages'), c.languages || []],
   ].filter(([, values]) => values.length);
