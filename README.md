@@ -2,6 +2,8 @@
 
 [![check](https://github.com/GustavoHSCruz/SteamProfiler.Front/actions/workflows/ci.yml/badge.svg)](https://github.com/GustavoHSCruz/SteamProfiler.Front/actions/workflows/ci.yml)
 
+<a href="https://ko-fi.com/gordziilla"><img src="https://storage.ko-fi.com/cdn/kofi3.png?v=3" alt="Support me on Ko-fi" height="36"></a>
+
 The client half of [steamprofiler.org](https://steamprofiler.org): a Steam
 profile reader that draws a whole library to scale and gives every game that was
 ever launched a page designed after that game's own interface.
