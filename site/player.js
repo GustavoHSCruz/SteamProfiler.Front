@@ -59,6 +59,19 @@
     return match ? new URL(match[1], base).href : null;
   };
 
+  // MediaSource treats an open stream as having an infinite duration until it
+  // is explicitly told otherwise. Steam's media playlist already carries the
+  // exact duration of every segment, so use that information immediately: the
+  // clock and seek rail must work while the remaining segments are buffering,
+  // not only after the entire trailer has downloaded.
+  const playlistDuration = (playlist) => {
+    let total = 0;
+    for (const match of playlist.matchAll(/^#EXTINF:([0-9.]+)/gm)) {
+      total += Number(match[1]) || 0;
+    }
+    return total;
+  };
+
   const append = (buffer, data) => new Promise((resolve, reject) => {
     const done = () => { buffer.removeEventListener('error', failed); resolve(); };
     const failed = () => { buffer.removeEventListener('updateend', done); reject(new Error('media buffer')); };
@@ -118,6 +131,11 @@
       read(best.url),
       audioUrl ? read(audioUrl) : Promise.resolve(''),
     ]);
+    const streamDuration = Math.max(playlistDuration(videoList), playlistDuration(audioList));
+    if (streamDuration > 0) {
+      video.dataset.duration = String(streamDuration);
+      video.dispatchEvent(new Event('spdurationchange'));
+    }
     const videoCodec = best.codecs.find((codec) => /^(avc|hev|hvc|av01)/i.test(codec)) || 'avc1.640029';
     const audioCodec = best.codecs.find((codec) => /^(mp4a|opus)/i.test(codec)) || 'mp4a.40.2';
     const videoType = `video/mp4; codecs="${videoCodec}"`;
@@ -144,6 +162,7 @@
       const audioBuffer = source.addSourceBuffer(audioType);
       jobs.push(appendTrack(audioBuffer, initFile(audioList, audioUrl), mediaFiles(audioList, audioUrl)));
     }
+    if (streamDuration > 0 && source.readyState === 'open') source.duration = streamDuration;
     video.dataset.quality = best.height ? `${best.height}P` : 'MAX';
     await Promise.all(jobs);
     if (source.readyState === 'open' && !source.sourceBuffers[0].updating) source.endOfStream();
@@ -250,8 +269,13 @@
       reveal();
     };
 
+    const totalDuration = () => {
+      if (Number.isFinite(video.duration) && video.duration > 0) return video.duration;
+      return Number(video.dataset.duration) || 0;
+    };
+
     const syncTime = () => {
-      const total = video.duration || 0;
+      const total = totalDuration();
       const ratio = total ? video.currentTime / total : 0;
       current.textContent = clock(video.currentTime);
       duration.textContent = clock(total);
@@ -261,12 +285,13 @@
     };
 
     const syncBuffer = () => {
-      if (!video.duration || !video.buffered.length) return;
+      const total = totalDuration();
+      if (!total || !video.buffered.length) return;
       let end = 0;
       for (let i = 0; i < video.buffered.length; i++) {
         if (video.buffered.start(i) <= video.currentTime + 1) end = Math.max(end, video.buffered.end(i));
       }
-      buffered.style.width = `${Math.min(100, (end / video.duration) * 100)}%`;
+      buffered.style.width = `${Math.min(100, (end / total) * 100)}%`;
     };
 
     const syncVolume = () => {
@@ -304,6 +329,7 @@
     on(video, 'ended', syncPlay);
     on(video, 'timeupdate', syncTime);
     on(video, 'durationchange', syncTime);
+    on(video, 'spdurationchange', syncTime);
     on(video, 'loadedmetadata', () => {
       live.textContent = `MAX · ${video.dataset.quality || (video.videoHeight ? `${video.videoHeight}P` : 'VIDEO')}`;
     });
@@ -314,13 +340,14 @@
     on(video, 'volumechange', syncVolume);
     on(seek, 'input', () => {
       seeking = true;
-      const total = video.duration || 0;
+      const total = totalDuration();
       const next = (Number(seek.value) / 1000) * total;
       played.style.width = `${Number(seek.value) / 10}%`;
       current.textContent = clock(next);
     });
     on(seek, 'change', () => {
-      if (video.duration) video.currentTime = (Number(seek.value) / 1000) * video.duration;
+      const total = totalDuration();
+      if (total) video.currentTime = (Number(seek.value) / 1000) * total;
       seeking = false;
       syncTime();
     });
@@ -348,7 +375,7 @@
       const key = event.key.toLowerCase();
       if (key === ' ' || key === 'k') { event.preventDefault(); togglePlay(); }
       else if (key === 'arrowleft') { event.preventDefault(); video.currentTime = Math.max(0, video.currentTime - 5); }
-      else if (key === 'arrowright') { event.preventDefault(); video.currentTime = Math.min(video.duration || Infinity, video.currentTime + 5); }
+      else if (key === 'arrowright') { event.preventDefault(); video.currentTime = Math.min(totalDuration() || Infinity, video.currentTime + 5); }
       else if (key === 'arrowup') { event.preventDefault(); video.volume = Math.min(1, video.volume + .1); }
       else if (key === 'arrowdown') { event.preventDefault(); video.volume = Math.max(0, video.volume - .1); }
       else if (key === 'm') { event.preventDefault(); video.muted = !video.muted; }
