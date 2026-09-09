@@ -1736,6 +1736,11 @@ a.seat:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 }
 .fxs-go:hover, .fxs-go:focus-visible { border-color: var(--accent); color: var(--accent); }
 
+/* The houses have two doors rather than one, so the pair needs a gap the
+   single link never did. */
+.hxs { border-bottom: 1px solid var(--line); }
+.hxs-doors { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; }
+
 .fxs-grid {
   display: grid;
   /* Five across, then two. Counted rather than left to auto-fit, and only
