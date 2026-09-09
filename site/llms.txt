@@ -107,6 +107,8 @@ Not affiliated with, endorsed by, or connected to Valve Corporation. Steam and
 the Steam logo are trademarks of Valve Corporation. Game names and art belong to
 their respective owners.
 
-The front end is open source under the MIT licence, so the code that draws every
-page described here can be read rather than taken on trust:
+Both halves are open source under the MIT licence, so the code that draws the
+pages and the service that reads Steam can be inspected rather than taken on
+trust:
 <https://github.com/GustavoHSCruz/SteamProfiler.Front>
+<https://github.com/GustavoHSCruz/SteamProfiler.Api>

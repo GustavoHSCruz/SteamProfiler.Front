@@ -78,10 +78,10 @@ first if the game you want does not already have a theme.
 
 ## Scope
 
-This repository is the front end. The service behind `/api/` is closed source
-and lives in a separate repository. Changes that require the API to send
-something new cannot be merged from here alone; open an issue describing what
-the page would need and it can be discussed.
+This repository is the front end. The service behind `/api/` is open source in
+[SteamProfiler.Api](https://github.com/GustavoHSCruz/SteamProfiler.Api).
+Changes that require the API to send something new need a coordinated change
+there rather than a front-end patch alone.
 
 ## Licence
 

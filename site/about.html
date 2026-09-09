@@ -27,7 +27,7 @@
      Steam profile" is a fair reading of a site that never signs itself.
 
      So: a Person node with sameAs pointing at a public GitHub account with the
-     source of this half of the site under it, named as the author of both the
+     source of both halves of the site under it, named as the author of both the
      site and the application. A handle with a public repository behind it is a
      verifiable identity. No name at all is not. -->
 <script type="application/ld+json">
@@ -53,6 +53,7 @@
       "sameAs": [
         "https://github.com/GustavoHSCruz",
         "https://github.com/GustavoHSCruz/SteamProfiler.Front",
+        "https://github.com/GustavoHSCruz/SteamProfiler.Api",
         "https://ko-fi.com/gordziilla"
       ]
     },
@@ -141,7 +142,7 @@
         <li data-i18n-html="abt.safe_trade"><b>Nothing here trades, sells or offers anything.</b> No items, no skins, no gambling, no "verify your account". If you find a page on this domain doing any of that, it is not mine.</li>
         <li data-i18n-html="abt.safe_store"><b>Nothing about you is kept.</b> No account, no cookies, no trackers, no analytics profile. What a lookup produces lives in a cache for fifteen minutes and then it is gone - <a href="/privacy">the privacy page is the long version</a>.</li>
       </ul>
-      <p data-i18n-html="abt.safe_2">The client half of the site is public, MIT licensed, and <a href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener">every line of it is on GitHub ↗</a>.</p>
+      <p data-i18n-html="abt.safe_2">Both halves of the site are public and MIT licensed: <a href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener">the front end ↗</a> and <a href="https://github.com/GustavoHSCruz/SteamProfiler.Api" rel="noopener">the service that reads Steam ↗</a>.</p>
     </div>
   </article>
 
@@ -158,7 +159,8 @@
     <div class="panel-body">
       <ul class="abt-links">
         <li><a href="https://github.com/GustavoHSCruz" rel="noopener me" data-i18n="abt.gh">GitHub · GustavoHSCruz ↗</a></li>
-        <li><a href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener" data-i18n="abt.repo">The source of this site ↗</a></li>
+        <li><a href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener" data-i18n="abt.repo_front">The source of the front end ↗</a></li>
+        <li><a href="https://github.com/GustavoHSCruz/SteamProfiler.Api" rel="noopener" data-i18n="abt.repo_api">The source of the API ↗</a></li>
         <li><a href="/u/gordziilla" data-i18n="abt.mine">My own profile, read by the site</a></li>
         <li><a href="/feedback" data-i18n="abt.say">Tell me something is broken</a></li>
         <li><a href="/support" data-i18n="abt.help">Help pay the power bill</a></li>
@@ -169,7 +171,7 @@
 </main>
 
 <footer class="foot">
-  <p><a href="/" data-i18n="nav.lookup">look up a profile</a> · <a href="/blog" data-i18n="nav.blog">blog</a> · <a href="/privacy" data-i18n="nav.privacy">privacy</a> · <a class="foot-repo" href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener" data-i18n="foot.repo">source code ↗</a></p>
+  <p><a href="/" data-i18n="nav.lookup">look up a profile</a> · <a href="/blog" data-i18n="nav.blog">blog</a> · <a href="/privacy" data-i18n="nav.privacy">privacy</a> · <a class="foot-repo" href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener" data-i18n="foot.front_repo">front-end source ↗</a> · <a class="foot-repo" href="https://github.com/GustavoHSCruz/SteamProfiler.Api" rel="noopener" data-i18n="foot.api_repo">API source ↗</a></p>
   <p class="foot-legal" data-i18n="foot.disclaimer">steamprofiler.org is an independent hobby project. It is not affiliated with, endorsed by, or connected to Valve Corporation. Steam and the Steam logo are trademarks of Valve Corporation. Game names and art belong to their respective owners.</p>
 </footer>
 

@@ -26,10 +26,10 @@ pages that hold no data.
 
 ## What is here, and what is not
 
-This repository is the front end only. The service that answers `/api/` is
-closed source and lives elsewhere; from here it is a URL that returns JSON.
-Everything about how that JSON is produced is out of scope, and so is anything
-about where or how the site is hosted.
+This repository is the front end only. The service that answers `/api/` is also
+open source under MIT and lives in
+[SteamProfiler.Api](https://github.com/GustavoHSCruz/SteamProfiler.Api). Its
+implementation remains out of scope for changes made in this repository.
 
 That boundary is also the contribution surface. Layout, CSS, copy,
 accessibility, translations, a new game page: all of it lives here and none of
