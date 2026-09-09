@@ -186,12 +186,13 @@ function houseFilter(opts) {
    Every company on the axis, a page at a time: biggest shelf first with
    nobody attached, and most of this library first with somebody.
 
-   No key art on these tiles, and that is a decision rather than an omission.
-   The picture would be one cold fetch of a game nobody has opened, per tile,
-   for a list ninety thousand long - so opening this screen would have this
-   server pulling sixty pictures out of Steam's CDN to decorate a list of
-   names. The colour does that work instead. A house's own screen still has
-   its picture, because that is one game on one page somebody asked for. */
+   The picture on a tile is the capsule of one of that company's games - the
+   most reviewed one, chosen while the catalogue was being walked. It comes
+   off Steam's CDN and not off /art/, which is the difference that makes it
+   affordable: /art/ caches a 400 KB hero through this server, and sixty of
+   those per screen on a list ninety thousand long would be this server
+   fetching pictures all day. A capsule is a few kilobytes and never touches
+   it. The colour still does the work for a house whose picture is missing. */
 async function renderHouseIndex(axis, root, ctx) {
   document.title = `${t(axis.title)} - steamprofiler.org`;
   root.textContent = '';
@@ -280,11 +281,28 @@ async function renderHouseIndex(axis, root, ctx) {
  *  about a library, and it is the whole reason that view is worth opening. */
 function houseTile(axis, house, ctx) {
   const card = h('a', {
-    cls: 'hs-tile hs-tile--flat',
+    cls: house.art ? 'hs-tile' : 'hs-tile hs-tile--flat',
     data: { hs: house.slug },
     attr: { role: 'listitem', href: houseHref(axis, house.slug, ctx) },
     style: { '--tint': houseTint(house.slug) },
   });
+  if (house.art) {
+    const art = h('img', {
+      cls: 'hs-tile-art',
+      attr: {
+        src: `${HEADER_ART}/${house.art}/capsule_231x87.jpg`,
+        alt: '', loading: 'lazy', decoding: 'async', width: '231', height: '87',
+      },
+    });
+    // A game with no capsule leaves a broken-image glyph across the tile,
+    // which reads as a page that failed rather than as a company nobody has
+    // taken a picture of. Removed, and the colour carries the tile alone.
+    art.addEventListener('error', () => {
+      art.remove();
+      card.classList.add('hs-tile--flat');
+    }, { once: true });
+    card.append(art);
+  }
   const body = h('div', { cls: 'hs-tile-in' },
     h('h2', { cls: 'hs-tile-name', text: house.name }),
     h('p', { cls: 'hs-tile-span', text: t('hs.n_games', {
@@ -327,13 +345,15 @@ async function renderHouse(axis, slug, root, ctx) {
   const stand = ctx.library ? houseStanding(apps, mine, idle) : null;
 
   const hero = h('header', { cls: 'hs-hero', style: { '--tint': houseTint(slug) } });
-  // One picture, for the first game on the shelf. A house page is a page
-  // somebody asked for by name, so a single cold fetch is fair; the index
-  // deliberately has none, at a thousand times the scale.
-  if (apps.length) {
+  // The same game the tile used, at hero size. /art/ here and the CDN on the
+  // tiles: this is one picture on one page somebody asked for by name, which
+  // is what that cache is for, and the full-bleed header is the one place the
+  // 400 KB hero is worth its weight.
+  const face = house.art || (apps.length ? apps[0].appid : null);
+  if (face) {
     const art = h('img', {
       cls: 'hs-hero-art',
-      attr: { src: `/art/${apps[0].appid}.jpg`, alt: '', decoding: 'async' },
+      attr: { src: `/art/${face}.jpg`, alt: '', decoding: 'async' },
     });
     art.addEventListener('error', () => art.remove(), { once: true });
     hero.append(art);

@@ -84,6 +84,15 @@
     linear-gradient(0deg, #07060a 6%, #07060ac9 46%, #07060a44 100%),
     linear-gradient(94deg, color-mix(in srgb, var(--tint) 42%, transparent), transparent 62%);
 }
+/* A house whose picture is missing leans harder on its colour, so a tile with
+   no capsule reads as one of two deliberate states rather than as one that
+   failed to load. */
+.hs-tile--flat .hs-tile-veil {
+  background:
+    linear-gradient(0deg, #07060a 6%, #07060ac2 44%, #07060a55 100%),
+    linear-gradient(122deg, color-mix(in srgb, var(--tint) 62%, transparent), transparent 76%);
+}
+
 .hs-tile-in {
   position: relative;
   z-index: 2;
