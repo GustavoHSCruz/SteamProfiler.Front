@@ -241,6 +241,19 @@ const FRANCHISES = [
       { id: 3937550, year: 2026, tag: 'fx.tag_remake', name: 'Yakuza Kiwami 3 & Dark Ties' },
     ],
   },
+  {
+    slug: 'watch-dogs',
+    name: 'Watch Dogs',
+    house: 'Ubisoft',
+    born: 2014,
+    flagship: 243470,
+    tint: '#42f5d1',
+    apps: [
+      { id: 243470, year: 2014, name: 'Watch_Dogs™' },
+      { id: 447040, year: 2016, name: 'Watch_Dogs® 2' },
+      { id: 2239550, year: 2023, name: 'Watch Dogs®: Legion' },
+    ],
+  },
 ];
 
 const BY_SLUG = new Map(FRANCHISES.map((f) => [f.slug, f]));

@@ -216,6 +216,20 @@ const INTRO = {
       h('span', { text: '龍が如く' })),
     h('div', { cls: 'fxyki-rain' }, ...Array.from({ length: 18 }, () => h('i'))),
   ],
+  /* ctOS acquires the visitor, resolves the city and loses the picture to a
+     deliberate blackout before the franchise name cuts through the feed. */
+  'watch-dogs': () => [
+    h('div', { cls: 'fxwdi-grid' }),
+    h('div', { cls: 'fxwdi-feed' }, ...Array.from({ length: 9 }, (_, index) =>
+      h('i', { text: String((index * 1709 + 404) % 9999).padStart(4, '0') }))),
+    h('div', { cls: 'fxwdi-lock' }, h('i'), h('i'), h('b', { text: '+' })),
+    h('p', { cls: 'fxwdi-status' },
+      h('span', { text: 'ctOS // OPTICAL ACQUISITION' }),
+      h('b', { text: 'TARGET FOUND' })),
+    h('p', { cls: 'fxwdi-word' },
+      h('span', { text: 'WATCH' }), h('i', { text: '_' }), h('span', { text: 'DOGS' })),
+    h('div', { cls: 'fxwdi-blackout' }),
+  ],
 };
 
 /** An inline SVG. `html` rather than built node by node because these are
@@ -254,7 +268,7 @@ const INTRO_MS = {
   'half-life': 3400, 'counter-strike': 2900, portal: 3000,
   'grand-theft-auto': 3200, 'the-elder-scrolls': 3600, fallout: 3600,
   stalker: 3200, arma: 3000, 'dark-souls': 3800, 'resident-evil': 3400,
-  yakuza: 3900,
+  yakuza: 3900, 'watch-dogs': 3500,
 };
 
 /** Play the opening for `fr` over the page, and resolve when it is done or

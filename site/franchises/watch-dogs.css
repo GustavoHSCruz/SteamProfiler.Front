@@ -1,0 +1,162 @@
+/* WATCH DOGS: a city already indexed. ctOS cyan on wet asphalt, everything on
+   a grid, and a profiler walking from one stranger to the next.
+
+   The layout idea that keeps this away from the other eleven: nothing here is
+   a card floating on a page. The whole screen is one surveillance surface -
+   the hero is a map, the timeline is a route between junctions, and the list
+   of games is a stack of dossiers being read one at a time. */
+
+:root[data-franchise="watch-dogs"]{
+  --ground:linear-gradient(#42f5d10a 1px,transparent 1px) 0 0/54px 54px,linear-gradient(90deg,#42f5d10a 1px,transparent 1px) 0 0/54px 54px,radial-gradient(circle at 78% 8%,#42f5d114,transparent 34%),linear-gradient(160deg,#04080b,#060d11 55%,#03070a);
+  --accent:#42f5d1;--line:#42f5d126;--line-2:#42f5d13d;--panel:#071016;--panel-2:#050c11;--dim:#9fb6bd;--faint:#5d7078
+}
+:root[data-franchise="watch-dogs"] body{background-color:#04080b}
+:root[data-franchise="watch-dogs"] .bar-top{background:#04080be6;border-bottom:1px solid #42f5d13d;backdrop-filter:blur(14px)}
+:root[data-franchise="watch-dogs"] .wordmark span{color:#42f5d1}
+
+/* ── The hero: a block of city under the scanner ─────────────────────── */
+:root[data-franchise="watch-dogs"] .fx-hero{min-height:min(880px,94vh);align-items:flex-end;border:0;background:#04080b;isolation:isolate}
+:root[data-franchise="watch-dogs"] .fx-hero-art{opacity:.16;filter:grayscale(.85) contrast(1.4) brightness(.72)}
+:root[data-franchise="watch-dogs"] .fx-hero-veil{background:linear-gradient(0deg,#04080b 4%,#04080bd0 42%,#04080b52 100%)}
+:root[data-franchise="watch-dogs"] .fx-hero-in{max-width:1320px;padding-bottom:clamp(26px,5vh,60px)}
+:root[data-franchise="watch-dogs"] .fx-hero-kicker{gap:10px;color:#42f5d1}
+:root[data-franchise="watch-dogs"] .fx-hero-kicker::before{content:"";width:9px;height:9px;background:#42f5d1;box-shadow:0 0 0 4px #42f5d129}
+:root[data-franchise="watch-dogs"] .fx-hero-name{font-size:clamp(56px,11vw,150px);letter-spacing:-.05em;text-shadow:0 0 40px #42f5d13d}
+:root[data-franchise="watch-dogs"] .fx-stand{border-top:1px solid #42f5d13d;padding-top:14px}
+:root[data-franchise="watch-dogs"] .fx-stand b{color:#42f5d1}
+:root[data-franchise="watch-dogs"] .fx-act{border:1px solid #42f5d14d;border-radius:0;background:#071016cc;font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+:root[data-franchise="watch-dogs"] .fx-act:hover{background:#42f5d1;color:#04080b}
+
+.fxwd-scene{position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none;color:#42f5d1;font-family:'IBM Plex Mono',monospace}
+.fxwd-grid{position:absolute;left:-12%;right:-12%;bottom:-6%;height:74%;transform:perspective(760px) rotateX(63deg);transform-origin:50% 100%;background:linear-gradient(#42f5d117 1px,transparent 1px) 0 0/72px 72px,linear-gradient(90deg,#42f5d117 1px,transparent 1px) 0 0/72px 72px}
+.fxwd-grid i{position:absolute;top:0;bottom:0;width:2px;background:linear-gradient(#42f5d100,#42f5d155);opacity:.5}
+.fxwd-grid i:nth-child(1){left:9%}.fxwd-grid i:nth-child(2){left:22%}.fxwd-grid i:nth-child(3){left:35%}.fxwd-grid i:nth-child(4){left:47%}
+.fxwd-grid i:nth-child(5){left:60%}.fxwd-grid i:nth-child(6){left:71%}.fxwd-grid i:nth-child(7){left:83%}.fxwd-grid i:nth-child(8){left:94%}
+.fxwd-skyline{position:absolute;left:0;right:0;top:6%;height:34%;display:flex;align-items:flex-end;gap:.8vw;opacity:.4}
+.fxwd-skyline i{width:var(--w);height:var(--h);background:repeating-linear-gradient(180deg,#071016 0 9px,#42f5d114 10px 11px);border-top:1px solid #42f5d13d}
+.fxwd-mesh{position:absolute;inset:0;background:radial-gradient(circle at 50% 62%,#42f5d114,transparent 46%)}
+
+.fxwd-node{position:absolute;left:var(--x);top:var(--y);width:0;height:0}
+.fxwd-ping{position:absolute;left:-26px;top:-26px;width:52px;height:52px;border:1px solid #42f5d155;border-radius:50%;opacity:0}
+.fxwd-body{position:absolute;left:-5px;top:-16px;width:10px;height:26px;background:#42f5d13d;border:1px solid #42f5d16b;clip-path:polygon(50% 0,100% 26%,78% 100%,22% 100%,0 26%)}
+.fxwd-node[data-on] .fxwd-body{background:#42f5d1;box-shadow:0 0 20px #42f5d1}
+.fxwd-card{position:absolute;left:20px;top:-64px;width:min(280px,34vw);padding:11px 13px;background:#04080bf2;border:1px solid #42f5d16b;border-left:3px solid #42f5d1;opacity:0;transform:translateX(-8px);clip-path:polygon(0 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%)}
+.fxwd-node[data-on] .fxwd-card{opacity:1;transform:none}
+.fxwd-card b{display:block;font-size:15px;letter-spacing:.08em;color:#e6fbf7}
+.fxwd-card span{display:block;margin-top:3px;font-size:10px;letter-spacing:.16em;color:#42f5d1}
+.fxwd-card em{display:block;margin-top:8px;font-style:normal;font-size:10.5px;line-height:1.5;color:#9fb6bd}
+.fxwd-card u{display:block;margin-top:8px;padding-top:7px;border-top:1px dashed #42f5d13d;text-decoration:none;font-size:13px;color:#e6fbf7}
+
+.fxwd-feed{position:absolute;left:4%;top:9%;display:flex;flex-direction:column;gap:6px}
+.fxwd-feed p{display:flex;align-items:center;gap:8px;margin:0;font-size:10px;letter-spacing:.15em;color:#5d7078}
+.fxwd-feed p i{width:5px;height:5px;background:#42f5d1;opacity:.35}
+.fxwd-hack{position:absolute;right:5%;top:12%;width:120px;height:120px;display:grid;place-items:center;text-align:center}
+.fxwd-hack svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.fxwd-ring-back,.fxwd-ring{fill:none;stroke-width:3}
+.fxwd-ring-back{stroke:#42f5d129}
+.fxwd-ring{stroke:#42f5d1;stroke-dasharray:327;stroke-dashoffset:327}
+.fxwd-pct{font-size:31px;letter-spacing:-.02em;color:#e6fbf7}
+.fxwd-hack span{position:absolute;bottom:-17px;left:50%;transform:translateX(-50%);font-size:9px;letter-spacing:.3em;white-space:nowrap}
+.fxwd-glitch{position:absolute;inset:0;opacity:.5;background:repeating-linear-gradient(0deg,transparent 0 3px,#42f5d10a 4px)}
+
+/* ── The route: the timeline as three junctions ──────────────────────── */
+:root[data-franchise="watch-dogs"] .fx-line{max-width:1320px}
+:root[data-franchise="watch-dogs"] .panel-bar{border:1px solid #42f5d129;background:#071016;color:#9fb6bd;letter-spacing:.2em;text-transform:uppercase}
+:root[data-franchise="watch-dogs"] .fx-track{height:210px;border:1px solid #42f5d129;background:linear-gradient(#42f5d10d 1px,transparent 1px) 0 0/42px 42px,linear-gradient(90deg,#42f5d10d 1px,transparent 1px) 0 0/42px 42px,#050c11}
+:root[data-franchise="watch-dogs"] .fx-track::after{height:1px;background:repeating-linear-gradient(90deg,#42f5d1 0 22px,transparent 22px 34px)}
+:root[data-franchise="watch-dogs"] .fx-dot i{border-radius:0;border:2px solid #42f5d1;background:#04080b;rotate:45deg;box-shadow:0 0 0 5px #42f5d114}
+
+/* ── The shelf: dossiers, read one at a time ─────────────────────────── */
+:root[data-franchise="watch-dogs"] .fx-shelf{max-width:1320px}
+:root[data-franchise="watch-dogs"] .fx-rows{counter-reset:subject}
+:root[data-franchise="watch-dogs"] .fx-row{counter-increment:subject;position:relative;overflow:hidden;padding:20px 20px 20px 88px;border:1px solid #42f5d129;border-radius:0;background:linear-gradient(90deg,#0a141a,#050c11 62%)}
+:root[data-franchise="watch-dogs"] .fx-row::before{content:"SUBJ/" counter(subject,decimal-leading-zero);position:absolute;left:0;top:0;bottom:0;width:72px;display:grid;place-items:center;border-right:1px solid #42f5d129;background:#04080b;color:#42f5d1;font:9px/1.4 'IBM Plex Mono',monospace;letter-spacing:.12em;text-align:center}
+:root[data-franchise="watch-dogs"] .fx-row:hover{border-color:#42f5d1;background:linear-gradient(90deg,#0d1b22,#071016 62%)}
+:root[data-franchise="watch-dogs"] .fx-row-year{color:#42f5d1;letter-spacing:.14em}
+:root[data-franchise="watch-dogs"] .fx-row-name{letter-spacing:-.01em}
+:root[data-franchise="watch-dogs"] .fx-row-facts > *{border-radius:0;border-color:#42f5d129;background:#04080bcc}
+:root[data-franchise="watch-dogs"] .fx-sig{max-width:1320px}
+
+@media(prefers-reduced-motion:no-preference){
+  .fxwd-node[data-on] .fxwd-ping{animation:fxwdPing 2.6s ease-out infinite}
+  .fxwd-node[data-on] .fxwd-card{animation:fxwdCard .34s cubic-bezier(.15,.85,.2,1) both}
+  .fxwd-node[data-on] .fxwd-body{animation:fxwdLock .34s steps(3) both}
+  .fxwd-ring{animation:fxwdRing 2.6s linear infinite}
+  .fxwd-feed p{animation:fxwdFeed 4.2s calc(var(--i) * .35s) ease-in-out infinite}
+  .fxwd-glitch{animation:fxwdGlitch 7s steps(1) infinite}
+  .fxwd-grid{animation:fxwdCrawl 9s linear infinite}
+  @keyframes fxwdPing{0%{opacity:.85;transform:scale(.35)}70%,100%{opacity:0;transform:scale(1.9)}}
+  @keyframes fxwdCard{0%{opacity:0;transform:translateX(-14px) skewX(-6deg);filter:blur(3px)}100%{opacity:1;transform:none;filter:none}}
+  @keyframes fxwdLock{0%{transform:translateY(-4px);opacity:.4}100%{transform:none;opacity:1}}
+  @keyframes fxwdRing{0%{stroke-dashoffset:327}72%,100%{stroke-dashoffset:0}}
+  @keyframes fxwdFeed{0%,100%{opacity:.32}45%{opacity:1;color:#42f5d1}}
+  @keyframes fxwdGlitch{0%,92%,100%{transform:none;opacity:.5}93%{transform:translateX(-6px);opacity:.9}95%{transform:translateX(5px);opacity:.28}97%{transform:none;opacity:.72}}
+  @keyframes fxwdCrawl{to{background-position:0 72px,72px 0}}
+
+  /* The opening: ctOS finds the visitor, resolves the city, and cuts the
+     picture before the name lands. */
+  .fx-intro[data-intro="watch-dogs"][data-play="1"] .fxwdi-grid{animation:fxwdiGrid 3.5s ease-out both}
+  .fx-intro[data-intro="watch-dogs"][data-play="1"] .fxwdi-feed{animation:fxwdiFeed 2.4s .15s ease both}
+  .fx-intro[data-intro="watch-dogs"][data-play="1"] .fxwdi-status{animation:fxwdiStatus 1.1s 1.35s steps(1) both}
+  .fx-intro[data-intro="watch-dogs"][data-play="1"] .fxwdi-blackout{animation:fxwdiBlack .5s 2.15s steps(1) both}
+  .fx-intro[data-intro="watch-dogs"][data-play="1"] .fxwdi-word{animation:fxwdiWord .6s 2.5s cubic-bezier(.1,.8,.1,1) both}
+  @keyframes fxwdiGrid{0%{opacity:0;transform:perspective(700px) rotateX(74deg) scale(1.5)}30%,100%{opacity:.75;transform:perspective(700px) rotateX(62deg) scale(1)}}
+  @keyframes fxwdiFeed{from{opacity:0;transform:translateY(14px)}to{opacity:.85;transform:none}}
+  @keyframes fxwdiLock{0%{opacity:0;transform:translate(-50%,-50%) scale(2.6)}55%,100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+  @keyframes fxwdiStatus{0%{opacity:0}20%,100%{opacity:1}}
+  @keyframes fxwdiBlack{0%{opacity:0}40%{opacity:1}100%{opacity:0}}
+  @keyframes fxwdiWord{0%{opacity:0;filter:blur(16px);letter-spacing:.4em}100%{opacity:1;filter:none;letter-spacing:-.03em}}
+  /* The lock is gone by the time the name lands: the blackout is the cut. */
+  .fx-intro[data-intro="watch-dogs"][data-play="1"] .fxwdi-lock{animation:fxwdiLock 1.5s .35s cubic-bezier(.2,.85,.15,1) both,fxwdiGone .01s 2.4s both}
+  @keyframes fxwdiGone{to{opacity:0}}
+}
+
+/* ── The opening's own furniture ─────────────────────────────────────── */
+.fxwdi-grid{position:absolute;left:-25%;right:-25%;bottom:-10%;height:80%;transform-origin:50% 100%;transform:perspective(700px) rotateX(62deg);background:linear-gradient(#42f5d155 1px,transparent 1px) 0 0/64px 64px,linear-gradient(90deg,#42f5d155 1px,transparent 1px) 0 0/64px 64px;opacity:0}
+.fxwdi-feed{position:absolute;left:5%;top:12%;display:flex;flex-direction:column;gap:5px;opacity:0;color:#42f5d1;font:10px 'IBM Plex Mono',monospace;letter-spacing:.28em}
+.fxwdi-lock{position:absolute;left:50%;top:50%;width:min(420px,58vw);height:min(420px,58vw);transform:translate(-50%,-50%);opacity:0}
+/* Four corner brackets and no rectangle between them: a viewfinder closing on
+   somebody, which is the gesture the whole series opens with. Two elements,
+   two pseudo-elements each, one corner apiece - a single box with a border
+   would be a frame, and a frame is a picture rather than a lock. */
+.fxwdi-lock i{position:absolute;inset:0}
+.fxwdi-lock i::before,.fxwdi-lock i::after{content:"";position:absolute;width:34%;height:34%;border:3px solid #42f5d1}
+/* nth-of-type and not first/last-child: the reticle is <i><i><b>, so the last
+   child is the crosshair and `i:last-child` matches nothing at all - which is
+   how the bottom two corners went missing while the second <i> fell back to
+   the shared rule and drew a closed box. */
+.fxwdi-lock i:nth-of-type(1)::before{left:0;top:0;border-right:0;border-bottom:0}
+.fxwdi-lock i:nth-of-type(1)::after{right:0;top:0;border-left:0;border-bottom:0}
+.fxwdi-lock i:nth-of-type(2)::before{left:0;bottom:0;border-right:0;border-top:0}
+.fxwdi-lock i:nth-of-type(2)::after{right:0;bottom:0;border-left:0;border-top:0}
+.fxwdi-lock b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#42f5d1;font:200 46px 'IBM Plex Mono',monospace}
+.fxwdi-status{position:absolute;left:50%;top:calc(50% + min(248px,36vw));transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:7px;margin:0;opacity:0;white-space:nowrap}
+.fxwdi-status span{color:#5d7078;font:10px 'IBM Plex Mono',monospace;letter-spacing:.34em}
+.fxwdi-status b{padding:4px 12px;background:#42f5d1;color:#04080b;font:700 12px 'IBM Plex Mono',monospace;letter-spacing:.24em}
+/* Sized to fit rather than to be big: WATCH_DOGS is ten glyphs and at 14vw it
+   runs past both edges on a wide window, which is a title that has to be
+   scrolled. */
+.fxwdi-word{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:baseline;justify-content:center;width:92vw;margin:0;opacity:0;color:#e6fbf7;font:800 clamp(38px,8.6vw,124px)/1 'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-.03em;white-space:nowrap}
+.fxwdi-word i{color:#42f5d1;font-style:normal}
+.fxwdi-blackout{position:absolute;inset:0;background:#04080b;opacity:0}
+
+@media(prefers-reduced-motion:reduce){
+  .fxwd-glitch{opacity:.22}
+  .fxwd-ring{stroke-dashoffset:0}
+}
+
+@media(max-width:920px){
+  :root[data-franchise="watch-dogs"] .fx-hero{min-height:740px}
+  .fxwd-feed{display:none}
+  .fxwd-hack{right:4%;top:8%;width:88px;height:88px}
+  .fxwd-pct{font-size:23px}
+  .fxwd-card{width:min(220px,52vw)}
+}
+@media(max-width:620px){
+  :root[data-franchise="watch-dogs"] .fx-hero{min-height:660px}
+  :root[data-franchise="watch-dogs"] .fx-row{padding:16px 14px 16px 14px}
+  :root[data-franchise="watch-dogs"] .fx-row::before{position:static;width:auto;display:block;margin-bottom:8px;border:0;background:none;text-align:left}
+  .fxwd-hack{display:none}
+  .fxwd-node[data-n="3"],.fxwd-node[data-n="4"]{display:none}
+  .fxwd-card{width:min(190px,58vw);top:-52px}
+}
