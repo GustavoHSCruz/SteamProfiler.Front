@@ -45,9 +45,9 @@ const series = franchises && parts[3] && BY_SLUG.has(parts[3]) ? parts[3] : null
 // paths rather than one with a flag because they are separate shelves: Valve
 // published Garry's Mod and Facepunch made it.
 const axis = houseAxisOf(parts[2] || '');
-// O slug e so o que veio no endereco. Qual casa ele e depende da tabela, que
-// e meia mega e so e buscada se alguem pedir uma destas telas - entao a
-// resolucao acontece la embaixo, depois do await.
+// O slug e so o que veio no endereco. Quais existem e uma pergunta que so a
+// api responde - sao noventa mil - entao ela vai como veio e a resposta dela
+// e que diz se a casa existe.
 const houseSlug = axis && parts[3] ? parts[3] : null;
 
 /** The address this view should have been reached at. A link built by hand or
@@ -195,32 +195,24 @@ function showChrome(profileQuery, persona) {
       // the profile is the only thing this waits on. What the library adds is
       // the one column these screens cannot hold on their own - how much of
       // each shelf is already in it.
-      // A biblioteca e a tabela das casas ao mesmo tempo: uma vem da api e a
-      // outra do disco, nenhuma depende da outra, e esperar as duas em fila
-      // custaria a mais lenta somada a mais rapida sem motivo.
-      const [d] = await Promise.all([
-        api(`/profile?id=${steamid}`),
-        loadHouseCatalogue(),
-      ]);
+      // O perfil e a unica espera: as casas em si a propria tela busca, e o
+      // que o perfil traz e a biblioteca que essas telas poem por cima.
+      const d = await api(`/profile?id=${steamid}`);
       bootMark('fetched');
       el('houses').hidden = false;
       showChrome(query, d.profile.persona);
       bootDone();
       const ctx = {
         query: encodeURIComponent(query),
+        // O indice pede a api para cruzar com esta biblioteca, e para isso
+        // precisa do steamid resolvido e nao do que a pessoa digitou.
+        steamid,
         persona: d.profile.persona,
         library: d.library || [],
         unplayed: d.unplayed || [],
       };
       const root = el('hs-root');
-      const house = houseSlug ? houseBySlug(axis, houseSlug) : null;
-      // Um slug que nao e casa nenhuma nao merece uma pagina de erro: o
-      // indice esta ali e e a resposta para "quais existem".
-      if (houseSlug && !house) {
-        location.replace(`/u/${encodeURIComponent(query)}/${axis.axis}`);
-        return;
-      }
-      if (house) await renderHouse(axis, house, root, ctx);
+      if (houseSlug) await renderHouse(axis, houseSlug, root, ctx);
       else await renderHouseIndex(axis, root, ctx);
     } else if (year) {
       // Every figure on this page except the unlocks is already in the profile

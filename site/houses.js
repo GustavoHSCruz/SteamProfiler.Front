@@ -2,11 +2,11 @@
 
    Two screens off one renderer, because they are the same screen twice:
 
-     /publishers              the houses that put games on the shelf
+     /publishers              every company that publishes on Steam
      /publishers/<slug>       one of them, everything it published
-     /developers              the houses that made them
+     /developers              every company that makes games on Steam
      /developers/<slug>       one of them, everything it made
-     /u/<who>/publishers      the same four, with that profile's hours on top
+     /u/<who>/publishers      the same four, narrowed to that library
      /u/<who>/publishers/<slug>
      /u/<who>/developers
      /u/<who>/developers/<slug>
@@ -16,32 +16,27 @@
    the second. Keeping the two axes apart is the only way that difference can
    be seen at all, and it is why there are two addresses rather than a toggle.
 
-   Which houses there are is not here and is not a decision: house-catalogue.js
-   holds every company the site has read, both axes, one entry each.
+   Unlike the franchise screens, none of this is a table that shipped with the
+   page. There are ninety thousand companies on Steam and a browser has no
+   business holding all of them to show sixty: the list, the filtering and the
+   paging belong to the api, and what arrives is the answer rather than the
+   material to work it out from.
 
-   No api call anywhere on these screens. The catalogue is the whole layout,
-   and the only thing that ever lands on top of it is the profile's own
-   library - which the router already had in hand before it got here.
+   With a profile in the address the api does one more join and answers a
+   different question - which companies this library is on, most of it first -
+   because "only what I own" over fifty thousand shelves cannot be done in a
+   browser that holds none of them.
 
    Shared helpers come from lib.js. The router decides when this runs. */
 
-/* Above this many entries a list gets a filter field. Below it a filter is a
-   control that costs a line and saves nobody a scroll. */
+/* How many houses come back in one go, and how many rows a shelf shows before
+   the filter earns its place. */
+const HS_PAGE = 60;
 const HS_FILTER_AT = 24;
 
-/* How many tiles go into the index at a time. There are over two thousand
-   developers, and building two thousand anchors with a picture in each before
-   showing anybody anything is a page that arrives late to say something it
-   could have said at once. The rest follow as the reader gets near them. */
-const HS_PAGE = 48;
-
-/** The two axes: an address, four strings, and the name of the table each one
- *  reads. Every function below takes one of these rather than a boolean, so
- *  nothing has to remember which way round `true` meant.
- *
- *  Deliberately no table here. This object has to exist before the catalogue
- *  does, because the router reads the address on the first line it runs and
- *  the catalogue is half a megabyte that most pages never need. */
+/** The two axes: an address and four strings. Every function below takes one
+ *  of these rather than a boolean, so nothing has to remember which way round
+ *  `true` meant. */
 const HS_AXES = {
   publishers: {
     axis: 'publishers',
@@ -65,68 +60,23 @@ function houseAxisOf(word) {
   return Object.prototype.hasOwnProperty.call(HS_AXES, word) ? HS_AXES[word] : null;
 }
 
-/* ── Getting the catalogue ─────────────────────────────────────────────
-   house-catalogue.js is every company this site has read and every game under
-   them: about half a megabyte, and the dashboard, the game pages and the
-   backlog have no use for a byte of it. The two house shells load it with a
-   tag of their own because they are nothing without it. /u/<who>/publishers
-   lives on profile.html, which serves five other views, so there it is
-   fetched when somebody actually asks for one.
+const houseIndexHref = (axis, ctx) =>
+  (ctx.query ? `/u/${ctx.query}/${axis.axis}` : `/${axis.axis}`);
 
-   Once, and awaited by everyone who asks while it is still in the air. */
-let HS_LOADING = null;
+const houseHref = (axis, slug, ctx) =>
+  (ctx.query ? `/u/${ctx.query}/${axis.axis}/${slug}` : `/${axis.axis}/${slug}`);
 
-function loadHouseCatalogue() {
-  if (typeof PUBLISHERS !== 'undefined') return Promise.resolve();
-  if (HS_LOADING) return HS_LOADING;
-  HS_LOADING = new Promise((resolve, reject) => {
-    const tag = document.createElement('script');
-    tag.src = '/house-catalogue.js';
-    tag.addEventListener('load', () => resolve(), { once: true });
-    tag.addEventListener('error', () => reject(new Error(t('err.load'))), { once: true });
-    document.head.append(tag);
-  });
-  return HS_LOADING;
-}
-
-/* The table itself. Read through the identifier and not off `window`, because
-   house-catalogue.js declares both with `const` - a top-level `const` is a
-   lexical binding in the global scope and never a property of the window
-   object, so `window.PUBLISHERS` is forever undefined while `PUBLISHERS` is
-   sitting right there. */
-const houseTable = (axis) => {
-  if (axis.axis === 'publishers') {
-    return typeof PUBLISHERS === 'undefined' ? [] : PUBLISHERS;
-  }
-  return typeof DEVELOPERS === 'undefined' ? [] : DEVELOPERS;
-};
-
-/* Built on first use rather than on load, for the same reason the catalogue
-   is: a Map over two thousand entries is work, and the page that wants it is
-   the only page that should pay for it. */
-const HS_INDEX = {};
-
-function houseBySlug(axis, slug) {
-  if (!HS_INDEX[axis.axis]) {
-    HS_INDEX[axis.axis] = new Map(houseTable(axis).map((x) => [x.slug, x]));
-  }
-  return HS_INDEX[axis.axis].get(slug) || null;
-}
-
-/** One game off the shared table as `[name, year]`. The two axes name the same
- *  games and there is no reason to spell them twice, so the shelves hold
- *  appids and this is where they turn back into something readable. */
-const houseGame = (id) =>
-  (typeof HOUSE_GAMES === 'undefined' ? null : HOUSE_GAMES[id]) || null;
+/* A game links into the profile that is reading, and to the public page when
+   nobody is. Same rule the franchise rows follow. */
+const houseGameHref = (id, ctx) => (ctx.query ? `/u/${ctx.query}/${id}` : `/g/${id}`);
 
 /* A house's colour, out of its own slug.
  *
- *  Two thousand two hundred and sixty-nine developers is two thousand two
- *  hundred and sixty-nine palette decisions nobody is going to make, and a
- *  table of hand-picked colours would quietly become the list of houses that
- *  count. So the hue is a hash of the slug: stable for a house across
- *  reloads, spread across the wheel, and the same arithmetic for the biggest
- *  publisher on Steam and for somebody's one game.
+ *  Ninety thousand companies is ninety thousand palette decisions nobody is
+ *  going to make, and a table of hand-picked colours would quietly become the
+ *  list of houses that count. So the hue is a hash of the slug: stable for a
+ *  house across reloads, spread across the wheel, and the same arithmetic for
+ *  the biggest publisher on Steam and for somebody's one game.
  *
  *  Saturation and lightness are fixed rather than hashed, because those are
  *  what keep a colour legible on this background - a hashed lightness would
@@ -137,59 +87,41 @@ function houseTint(slug) {
   return `hsl(${n % 360} 58% 52%)`;
 }
 
-const houseIndexHref = (axis, ctx) =>
-  (ctx.query ? `/u/${ctx.query}/${axis.axis}` : `/${axis.axis}`);
-
-const houseHref = (axis, house, ctx) =>
-  (ctx.query ? `/u/${ctx.query}/${axis.axis}/${house.slug}` : `/${axis.axis}/${house.slug}`);
-
-/* A game links into the profile that is reading, and to the public page when
-   nobody is. Same rule the franchise rows follow. */
-const houseGameHref = (id, ctx) => (ctx.query ? `/u/${ctx.query}/${id}` : `/g/${id}`);
-
-/** The years a house's shelf covers: its oldest release here to its newest.
- *
- *  Deliberately not the year the company was founded. Atari is from 1972 and
- *  the oldest thing on its shelf is from 2003, and printing 1972 would be this
- *  page saying something the storefront never told it. */
-function houseSpan(house) {
+/** The years a shelf covers, over the games this site has a year for. */
+function houseSpan(apps) {
   let from = null;
   let to = null;
-  for (const id of house.apps) {
-    const g = houseGame(id);
-    const year = g && g[1];
-    if (!year) continue;
-    if (from === null || year < from) from = year;
-    if (to === null || year > to) to = year;
+  for (const app of apps) {
+    if (!app.year) continue;
+    if (from === null || app.year < from) from = app.year;
+    if (to === null || app.year > to) to = app.year;
   }
   return from === null ? null : { from, to };
 }
 
-/** What one profile has of one house. `library` is what was played and
+/** What one profile has of one shelf. `library` is what was played and
  *  `unplayed` is what is owned and never launched - two different facts, kept
  *  apart here the way they are kept apart everywhere else on this site. */
-function houseStanding(house, mine, idle) {
+function houseStanding(apps, mine, idle) {
   let hours = 0;
   let played = 0;
   let owned = 0;
   let top = null;
-  for (const id of house.apps) {
-    const g = mine.get(id);
+  for (const app of apps) {
+    const g = mine.get(app.appid);
     if (g) {
       hours += g.hours || 0;
       played += 1;
       owned += 1;
       if (!top || (g.hours || 0) > (top.hours || 0)) top = g;
-    } else if (idle.has(id)) {
+    } else if (idle.has(app.appid)) {
       owned += 1;
     }
   }
-  return { hours, played, owned, top, total: house.apps.length, mine, idle };
+  return { hours, played, owned, top, total: apps.length, mine, idle };
 }
 
-/** The profile's library as the two lookups every screen here wants. Built
- *  once per render rather than once per house: a thousand houses against a
- *  five thousand game library is a million comparisons done the naive way. */
+/** The profile's library as the two lookups a shelf wants. */
 function houseLibrary(ctx) {
   return {
     mine: new Map((ctx.library || []).map((g) => [g.appid, g])),
@@ -198,17 +130,22 @@ function houseLibrary(ctx) {
 }
 
 /* ── The filter ────────────────────────────────────────────────────────
-   One control for both screens. It owns the field, the checkbox and the
-   count, and hands what was typed to whoever built it - because the two
-   screens do different things with the answer. A shelf is at most a few
-   hundred rows and they are all on the page already, so it hides them. An
-   index is two thousand houses that are deliberately not all on the page, so
-   it rebuilds.
+   One control for both screens. It owns the field and the count and hands
+   what was typed to whoever built it, because the two screens do different
+   things with the answer: an index asks the api again, a shelf hides rows it
+   already has.
+
+   No "only what I own" checkbox. On a shelf it would be a real control, but
+   on the index it would be a second way of saying what the address already
+   says - with a profile in the path the api is answering about that library
+   and about nothing else. Two controls for one state is how a screen starts
+   lying, so the shelf does without it too rather than have the same word mean
+   two things one click apart.
 
    `hidden` and not `style.display`, because that is the one the shell's reset
    marks `!important` and the only one a stylesheet cannot quietly lose. */
 function houseFilter(opts) {
-  const { label, mine, onChange } = opts;
+  const { label, onChange } = opts;
   const box = h('div', { cls: 'hs-filter' });
   const id = `hs-filter-${Math.random().toString(36).slice(2, 8)}`;
 
@@ -218,16 +155,6 @@ function houseFilter(opts) {
             placeholder: t(label) },
   });
   box.append(h('label', { cls: 'hs-filter-label', attr: { for: id }, text: t(label) }), field);
-
-  // The reader's own filter, and only where there is a reader. On a list of
-  // two thousand this is the one somebody actually wants.
-  let onlyMine = null;
-  if (mine) {
-    const mineId = `${id}-mine`;
-    onlyMine = h('input', { cls: 'hs-filter-check', attr: { id: mineId, type: 'checkbox' } });
-    box.append(h('span', { cls: 'hs-filter-only' }, onlyMine,
-      h('label', { attr: { for: mineId }, text: t('hs.only_mine') })));
-  }
 
   // Counted out loud, because a filter that hides forty rows without saying
   // so reads as a list that lost them.
@@ -242,31 +169,29 @@ function houseFilter(opts) {
       ? t('hs.showing', { shown: num(shown), total: num(total) })
       : t('hs.none_match');
   };
+  const waiting = () => { count.textContent = t('hs.reading'); };
 
-  const run = () => onChange(field.value.trim().toLowerCase(),
-    !!(onlyMine && onlyMine.checked), say);
-
-  // Typing into a two thousand entry index rebuilds a grid on every
-  // keystroke, and a rebuild is cheap but not free. One frame of settling
-  // makes a held-down key one rebuild instead of eight.
+  // A quarter second of settling. On the index every keystroke is a request,
+  // and a held-down key should be one of them rather than eight.
   let pending = null;
   field.addEventListener('input', () => {
     clearTimeout(pending);
-    pending = setTimeout(run, 90);
+    pending = setTimeout(() => onChange(field.value.trim(), say, waiting), 240);
   });
-  if (onlyMine) onlyMine.addEventListener('change', run);
-  run();
+  onChange('', say, waiting);
   return box;
 }
 
 /* ── The index ─────────────────────────────────────────────────────────
-   Every house on the axis, biggest shelf first, as a tile with its flagship's
-   art behind it. With a profile, each tile also carries that library's
-   standing, and a house it has nothing from still gets a tile: an empty shelf
-   is an answer to "have I got anything by these people".
+   Every company on the axis, a page at a time: biggest shelf first with
+   nobody attached, and most of this library first with somebody.
 
-   Drawn a page at a time. The whole list is held in memory and only the part
-   somebody has scrolled to is in the document. */
+   No key art on these tiles, and that is a decision rather than an omission.
+   The picture would be one cold fetch of a game nobody has opened, per tile,
+   for a list ninety thousand long - so opening this screen would have this
+   server pulling sixty pictures out of Steam's CDN to decorate a list of
+   names. The colour does that work instead. A house's own screen still has
+   its picture, because that is one game on one page somebody asked for. */
 async function renderHouseIndex(axis, root, ctx) {
   document.title = `${t(axis.title)} - steamprofiler.org`;
   root.textContent = '';
@@ -275,123 +200,144 @@ async function renderHouseIndex(axis, root, ctx) {
     h('p', { cls: 'hs-ix-kicker', text: t(axis.kicker) }),
     h('h1', { cls: 'display hs-ix-title', text: t(axis.title) })));
 
-  const { mine, idle } = houseLibrary(ctx);
-  const all = houseTable(axis).map((house) => ({
-    house,
-    search: house.name.toLowerCase(),
-    stand: ctx.library ? houseStanding(house, mine, idle) : null,
-  }));
-
   const grid = h('div', { cls: 'hs-ix-grid', attr: { role: 'list' } });
   const more = h('div', { cls: 'hs-more' });
-
-  let shown = [];
-  let drawn = 0;
-
-  const draw = () => {
-    const slice = shown.slice(drawn, drawn + HS_PAGE);
-    for (const item of slice) grid.append(houseTile(axis, item, ctx));
-    drawn += slice.length;
-    more.hidden = drawn >= shown.length;
-  };
-
-  // The sentinel under the grid: when it comes into view there is more to
-  // draw, so draw it. A reader who never scrolls never pays for the rest.
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver((entries) => {
-      if (entries.some((e) => e.isIntersecting) && drawn < shown.length) draw();
-    }, { rootMargin: '600px' }).observe(more);
-  }
-
-  const filter = houseFilter({
-    label: 'hs.filter_house',
-    mine: !!ctx.library,
-    onChange: (needle, owned, say) => {
-      shown = all.filter((it) => (!needle || it.search.includes(needle))
-        && (!owned || (it.stand && it.stand.owned)));
-      grid.textContent = '';
-      drawn = 0;
-      draw();
-      say(shown.length, all.length);
-    },
-  });
-
-  // The filter is built before the grid is in the document and draws into it
-  // straight away, so the order here is only where the control sits.
-  root.append(filter, grid, more);
-
-  // A browser with no IntersectionObserver gets a button instead of a scroll
-  // trigger, which is the same promise kept by hand.
   const button = h('button', {
     cls: 'hs-act', attr: { type: 'button' }, text: t('hs.show_more'),
   });
-  button.addEventListener('click', draw);
+
+  // Which question the newest keystroke asked. A page that lands after the
+  // reader has typed again belongs to a question nobody is asking any more,
+  // and drawing it would interleave two answers in one grid.
+  let token = 0;
+  let query = '';
+  let start = 0;
+  let total = 0;
+  let busy = false;
+
+  const url = () => `/houses?kind=${axis.axis}`
+    + (ctx.steamid ? `&id=${ctx.steamid}` : '')
+    + `&q=${encodeURIComponent(query)}&start=${start}&count=${HS_PAGE}`;
+
+  const page = async (mine, say) => {
+    if (busy || (start && start >= total)) return;
+    busy = true;
+    button.disabled = true;
+    try {
+      const answer = await api(url());
+      if (mine !== token) return;
+      total = answer.total || 0;
+      start += (answer.houses || []).length;
+      for (const house of answer.houses || []) grid.append(houseTile(axis, house, ctx));
+      // Nothing at all and nothing asked for is not an empty search: it is a
+      // server that has not finished walking the catalogue yet. The first walk
+      // takes about an hour and a half, and a screen that says "no results" to
+      // an empty filter would be reporting a fault that is not one.
+      if (!total && !query) {
+        grid.append(h('p', { cls: 'hs-fail', text: t('hs.filling') }));
+      }
+      if (say) say(Math.min(start, total), total);
+      more.hidden = start >= total;
+    } finally {
+      busy = false;
+      button.disabled = false;
+    }
+  };
+
+  const load = async (needle, say, waiting) => {
+    token += 1;
+    const mine = token;
+    query = needle;
+    start = 0;
+    total = 0;
+    grid.textContent = '';
+    more.hidden = true;
+    waiting();
+    try {
+      await page(mine, say);
+    } catch (e) {
+      if (mine !== token) return;
+      grid.textContent = '';
+      grid.append(h('p', { cls: 'hs-fail', text: e.message }));
+      say(0, 0);
+    }
+  };
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) page(token, null).catch(() => {});
+    }, { rootMargin: '600px' }).observe(more);
+  }
+  // A browser with no IntersectionObserver gets a button instead of a scroll
+  // trigger, which is the same promise kept by hand.
+  button.addEventListener('click', () => page(token, null).catch(() => {}));
   more.append(button);
+
+  root.append(houseFilter({ label: 'hs.filter_house', onChange: load }), grid, more);
 }
 
-/** One house on the index. */
-function houseTile(axis, item, ctx) {
-  const { house, stand } = item;
-  const span = houseSpan(house);
-
+/** One house on the index. `owned` only comes back when the api was asked
+ *  about a library, and it is the whole reason that view is worth opening. */
+function houseTile(axis, house, ctx) {
   const card = h('a', {
-    cls: 'hs-tile',
+    cls: 'hs-tile hs-tile--flat',
     data: { hs: house.slug },
-    attr: { role: 'listitem', href: houseHref(axis, house, ctx) },
+    attr: { role: 'listitem', href: houseHref(axis, house.slug, ctx) },
     style: { '--tint': houseTint(house.slug) },
   });
-
-  const art = h('img', {
-    cls: 'hs-tile-art',
-    attr: { src: `/art/${house.flagship}.jpg`, alt: '', loading: 'lazy', decoding: 'async' },
-  });
-  // An app with no key art leaves a broken-image glyph across the tile, which
-  // reads as a page that failed rather than as a game that is old.
-  art.addEventListener('error', () => art.remove(), { once: true });
-  card.append(art, h('div', { cls: 'hs-tile-veil' }));
-
   const body = h('div', { cls: 'hs-tile-in' },
     h('h2', { cls: 'hs-tile-name', text: house.name }),
-    h('p', { cls: 'hs-tile-span', text: span
-      ? t('hs.tile_span', {
-        n: num(house.apps.length), raw: house.apps.length, from: span.from, to: span.to,
-      })
-      : t('hs.n_games', { n: num(house.apps.length), raw: house.apps.length }) }));
-
-  if (stand) {
-    body.append(stand.owned
-      ? h('p', { cls: 'hs-tile-you' },
-        h('b', { text: t('hs.yours_n', { n: num(stand.owned), total: num(stand.total) }) }),
-        stand.hours ? h('span', { text: t('hs.hours_n', { h: hrs(stand.hours) }) }) : null)
-      : h('p', { cls: 'hs-tile-you', data: { none: '1' }, text: t('hs.tile_none') }));
+    h('p', { cls: 'hs-tile-span', text: t('hs.n_games', {
+      n: num(house.games), raw: house.games,
+    }) }));
+  if (house.owned != null) {
+    body.append(h('p', { cls: 'hs-tile-you' },
+      h('b', { text: t('hs.yours_n', { n: num(house.owned), total: num(house.games) }) })));
   }
-
-  card.append(body);
+  card.append(h('div', { cls: 'hs-tile-veil' }), body);
   return card;
 }
 
 /* ── One house ─────────────────────────────────────────────────────────
    The shelf, banded by decade. A house is not a series: a shelf here runs
-   from one game to a couple of hundred, and a decade is the coarsest band
+   from one game to a couple of thousand, and a decade is the coarsest band
    that still says something about when this house was busy.
 
    Ascending, oldest band first, because read that way the bands are the
    house's own history and not a store listing. */
-async function renderHouse(axis, house, root, ctx) {
-  document.title = `${house.name} - steamprofiler.org`;
+async function renderHouse(axis, slug, root, ctx) {
   root.textContent = '';
+  root.append(h('p', { cls: 'hs-fail', text: t('hs.reading') }));
 
-  const tint = houseTint(house.slug);
-  const span = houseSpan(house);
+  let house;
+  try {
+    house = await api(`/house?kind=${axis.axis}&slug=${encodeURIComponent(slug)}`);
+  } catch (e) {
+    root.textContent = '';
+    root.append(h('p', { cls: 'hs-fail', text: e.message }));
+    return;
+  }
+
+  root.textContent = '';
+  document.title = `${house.name} - steamprofiler.org`;
+
+  const apps = house.apps || [];
+  const span = houseSpan(apps);
   const { mine, idle } = houseLibrary(ctx);
-  const stand = ctx.library ? houseStanding(house, mine, idle) : null;
+  const stand = ctx.library ? houseStanding(apps, mine, idle) : null;
 
-  const hero = h('header', { cls: 'hs-hero', style: { '--tint': tint } });
-  const art = h('img', {
-    cls: 'hs-hero-art',
-    attr: { src: `/art/${house.flagship}.jpg`, alt: '', decoding: 'async' },
-  });
-  art.addEventListener('error', () => art.remove(), { once: true });
+  const hero = h('header', { cls: 'hs-hero', style: { '--tint': houseTint(slug) } });
+  // One picture, for the first game on the shelf. A house page is a page
+  // somebody asked for by name, so a single cold fetch is fair; the index
+  // deliberately has none, at a thousand times the scale.
+  if (apps.length) {
+    const art = h('img', {
+      cls: 'hs-hero-art',
+      attr: { src: `/art/${apps[0].appid}.jpg`, alt: '', decoding: 'async' },
+    });
+    art.addEventListener('error', () => art.remove(), { once: true });
+    hero.append(art);
+  }
 
   const standing = stand
     ? (stand.owned
@@ -410,7 +356,7 @@ async function renderHouse(axis, house, root, ctx) {
       : h('p', { cls: 'hs-hero-you', data: { none: '1' }, text: t(axis.empty) }))
     : null;
 
-  put(hero, art, h('div', { cls: 'hs-hero-veil' }),
+  put(hero, h('div', { cls: 'hs-hero-veil' }),
     h('div', { cls: 'hs-hero-in' },
       h('p', { cls: 'hs-hero-kicker' },
         h('span', { text: t(axis.shelf) }),
@@ -418,7 +364,7 @@ async function renderHouse(axis, house, root, ctx) {
         span ? h('span', { text: t('hs.span_years', { from: span.from, to: span.to }) }) : null),
       h('h1', { cls: 'display hs-hero-name', text: house.name }),
       h('p', { cls: 'hs-hero-count', text: t('hs.n_games', {
-        n: num(house.apps.length), raw: house.apps.length,
+        n: num(house.games), raw: house.games,
       }) }),
       standing,
       h('div', { cls: 'hs-acts' }, h('a', {
@@ -428,54 +374,67 @@ async function renderHouse(axis, house, root, ctx) {
 
   const byDecade = new Map();
   const undated = [];
-  for (const id of house.apps) {
-    const g = houseGame(id);
-    if (!g) continue;
-    if (!g[1]) {
-      undated.push([id, g]);
+  for (const app of apps) {
+    if (!app.year) {
+      undated.push(app);
       continue;
     }
-    const decade = Math.floor(g[1] / 10) * 10;
+    const decade = Math.floor(app.year / 10) * 10;
     if (!byDecade.has(decade)) byDecade.set(decade, []);
-    byDecade.get(decade).push([id, g]);
+    byDecade.get(decade).push(app);
   }
 
   const items = [];
   const groups = [];
   const shelf = h('div', { cls: 'hs-shelf' });
 
+  // Bands only where there is something to band by. This site has read the
+  // store about a few thousand of the ninety thousand apps in the index, so
+  // most shelves have no years at all - and a decade heading over a list where
+  // every row says "-" is a structure describing nothing. Those get one plain
+  // list, alphabetical, and no year column either.
+  const dated = byDecade.size > 0;
+  if (!dated) shelf.dataset.undated = '1';
+
   const band = (heading, rows) => {
     const count = h('b', { text: num(rows.length) });
-    const section = h('section', { cls: 'hs-band' },
-      h('div', { cls: 'panel-bar' }, h('span', { text: heading }), count));
+    const section = h('section', { cls: 'hs-band' });
+    if (heading) {
+      section.append(h('div', { cls: 'panel-bar' },
+        h('span', { text: heading }), count));
+    }
     const list = h('ol', { cls: 'hs-rows' });
     const own = [];
-    for (const [id, g] of rows) {
-      const row = houseRow(id, g, ctx, stand);
+    for (const app of rows) {
+      const row = houseRow(app, ctx, stand, dated);
       list.append(row.node);
       items.push(row);
       own.push(row);
     }
     section.append(list);
     shelf.append(section);
-    groups.push({ node: section, items: own, count });
+    groups.push({ node: section, items: own, count: heading ? count : null });
   };
 
-  for (const decade of [...byDecade.keys()].sort((a, b) => a - b)) {
-    const rows = byDecade.get(decade).sort((a, b) => a[1][1] - b[1][1]
-      || a[1][0].localeCompare(b[1][0]));
-    band(t('hs.decade', { d: decade }), rows);
+  const byName = (x, y) => x.name.localeCompare(y.name);
+  if (!dated) {
+    band(null, apps.slice().sort(byName));
+  } else {
+    for (const decade of [...byDecade.keys()].sort((a, b) => a - b)) {
+      band(t('hs.decade', { d: decade }),
+        byDecade.get(decade).sort((a, b) => a.year - b.year || byName(a, b)));
+    }
+    if (undated.length) band(t('hs.no_year'), undated.sort(byName));
   }
-  if (undated.length) band(t('hs.undated'), undated);
 
-  if (items.length > HS_FILTER_AT || stand) {
+  if (items.length > HS_FILTER_AT) {
     root.append(houseFilter({
       label: 'hs.filter_game',
-      mine: !!stand,
-      onChange: (needle, owned, say) => {
+      onChange: (needle, say) => {
+        const lower = needle.toLowerCase();
         let left = 0;
         for (const it of items) {
-          const hit = (!needle || it.search.includes(needle)) && (!owned || it.owned);
+          const hit = !lower || it.search.includes(lower);
           it.node.hidden = !hit;
           if (hit) left += 1;
         }
@@ -485,32 +444,62 @@ async function renderHouse(axis, house, root, ctx) {
         for (const g of groups) {
           const n = g.items.filter((it) => !it.node.hidden).length;
           g.node.hidden = !n;
-          g.count.textContent = num(n);
+          if (g.count) g.count.textContent = num(n);
         }
         say(left, items.length);
       },
     }));
   }
   root.append(shelf);
+
+  // What the shelf could not say. Both are real: a year is missing because
+  // this server has not been to the store about that game yet, and a shelf is
+  // cut because some catalogue publishers have thousands of apps.
+  const foot = [];
+  if (house.read != null && house.read < apps.length) {
+    foot.push(t('hs.years_read', { n: num(house.read), total: num(apps.length) }));
+  }
+  if (house.shown != null && house.games > house.shown) {
+    foot.push(t('hs.cut_at', { n: num(house.shown), total: num(house.games) }));
+  }
+  if (foot.length) root.append(h('p', { cls: 'hs-foot', text: foot.join(' · ') }));
 }
 
 /** One game on a house's shelf. The reader's column is absent entirely when
  *  nobody is being talked about, rather than present and empty. */
-function houseRow(id, game, ctx, stand) {
-  const [name, year] = game;
-  const owned = stand && stand.mine.get(id);
-  const idle = stand && stand.idle.has(id);
+function houseRow(app, ctx, stand, dated) {
+  const owned = stand && stand.mine.get(app.appid);
+  const idle = stand && stand.idle.has(app.appid);
 
   const li = h('li', {});
   const a = h('a', {
     cls: 'hs-row',
     data: owned ? { on: '1' } : idle ? { idle: '1' } : {},
-    attr: { href: houseGameHref(id, ctx) },
+    attr: { href: houseGameHref(app.appid, ctx) },
   });
 
-  put(a,
-    h('span', { cls: 'hs-row-year', text: year ? String(year) : '-' }),
-    h('b', { cls: 'hs-row-name', text: name }));
+  // The game's own capsule, straight off Steam's CDN and lazily. Not through
+  // /art/: that route caches library_hero.jpg at 400 KB a game and exists for
+  // a page opened to look at one of them, and a shelf is hundreds of rows. The
+  // small capsule is a few kilobytes and never touches this server, which is
+  // the same trade lib.js already documents for thumbnails.
+  const icon = h('img', {
+    cls: 'hs-row-icon',
+    attr: {
+      src: `${HEADER_ART}/${app.appid}/capsule_sm_120.jpg`,
+      alt: '', loading: 'lazy', decoding: 'async', width: '60', height: '28',
+    },
+  });
+  // A game with no capsule leaves a broken-image glyph in every row it is in.
+  // Removed rather than hidden, so the row closes up instead of keeping a gap
+  // where a picture was going to be.
+  icon.addEventListener('error', () => icon.remove(), { once: true });
+
+  put(a, icon,
+    // The year column only exists where the shelf has years. A column of
+    // dashes is a column saying nothing in a space that could be the name.
+    dated ? h('span', { cls: 'hs-row-year', text: app.year ? String(app.year) : '-' }) : null,
+    h('b', { cls: 'hs-row-name', text: app.name }));
 
   if (stand) {
     a.append(h('span', {
@@ -522,5 +511,5 @@ function houseRow(id, game, ctx, stand) {
   }
 
   li.append(a);
-  return { node: li, search: name.toLowerCase(), owned: !!(owned || idle) };
+  return { node: li, search: app.name.toLowerCase(), owned: !!(owned || idle) };
 }

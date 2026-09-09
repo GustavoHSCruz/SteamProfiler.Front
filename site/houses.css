@@ -264,7 +264,7 @@
 .hs-rows { margin: 10px 0 0; padding: 0; list-style: none; }
 .hs-row {
   display: grid;
-  grid-template-columns: 58px minmax(0, 1fr) auto;
+  grid-template-columns: 60px 52px minmax(0, 1fr) auto;
   align-items: center;
   gap: 4px 14px;
   padding: 10px 14px;
@@ -278,15 +278,31 @@
 .hs-row:hover, .hs-row:focus-visible { border-color: var(--accent); }
 .hs-row[data-on] { border-left: 2px solid var(--accent); }
 .hs-row[data-idle] { border-left: 2px solid var(--line-2); }
+/* The capsule. A fixed box whether or not the picture arrives, so a shelf of
+   three hundred rows does not reflow as they land one by one - and the column
+   simply collapses for the rows whose picture never existed. */
+.hs-row-icon {
+  width: 60px;
+  height: 28px;
+  object-fit: cover;
+  border-radius: 2px;
+  background: var(--panel-2);
+}
 .hs-row-year { font-family: var(--mono); font-size: 13px; color: var(--faint); }
 .hs-row-name { font-weight: 600; font-size: 15px; min-width: 0; }
 .hs-row-you { font-family: var(--mono); font-size: 13px; color: var(--accent); text-align: right; }
 .hs-row[data-idle] .hs-row-you,
 .hs-row:not([data-on]):not([data-idle]) .hs-row-you { color: var(--faint); }
 
+/* A shelf with no years anywhere loses the column rather than filling it with
+   dashes, so the name starts where the year would have been. */
+.hs-shelf[data-undated] .hs-row { grid-template-columns: 60px minmax(0, 1fr) auto; }
+
 @media (max-width: 560px) {
-  .hs-row { grid-template-columns: 46px minmax(0, 1fr); }
-  .hs-row-you { grid-column: 2; text-align: left; }
+  .hs-row { grid-template-columns: 48px 44px minmax(0, 1fr); }
+  .hs-shelf[data-undated] .hs-row { grid-template-columns: 48px minmax(0, 1fr); }
+  .hs-row-icon { width: 48px; height: 22px; }
+  .hs-row-you { grid-column: 2 / -1; text-align: left; }
 }
 
 /* The tail of the index. There are more houses than anybody scrolls through,
