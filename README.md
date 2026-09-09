@@ -44,6 +44,7 @@ site/
   profile.html    every /u/* path                                 router.js
     dash.js       the treemap, the panels, the years, the library
     game.js       one renderer per game, dispatched on `theme`
+    embed.js      the generator: charts, banners and badges to take away
     lib.js        helpers shared by both, the API calls, the footer
   game-public.html  every /g/<appid>                              public.js
   franchises.html   /franchises and /franchises/<slug>            fxpage.js
@@ -64,6 +65,7 @@ site/
   home.css        the landing page
   games.css       every game page, one block each
   franchises.css  the ten franchise screens, one block each
+  embed.css       the generator
   extras.css      blog, feedback, support, privacy, appeal
   fonts.css       the vendored faces, generated
 
@@ -91,6 +93,7 @@ tools/            checks and generators, run with node, never shipped
 | `/u/<profile>/vs/<other>` | two libraries against each other |
 | `/u/<profile>/backlog` | everything owned and never launched |
 | `/u/<profile>/cards` | the trading-card badges this profile has made, the sets it has not, and what one of each card in those would cost on the market today |
+| `/u/<profile>/embed` | the generator: a bar chart, a badge, a banner or a Unicode chart of this library, each one as an address that stays current or as a file that does not. Steam's own About Me only loads pictures already on Steam's hosts, so the page says so and offers the download for that case |
 | `/u/<profile>/year/<year>` | one year of it: what was put down that year, and what was unlocked during it. The word `year` is in the path because an appid is digits too |
 | `/blog`, `/blog/<id>/<title>` | the index and a post. The id resolves it; the title is that post's own title in the language the link was made in, and the page rewrites it to the reader's without reloading |
 | `/feedback` | leave a bug or an idea, and the public board |

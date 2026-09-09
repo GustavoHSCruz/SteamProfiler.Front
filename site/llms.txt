@@ -87,6 +87,13 @@ is not this site.
   and `/developers/<slug>` are one house; the same four addresses under
   `/u/<name>/` add that library's hours and say what it is missing.
 - Profiles live at `/u/<name>`. See the crawling note below.
+- The generator at `/u/<name>/embed` builds something a profile can be shown
+  with somewhere else: a bar chart, a badge in the shields.io shape, a banner,
+  or the same chart as Unicode text. The pictures are SVG and self-contained -
+  no webfont, no remote image - and are served from `/api/bars.svg`,
+  `/api/banner.svg`, `/api/badge.svg` and `/api/bars.txt`, each taking the same
+  `q=<name>` a lookup takes. They read the same public profile data the rest of
+  the site reads and need no key from whoever embeds them.
 
 ## Crawling
 

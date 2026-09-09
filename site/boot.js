@@ -109,12 +109,20 @@ const BOOT_PLAN = {
     ['fetched', [['load.s_library', 0], ['load.s_hours', 2600]]],
     ['drawn', [['load.s_page', 0]]],
   ],
+  // The generator waits on the profile and on nothing else: the pictures are
+  // drawn by the api, one request each, after this screen is already up.
+  embed: [
+    ['resolved', [['load.s_find', 0]]],
+    ['fetched', [['load.s_library', 0], ['load.s_hours', 2600]]],
+    ['drawn', [['load.s_page', 0]]],
+  ],
 };
 
 const BOOT_HEAD = {
   dash: 'load.h_dash', backlog: 'load.h_dash', cards: 'load.h_dash',
   game: 'load.h_game', versus: 'load.h_versus', year: 'load.h_year',
   franchises: 'load.h_franchises', houses: 'load.h_houses', deck: 'load.h_deck',
+  embed: 'load.h_embed',
 };
 
 /* What the window says once the wait stops being short, and when. Three
@@ -193,6 +201,8 @@ const BOOT_SHAPE = {
   franchises: () => bootShelf(),
   houses: () => bootShelf(),
   deck: () => bootShelf(),
+  // Four panels of controls, which is what the generator is about to be.
+  embed: () => bootPanels(),
 };
 
 /* ── The wait of one game ──────────────────────────────────────────────

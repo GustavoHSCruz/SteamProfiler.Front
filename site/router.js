@@ -13,6 +13,7 @@
      /u/<perfil>/developers   the houses that made it
      /u/<perfil>/developers/<slug>   one of them
      /u/<perfil>/deck         what this library would run on linux
+     /u/<perfil>/embed        the generator: charts, banners and badges
 
    <perfil> is whatever the visitor typed - a vanity name or a steamID64 - and it
    stays in the URL untouched so the link is shareable and readable. */
@@ -54,6 +55,9 @@ const houseSlug = axis && parts[3] ? parts[3] : null;
 // appid. The screen is about the Deck and the Linux clock behind it, which is
 // one question and so one address without a tail.
 const deck = parts[2] === 'deck';
+// Same path space once more, same reason. This one is not a view of the
+// library: it is where somebody builds something to take away from it.
+const gen = parts[2] === 'embed';
 
 /** The address this view should have been reached at. A link built by hand or
  *  held from before this page understood URLs still works, and gets tidied in
@@ -70,7 +74,8 @@ function canonical() {
               : houseSlug ? `/${axis.axis}/${houseSlug}`
                 : axis ? `/${axis.axis}`
                   : deck ? '/deck'
-                  : appid ? `/${appid}` : '';
+                  : gen ? '/embed'
+                    : appid ? `/${appid}` : '';
   return `/u/${encodeURIComponent(query)}${tail}`;
 }
 
@@ -87,6 +92,7 @@ function fail(message, retry) {
   el('franchises').hidden = true;
   el('houses').hidden = true;
   el('deck').hidden = true;
+  el('embed').hidden = true;
   failure.hidden = false;
   el('failure-text').textContent = message;
   const again = el('failure-retry');
@@ -123,7 +129,7 @@ function showChrome(profileQuery, persona) {
   // waits on different calls and the skeleton it draws is that view's layout.
   bootStart(rival ? 'versus' : pile ? 'backlog' : cardset ? 'cards'
     : year ? 'year' : franchises ? 'franchises' : axis ? 'houses' : deck ? 'deck'
-      : appid ? 'game' : 'dash', query, appid);
+      : gen ? 'embed' : appid ? 'game' : 'dash', query, appid);
 
   let steamid;
   try {
@@ -231,6 +237,21 @@ function showChrome(profileQuery, persona) {
       showChrome(query, d.profile.persona);
       bootDone();
       await renderDeck(el('dk-root'), {
+        query: encodeURIComponent(query),
+        steamid,
+        persona: d.profile.persona,
+      });
+    } else if (gen) {
+      // The profile is the only thing this waits on, and it is needed for one
+      // thing only: the name at the top and the link the snippets point at.
+      // Every picture on the screen is fetched from the api afterwards, one
+      // request per control the visitor touches.
+      const d = await api(`/profile?id=${steamid}`);
+      bootMark('fetched');
+      el('embed').hidden = false;
+      showChrome(query, d.profile.persona);
+      bootDone();
+      renderEmbed(el('em-root'), {
         query: encodeURIComponent(query),
         steamid,
         persona: d.profile.persona,

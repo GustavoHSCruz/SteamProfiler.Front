@@ -34,6 +34,7 @@
 <link rel="stylesheet" href="/player.css">
 <link rel="stylesheet" href="/houses.css">
 <link rel="stylesheet" href="/deck.css">
+<link rel="stylesheet" href="/embed.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
@@ -515,6 +516,13 @@
   <div id="dk-root"></div>
 </main>
 
+<!-- The generator. Everything on it is drawn by embed.js off the same profile
+     payload the dashboard read, and the pictures themselves come from the api,
+     which is the only thing here that can be pasted somewhere else. -->
+<main id="embed" hidden>
+  <div id="em-root"></div>
+</main>
+
 <footer class="foot">
   <p><span data-i18n="foot.source_pre">Read from Steam. Fetched</span> <time id="g-generated"></time>. <a href="/feedback" data-i18n="foot.found_bug">found a bug?</a> · <a href="/blog" data-i18n="nav.blog">blog</a> · <a href="/about" data-i18n="nav.about">about</a> · <a href="/privacy" data-i18n="nav.privacy">privacy</a> · <a class="foot-repo" href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener" data-i18n="foot.front_repo">front-end source ↗</a> · <a class="foot-repo" href="https://github.com/GustavoHSCruz/SteamProfiler.Api" rel="noopener" data-i18n="foot.api_repo">API source ↗</a></p>
   <p id="credit-slot"><a href="/u/gordziilla">made with ♥</a></p>
@@ -538,6 +546,7 @@
 <script src="/franchises.js" defer></script>
 <script src="/houses.js" defer></script>
 <script src="/deck.js" defer></script>
+<script src="/embed.js" defer></script>
 <script src="/router.js" defer></script>
 </body>
 </html>

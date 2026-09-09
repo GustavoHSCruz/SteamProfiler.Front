@@ -267,6 +267,10 @@ function buildDiscover(d, query) {
   chip(`/u/${query}/publishers`, t('go.publishers'), t('go.publishers_hint'));
   chip(`/u/${query}/developers`, t('go.developers'), t('go.developers_hint'));
   chip(`/u/${query}/deck`, t('go.deck'), t('go.deck_hint'));
+  // The one chip that does not point at another view of this library. It
+  // points at the place where a piece of it is turned into something that can
+  // be pasted somewhere else, so it goes last.
+  chip(`/u/${query}/embed`, t('go.embed'), t('go.embed_hint'));
 
   rail.textContent = '';
   for (const c of chips) rail.append(c);
