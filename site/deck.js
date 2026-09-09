@@ -37,6 +37,39 @@ async function renderDeck(root, ctx) {
     root.append(h('p', { cls: 'dk-fail', text: e.message }));
     return;
   }
+  dkDraw(root, ctx, deck);
+  dkPoll(root, ctx, deck);
+}
+
+/** Ask again for as long as it is still worth asking.
+ *
+ *  A library nobody has opened before answers with nothing at all: the
+ *  verdicts are queued at that moment and fetched one every couple of
+ *  seconds, so a library of four hundred is complete a quarter of an hour
+ *  after the page opened rather than before it drew. Without this the first
+ *  visit is a blank screen that stays blank while the answer arrives behind
+ *  it, which reads as broken and is the opposite of what is happening.
+ *
+ *  Same shape as the store poll on the dashboard, and for the same reason. */
+function dkPoll(root, ctx, first) {
+  const done = (d) => (d.coverage || {}).asked >= (d.coverage || {}).owned;
+  if (done(first)) return;
+  let left = 40;
+  const tick = async () => {
+    let got;
+    try {
+      got = await api(`/deck?id=${ctx.steamid}`);
+    } catch {
+      return; // A refusal here is not worth an error on a page that is fine.
+    }
+    dkDraw(root, ctx, got);
+    if (--left > 0 && !done(got)) setTimeout(tick, 6000);
+  };
+  setTimeout(tick, 5000);
+}
+
+function dkDraw(root, ctx, deck) {
+  root.textContent = '';
 
   const games = deck.games || [];
   const cov = deck.coverage || {};

@@ -118,11 +118,21 @@ const publicGenres = (g) => ((g.store || {}).genres || [])
   .map((x) => typeof x === 'string' ? x : x?.name).filter(Boolean);
 const publicKicker = (g) => [t('gp.global'), (g.store || {}).year, ...publicGenres(g).slice(0, 2)]
   .filter(Boolean).join('  ·  ');
-const publicFacts = (g) => [
-  [t('gp.total_ach'), num((g.achievements || {}).total || 0)],
-  [t('gp.median'), rarity(publicMedian(g))],
-  [t('gp.common'), num(publicCommon(g))],
-];
+/* The three figures every public layout puts across the top, and a fourth
+   when there is one. Whether a game runs on Linux is a fact about the game,
+   so it belongs on the page about the game and not only behind a profile -
+   and putting it here rather than in each layout means the themed screens
+   get it without any of them being edited. */
+const publicFacts = (g) => {
+  const facts = [
+    [t('gp.total_ach'), num((g.achievements || {}).total || 0)],
+    [t('gp.median'), rarity(publicMedian(g))],
+    [t('gp.common'), num(publicCommon(g))],
+  ];
+  const tier = (g.proton || {}).tier;
+  if (tier) facts.push([t('gp.proton'), t(`dk.t_${tier}`)]);
+  return facts;
+};
 
 function publicDota(g, root) {
   const wrap = h('div', { cls: 'd' });

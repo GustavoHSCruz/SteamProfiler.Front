@@ -1893,6 +1893,9 @@ const DICT = {
     'hs.show_more': 'show more',
     /* ── The Deck screen ── */
     'dk.title': 'What would run on the Deck',
+    'gp.proton': 'on linux',
+    'g.proton': 'runs on linux',
+    'g.proton_n': (v) => `${v.n} ${plural(v.raw, ['report', 'reports'])}`,
     'dk.kicker': 'the other half of the clock',
     'dk.on_deck': 'on the deck',
     'dk.on_linux': 'on linux, off the deck',
@@ -3795,6 +3798,9 @@ const DICT = {
     'hs.show_more': 'mostrar mais',
     /* ── A tela do Deck ── */
     'dk.title': 'O que rodaria no Deck',
+    'gp.proton': 'no linux',
+    'g.proton': 'roda no linux',
+    'g.proton_n': (v) => `${v.n} ${plural(v.raw, ['relato', 'relatos'])}`,
     'dk.kicker': 'a outra metade do relógio',
     'dk.on_deck': 'no deck',
     'dk.on_linux': 'no linux, fora do deck',
@@ -5698,6 +5704,9 @@ const DICT = {
     'hs.show_more': 'показать ещё',
     /* ── Экран Deck ── */
     'dk.title': 'Что пошло бы на Deck',
+    'gp.proton': 'на linux',
+    'g.proton': 'идёт на linux',
+    'g.proton_n': (v) => `${v.n} ${plural(v.raw, ['отчёт', 'отчёта', 'отчётов'])}`,
     'dk.kicker': 'вторая половина часов',
     'dk.on_deck': 'на deck',
     'dk.on_linux': 'на linux, вне deck',

@@ -5537,6 +5537,10 @@ function renderGame(g, root) {
   // whether or not this profile had anything to say about it, and the page with
   // the least on it is the page where that is worth the most.
   priceInto(g, root);
+  // Beside the price and for the same reason: whether it runs on Linux is
+  // true of the game whichever profile is looking at it, so it goes in the
+  // footer every layout shares rather than into any of them.
+  protonInto(g, root);
   // The same game with nobody attached to it. Two reasons it is here and not
   // only in a sitemap: this address is shareable in a way the one above it is
   // not - it carries the game and not somebody's account - and it holds the one
@@ -5548,6 +5552,20 @@ function renderGame(g, root) {
       text: t('gp.this_game'),
       attr: { href: `/g/${g.appid}` },
     })));
+}
+
+/** The Linux verdict, when there is one. Absent rather than empty for a game
+ *  the queue has not reached and for one nobody has reported on, because
+ *  "unknown" and "nobody tried" are the same shape of silence here and
+ *  neither is worth a line. */
+function protonInto(g, root) {
+  const tier = (g.proton || {}).tier;
+  if (!tier) return;
+  const total = (g.proton || {}).total;
+  root.append(h('p', { cls: 'g-proton', data: { tier } },
+    h('span', { cls: 'g-proton-k', text: t('g.proton') }),
+    h('b', { text: t(`dk.t_${tier}`) }),
+    total ? h('em', { text: t('g.proton_n', { n: num(total), raw: total }) }) : null));
 }
 
 /* ── When the game has a layout but the profile has no data ───────────

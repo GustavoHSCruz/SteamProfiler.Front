@@ -9861,3 +9861,33 @@ a.gta-tab:hover { color: var(--text); background: #ffffff08; }
   .pz-link { transition: color 180ms ease; }
 }
 @media (prefers-reduced-motion: reduce) { .pz-link { transition: none; } }
+
+/* The Linux verdict, in the footer every game layout shares. The tier colours
+   are deck.css's, which profile.html already loads: one verdict has one
+   colour across the site, or it reads as two different facts. */
+.g-proton {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+  max-width: 1180px;
+  margin: 18px auto 0;
+  padding: 12px var(--edge);
+  border-left: 3px solid var(--dk-silver, #9fa7ae);
+}
+.g-proton-k {
+  font-family: var(--label);
+  font-size: 10.5px;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.g-proton b { font-family: var(--mono); font-size: 15px; }
+.g-proton em { font-style: normal; font-size: 12.5px; color: var(--faint); }
+.g-proton[data-tier="platinum"] { border-left-color: var(--dk-platinum, #b9d5e8); }
+.g-proton[data-tier="gold"] { border-left-color: var(--dk-gold, #e0b44a); }
+.g-proton[data-tier="bronze"] { border-left-color: var(--dk-bronze, #b5763f); }
+.g-proton[data-tier="borked"] { border-left-color: var(--dk-borked, #b4423c); }
+.g-proton[data-tier="platinum"] b { color: var(--dk-platinum, #b9d5e8); }
+.g-proton[data-tier="gold"] b { color: var(--dk-gold, #e0b44a); }
+.g-proton[data-tier="borked"] b { color: var(--dk-borked, #b4423c); }
