@@ -176,6 +176,21 @@ function emUrl(kind, state, query) {
 /** The four ways this gets pasted somewhere. `src` is either the live address
  *  or the name of the file that was just downloaded, and that is the only
  *  difference between the dynamic and the static answer. */
+/** The address inside the marker a Steam profile is read for.
+ *
+ *  Steam will not load one of these pictures itself, so this is not a fourth
+ *  way of embedding an image: it is a line the Companion extension finds in an
+ *  About Me or an info box and draws the card for. Nobody else sees anything,
+ *  which is why it is a form of its own and not one of the wrappers above.
+ *
+ *  The address keeps its `q`, so the same string is still a working link for
+ *  anybody who opens it. The extension rewrites `q` with whichever profile is
+ *  being looked at anyway - a card on a page is that page's card - so the two
+ *  agree in the ordinary case and the tag cannot be pointed at a stranger. */
+function emTag(src) {
+  return `[!stpf=url=${src}]`;
+}
+
 function emSnippets(src, alt, link, size) {
   const dims = size ? ` width="${size.w}" height="${size.h}"` : '';
   return {
@@ -183,6 +198,7 @@ function emSnippets(src, alt, link, size) {
     html: `<a href="${link}"><img src="${src}" alt="${alt}"${dims}></a>`,
     bb: `[url=${link}][img]${src}[/img][/url]`,
     url: src,
+    steam: emTag(src),
   };
 }
 
@@ -325,6 +341,25 @@ function emSection(kind, ctx) {
   /** The block under the preview, for whichever of the two answers is on. */
   function paint() {
     const live = mode === 'live';
+    // The block somebody copies is an address, and there is no address for a
+    // picture that only exists here. So it goes, rather than printing one that
+    // would draw a stranger's artwork with an empty hole in it.
+    const nowhere = localOnly();
+
+    /* Which of the wrappers make sense for what is on screen.
+
+       The Steam tag is an address inside a marker, so it needs an address:
+       a static file has a name and not one. The other four are the opposite way
+       round for a text chart, whose live form is the address itself and has
+       nothing to wrap - but the tag is still worth offering there, because the
+       extension draws that chart too. */
+    const usable = (which) => !nowhere
+      && (which === 'steam' ? live : !(kind === 'text' && live));
+    if (!usable(tab)) {
+      const first = [...tabs.children].find((b) => usable(b.dataset.tab));
+      if (first) tab = first.dataset.tab;
+    }
+
     const src = live ? `${location.origin}${emUrl(kind, state, ctx.query)}`
       : fileName(kind === 'text' ? 'txt' : 'svg');
     if (kind === 'text') {
@@ -332,23 +367,22 @@ function emSection(kind, ctx) {
       // characters themselves, wrapped in whatever the destination fences code
       // with. The live address is still worth printing - it is what a script
       // that rewrites a README every morning would read.
-      out.textContent = live ? src
+      out.textContent = live ? (tab === 'steam' ? emTag(src) : src)
         : (tab === 'bb' ? `[code]\n${held || ''}[/code]`
           : tab === 'md' ? `\`\`\`\n${held || ''}\`\`\`` : (held || ''));
     } else {
       out.textContent = emSnippets(src, alt, link(), size)[tab];
     }
-    for (const b of tabs.children) b.dataset.on = b.dataset.tab === tab ? '1' : '';
-    // A live text chart has one useful form and it is the address itself, so
-    // the four ways of wrapping it only appear once there is a file to wrap.
-    tabs.hidden = kind === 'text' && live;
+
+    let offered = 0;
+    for (const b of tabs.children) {
+      b.hidden = !usable(b.dataset.tab);
+      if (!b.hidden) offered += 1;
+      b.dataset.on = b.dataset.tab === tab ? '1' : '';
+    }
+    tabs.hidden = offered === 0;
     acts.hidden = live;
-    // The block somebody copies is an address, and there is no address for a
-    // picture that only exists here. So it goes, rather than printing one that
-    // would draw a stranger's artwork with an empty hole in it.
-    const nowhere = localOnly();
     out.hidden = nowhere;
-    tabs.hidden = tabs.hidden || nowhere;
     copyRow.hidden = nowhere;
     said.textContent = nowhere ? t('em.own_note')
       : live ? t('em.live_note')
@@ -567,7 +601,10 @@ function emSection(kind, ctx) {
     modes.append(b);
   }
 
-  for (const which of (kind === 'text' ? ['md', 'bb', 'url'] : ['md', 'html', 'bb', 'url'])) {
+  // `steam` last, and on every output, because the extension draws all of them.
+  // paint() is what decides which of these are on screen at any moment.
+  for (const which of (kind === 'text'
+    ? ['md', 'bb', 'url', 'steam'] : ['md', 'html', 'bb', 'url', 'steam'])) {
     const b = h('button', {
       cls: 'em-tab', text: t(`em.tab_${which}`),
       attr: { type: 'button' }, data: { tab: which },
