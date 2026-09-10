@@ -35,6 +35,12 @@
   font-family: var(--mono); font-size: 10px; letter-spacing: 0; color: var(--accent);
 }
 .em-ctl[data-flag] { flex-direction: row; align-items: center; gap: 8px; }
+/* The boxes of a banner: one select each, wrapping together rather than each
+   one carrying a label of its own. Which figure goes where is the order they
+   sit in, and that is legible without a caption above every one. */
+.em-ctl[data-wide] { flex-basis: 100%; }
+.em-slots { display: flex; flex-wrap: wrap; gap: 6px; }
+.em-slots select { min-width: 132px; }
 .em-ctl select, .em-ctl input[type="text"] {
   padding: 7px 9px; background: var(--panel-2); color: var(--text);
   border: 1px solid var(--line); border-radius: 8px;

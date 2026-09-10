@@ -43,6 +43,16 @@ const EM_CONTROLS = {
   banner: [
     { name: 'preset', pick: ['blog', 'forum', 'wide', 'card', 'tower', 'side'] },
     { name: 'theme', pick: ['dark', 'light', 'steam'] },
+    // One choice per box, which makes "which figures" and "how many" the same
+    // question: a box set to nothing is a box that is not drawn. Four is the
+    // ceiling the api draws, and a narrow banner drops the last ones itself
+    // rather than squeezing the name out to fit them.
+    {
+      name: 'facts',
+      slots: ['hours', 'games', 'played', 'none'],
+      pick: ['none', 'hours', 'games', 'played', 'never', 'level', 'top',
+        'linux', 'deck', 'achievements', 'badges', 'since', 'per_day', 'now'],
+    },
   ],
   badge: [
     {
@@ -65,9 +75,21 @@ function emUrl(kind, state, query) {
     // An empty custom label is not a label of nothing: it is the absence of
     // one, and the api falls back to the metric's own word.
     if (v === '') continue;
+    if (Array.isArray(v)) {
+      // `none` is written out rather than left off, because a parameter that
+      // is not there and one that is empty look the same in a query string,
+      // and one of them has to be able to mean "no boxes at all".
+      const chosen = v.filter((one) => one !== 'none');
+      q.set(k, chosen.length ? chosen.join(',') : 'none');
+      continue;
+    }
     q.set(k, v === true ? '1' : v === false ? '0' : String(v));
   }
-  return `/api/${EM_PATHS[kind]}?${q}`;
+  // The commas between the boxes are left as commas. URLSearchParams escapes
+  // them to %2C, which is correct and which nobody wants to read in the middle
+  // of a link pasted into a README. A comma is legal in a query string and the
+  // api decodes both spellings the same way.
+  return `/api/${EM_PATHS[kind]}?${q.toString().replace(/%2C/g, ',')}`;
 }
 
 /** The four ways this gets pasted somewhere. `src` is either the live address
@@ -133,7 +155,10 @@ function emDownload(href, name) {
 function emSection(kind, ctx) {
   const state = {};
   for (const c of EM_CONTROLS[kind]) {
-    state[c.name] = c.value !== undefined ? c.value : (c.pick ? c.pick[0] : '');
+    // Sliced, never shared: the table above is read once per page and a state
+    // that held its array would write the next visitor's choices into it.
+    if (c.slots) state[c.name] = c.slots.slice();
+    else state[c.name] = c.value !== undefined ? c.value : (c.pick ? c.pick[0] : '');
   }
   let mode = 'live';
   let held = null;      // the bytes, once they have been fetched
@@ -221,7 +246,22 @@ function emSection(kind, ctx) {
     const name = h('span', { cls: 'em-ctl-name', text: t(`em.o_${c.name}`) });
     const label = h('label', { cls: 'em-ctl' }, name);
     let field;
-    if (c.pick) {
+    if (c.slots) {
+      field = h('span', { cls: 'em-slots' });
+      c.slots.forEach((_, slot) => {
+        const box = h('select');
+        for (const value of c.pick) {
+          box.append(h('option', { attr: { value }, text: t(`em.v_${value}`) }));
+        }
+        box.value = state[c.name][slot];
+        box.addEventListener('change', () => {
+          state[c.name][slot] = box.value;
+          refresh();
+        });
+        field.append(box);
+      });
+      label.dataset.wide = '1';
+    } else if (c.pick) {
       field = h('select');
       for (const value of c.pick) {
         field.append(h('option', { attr: { value }, text: t(`em.v_${value}`) }));
