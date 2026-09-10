@@ -4,8 +4,8 @@
    something that leaves it: a chart, a strip, a badge, two profiles against
    each other, a whole piece of artwork for a Steam profile, or the same chart
    as plain text for the places that take no picture at all. The api draws all
-   of them (embed.py), so this file is the controls, the preview, and the four
-   ways somebody pastes the result somewhere else.
+   of them (embed.py), so this file is the controls, the preview, and the ways
+   somebody pastes the result somewhere else.
 
    Two answers per output, and the difference between them is worth stating
    plainly rather than hiding behind a switch:
@@ -18,6 +18,14 @@
                a Steam profile will not load an image from here at all: its
                About Me only accepts pictures already on Steam's own hosts, so
                the file has to be uploaded there as artwork first.
+
+   There is a third answer now, and it is the `steam profile` tab. Steam still
+   will not draw one of these, and nothing here changed that - but the Companion
+   extension will, on the profile itself, for readers who have it. So that tab
+   is not a fourth way of writing an <img>: it is a marker the extension finds
+   in an About Me or an info box, with the dynamic address inside it. Everyone
+   without the extension sees the marker as the text it is, which is the honest
+   cost of the thing and worth knowing before choosing it.
 
    The static download is made in the browser and not by the api: the SVG is
    already self-contained, so turning it into a PNG is one canvas and no round
@@ -188,7 +196,13 @@ function emUrl(kind, state, query) {
  *  being looked at anyway - a card on a page is that page's card - so the two
  *  agree in the ordinary case and the tag cannot be pointed at a stranger. */
 function emTag(src) {
-  return `[!stpf=url=${src}]`;
+  // Braces and not square brackets, which is not a matter of taste: the About
+  // Me and the info box are parsed as BBCode, BBCode owns the square bracket,
+  // and a marker it does not recognise comes back padded - what somebody pastes
+  // as `[!stpf=url=X]` is drawn as `[ !stpf=url=X ]`. The extension reads both
+  // and forgives the spaces either way, but there is no reason to hand people a
+  // string that Steam is going to rewrite in front of them.
+  return `{!stpf=url=${src}}`;
 }
 
 function emSnippets(src, alt, link, size) {
