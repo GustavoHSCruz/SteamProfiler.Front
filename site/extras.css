@@ -576,6 +576,19 @@ h4.prose-h { font-size: 15.5px; letter-spacing: 0; }
   display: block; margin-top: 5px; color: #98919f; font-size: 11px;
   letter-spacing: .5px; text-transform: uppercase;
 }
+.xt-insights {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px; margin-top: 10px;
+}
+.xt-insight { min-width: 0; padding: 13px; background: #131117; border: 1px solid #312d38; }
+.xt-insight > span {
+  display: block; margin-bottom: 8px; color: #98919f; font-size: 10px;
+  letter-spacing: 1px; text-transform: uppercase;
+}
+.xt-insight strong { display: block; color: #f4f1eb; font-size: 13px; line-height: 1.4; }
+.xt-insight strong b { color: #fff; }
+.xt-insight strong i { color: #aaa3b4; font-size: 11px; font-style: normal; font-weight: 400; }
+.xt-insight em { display: block; margin-top: 6px; color: #aaa3b4; font-size: 11px; font-style: normal; }
 .xt-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
 /* A picture of a button, and not a button: there is nothing on this page for
    it to do, and a control that answers nothing is worse than a drawing. */
@@ -592,5 +605,6 @@ h4.prose-h { font-size: 15.5px; letter-spacing: 0; }
 
 @media (max-width: 700px) {
   .xt-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .xt-insights { grid-template-columns: 1fr; }
   .xt-title { font-size: 18px; }
 }
