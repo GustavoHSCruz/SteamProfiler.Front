@@ -589,6 +589,11 @@ h4.prose-h { font-size: 15.5px; letter-spacing: 0; }
 .xt-insight strong b { color: #fff; }
 .xt-insight strong i { color: #aaa3b4; font-size: 11px; font-style: normal; font-weight: 400; }
 .xt-insight em { display: block; margin-top: 6px; color: #aaa3b4; font-size: 11px; font-style: normal; }
+/* The opt-in section runs the width of the grid and carries the green edge the
+   real panel gives it, because "this one is about you" is the whole point of
+   it being a different colour over there. */
+.xt-personal { grid-column: 1 / -1; border-left: 3px solid #8bd49c; }
+
 .xt-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
 /* A picture of a button, and not a button: there is nothing on this page for
    it to do, and a control that answers nothing is worse than a drawing. */

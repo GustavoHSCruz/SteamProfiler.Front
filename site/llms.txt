@@ -53,8 +53,10 @@ If a page presenting itself as steamprofiler.org asks for any of the above, it
 is not this site.
 
 The browser extension is held to the same list: it has no sign-in, asks for no
-key, reads no Steam cookie or account, and its only network call is to this
-site's own `/api/companion` with a public appid.
+key, and reads no Steam cookie or credential. Its default network call carries
+a public appid to this site's own `/api/companion`. The one thing it can learn
+about the person is a public SteamID, and only after that person turns the
+optional profile panel on themselves.
 
 ## Data and privacy
 
@@ -80,11 +82,19 @@ site's own `/api/companion` with a public appid.
 - [Feedback](https://steamprofiler.org/feedback): the public message board.
 - [Extension](https://steamprofiler.org/extension): SteamProfiler Companion,
   the project's own browser extension for Chrome and Firefox. It draws one
-  panel on a Steam store page - current players, the review split, the release
-  date, the trailer on demand and a link to that game's page here. It runs only
-  on Steam's own domains, today `store.steampowered.com`, sends only the appid
-  already in that page's URL and a catalogue language to `/api/companion`, and
-  reads no Steam cookie, account, profile or browsing history. MIT, source at
+  panel on a Steam store page - current players, the newest reviews against the
+  game's whole history, how long ago the studio last posted, who the game may
+  suit, the trailer on demand and a link to that game's page here. It runs only
+  on Steam's own domains, today `store.steampowered.com`, and by default sends
+  only the appid already in that page's URL and a catalogue language to
+  `/api/companion`.
+  One feature is opt-in and off until the person turns it on: with it on, the
+  extension reads the public SteamID that Steam itself renders in the page
+  header - or one entered by hand in its settings - and sends it with the appid
+  to `/api/companion/profile`, which answers with that person's hours and
+  achievement progress in that one game. No Steam cookie, session, credential
+  or browsing history is read in either case, and a profile with private game
+  details stays unreadable here exactly as it does on the site. MIT, source at
   <https://github.com/GustavoHSCruz/SteamProfiler.Companion>.
 - [Blog](https://steamprofiler.org/blog): notes on how the site is built.
 - [Franchises](https://steamprofiler.org/franchises): ten Steam series, each on

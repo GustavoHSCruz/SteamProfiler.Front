@@ -73,7 +73,7 @@
   <section class="page-head">
     <p class="eyebrow" data-i18n="ext.eyebrow">our extension</p>
     <h1 class="display" data-i18n="ext.h1">The site, on Steam's own page.</h1>
-    <p class="lede" data-i18n-html="ext.lede"><b>SteamProfiler Companion</b> adds a decision panel to Steam: review trends, official activity, who the game may suit and the complete analysis. Personal hours and achievements are optional, off by default and need no cookies.</p>
+    <p class="lede" data-i18n-html="ext.lede"><b>SteamProfiler Companion</b> is our extension. It draws one panel under the buy box: who is playing right now, how the newest reviews compare with the whole history, how long ago the studio last said anything, who the game may suit, the trailer on demand, and the way through to the complete analysis here. It is free, its source is public, and the part that reads you is off until you turn it on.</p>
   </section>
 
   <!-- ── The panel, drawn and not photographed ──────────────────────────
@@ -108,7 +108,7 @@
       <div class="xt-insights">
         <div class="xt-insight">
           <span data-i18n="ext.pv_review_xray">review X-ray</span>
-          <strong><b>98%</b> <i data-i18n="ext.pv_all">all-time</i> · <b>94%</b> <i data-i18n="ext.pv_recent">30 days</i></strong>
+          <strong><b>98%</b> <i data-i18n="ext.pv_all">all-time</i> · <b>94%</b> <i data-i18n="ext.pv_recent">recent</i></strong>
           <em data-i18n="ext.pv_review_down">Recent reviews are 4 points lower.</em>
         </div>
         <div class="xt-insight">
@@ -119,6 +119,11 @@
         <div class="xt-insight">
           <span data-i18n="ext.pv_audience">may suit</span>
           <strong data-i18n="ext.pv_audience_value">Co-op · solo play · achievement hunting</strong>
+        </div>
+        <div class="xt-insight xt-personal">
+          <span data-i18n="ext.pv_mine">on your profile</span>
+          <strong data-i18n="ext.pv_mine_off">Off until you switch it on</strong>
+          <em data-i18n="ext.pv_mine_note">Then: your hours here, and how much of the achievement set you have.</em>
         </div>
       </div>
       <div class="xt-actions">
@@ -133,7 +138,8 @@
     <div class="panel-bar"><span data-i18n="ext.draws">what it draws</span><b data-i18n="ext.draws_tag">one panel</b></div>
     <div class="panel-body">
       <p data-i18n="ext.draws_1">The panel goes under the purchase area, in the same amber this site counts hours in, and it is the only thing the extension adds to that page. Nothing is moved, nothing is covered, and nothing the store already did stops working.</p>
-      <p data-i18n="ext.draws_2">It compares the last 30 days of reviews with the lifetime result, dates the latest official post and suggests who the public store features may suit. The trailer remains available on demand.</p>
+      <p data-i18n="ext.draws_2">The figures are the public ones: how many people are in the game at this moment, the review split with the newest reviews beside the whole history, the release date, and how long ago the studio last posted - which says the game is being talked about, not that it was updated. The trailer is Steam's own file, and nothing crosses the network until somebody presses the button.</p>
+      <p data-i18n="ext.draws_3">Under all of it sits one section that is about you and starts switched off. Turned on, it adds your hours in that game and how much of its achievement set you have, read from the profile Steam already publishes to anybody.</p>
     </div>
   </article>
 
@@ -143,9 +149,10 @@
       <p data-i18n="ext.asks_1">An extension can be given every page you open, which is why what this one may touch is short enough to print here in full.</p>
       <ul class="abt-list">
         <li data-i18n-html="ext.asks_pages"><b>Steam, and nothing else.</b> It runs on Steam's own domains and nowhere else. Every other tab is out of its reach.</li>
-        <li data-i18n-html="ext.asks_call"><b>One address, ours.</b> The appid and catalogue language go to steamprofiler.org. Only when personal progress is enabled does the public SteamID visible in the page go with them.</li>
-        <li data-i18n-html="ext.asks_prefs"><b>Your own switches.</b> Panel, metrics, trailer, language and profile consent stay in browser extension storage. A manually entered SteamID may be stored there too.</li>
-        <li data-i18n-html="ext.asks_never"><b>No cookies, ever.</b> No session, sign-in, credentials, browsing history, analytics or ads. Personal progress is public Steam data and is off by default.</li>
+        <li data-i18n-html="ext.asks_call"><b>Two addresses, both ours.</b> The appid already in the page URL and the catalogue language go to steamprofiler.org/api/companion, which answers with public store facts. The second, /api/companion/profile, is called only if you switch the section below on. Every reply is checked before a single value reaches the page.</li>
+        <li data-i18n-html="ext.asks_profile"><b>Your profile, and only if you say so.</b> "Use my profile" starts off. Turned on, the extension takes the public SteamID that Steam itself prints in the page header, or the one you typed in the settings, and sends it with the appid to that second address. What comes back is your hours and your achievements in that one game. No cookie is read to find it, and game details set to private stay private here exactly as they do on the site.</li>
+        <li data-i18n-html="ext.asks_prefs"><b>Your own switches.</b> The panel, the metrics, the trailer, the language, the profile consent and any SteamID you typed live in the browser's extension storage, which your browser may sync between your own devices. The switches themselves are never sent anywhere.</li>
+        <li data-i18n-html="ext.asks_never"><b>No sign-in, and no credential.</b> No cookies, no session, no login, no password, no API key, no browsing history, no analytics and no ads. The most this extension can know about you is a public SteamID you handed it on purpose, which is the same number anybody can read off your profile page.</li>
       </ul>
     </div>
   </article>
