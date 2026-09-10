@@ -362,6 +362,21 @@ a.mod:hover { border-color: var(--line-2); color: var(--text); }
   border-top: 1px solid var(--line);
 }
 .kv dt:first-of-type, .kv dt:first-of-type + dd { border-top: 0; padding-top: 0; }
+.kv dd a { color: var(--link); text-decoration: none; }
+.kv dd a:hover { text-decoration: underline; }
+/* A profile address is one long unbroken token, and this column is the narrow
+   one. It may wrap mid-address rather than push the panel wider than the page. */
+.kv dd .kv-url { display: inline-block; max-width: 100%; overflow-wrap: anywhere; }
+/* A row whose value is too long to sit beside its own name: both halves take
+   the full width and the value goes underneath. */
+.kv dt.kv-wide { grid-column: 1 / -1; padding-bottom: 2px; }
+.kv dd.kv-wide {
+  grid-column: 1 / -1;
+  padding-top: 0;
+  text-align: left;
+  border-top: 0;
+  font-size: 12px;
+}
 
 /* ── Meters ───────────────────────────────────────────────────────── */
 

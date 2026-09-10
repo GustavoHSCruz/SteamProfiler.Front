@@ -139,6 +139,12 @@ function renderIds(root, d, steamid, query) {
     hash ? sidRow(t('sid.avatar_full'),
       `https://avatars.steamstatic.com/${hash}_full.jpg`,
       `https://avatars.steamstatic.com/${hash}_full.jpg`) : null,
+    // The animated one is a Points Shop item rather than part of the account,
+    // so it is here only when this profile has equipped one.
+    d.profile?.items?.avatar?.image_small
+      ? sidRow(t('sid.avatar_moving'), d.profile.items.avatar.image_small,
+        d.profile.items.avatar.image_small)
+      : null,
   ]));
 
   put(root, h('p', { cls: 'sid-note', text: t('sid.note') }));

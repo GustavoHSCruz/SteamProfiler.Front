@@ -176,12 +176,25 @@ function rowsInto(parent, rows) {
 
 function kvInto(parent, rows) {
   parent.textContent = '';
-  for (const [k, v] of rows) {
+  for (const [k, v, wide] of rows) {
     if (v == null || v === '') continue;
     const dt = document.createElement('dt');
     dt.textContent = k;
     const dd = document.createElement('dd');
-    dd.textContent = v;
+    // A value may be an element now: the account panel puts an address and a
+    // link to the codes screen in this list, and both of those are clicked.
+    if (v instanceof Node) dd.append(v);
+    else dd.textContent = v;
+    // A third field marks a row whose value cannot share a line with its own
+    // label. This list is two columns and the right one sizes to its content,
+    // so one profile address in it pushed every label into four-line wrapping
+    // and printed itself over the label beside it. A wide row puts the value
+    // under the name instead, which is the only shape a 90-character address
+    // has in a panel this narrow.
+    if (wide) {
+      dt.classList.add('kv-wide');
+      dd.classList.add('kv-wide');
+    }
     parent.append(dt, dd);
   }
 }
@@ -455,7 +468,7 @@ function dressPage(pf) {
   stage.append(movie);
 }
 
-function buildAccount(pf) {
+function buildAccount(pf, steamid, query) {
   if (pf.avatar) {
     const img = el('avatar');
     img.src = pf.avatar;
@@ -497,6 +510,27 @@ function buildAccount(pf) {
     // .p-now panel saying so, and "last seen today" under it says nothing.
     [t('dash.last_seen'), pf.online === 'offline' && pf.last_seen
       ? shortDate(pf.last_seen) : null],
+    // The account's own number, the address it lives at, and the way through to
+    // every other spelling of that number. This panel is where somebody comes
+    // looking for an id, and until now it held every figure about the account
+    // except the one that names it.
+    [t('dash.steamid'), steamid ? String(steamid) : null],
+    [t('dash.profile_url'), pf.url
+      ? h('a', { cls: 'kv-url', text: pf.url, attr: { href: pf.url, rel: 'noopener' } })
+      : null, true],
+    // Only when there is one: an animated avatar is a Points Shop item and
+    // most profiles have never equipped anything. The still one is on the page
+    // already, three lines above this list.
+    [t('dash.avatar_moving'), pf.items?.avatar?.image_small
+      ? h('a', {
+        cls: 'kv-url',
+        text: pf.items.avatar.image_small,
+        attr: { href: pf.items.avatar.image_small, rel: 'noopener' },
+      })
+      : null, true],
+    [t('dash.codes'), query
+      ? h('a', { text: t('dash.codes_go'), attr: { href: `/u/${query}/ids` } })
+      : null],
   ]);
   buildLimited(pf);
   buildBans(pf.bans);
@@ -2221,7 +2255,7 @@ function renderDashboard(d, query) {
   buildDiscover(d, query);
   buildNow(d.now);
   buildPlatform(d.platform, d.library);
-  buildAccount(pf);
+  buildAccount(pf, d.steamid, query);
   buildShowcase(pf);
   // A badge names a game by appid, including the sale and event badges whose
   // appid belongs to a storefront page nobody owns. Only the ones this library
