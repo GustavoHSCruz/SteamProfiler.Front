@@ -1,0 +1,99 @@
+/* steamprofiler.org - the codes screen at /u/<perfil>/ids.
+
+   A list of rows and nothing else, because the page is a reference somebody
+   opens to copy one line out of. Everything is monospaced and selectable: the
+   value is the product here, so it gets the width, and the label and the copy
+   button stay out of its way. */
+
+.sid {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(20px, 4vh, 48px) var(--edge) var(--edge);
+  display: grid;
+  gap: var(--gap);
+}
+
+.sid-head { max-width: 66ch; margin-bottom: clamp(10px, 2vh, 22px); }
+.sid-kicker {
+  margin: 0 0 10px;
+  font-family: var(--label);
+  font-weight: var(--label-w);
+  font-size: 11px;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.sid-title { margin: 0; font-size: clamp(1.6rem, 4vw, 2.6rem); }
+.sid-lede { margin: 14px 0 0; font-size: 14.5px; line-height: 1.65; color: var(--dim); }
+
+.sid-rows { display: grid; gap: 2px; }
+
+/* Three columns on a screen with room: what it is called, what it is, and the
+   button. The value column takes the slack, and it is the only one that may
+   scroll - an address is long and wrapping it would break the thing being
+   copied across two lines. */
+.sid-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 210px) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-top: 1px solid var(--line);
+}
+.sid-row:first-child { border-top: 0; }
+
+.sid-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.sid-value {
+  min-width: 0;
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text);
+  white-space: nowrap;
+  scrollbar-width: thin;
+}
+a.sid-value { color: var(--link); text-decoration: none; }
+a.sid-value:hover { text-decoration: underline; }
+
+.sid-copy {
+  padding: 6px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: none;
+  color: var(--dim);
+  font-family: var(--mono);
+  font-size: 11px;
+  cursor: pointer;
+  transition: border-color 140ms ease, color 140ms ease;
+}
+.sid-copy:hover, .sid-copy:focus-visible { border-color: var(--accent); color: var(--accent); }
+
+.sid-note {
+  max-width: 70ch;
+  margin: 6px 0 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--faint);
+}
+
+/* Narrow: the button leaves the row rather than squeezing the value, and the
+   label sits above what it names. */
+@media (max-width: 620px) {
+  .sid-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "label label" "value copy";
+    gap: 6px 10px;
+  }
+  .sid-label { grid-area: label; }
+  .sid-value { grid-area: value; }
+  .sid-copy { grid-area: copy; }
+}

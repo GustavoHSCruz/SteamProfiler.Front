@@ -59,6 +59,10 @@ const deck = parts[2] === 'deck';
 // library: it is where somebody builds something to take away from it.
 const gen = parts[2] === 'embed';
 
+// And once more. This one is not a view of the library either: it is the
+// account's own number, in every format Steam has ever handed out.
+const codes = parts[2] === 'ids';
+
 /** The address this view should have been reached at. A link built by hand or
  *  held from before this page understood URLs still works, and gets tidied in
  *  place so the one the visitor copies from here is the short one. It also puts
@@ -75,6 +79,7 @@ function canonical() {
                 : axis ? `/${axis.axis}`
                   : deck ? '/deck'
                   : gen ? '/embed'
+                  : codes ? '/ids'
                     : appid ? `/${appid}` : '';
   return `/u/${encodeURIComponent(query)}${tail}`;
 }
@@ -93,6 +98,7 @@ function fail(message, retry) {
   el('houses').hidden = true;
   el('deck').hidden = true;
   el('embed').hidden = true;
+  el('ids').hidden = true;
   failure.hidden = false;
   el('failure-text').textContent = message;
   const again = el('failure-retry');
@@ -129,7 +135,7 @@ function showChrome(profileQuery, persona) {
   // waits on different calls and the skeleton it draws is that view's layout.
   bootStart(rival ? 'versus' : pile ? 'backlog' : cardset ? 'cards'
     : year ? 'year' : franchises ? 'franchises' : axis ? 'houses' : deck ? 'deck'
-      : gen ? 'embed' : appid ? 'game' : 'dash', query, appid);
+      : gen ? 'embed' : codes ? 'ids' : appid ? 'game' : 'dash', query, appid);
 
   let steamid;
   try {
@@ -256,6 +262,18 @@ function showChrome(profileQuery, persona) {
         steamid,
         persona: d.profile.persona,
       });
+    } else if (codes) {
+      // The codes themselves need only the number the resolve already gave
+      // back. The profile is waited on for the four lines that are not
+      // arithmetic - the name, the custom URL, the day it was opened and the
+      // avatar - and for the name on the back link, the same as every other
+      // screen here.
+      const d = await api(`/profile?id=${steamid}`);
+      bootMark('fetched');
+      el('ids').hidden = false;
+      showChrome(query, d.profile.persona);
+      bootDone();
+      renderIds(el('sid-root'), d, steamid, encodeURIComponent(query));
     } else if (year) {
       // Every figure on this page except the unlocks is already in the profile
       // payload, so the page is complete the moment that lands. The unlocks

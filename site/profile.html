@@ -35,6 +35,7 @@
 <link rel="stylesheet" href="/houses.css">
 <link rel="stylesheet" href="/deck.css">
 <link rel="stylesheet" href="/embed.css">
+<link rel="stylesheet" href="/ids.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
@@ -523,6 +524,12 @@
   <div id="em-root"></div>
 </main>
 
+<!-- Every code this account has. Drawn by ids.js out of the number the lookup
+     already resolved: the screen is arithmetic, not a second lookup. -->
+<main id="ids" class="sid" hidden>
+  <div id="sid-root"></div>
+</main>
+
 <footer class="foot">
   <p><span data-i18n="foot.source_pre">Read from Steam. Fetched</span> <time id="g-generated"></time>. <a href="/feedback" data-i18n="foot.found_bug">found a bug?</a> · <a href="/blog" data-i18n="nav.blog">blog</a> · <a href="/about" data-i18n="nav.about">about</a> · <a href="/privacy" data-i18n="nav.privacy">privacy</a> · <a class="foot-repo" href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener" data-i18n="foot.front_repo">front-end source ↗</a> · <a class="foot-repo" href="https://github.com/GustavoHSCruz/SteamProfiler.Api" rel="noopener" data-i18n="foot.api_repo">API source ↗</a></p>
   <p id="credit-slot"><a href="/u/gordziilla">made with ♥</a></p>
@@ -547,6 +554,7 @@
 <script src="/houses.js" defer></script>
 <script src="/deck.js" defer></script>
 <script src="/embed.js" defer></script>
+<script src="/ids.js" defer></script>
 <script src="/router.js" defer></script>
 </body>
 </html>

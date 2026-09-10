@@ -267,6 +267,10 @@ function buildDiscover(d, query) {
   chip(`/u/${query}/publishers`, t('go.publishers'), t('go.publishers_hint'));
   chip(`/u/${query}/developers`, t('go.developers'), t('go.developers_hint'));
   chip(`/u/${query}/deck`, t('go.deck'), t('go.deck_hint'));
+  // Not a view of the library either: the account's own number, in every
+  // format Steam has handed out. It goes next to the generator because both
+  // are here to be copied out of rather than read.
+  chip(`/u/${query}/ids`, t('go.ids'), t('go.ids_hint'));
   // The one chip that does not point at another view of this library. It
   // points at the place where a piece of it is turned into something that can
   // be pasted somewhere else, so it goes last.

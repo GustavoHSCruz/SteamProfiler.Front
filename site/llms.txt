@@ -109,6 +109,11 @@ optional profile panel on themselves.
   and `/developers/<slug>` are one house; the same four addresses under
   `/u/<name>/` add that library's hours and say what it is missing.
 - Profiles live at `/u/<name>`. See the crawling note below.
+- `/u/<name>/ids` writes that account's own number in every format Steam has
+  handed out - SteamID64 in decimal and hex, STEAM_1 and STEAM_0, `[U:1:x]`,
+  the account id, the FiveM identifier and the invite code - plus the addresses
+  that open the same profile. All of it is arithmetic on the id the lookup
+  already resolved, and none of it is a further request to Steam.
 - The generator at `/u/<name>/embed` builds something a profile can be shown
   with somewhere else: a bar chart, a badge in the shields.io shape, a banner,
   or the same chart as Unicode text. The pictures are SVG and self-contained -

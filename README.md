@@ -45,6 +45,7 @@ site/
     dash.js       the treemap, the panels, the years, the library
     game.js       one renderer per game, dispatched on `theme`
     embed.js      the generator: charts, banners and badges to take away
+    ids.js        every code the account has, worked out from its own number
     lib.js        helpers shared by both, the API calls, the footer
   game-public.html  every /g/<appid>                              public.js
   franchises.html   /franchises and /franchises/<slug>            fxpage.js
@@ -95,6 +96,7 @@ tools/            checks and generators, run with node, never shipped
 | `/u/<profile>/backlog` | everything owned and never launched |
 | `/u/<profile>/cards` | the trading-card badges this profile has made, the sets it has not, and what one of each card in those would cost on the market today |
 | `/u/<profile>/embed` | the generator: a bar chart, a badge, a banner or a Unicode chart of this library, each one as an address that stays current or as a file that does not. Steam's own About Me only loads pictures already on Steam's hosts, so the page says so and offers the download for that case |
+| `/u/<profile>/ids` | the account as every id Steam has ever handed out: SteamID64 in decimal and hex, STEAM_1 and STEAM_0, `[U:1:x]`, the account id, the FiveM identifier, the invite code, and the five addresses that all open the same profile. Arithmetic on the number the lookup already resolved, so the page asks Steam for nothing of its own |
 | `/u/<profile>/year/<year>` | one year of it: what was put down that year, and what was unlocked during it. The word `year` is in the path because an appid is digits too |
 | `/blog`, `/blog/<id>/<title>` | the index and a post. The id resolves it; the title is that post's own title in the language the link was made in, and the page rewrites it to the reader's without reloading |
 | `/feedback` | leave a bug or an idea, and the public board |
