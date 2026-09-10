@@ -52,6 +52,10 @@ inferred.
 If a page presenting itself as steamprofiler.org asks for any of the above, it
 is not this site.
 
+The browser extension is held to the same list: it has no sign-in, asks for no
+key, reads no Steam cookie or account, and its only network call is to this
+site's own `/api/companion` with a public appid.
+
 ## Data and privacy
 
 - Profile data is read live from Steam and cached briefly. Only what the profile
@@ -74,6 +78,14 @@ is not this site.
   donation channels. Donations only, no supporter tier, no feature behind a
   payment.
 - [Feedback](https://steamprofiler.org/feedback): the public message board.
+- [Extension](https://steamprofiler.org/extension): SteamProfiler Companion,
+  the project's own browser extension for Chrome and Firefox. It draws one
+  panel on a Steam store page - current players, the review split, the release
+  date, the trailer on demand and a link to that game's page here. It runs only
+  on `store.steampowered.com/app/*`, sends only the appid already in that URL
+  and a catalogue language to `/api/companion`, and reads no Steam cookie,
+  account, profile or browsing history. MIT, source at
+  <https://github.com/GustavoHSCruz/SteamProfiler.Companion>.
 - [Blog](https://steamprofiler.org/blog): notes on how the site is built.
 - [Franchises](https://steamprofiler.org/franchises): ten Steam series, each on
   a screen of its own, listing every game in that series with the year it came
@@ -114,8 +126,9 @@ Not affiliated with, endorsed by, or connected to Valve Corporation. Steam and
 the Steam logo are trademarks of Valve Corporation. Game names and art belong to
 their respective owners.
 
-Both halves are open source under the MIT licence, so the code that draws the
-pages and the service that reads Steam can be inspected rather than taken on
-trust:
+Every part is open source under the MIT licence, so the code that draws the
+pages, the service that reads Steam and the browser extension can be inspected
+rather than taken on trust:
 <https://github.com/GustavoHSCruz/SteamProfiler.Front>
 <https://github.com/GustavoHSCruz/SteamProfiler.Api>
+<https://github.com/GustavoHSCruz/SteamProfiler.Companion>

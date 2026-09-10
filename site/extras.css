@@ -523,3 +523,74 @@ h4.prose-h { font-size: 15.5px; letter-spacing: 0; }
   color: var(--link); text-decoration: none;
 }
 .abt-links a:hover { text-decoration: underline; }
+
+/* ── The extension ─────────────────────────────────────────────────────
+   The picture at the top of /extension is the companion's own panel, rebuilt
+   out of markup. A screenshot would have been one game on one day in one
+   language; this one carries the reader's language and can be corrected in a
+   diff. Everything here is `xt-` because `ext-` is close enough to `extras`
+   to read as the stylesheet's own furniture, and this is one page's block.
+
+   The colours are the extension's and not the site's tokens on purpose: the
+   panel is drawn on Steam's page, where none of this site's variables exist,
+   so the point of the picture is what it looks like over there. */
+
+.xt-shot { margin: clamp(26px, 3.4vw, 44px) 0 clamp(20px, 2.4vw, 30px); }
+.xt-panel {
+  padding: 20px;
+  color: #f4f1eb;
+  background: linear-gradient(135deg, #17141d 0%, #0b0a0e 70%);
+  border: 1px solid #4a4458;
+  border-left: 4px solid var(--accent);
+  border-radius: 2px;
+  /* Arial, and not the vendored faces, because that is the font the panel
+     inherits from the store page it is drawn on. */
+  font-family: Arial, Helvetica, sans-serif;
+}
+.xt-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap;
+}
+.xt-identity { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.xt-mark {
+  display: grid; place-items: center; flex: 0 0 42px; height: 42px;
+  color: #0b0a0e; background: var(--accent);
+  font-size: 16px; font-weight: 900; letter-spacing: -1px;
+}
+.xt-kicker {
+  margin: 0 0 3px; color: #aaa3b4; font-size: 11px;
+  letter-spacing: 1.4px; text-transform: uppercase;
+}
+.xt-title { margin: 0; color: #fff; font-size: 22px; line-height: 1.1; }
+.xt-brand { flex: none; color: var(--accent); font-size: 12px; font-weight: 700; }
+.xt-metrics {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px; margin-top: 20px; background: #37323f;
+}
+.xt-metric { min-width: 0; padding: 15px; background: #131117; }
+.xt-metric strong {
+  display: block; overflow: hidden; color: #fff; font-size: 20px;
+  text-overflow: ellipsis; white-space: nowrap;
+}
+.xt-metric span {
+  display: block; margin-top: 5px; color: #98919f; font-size: 11px;
+  letter-spacing: .5px; text-transform: uppercase;
+}
+.xt-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+/* A picture of a button, and not a button: there is nothing on this page for
+   it to do, and a control that answers nothing is worse than a drawing. */
+.xt-btn {
+  padding: 10px 15px; color: #f4f1eb; background: #292530;
+  border: 1px solid #4a4458; border-radius: 2px;
+  font: 700 12px/1 Arial, Helvetica, sans-serif;
+}
+.xt-btn--primary { color: #0b0a0e; background: var(--accent); border-color: var(--accent); }
+.xt-cap {
+  margin: 10px 2px 0; font-family: var(--mono); font-size: 11px;
+  line-height: 1.6; color: var(--faint);
+}
+
+@media (max-width: 700px) {
+  .xt-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .xt-title { font-size: 18px; }
+}

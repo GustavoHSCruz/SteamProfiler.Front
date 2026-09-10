@@ -56,6 +56,7 @@ site/
   post.html       one post                     post.js
   feedback.html   the form and the public board                   feedback.js
   support.html    the donation channels                           support.js
+  extension.html  the browser extension, and the panel it draws  extension.js
   privacy.html    what the site does with data                    privacy.js
   policy-history.html   every past revision of that policy        policy-history.js
   appeal.html     the form behind a block, plus appeal-sent.html
@@ -66,7 +67,7 @@ site/
   games.css       every game page, one block each
   franchises.css  the ten franchise screens, one block each
   embed.css       the generator
-  extras.css      blog, feedback, support, privacy, appeal
+  extras.css      blog, feedback, support, privacy, appeal, the extension
   fonts.css       the vendored faces, generated
 
   i18n.js         t(), plural(), the language picker
@@ -98,6 +99,7 @@ tools/            checks and generators, run with node, never shipped
 | `/blog`, `/blog/<id>/<title>` | the index and a post. The id resolves it; the title is that post's own title in the language the link was made in, and the page rewrites it to the reader's without reloading |
 | `/feedback` | leave a bug or an idea, and the public board |
 | `/support` | the donation channels |
+| `/extension` | SteamProfiler Companion, the extension this project makes: what it draws on a Steam store page, everything it may touch, and how to install it while it is not in the stores yet. The panel in the middle of that page is markup and not a screenshot, so it speaks the reader's language and is corrected in a diff |
 | `/privacy`, `/privacy/history` | the policy and its archive |
 
 Paths under `/u/` are resolved in `router.js` after `profile.html` loads. The
