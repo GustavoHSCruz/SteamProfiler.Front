@@ -147,6 +147,11 @@ a.cell[data-dark="1"]:hover, .cell[data-dark="1"][data-on="1"] {
   padding: 0 var(--edge) var(--edge);
   align-items: start;
 }
+/* Set by dash.js once it has measured the panels. See packGrid(): with a
+   script running the row stops being the unit and a short panel no longer
+   holds the whole row open. Without one, nothing here applies. */
+.grid[data-packed] { grid-auto-rows: 4px; }
+
 .p-now   { grid-column: span 4; }
 .p-plat  { grid-column: span 4; }
 .p-acct  { grid-column: span 4; }

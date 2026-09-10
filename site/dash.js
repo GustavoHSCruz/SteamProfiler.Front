@@ -614,6 +614,71 @@ function buildShowcase(pf) {
  *  itself. Whichever one is left then takes the whole width, because a panel
  *  sitting alone beside eight empty columns is the shape this row was
  *  rearranged to stop making. Called after both have had their say. */
+/* ── Packing the panel grid ────────────────────────────────────────────
+   The panels are twelve columns wide and three across, and a grid row is as
+   tall as the tallest thing in it. The account panel is a head, a picture and
+   fourteen lines; the system panel on a library that has only ever run Windows
+   is a figure and one row. Side by side, the short one left four hundred
+   pixels of nothing under it and the next row started below all three.
+
+   So the row stops being the unit. The grid gets rows four pixels tall, every
+   panel is told how many of them it covers, and the auto-placement walks down
+   the columns filling the first slot each panel fits in. Nothing moves in the
+   markup and nothing is reordered: a panel simply stops waiting for its
+   neighbour to finish.
+
+   It only happens with a script running, which is why the mode is a data
+   attribute the script sets. Without one the grid is what it always was -
+   three panels a row, aligned to the top - because a four-pixel row with no
+   span on it is a panel four pixels tall. */
+const PACK_ROW = 4;
+/* The observer below watches the same panels this function writes to. Nothing
+   it writes changes a panel's own height - the grid aligns them to the top, so
+   a row span is not a stretch - but a measure loop is a page that never stops
+   working, and one flag is cheaper than trusting that across browsers. */
+let packing = false;
+
+function packGrid() {
+  const grid = document.querySelector('.grid');
+  if (!grid || packing) return;
+  packing = true;
+  const panels = [...grid.children];
+  // Measured with the spans off. A panel already covering thirty rows reports
+  // the height of thirty rows, and packing it again against that would grow it
+  // a little on every pass.
+  delete grid.dataset.packed;
+  for (const panel of panels) panel.style.gridRowEnd = '';
+  const gap = parseFloat(getComputedStyle(grid).rowGap) || 0;
+  const spans = panels.map((panel) => Math.max(
+    1, Math.ceil((panel.getBoundingClientRect().height + gap) / (PACK_ROW + gap)),
+  ));
+  grid.dataset.packed = '1';
+  panels.forEach((panel, i) => { panel.style.gridRowEnd = `span ${spans[i]}`; });
+  requestAnimationFrame(() => { packing = false; });
+}
+
+/** Pack once the page settles, and again whenever a panel changes height: the
+ *  badges arrive after their pictures load, the map redraws on a resize, and a
+ *  panel that grew after being measured would overlap the one under it. */
+function watchGrid() {
+  const grid = document.querySelector('.grid');
+  if (!grid) return;
+  let queued = 0;
+  const soon = () => {
+    clearTimeout(queued);
+    queued = setTimeout(packGrid, 120);
+  };
+  requestAnimationFrame(() => requestAnimationFrame(packGrid));
+  window.addEventListener('resize', soon);
+  if (typeof ResizeObserver === 'function') {
+    const watch = new ResizeObserver(soon);
+    for (const panel of grid.children) watch.observe(panel);
+  }
+  // The panels tile in on arrival, and a height measured mid-animation is the
+  // height of a panel that is still moving.
+  setTimeout(packGrid, 900);
+}
+
 function pairRow() {
   const rig = el('panel-showcase');
   const badges = el('panel-badges');
@@ -2253,6 +2318,7 @@ function renderDashboard(d, query) {
   buildBadges(pf, query, new Set(
     [...d.library, ...d.unplayed].map((g) => g.appid)));
   pairRow();
+  watchGrid();
   buildPages(d.top_games, query);
   buildTable(d.top_games, query);
   buildTimeline(d.library, query);
