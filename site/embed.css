@@ -1,6 +1,6 @@
 /* steamprofiler.org - the generator at /u/<perfil>/embed.
 
-   Four panels, each one an output: its controls, the file itself, and the block
+   Six panels, each one an output: its controls, the file itself, and the block
    somebody copies. The preview is the only place on this site that draws a
    picture the site did not lay out, so it gets a checkerboard behind it - a
    light theme chart on a dark page has to be visibly a file with its own
@@ -9,8 +9,13 @@
 .em-grid { align-items: start; }
 .p-em { grid-column: span 6; }
 .p-em-steam { grid-column: span 12; }
-/* The text chart is a wide monospaced block, so it gets the full row. */
-.p-em.em-text { grid-column: span 12; }
+/* The two that are wide files get the whole row: an artwork is 1920 pixels
+   across, and a text chart is a monospaced block that has to line up. The
+   other four pair off into halves, which is also what keeps the grid from
+   opening a hole in the middle of itself - a twelve between two sixes is a
+   row with a gap in it. */
+.p-em.em-text,
+.p-em.em-artwork { grid-column: span 12; }
 
 .em-steps {
   margin: 14px 0 0; padding-left: 20px; color: var(--dim);
@@ -47,8 +52,43 @@
   font-family: var(--sans); font-size: 12.5px;
 }
 .em-ctl input[type="range"] { width: 120px; accent-color: var(--accent); }
+/* The one field that is a name and not a shape. Wider than the rest, because
+   what goes in it is a profile URL as often as it is a handle. */
+.em-artwork .em-ctl input[type="text"] { min-width: 190px; }
+.em-versus .em-ctl input[type="text"] { min-width: 260px; }
 .em-ctl input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; }
 .em-ctl select:focus-visible, .em-ctl input:focus-visible { outline: 2px solid var(--accent); }
+
+/* ── The reader's own picture ──────────────────────────────────────
+   The only control on this page that takes something from the visitor rather
+   than giving them something. It reads as a row and not as a column, because
+   the file's name has to sit beside the button that chose it. */
+
+.em-ctl input[type="file"] {
+  padding: 7px 9px; max-width: 100%;
+  background: var(--panel-2); color: var(--dim);
+  border: 1px dashed var(--line); border-radius: 8px;
+  font-family: var(--sans); font-size: 12px;
+}
+.em-ctl input[type="file"]::file-selector-button {
+  margin-right: 10px; padding: 5px 10px;
+  background: var(--accent); color: var(--bg);
+  border: 0; border-radius: 7px; cursor: pointer;
+  font-family: var(--label); font-size: 9.5px; font-weight: var(--label-w);
+  letter-spacing: var(--label-ls); text-transform: uppercase;
+}
+.em-file-said {
+  display: block; margin: 6px 0 0;
+  font-family: var(--mono); font-size: 11px; color: var(--faint);
+}
+
+/* What a panel says when it cannot draw anything yet, which is only ever the
+   versus card waiting on a second name. */
+.em-asked {
+  margin: 16px 0 0; padding: 18px 16px;
+  border: 1px dashed var(--line); border-radius: var(--r);
+  color: var(--dim); font-size: 13px; line-height: 1.6; text-align: center;
+}
 
 /* ── The file ─────────────────────────────────────────────────────── */
 
@@ -68,6 +108,9 @@
 }
 .em-preview[data-busy] { opacity: 0.45; }
 .em-shot { max-width: 100%; height: auto; }
+/* An artwork is up to 1500 pixels tall. Held to a screenful so the controls
+   above it and the buttons below it stay in the same view. */
+.em-artwork .em-shot { max-height: 62vh; width: auto; }
 .em-pre {
   margin: 0; width: 100%; overflow-x: auto; color: var(--text);
   font-family: var(--mono); font-size: 11px; line-height: 1.5; white-space: pre;
@@ -84,6 +127,11 @@
   letter-spacing: var(--label-ls); text-transform: uppercase;
 }
 .em-mode[data-on="1"] { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+/* Dynamic, on an artwork carrying a picture of the reader's own. There is no
+   address that could serve it, so the button is not a choice - and it stays on
+   the screen rather than disappearing, because the note beside it explains why
+   it is out. */
+.em-mode:disabled { opacity: .35; cursor: not-allowed; }
 .em-tab[data-on="1"] { color: var(--accent); border-color: var(--accent-d); }
 .em-said {
   display: block; margin: 10px 0 0; font-family: var(--mono);

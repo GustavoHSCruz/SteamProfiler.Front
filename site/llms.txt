@@ -116,11 +116,19 @@ optional profile panel on themselves.
   already resolved, and none of it is a further request to Steam.
 - The generator at `/u/<name>/embed` builds something a profile can be shown
   with somewhere else: a bar chart, a badge in the shields.io shape, a banner,
-  or the same chart as Unicode text. The pictures are SVG and self-contained -
-  no webfont, no remote image - and are served from `/api/bars.svg`,
-  `/api/banner.svg`, `/api/badge.svg` and `/api/bars.txt`, each taking the same
-  `q=<name>` a lookup takes. They read the same public profile data the rest of
-  the site reads and need no key from whoever embeds them.
+  a card of two profiles against each other, a full-size piece of Steam
+  artwork, or the same chart as Unicode text. Which figures go on each one is
+  the visitor's choice, off one menu of everything a profile publishes. The
+  pictures are SVG and self-contained - no webfont, no remote image - and are
+  served from `/api/bars.svg`, `/api/banner.svg`, `/api/badge.svg`,
+  `/api/versus.svg`, `/api/artwork.svg` and `/api/bars.txt`, each taking the
+  same `q=<name>` a lookup takes (the versus card takes a second one as `vs=`).
+  They read the same public profile data the rest of the site reads and need no
+  key from whoever embeds them.
+- The artwork can carry a picture the visitor chose off their own disk. That
+  picture is decoded and composited in their browser and is never uploaded, so
+  it exists only in the file they save: that one case has a download and no
+  address at all.
 
 ## Crawling
 

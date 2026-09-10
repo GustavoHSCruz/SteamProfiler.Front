@@ -209,8 +209,15 @@ const BOOT_SHAPE = {
   franchises: () => bootShelf(),
   houses: () => bootShelf(),
   deck: () => bootShelf(),
-  // Four panels of controls, which is what the generator is about to be.
-  embed: () => bootPanels(),
+  // The generator's own shape: the note about Steam across the top, the
+  // artwork under it at full width, then the four half-width panels in pairs
+  // and the text chart across the bottom.
+  embed: () => [
+    { x: 0, y: 0, w: 100, h: 12 },
+    { x: 0, y: 14, w: 100, h: 30 },
+    { x: 0, y: 46, w: 49, h: 24 }, { x: 51, y: 46, w: 49, h: 24 },
+    { x: 0, y: 72, w: 49, h: 24 }, { x: 51, y: 72, w: 49, h: 24 },
+  ],
   // Rows, which is all the codes screen is.
   ids: () => bootPile(),
 };
