@@ -518,16 +518,6 @@ function buildAccount(pf, steamid, query) {
     [t('dash.profile_url'), pf.url
       ? h('a', { cls: 'kv-url', text: pf.url, attr: { href: pf.url, rel: 'noopener' } })
       : null, true],
-    // Only when there is one: an animated avatar is a Points Shop item and
-    // most profiles have never equipped anything. The still one is on the page
-    // already, three lines above this list.
-    [t('dash.avatar_moving'), pf.items?.avatar?.image_small
-      ? h('a', {
-        cls: 'kv-url',
-        text: pf.items.avatar.image_small,
-        attr: { href: pf.items.avatar.image_small, rel: 'noopener' },
-      })
-      : null, true],
     [t('dash.codes'), query
       ? h('a', { text: t('dash.codes_go'), attr: { href: `/u/${query}/ids` } })
       : null],
