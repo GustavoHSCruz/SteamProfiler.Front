@@ -83,6 +83,17 @@ function emSnippets(src, alt, link, size) {
   };
 }
 
+/** One file, as something an <img> or an <a download> can take.
+ *
+ *  A data URI and not a blob one, which is not a matter of taste: the site's
+ *  Content-Security-Policy allows `data:` under img-src and does not allow
+ *  `blob:`, so a preview built with URL.createObjectURL() is blocked by the
+ *  browser and the panel shows nothing at all. Everything here is a handful of
+ *  kilobytes, which is what makes the choice free. */
+function emData(text, type) {
+  return `data:${type};charset=utf-8,${encodeURIComponent(text)}`;
+}
+
 /** The bytes of an SVG, as a PNG, at twice the size so it survives a retina
  *  screen and a forum that scales it. Everything the file needs is inside it -
  *  no webfont, no remote picture - which is the only reason a canvas is
@@ -92,16 +103,14 @@ async function emPng(svg, size, scale = 2) {
   await new Promise((ok, no) => {
     img.onload = ok;
     img.onerror = () => no(new Error('svg'));
-    img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+    img.src = emData(svg, 'image/svg+xml');
   });
   const canvas = document.createElement('canvas');
   canvas.width = size.w * scale;
   canvas.height = size.h * scale;
   const pen = canvas.getContext('2d');
   pen.drawImage(img, 0, 0, canvas.width, canvas.height);
-  return new Promise((ok, no) => {
-    canvas.toBlob((blob) => (blob ? ok(blob) : no(new Error('png'))), 'image/png');
-  });
+  return canvas.toDataURL('image/png');
 }
 
 /** What an <img> would reserve for it. Read off the file rather than guessed,
@@ -113,14 +122,11 @@ function emSize(svg) {
   return w && h ? { w: Number(w[1]), h: Number(h[1]) } : null;
 }
 
-function emDownload(blob, name) {
-  const href = URL.createObjectURL(blob);
+function emDownload(href, name) {
   const a = h('a', { attr: { href, download: name } });
   document.body.append(a);
   a.click();
   a.remove();
-  // Given back on the next turn of the loop, once the browser has taken it.
-  setTimeout(() => URL.revokeObjectURL(href), 60_000);
 }
 
 /** One output: its controls, its preview, and the block somebody copies. */
@@ -200,11 +206,7 @@ function emSection(kind, ctx) {
       // Drawn from the bytes in hand rather than from the address, so the
       // preview is the file: the same pixels the download will contain, and
       // one request instead of two.
-      const blob = new Blob([held], { type: 'image/svg+xml' });
-      if (shown.dataset.blob) URL.revokeObjectURL(shown.dataset.blob);
-      const href = URL.createObjectURL(blob);
-      shown.dataset.blob = href;
-      shown.src = href;
+      shown.src = emData(held, 'image/svg+xml');
       shown.alt = alt;
       weight.textContent = size
         ? `${size.w}×${size.h} · ${Math.max(1, Math.round(held.length / 1024))} kB`
@@ -297,13 +299,13 @@ function emSection(kind, ctx) {
       cls: 'em-go', text: t('em.save_txt'), attr: { type: 'button' },
     });
     txtBtn.addEventListener('click', () => {
-      emDownload(new Blob([held || ''], { type: 'text/plain' }), fileName('txt'));
+      emDownload(emData(held || '', 'text/plain'), fileName('txt'));
     });
     acts.append(txtBtn);
   } else {
     const svgBtn = h('button', { cls: 'em-go', text: t('em.save_svg'), attr: { type: 'button' } });
     svgBtn.addEventListener('click', () => {
-      emDownload(new Blob([held || ''], { type: 'image/svg+xml' }), fileName('svg'));
+      emDownload(emData(held || '', 'image/svg+xml'), fileName('svg'));
     });
     const pngBtn = h('button', { cls: 'em-go', text: t('em.save_png'), attr: { type: 'button' } });
     pngBtn.addEventListener('click', async () => {
