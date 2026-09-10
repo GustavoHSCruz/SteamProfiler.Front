@@ -82,7 +82,7 @@ site's own `/api/companion` with a public appid.
   the project's own browser extension for Chrome and Firefox. It draws one
   panel on a Steam store page - current players, the review split, the release
   date, the trailer on demand and a link to that game's page here. It runs only
-  on `store.steampowered.com/app/*`, sends only the appid already in that URL
+  on `store.steampowered.com`, sends only the appid already in that page's URL
   and a catalogue language to `/api/companion`, and reads no Steam cookie,
   account, profile or browsing history. MIT, source at
   <https://github.com/GustavoHSCruz/SteamProfiler.Companion>.
