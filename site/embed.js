@@ -116,10 +116,14 @@ const EM_CONTROLS = {
       pick: EM_METRICS,
     },
     { name: 'games', range: [0, 12], value: 4 },
-    // Fifteen characters, which is what embed.py will keep of it anyway. The
-    // browser stopping at the same number is what keeps the field from
+    // Twenty-five characters, which is what embed.py will keep of it anyway.
+    // The browser stopping at the same number is what keeps the field from
     // promising something the picture will not draw.
-    { name: 'sign', free: true, value: '', ph: 'em.ph_sign', size: 15 },
+    //
+    // Empty no longer means unsigned: the card is signed with the name on the
+    // profile unless this says otherwise, and `none` is how somebody asks for
+    // a blank corner. So the placeholder has to say what leaving it alone does.
+    { name: 'sign', free: true, value: '', ph: 'em.ph_sign', size: 25 },
     { name: 'face', flag: true, value: true },
     { name: 'round', flag: true, value: false },
   ],
@@ -146,8 +150,11 @@ const EM_OWN_SLOT = '#own';
 function emUrl(kind, state, query) {
   const q = new URLSearchParams({ q: query, lang: LANG });
   for (const [k, v] of Object.entries(state)) {
-    // An empty custom label is not a label of nothing: it is the absence of
-    // one, and the api falls back to the metric's own word.
+    // An empty field is not a value of nothing, it is the absence of one, and
+    // the api decides what stands in its place - which is not the same answer
+    // for every field. An empty `label` falls back to the metric's own word; an
+    // empty `sign` falls back to the name on the profile. Either way what
+    // travels is silence, not an empty string.
     if (v === '') continue;
     if (Array.isArray(v)) {
       // `none` is written out rather than left off, because a parameter that
