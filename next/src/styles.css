@@ -1,0 +1,547 @@
+@import "tailwindcss";
+
+/* ── The faces ───────────────────────────────────────────────────────── */
+@font-face { font-family: 'Bricolage Grotesque'; font-weight: 600; font-display: swap; src: url(/fonts/bricolage-grotesque-600.woff2) format('woff2'); }
+@font-face { font-family: 'Bricolage Grotesque'; font-weight: 800; font-display: swap; src: url(/fonts/bricolage-grotesque-800.woff2) format('woff2'); }
+@font-face { font-family: 'IBM Plex Mono'; font-weight: 400; font-display: swap; src: url(/fonts/ibm-plex-mono-400.woff2) format('woff2'); }
+@font-face { font-family: 'IBM Plex Mono'; font-weight: 500; font-display: swap; src: url(/fonts/ibm-plex-mono-500.woff2) format('woff2'); }
+@font-face { font-family: 'IBM Plex Mono'; font-weight: 600; font-display: swap; src: url(/fonts/ibm-plex-mono-600.woff2) format('woff2'); }
+@font-face { font-family: 'Archivo'; font-weight: 400; font-display: swap; src: url(/fonts/archivo-400.woff2) format('woff2'); }
+@font-face { font-family: 'Archivo'; font-weight: 500; font-display: swap; src: url(/fonts/archivo-500.woff2) format('woff2'); }
+@font-face { font-family: 'Archivo'; font-weight: 600; font-display: swap; src: url(/fonts/archivo-600.woff2) format('woff2'); }
+
+/* ── The palette ─────────────────────────────────────────────────────
+   Amber fixed, everything else rebuilt for a screen that is nine panels
+   deep. The greys are closer together than the served site's: on a page
+   that is mostly hairlines and title bars, a wide spread between panel and
+   line turns every border into a drawn box, and nine drawn boxes is a
+   wireframe. These sit two or three steps apart and let the gaps do the
+   dividing. */
+@theme {
+  --color-ink:     #08070c;
+  --color-panel:   #101017;
+  --color-panel-2: #15151d;
+  --color-line:    #22212c;
+  --color-line-2:  #32313d;
+  --color-text:    #f1eff5;
+  --color-dim:     #948fa0;
+  --color-faint:   #5f5c6c;
+  --color-amber:   #ffb454;
+  --color-amber-d: #c97f22;
+
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-sans: 'Archivo', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+:root {
+  color-scheme: dark;
+  --gap: 8px;
+  --r: 10px;
+}
+@media (min-width: 1280px) { :root { --gap: 9px; } }
+
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--color-ink);
+  /* The workspace, barely there. Forty-four pixels, the same square the
+     panels are laid on, so an empty corner still reads as part of a grid. */
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.022) 0 1px, transparent 1px 44px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.022) 0 1px, transparent 1px 44px);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--color-amber); color: #16100a; }
+:focus-visible { outline: 2px solid var(--color-amber); outline-offset: 2px; border-radius: 4px; }
+
+/* ── The panel ───────────────────────────────────────────────────────
+   Nine of these and nothing else. Title bar, body, and the compositor's
+   gradient ring on the one being pointed at, drawn as an inset ring so it
+   never changes the box and never shifts the grid. */
+.p {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background: var(--color-panel);
+  border: 1px solid var(--color-line);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.p::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(120deg, #33ccff, #a37bff 55%, #ff7ac4);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 200ms ease;
+  pointer-events: none;
+  z-index: 3;
+}
+.p:hover::after, .p:focus-within::after { opacity: .85; }
+@media (prefers-reduced-motion: reduce) { .p::after { transition: none; } }
+
+.p-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex: none;
+  padding: 8px 12px;
+  background: rgba(255,255,255,.025);
+  border-bottom: 1px solid var(--color-line);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--color-dim);
+  white-space: nowrap;
+}
+.p-bar > * { min-width: 0; }
+.p-body { flex: 1; min-height: 0; padding: 14px; }
+.p-tight { padding: 0; }
+
+/* A link in a title bar: the way out of that panel, and never the loudest
+   thing in it. */
+.p-go {
+  flex: none;
+  font-size: 10px;
+  letter-spacing: .06em;
+  text-transform: none;
+  color: var(--color-faint);
+  text-decoration: none;
+  transition: color 160ms;
+}
+.p-go:hover { color: var(--color-amber); }
+
+/* ── Type ─────────────────────────────────────────────────────────── */
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -.04em;
+  line-height: .94;
+  text-wrap: balance;
+}
+.mono { font-family: var(--font-mono); }
+.dot { display: inline-block; width: 7px; height: 7px; border-radius: 2px; background: var(--color-amber); }
+
+/* ── Controls ─────────────────────────────────────────────────────── */
+.field {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--color-ink);
+  border: 1px solid var(--color-line-2);
+  border-radius: 8px;
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 160ms, box-shadow 160ms;
+}
+.field::placeholder { color: var(--color-faint); }
+.field:focus {
+  border-color: var(--color-amber-d);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-amber) 13%, transparent);
+}
+.go {
+  flex: none;
+  padding: 12px 22px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--color-amber);
+  color: #16100a;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: -.01em;
+  cursor: pointer;
+  transition: filter 140ms, transform 140ms;
+}
+.go:hover { filter: brightness(1.08); }
+.go:active { transform: translateY(1px); }
+.go:disabled { opacity: .6; cursor: progress; }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: 1px solid var(--color-line-2);
+  border-radius: 999px;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-dim);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 160ms, border-color 160ms, background-color 160ms;
+}
+.pill:hover { color: var(--color-amber); border-color: var(--color-amber-d); background: color-mix(in srgb, var(--color-amber) 8%, transparent); }
+
+/* ── The language picker ─────────────────────────────────────────────
+   A real <select>. It was three buttons, which is fine for two languages and
+   wrong for three and worse for four: the bar is already a row of pills and
+   a fourth one that is secretly a radio group reads as another link. The
+   native control also brings the keyboard, the touch wheel on a phone and
+   the reader's own list styling, none of which a div rewrites for free.
+
+   Only the box is styled. The list that drops out of it belongs to the
+   browser, and `color-scheme: dark` on the root is what keeps it dark. */
+.lang {
+  appearance: none;
+  /* The one control on this page whose menu is drawn by the browser and not
+     by us, and that has a consequence worth writing down: Chrome paints the
+     popup with the *select's own* background-color. Transparent, which is
+     what the pill next to it wanted, came out white, and the option text
+     inherited the page's light grey - grey on white, unreadable, which is
+     exactly what this looked like.
+
+     So the box carries a real colour, the options are told theirs rather
+     than left to inherit, and color-scheme is set here as well as on the
+     root, because the popup is a native widget and reads it from the element
+     it belongs to. */
+  color-scheme: dark;
+  padding: 5px 26px 5px 12px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background-color: var(--color-panel);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--color-faint) 50%),
+    linear-gradient(135deg, var(--color-faint) 50%, transparent 50%);
+  background-size: 5px 5px, 5px 5px;
+  background-position: right 13px center, right 8px center;
+  background-repeat: no-repeat;
+  color: var(--color-dim);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+  transition: color 160ms, border-color 160ms;
+}
+.lang:hover { color: var(--color-text); border-color: var(--color-line-2); background-color: var(--color-panel-2); }
+.lang option {
+  background-color: var(--color-panel);
+  color: var(--color-text);
+}
+.lang option:checked { color: var(--color-amber); }
+.lang:focus-visible { outline: 2px solid var(--color-amber); outline-offset: 2px; }
+
+/* ── The bench ───────────────────────────────────────────────────────
+   Nine panels, tiled. Areas rather than a flow, because the point of this
+   cut is that the arrangement is decided and the reader is not scrolled
+   through it one idea at a time.
+
+   Three rows on a wide screen and the first one is the height of the
+   screen it is on; the two under it are what they need and no more. What
+   was cut to get here is the empty half of every band in the other cut. */
+.bench {
+  display: grid;
+  gap: var(--gap);
+  padding: var(--gap);
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: auto;
+  grid-template-areas: "find" "live" "map" "pages" "fx" "rail" "ext" "emb" "repos";
+}
+@media (min-width: 900px) {
+  .bench {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-areas:
+      "find find find find map  map"
+      "live live live pages pages pages"
+      "rail rail fx   fx    fx    fx"
+      "ext  ext  ext  emb   emb   emb"
+      "repos repos repos repos repos repos";
+  }
+}
+@media (min-width: 1280px) {
+  .bench {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    /* Minimums and not fixed heights. The bench should fill the screen it is
+       on and is allowed to run past it rather than crush the last row: a
+       panel squeezed until its own list scrolls is worse than a bench whose
+       third row asks for one flick of the wheel. */
+    grid-template-rows: minmax(330px, 42vh) minmax(320px, 35vh) minmax(0, auto);
+    grid-template-areas:
+      "find find find find find map  map  map  map  live  live  live"
+      "rail rail pages pages pages pages fx fx fx fx fx fx"
+      "ext  ext  ext  emb  emb  emb  repos repos repos repos repos repos";
+    min-height: calc(100vh - 42px);
+  }
+}
+.a-find { grid-area: find; } .a-map { grid-area: map; } .a-live { grid-area: live; }
+.a-rail { grid-area: rail; } .a-pages { grid-area: pages; } .a-fx { grid-area: fx; }
+.a-ext { grid-area: ext; } .a-emb { grid-area: emb; } .a-repos { grid-area: repos; }
+
+/* ── The map ─────────────────────────────────────────────────────────
+   Seventy-two rectangles, no names, nothing to click, drawn against the
+   size the panel actually got. The one thing they answer is the pointer:
+   the one under it lifts out of the sheet, which is the whole of the
+   interaction and is the reason this is a picture you lean into rather
+   than a picture you look at. */
+.map { position: absolute; inset: 0; }
+.cell {
+  position: absolute;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #0b0a10;
+  transition: filter 160ms ease, transform 160ms ease;
+}
+.map:hover .cell { filter: brightness(.72); }
+.map .cell:hover {
+  filter: brightness(1.5);
+  transform: scale(1.06);
+  z-index: 2;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cell, .map:hover .cell, .map .cell:hover { transition: none; transform: none; filter: none; }
+}
+
+/* ── The vertical rail ───────────────────────────────────────────────
+   A column of covers, running slowly, doubled so the loop has no seam.
+   It is the one thing on this screen that moves on its own, and it stops
+   the moment anybody points at it. */
+/* The strip is told how tall it may be, in pixels, and does not ask the
+   flexbox.
+
+   `flex: 1 1 0` reads as "take what is left", and it is, on the bench, where
+   the row has a height decided by the grid. Stacked on a narrow screen the
+   row is auto and there is nothing left to take: the height came back from
+   the content instead, and the content is forty-eight capsules at full panel
+   width. The panel was thirteen thousand pixels tall, the picture grid beside
+   it stretched to match, and the whole screen broke - which is exactly what
+   this looked like at 920px. A ceiling costs one line and holds in both
+   cases. */
+.rail-box { min-height: 150px; max-height: 300px; }
+.lane-v { display: flex; flex-direction: column; gap: 6px; will-change: transform; }
+@keyframes lane-run { from { transform: translate3d(0,0,0); } to { transform: translate3d(0,-50%,0); } }
+.lane-v[data-run="1"] { animation: lane-run 46s linear infinite; }
+.rail-box:hover .lane-v[data-run="1"], .rail-box:focus-within .lane-v[data-run="1"] { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .lane-v[data-run="1"] { animation: none; }
+  .rail-box { overflow-y: auto; }
+}
+
+/* ── A list with one thing written out under it ───────────────────────
+   Rows, and whatever the pointer or the keyboard is on is spelled out in a
+   block underneath at a fixed height. Five cards side by side would be five
+   things to read at once; five rows and one excerpt is one thing to read and
+   four to choose from, in a third of the room. */
+.rowl {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  padding: 3px 8px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--color-dim);
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 140ms, color 140ms;
+}
+.rowl b { font-family: var(--font-mono); font-size: 10.5px; color: var(--color-line-2); font-weight: 500; }
+.rowl:hover { color: var(--color-text); }
+.rowl[data-on="1"] { background: var(--color-panel-2); color: var(--color-text); }
+.rowl[data-on="1"] b { color: var(--color-amber); }
+/* Five rows dividing the panel between them rather than five rows and a
+   hole underneath: the feed is five posts long and the panel is as tall as
+   the one beside it, so the rows take the difference. */
+.rowl-tall {
+  height: 100%;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 0;
+}
+
+/* ── Franchise plates ────────────────────────────────────────────── */
+.plate {
+  position: relative;
+  display: block;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-radius: 7px;
+  background: var(--color-panel-2);
+  text-decoration: none;
+  color: inherit;
+  isolation: isolate;
+  transition: border-color 200ms;
+}
+.plate:hover { border-color: var(--tint); }
+.plate img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: .28;
+  filter: saturate(.35);
+  transition: opacity 300ms, filter 300ms;
+}
+.plate:hover img { opacity: .5; filter: saturate(.7); }
+.plate-veil {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(0deg, color-mix(in srgb, var(--tint) 38%, var(--color-panel)) 0%,
+      color-mix(in srgb, var(--tint) 10%, transparent) 62%, transparent 90%),
+    linear-gradient(0deg, var(--color-panel) 4%, color-mix(in srgb, var(--color-panel) 58%, transparent) 56%, transparent);
+}
+
+/* The drawn mocks: shapes, no words, every width a rule. */
+.mk { display: grid; gap: 7px; padding: 9px; background: #0b0a10; border: 1px solid var(--color-line); border-radius: 8px; }
+.mk-line { height: 5px; border-radius: 3px; background: var(--color-line-2); }
+.mk-meter { height: 6px; border-radius: 3px; background: #26232f; overflow: hidden; }
+.mk-meter i { display: block; height: 100%; background: var(--color-amber); opacity: .7; }
+.mk-bars { display: flex; align-items: flex-end; gap: 4px; height: 62px; }
+.mk-bars i { flex: 1; border-radius: 2px 2px 0 0; background: linear-gradient(180deg, var(--color-amber), var(--color-amber-d)); }
+
+@keyframes cell-in { from { opacity: 0; transform: scale(.9); } to { opacity: 1; transform: none; } }
+
+/* ── A Steam post, drawn here ─────────────────────────────────────────
+   The output of bbcode.ts and the only markup on this site written with
+   innerHTML. Measured rather than styled loudly: it is somebody else's
+   writing, and the job is to make it readable on a dark panel, not to give
+   it a voice it did not have on Steam. */
+.post { max-width: 74ch; font-size: 14.5px; line-height: 1.68; color: var(--color-dim); }
+.post > :first-child { margin-top: 0; }
+.post p { margin: 0 0 1em; }
+.post strong { color: var(--color-text); font-weight: 600; }
+.post h3 {
+  margin: 1.7em 0 .7em;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: -.03em;
+  color: var(--color-text);
+}
+.post ul { margin: 0 0 1em; padding-left: 1.1em; list-style: none; }
+.post li { position: relative; margin: 0 0 .45em; }
+.post li::before {
+  content: "";
+  position: absolute;
+  left: -1.05em; top: .62em;
+  width: 5px; height: 5px;
+  border-radius: 1px;
+  background: var(--color-amber-d);
+}
+.post li p { margin: 0; }
+.post a { color: var(--color-amber); text-decoration-color: color-mix(in srgb, var(--color-amber) 40%, transparent); text-underline-offset: 3px; }
+.post a:hover { text-decoration-color: var(--color-amber); }
+.post img, .post video {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 1.2em 0;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: var(--color-ink);
+}
+.post .yt { margin: 0 0 1.2em; }
+.post .yt a {
+  display: inline-block;
+  padding: 6px 14px;
+  border: 1px solid var(--color-line-2);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-dim);
+  text-decoration: none;
+}
+.post .yt a:hover { border-color: var(--color-amber-d); color: var(--color-amber); }
+
+/* The feed page: one wide column of posts and a narrow one beside it. */
+.feedgrid {
+  display: grid;
+  gap: var(--gap);
+  padding: var(--gap);
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 1100px) {
+  .feedgrid { grid-template-columns: minmax(0, 1fr) minmax(280px, 22rem); align-items: start; }
+  .feedgrid .stick { position: sticky; top: calc(42px + var(--gap)); }
+}
+
+/* ── The band behind a post ───────────────────────────────────────────
+   Steam dresses an announcement with a wide picture and then lays the panel
+   over its foot, and that is worth keeping: it is the one part of a post
+   that says what kind of post it is before a word of it is read.
+
+   The picture is 1920x622 and is always the whole width, so the band is
+   given the same proportion and a ceiling, and the title sits in its lower
+   third over a gradient into the panel's own colour. Without that gradient
+   the type would be sitting on whatever the artwork happens to be doing
+   there, which on the matrix-green ones is small bright text. */
+.hero {
+  position: relative;
+  isolation: isolate;
+  background: #0b0a10;
+}
+.hero img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(0deg, var(--color-panel) 2%, color-mix(in srgb, var(--color-panel) 86%, transparent) 34%,
+      color-mix(in srgb, var(--color-panel) 30%, transparent) 68%, transparent 100%),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-ink) 55%, transparent), transparent 60%);
+}
+.hero-in {
+  position: relative;
+  z-index: 2;
+  padding: clamp(150px, 17vw, 230px) clamp(16px, 2.4vw, 34px) clamp(16px, 1.8vw, 26px);
+}
+
+/* ── A page of prose ──────────────────────────────────────────────────
+   The privacy policy and the about page. Measured for reading rather than
+   for density: this is the one place on the site where somebody is looking
+   for a sentence, and the bench's 12-pixel mono would be an obstacle. */
+.policy-p { margin: 0 0 1em; max-width: 78ch; font-size: 13.5px; line-height: 1.7; color: var(--color-dim); }
+.policy-p:last-child { margin-bottom: 0; }
+.policy-p b, .policy-list b { color: var(--color-text); font-weight: 600; }
+.policy-p a, .policy-list a { color: var(--color-amber); text-underline-offset: 3px; }
+.policy-list { margin: 0; padding: 0; list-style: none; max-width: 78ch; }
+.policy-list li {
+  position: relative;
+  margin: 0 0 .8em;
+  padding-left: 16px;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--color-dim);
+}
+.policy-list li:last-child { margin-bottom: 0; }
+.policy-list li::before {
+  content: "";
+  position: absolute;
+  left: 0; top: .62em;
+  width: 5px; height: 5px;
+  border-radius: 1px;
+  background: var(--color-amber-d);
+}
+/* An anchor the index can reach, offset by the bar that would otherwise sit
+   on top of whatever it just scrolled to. */
+.p[id] { scroll-margin-top: calc(42px + var(--gap)); }
+
+/* The bar takes its width from the row it is in, and the row takes it from
+   the CSSOM. See usePainted in ui.tsx: the policy refuses a style attribute
+   and a server-rendered page is full of them. */
+.week-bar { width: var(--fill, 0%); }

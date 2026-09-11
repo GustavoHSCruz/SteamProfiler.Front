@@ -44,7 +44,8 @@ echo "checking $ROOT"
 # broken three commits ago and never touched since is still broken.
 while IFS= read -r f; do
   step "node --check ${f#./}" node --check "$f"
-done < <(find . -name '*.js' -not -path './.git/*' -not -path './node_modules/*' | sort)
+done < <(find . -name '*.js' -not -path './.git/*' -not -path '*/node_modules/*' \
+              -not -path './next/dist/*' | sort)
 
 while IFS= read -r f; do
   step "py_compile ${f#./}" python3 -m py_compile "$f"
@@ -58,6 +59,23 @@ step "franchise screens are isolated" node tools/check-franchise-exclusives.js
 step "every key a script asks for exists" node tools/check-keys.js
 step "the language boot lands right" node tools/check-language-boot.js
 step "html, keys and routes"    python3 tools/check-html.py
+
+# ── The front that is being built ────────────────────────────────────
+# next/ is the rebuild, and it has a compiler and a prerender where site/ has
+# neither. Both halves are served today, so both halves are gated: a type
+# error or a page that stops rendering to a file is exactly as publishable as
+# a broken site/ script, which is to say not.
+#
+# Skipped when its dependencies are not installed, and said out loud rather
+# than passed quietly - a clean checkout has no node_modules and should still
+# be able to check everything else.
+if [ -d next/node_modules ]; then
+  step "next: types"     npm --prefix next run --silent typecheck
+  step "next: build and prerender" npm --prefix next run --silent build
+  step "next: every page is a file" node tools/check-prerender.js
+else
+  printf '  skip  next/ (run: npm --prefix next ci)\n'
+fi
 
 # ── Is it the file a crawler expects ─────────────────────────────────
 step "robots.txt and llms.txt exist" test -f site/robots.txt -a -f site/llms.txt
