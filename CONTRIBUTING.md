@@ -26,6 +26,12 @@ default upstream: it is a home server, and it rate limits.
 **No dependencies and no build step.** No npm, no bundler, no framework, no
 preprocessor. If something needs a package to work, it does not go in.
 
+This is the rule for the tree you are reading, and the tree you are reading is
+what is served. A rebuild of the front on React and Vite is being weighed
+separately; until it replaces `site/`, a pull request against `site/` is held
+to the line above, and a patch that brings a package in is a patch this
+repository cannot take even if the rebuild later makes the same choice.
+
 **Vanilla everything.** Plain DOM APIs, plain CSS, modern syntax without
 transpiling. `lib.js` has the shared helpers; use `h()` to build elements rather
 than assembling HTML strings.
@@ -38,8 +44,8 @@ obvious alternative was tried and failed.
 codebase and the whole site.
 
 **Copy is not hardcoded.** Every visible string is a key in the dictionary, in
-all three languages. English is the fallback, so `en` is mandatory; a `pt` or
-`ru` that is only a copy of the English is worse than leaving the key out.
+all supported languages. English is the fallback, so `en` is mandatory; a
+translation that only copies the English is worse than leaving the key out.
 
 **The strings are written elsewhere.** `site/dict.<lang>.js` is built from
 [SteamProfiler.i18n](https://github.com/GustavoHSCruz/SteamProfiler.i18n) and
@@ -65,7 +71,7 @@ the accent colour is a page that should have used the generic renderer.
 
 That is everything: syntax on every file, the policy archive, the price blocks,
 the shells against `dict.js`, and the HTML - tag balance, duplicate ids, every
-`data-i18n` key present in all three languages, and every internal link
+`data-i18n` key present in every built dictionary, and every internal link
 pointing at a route that exists. The pre-push hook runs it for you.
 
 The deployment path refuses a file that does not parse, so `node --check` is not
@@ -75,14 +81,14 @@ If you edited any string that a `data-i18n` attribute points at, run
 the English text so that the page says something before the script runs.
 
 Screenshots help a lot for anything visual. Light and dark are not a thing here,
-but three languages are: a layout that fits in English and overflows in Russian
+but several languages are: a layout that fits in English and overflows in Russian
 is a common failure, and Russian is the one to check.
 
 ## Adding a game page
 
 1. A renderer in `game.js`, registered in `LAYOUTS` under the theme string.
 2. A block in `games.css`, scoped to that theme's class.
-3. Its strings in the i18n repository, all three languages, and the rebuilt
+3. Its strings in the i18n repository, all supported languages, and the rebuilt
    `dict.js` here.
 
 Which appid gets which theme is decided by the API, not here, so a renderer for

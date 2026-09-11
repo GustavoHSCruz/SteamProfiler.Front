@@ -264,7 +264,7 @@ function demoResize() {
   if (w === demoWidth) return;
   demoWidth = w;
   clearTimeout(demoTimer);
-  demoTimer = setTimeout(demoDraw, 120);
+  demoTimer = setTimeout(() => { demoDraw(); miniDraw(); }, 120);
 }
 
 /* ── The rail ──────────────────────────────────────────────────────────
@@ -365,18 +365,135 @@ function fxsDraw() {
   }
 }
 
-/* The button under the rail does not go anywhere. It puts the field above into
-   its other mode and hands it the caret, which is the whole of what "look a
-   game up" means on this page. */
-el('rail-go')?.addEventListener('click', () => {
-  setKind('game');
+/* ── The same shape, small ─────────────────────────────────────────────
+   The first tile of "what a profile turns into" claims a library can be drawn
+   to scale, and it is the one of the nine that can show it rather than say
+   it. Same proportions as the stage and the same squarify(), a third of the
+   rectangles, because seventy-two of them in a box that size is a texture and
+   not a map. */
+
+function miniDraw() {
+  const box = el('surf-mini');
+  if (!box) return;
+  const W = box.clientWidth;
+  const H = box.clientHeight;
+  if (!W || !H) return;
+
+  const shape = DEMO_SHAPE.slice(0, 26);
+  const top = shape[0] || 1;
+  box.textContent = '';
+  for (const r of squarify(shape.map((value) => ({ value, item: value })), 0, 0, W, H)) {
+    const node = h('div', { cls: 'cell' });
+    node.style.left = `${(r.x / W) * 100}%`;
+    node.style.top = `${(r.y / H) * 100}%`;
+    node.style.width = `${(r.w / W) * 100}%`;
+    node.style.height = `${(r.h / H) * 100}%`;
+    node.style.background = `rgba(255, 180, 84, ${(0.18 + 0.62 * Math.pow(r.item / top, 0.42)).toFixed(3)})`;
+    box.append(node);
+  }
+}
+
+/* ── The chart the generator makes ────────────────────────────────────
+   Drawn from the same proportions as the stage, for the same reason the stage
+   uses them: a bar chart with names down the side would be somebody's library
+   on the front page of the site. The curve is flattened harder than the map's
+   because a bar is read against its neighbour and a power law drawn honestly
+   is one bar and eight stubs. */
+
+function embDraw() {
+  const box = el('emb-chart');
+  if (!box) return;
+  const bars = DEMO_SHAPE.slice(0, 9);
+  const top = bars[0] || 1;
+  box.textContent = '';
+  for (const value of bars) {
+    const bar = h('i');
+    bar.style.height = `${(14 + 86 * Math.pow(value / top, 0.42)).toFixed(1)}%`;
+    box.append(bar);
+  }
+}
+
+/* ── What it knows right now ──────────────────────────────────────────
+   Four counts out of /api/status, which is the service's own public payload.
+   Nothing about anybody is in it and nothing here is about a profile: how
+   much of Steam has been read in full, how much of the catalogue is known,
+   how many companies are behind it, how many are graded for the Deck.
+
+   The panel stays hidden until they arrive and stays hidden if they never do.
+   A front page whose first tile is four dashes and an error is worse than a
+   front page with three tiles, and nothing else on this page needs the
+   service to be up. */
+
+async function liveDraw() {
+  const panel = el('live');
+  const body = el('live-body');
+  if (!panel || !body) return;
+  let out;
+  try {
+    out = await api('/status');
+  } catch {
+    return;
+  }
+  const known = (out && out.known) || {};
+  const counts = [
+    [known.detailed, 'land.live_games'],
+    [known.catalogue, 'land.live_cat'],
+    [known.houses, 'land.live_houses'],
+    [known.deck && known.deck.rated, 'land.live_deck'],
+  ].filter(([value]) => typeof value === 'number' && value > 0);
+  if (!counts.length) return;
+
+  const grid = h('div', { cls: 'live-grid' });
+  for (const [value, key] of counts) {
+    grid.append(h('div', { cls: 'live-cell' },
+      h('b', { cls: 'live-n', text: num(value) }),
+      h('span', { cls: 'live-k', text: t(key) })));
+  }
+  body.textContent = '';
+  body.append(grid);
+  panel.hidden = false;
+}
+
+/* ── The languages ────────────────────────────────────────────────────
+   Out of coverage.js, which the strings repository writes beside the
+   dictionaries. A file and not a request: once English has been merged
+   underneath a language, the dictionary that ships can no longer say which
+   half of it was translated, so the count has to come from where the merge
+   happened. */
+
+function ecoDraw() {
+  const box = el('eco-langs');
+  if (!box || typeof COVERAGE === 'undefined') return;
+  const langs = COVERAGE.languages || [];
+  if (!langs.length) return;
+
+  put(box, h('b', { text: t('land.eco_langs', { n: num(COVERAGE.keys), k: langs.length }) }));
+  for (const lang of langs) {
+    const pct = COVERAGE.keys ? Math.round((lang.done / COVERAGE.keys) * 100) : 0;
+    put(box, txt(' · '), txt(`${lang.code.toUpperCase()} `),
+        h('span', { cls: 'pct', text: `${pct}%` }));
+  }
+}
+
+/* The two buttons under a paragraph do not go anywhere. They put the field at
+   the top into the mode that paragraph was about and hand it the caret, which
+   is the whole of what "look a game up" and "look a profile up" mean on a page
+   whose only address bar is that field. */
+function intoField(next) {
+  setKind(next);
   el('find')?.scrollIntoView({ block: 'center' });
   input.focus();
-});
+}
+el('rail-go')?.addEventListener('click', () => intoField('game'));
+el('emb-go')?.addEventListener('click', () => intoField('profile'));
 
 demoDraw();
+miniDraw();
+embDraw();
 railDraw();
 fxsDraw();
+ecoDraw();
+liveDraw();
 demoWidth = el('demo-map')?.clientWidth || 0;
 addEventListener('resize', demoResize);
 

@@ -9,7 +9,7 @@
      page has already been told no, so the page costs the server one response
      and nothing else: styles inline, no script, no webfont, and an empty data:
      icon because a browser with no <link rel=icon> goes and asks for
-     /favicon.ico on its own. All three languages at once, because there is no
+     /favicon.ico on its own. All supported languages at once, because there is no
      script here to pick one and the reader is not being asked to click.
 
      How long the ban lasts is deliberately not written anywhere on this page,
@@ -104,7 +104,7 @@
 <main>
   <p class="code">403 / banned</p>
   <h1>Banned</h1>
-  <p class="lede">Banido &middot; Забанен</p>
+  <p class="lede">Banido &middot; Забанен &middot; 已封禁 &middot; 已封鎖</p>
 
   <blockquote>
     <p>&ldquo;Ah shit, here we go again.&rdquo;</p>
@@ -140,11 +140,27 @@
     траву.</p>
   </section>
 
+  <section lang="zh-CN">
+    <h2>简体中文</h2>
+    <p>您试图访问一个本不该请求的页面。以为能找到什么？这是您的免费封禁。</p>
+    <p>这项服务由一个人在一台机器上运行，而且他对此没有多少耐心。</p>
+    <p class="last">这是一个服务社区的网站。请出门走走。</p>
+  </section>
+
+  <section lang="zh-TW">
+    <h2>繁體中文</h2>
+    <p>您試圖存取一個本不該請求的頁面。以為能找到什麼？這是您的免費封鎖。</p>
+    <p>這項服務由一個人在一台機器上運行，而且他對此沒有多少耐心。</p>
+    <p class="last">這是一個服務社群的網站。請出門走走。</p>
+  </section>
+
   <div class="appeal">
     <p>If you think this was a mistake, open a ticket.<br>
     Se você acha que isto foi um engano, abra um chamado.<br>
-    Если считаете это ошибкой, отправьте обращение.</p>
-    <a href="/appeal">Support &middot; Suporte &middot; Поддержка</a>
+    Если считаете это ошибкой, отправьте обращение.<br>
+    如果您认为这是误判，请提交工单。<br>
+    如果您認為這是誤判，請提交支援單。</p>
+    <a href="/appeal">Support &middot; Suporte &middot; Поддержка &middot; 支持 &middot; 支援</a>
   </div>
 
   <footer>steamprofiler.org</footer>

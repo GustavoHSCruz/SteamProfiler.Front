@@ -29,7 +29,10 @@ const GITHUB = 'https://github.com/GustavoHSCruz/SteamProfiler.Front/commit/';
  *  summaries and is small enough for /privacy to load; the text lives apart in
  *  POLICY_TEXT, because it grows by 41 strings in three languages every time
  *  the policy is touched and only this page ever reads it. */
-const textOf = (rev, lang) => (POLICY_TEXT[rev.version] || {})[lang] || {};
+const textOf = (rev, lang) => {
+  const texts = POLICY_TEXT[rev.version] || {};
+  return texts[lang] || texts.en || {};
+};
 
 /* ── The diff ──────────────────────────────────────────────────────── */
 

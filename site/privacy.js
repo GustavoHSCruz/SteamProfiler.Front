@@ -1,4 +1,4 @@
-/* steamprofiler.org - the privacy page. Static text in three languages, so
+/* steamprofiler.org - the privacy page. Static translated text, so
    most of this is filling it in and hanging the usual chrome off the page.
 
    The one live thing is the date. It is read out of POLICY_LOG rather than

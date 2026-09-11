@@ -1,7 +1,14 @@
-/* steamprofiler.org - front page.
-   The hero is not a headline over a photo, it is the library itself: 435 games
-   drawn to scale, one rectangle each, area proportional to hours. The headline
-   sits over it as a floating window on a tiled desktop. */
+/* steamprofiler.org - the dashboard and the front page, in that order.
+
+   Everything above the Landing heading belongs to /u/<profile>: the stage a
+   real library is drawn on, the bento of panels under it, the badges, the
+   ranked table, the years, the versus pages. Everything from Landing down is
+   the front page, which is three tiles and six bands and shares only the
+   treemap cell with the dashboard.
+
+   games.css and franchises.css own their own layouts; style.css owns the
+   tokens, the chrome and the panel primitive both halves of this file are
+   built out of. */
 
 /* ── Stage ────────────────────────────────────────────────────────── */
 
@@ -518,64 +525,110 @@ a.badge:hover, a.badge:focus-visible {
 }
 
 /* ── Landing ──────────────────────────────────────────────────────────
-   Four bands, and each one is a thing rather than a claim about one. The
-   stage is the library itself with the field floating on it. The rail is the
-   covers of the games that have a page, which is what "a page built out of
-   that game's own interface" means. The cards are the sub-pages, each linking
-   to the example profile's own. The three promises stay last, where they were,
-   because they are what somebody scrolls to the bottom to check.
+   The front page, rebuilt around what the project actually is now.
 
-   The grid behind all of it is the same one the dashboard sits on: a tiling
-   workspace, 40px, barely there. */
+   What was here before was one screen and four bands under it, and the four
+   bands were the same shape: a heading, a paragraph, a pill. It described a
+   site with five sub-pages and one repository. There are nine sub-pages and
+   five repositories, and none of the four that were added had a way in from
+   the front door.
+
+   Two rules hold the page together.
+
+   The first is that the workspace is the layout and not a decoration on it.
+   Panels, gaps, rounded corners, a mono title bar on each, the compositor's
+   focus ring on the one being pointed at: that is `.panel` in style.css, and
+   the stage here is three of them tiled rather than a picture with a window
+   floating over it. Nothing on this page overlaps anything else.
+
+   The second is that amber is load-bearing and therefore rationed. It marks
+   the section you are in, the figures the service reports, the button that
+   performs the lookup, and the rectangles. Everything else is the violet
+   black and two greys, which is what leaves the amber able to mean something.
+   The old first screen was ninety per cent amber and by the bottom of it the
+   colour had stopped saying anything at all. */
 
 .land {
   padding: 0 0 clamp(40px, 6vh, 80px);
   background-image:
-    radial-gradient(90% 55% at 50% -8%, #ffb4540f 0%, transparent 62%),
-    repeating-linear-gradient(0deg, #ffffff05 0 1px, transparent 1px 40px),
-    repeating-linear-gradient(90deg, #ffffff05 0 1px, transparent 1px 40px);
+    radial-gradient(80% 48% at 50% -6%, #ffb4540d 0%, transparent 60%),
+    repeating-linear-gradient(0deg, #ffffff04 0 1px, transparent 1px 40px),
+    repeating-linear-gradient(90deg, #ffffff04 0 1px, transparent 1px 40px);
 }
 
-/* Every band below the stage lines up on the same gutter as the status bar. */
-.rail, .fxs, .turns, .promise { padding-inline: var(--edge); }
+/* ── The workspace ────────────────────────────────────────────────────
+   Three tiles on one screen. The field is tall and on the left because it is
+   the front door and a front door is not a corner of a picture. The shape is
+   beside it, still nobody's. The counts are under the shape, because they are
+   the only part of this screen that is different tomorrow and the eye should
+   reach them last.
 
-/* ── The stage ────────────────────────────────────────────────────────
-   One tile, the height of what is left of the screen under the status bar,
-   holding a map of a real library. The first version of this page put the map
-   in a column next to the headline; this one puts the headline on the map,
-   because a picture with a paragraph beside it is an illustration and a
-   picture with a window on it is a desktop. */
+   Sized to what is left of the viewport under the status bar, and capped, so
+   that a 1440-tall screen does not stretch one form over a metre of panel. */
 
-.land-stage {
-  position: relative;
+.work {
+  display: grid;
+  gap: var(--gap);
   margin: var(--edge);
-  height: clamp(520px, calc(100vh - 42px - 2 * var(--edge) - 30px), 840px);
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: clamp(560px, calc(100vh - 42px - 2 * var(--edge)), 820px);
 }
+.pane-find { grid-column: 1; grid-row: 1 / span 2; }
+.pane-map  { grid-column: 2; grid-row: 1; }
+.pane-live { grid-column: 2; grid-row: 2; }
 
-.land-frame {
-  position: absolute;
-  inset: 0;
-  border-radius: var(--r);
-  overflow: hidden;
-  /* A floor under the cells: they are amber at an opacity that carries how
-     many hours each one holds, so what is behind them is read as part of their
-     colour. Darker than the page, so the tile reads as a screen inside the
-     screen rather than as the page with rectangles on it. */
-  background: #0d0c12;
-  box-shadow: inset 0 0 0 1px var(--line), 0 30px 80px -50px #000;
+/* An element inside the title bar is the title: it inherits the bar's mono,
+   and the tag it is written as is about the outline, never about the look. */
+.pane-label { margin: 0; font: inherit; letter-spacing: inherit; color: inherit; text-transform: inherit; }
+.pane-go {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: none;
+  color: var(--faint);
+  text-decoration: none;
+  white-space: nowrap;
 }
+.pane-go::after { content: " ↗"; }
+.pane-go:hover, .pane-go:focus-visible { color: var(--accent); }
 
-.land-map { position: absolute; inset: 0; }
-/* Nothing is written in these, so the rounding that keeps a labelled cell from
-   crowding its own text is just four notches of the floor showing through at
-   every corner - and at seventy-two cells that reads as a dotted grid rather
-   than as a mosaic. Square-ish, with the floor drawn as a hairline inside each
-   one, which is what makes two neighbours of the same weight two rectangles
+/* The field sits in the middle of its own panel rather than at the top of it.
+   A column of air over a headline is what says this is the first thing on the
+   page, and the panel is tall enough to afford it. */
+.pane-find .panel-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(20px, 2.6vw, 34px);
+}
+.pane-find .display { font-size: clamp(2rem, 3.5vw, 3.1rem); }
+.pane-find .lede {
+  margin: 16px 0 0;
+  max-width: 52ch;
+  font-size: clamp(0.9rem, 1vw, 1.02rem);
+}
+.pane-find .eyebrow { margin-bottom: 14px; }
+
+/* ── The shape ────────────────────────────────────────────────────────
+   Seventy-two proportions, no names, nothing to click. The floor under the
+   cells is darker than the page so the panel reads as a screen inside the
+   screen, and each cell is drawn with a hairline of that floor inside it,
+   which is what keeps two neighbours of the same weight two rectangles
    instead of one blob. */
+
+.pane-frame {
+  position: relative;
+  flex: 1;
+  min-height: 240px;
+  background: #0c0b10;
+}
+.land-map { position: absolute; inset: 0; }
 .land-map .cell {
   padding: 0;
   border-radius: 2px;
-  box-shadow: inset 0 0 0 1px #0d0c12;
+  box-shadow: inset 0 0 0 1px #0c0b10;
   transition: none;
 }
 
@@ -593,47 +646,92 @@ a.badge:hover, a.badge:focus-visible {
   .land-map[data-animate="1"] .cell { animation: none; }
 }
 
-/* ── The window ───────────────────────────────────────────────────────
-   The one element that breaks the tiling, and the only floating thing on the
-   site apart from the dashboard's own. Bottom left, because the map's biggest
-   rectangle is top left and covering the one cell nobody can miss with the one
-   panel nobody can miss is two things fighting for the same corner. */
+/* ── What it knows right now ──────────────────────────────────────────
+   Four counts out of /api/status, and the panel is absent until they arrive:
+   a front page leading with four dashes is worse than a front page with three
+   tiles. Hairlines between the cells instead of borders on them, so the strip
+   reads as one instrument with four dials rather than four small panels
+   inside a panel. */
 
-.land-win {
-  position: absolute;
-  left: clamp(14px, 3vw, 34px);
-  bottom: clamp(14px, 3vw, 34px);
-  z-index: 4;
-  width: min(560px, calc(100% - clamp(28px, 6vw, 68px)));
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(18px) saturate(1.2);
-  border: 1px solid var(--line-2);
-  border-radius: var(--r);
-  box-shadow: 0 28px 70px -22px #000, 0 0 0 1px #00000060;
-  overflow: hidden;
+.pane-live .panel-body { padding: 0; }
+/* Two across, four across when the panel is wide enough for a label like
+   "publishers and developers" to sit on one line. Counted rather than
+   auto-fit, and the rules are on the cells rather than a hairline showing
+   through the gaps: auto-fit measures the longest label and silently drops to
+   three columns, and a four-cell strip in three columns leaves a hole with
+   the gap colour in it. Borders on the cells have no hole to leave, whatever
+   the service turned out to answer with. */
+.live-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-
-/* The title bar, and the mode switch is in it. Two tabs of one window is what
-   "profile or game" actually is - it changes what the whole panel is for, not
-   one setting inside a form, and it was reading as the latter while it sat
-   above the input like a checkbox. */
-.land-win-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 7px 8px 7px 16px;
-  background: #ffffff06;
-  border-bottom: 1px solid var(--line);
+.live-cell {
+  padding: 13px clamp(12px, 1.4vw, 18px) 15px;
+  background: var(--panel);
+  border-top: 1px solid var(--line);
 }
-.find-label {
-  font-family: var(--label);
+.live-cell:nth-child(2n) { border-left: 1px solid var(--line); }
+.live-cell:nth-child(-n+2) { border-top: 0; }
+@media (min-width: 1240px) {
+  .live-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .live-cell, .live-cell:nth-child(2n) { border-top: 0; border-left: 0; }
+  .live-cell + .live-cell { border-left: 1px solid var(--line); }
+}
+.live-n {
+  display: block;
+  font-family: var(--mono);
+  font-size: clamp(1.05rem, 1.5vw, 1.35rem);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--accent);
+}
+.live-k {
+  display: block;
+  margin-top: 5px;
+  font-family: var(--mono);
   font-size: 10px;
-  font-weight: var(--label-w);
-  letter-spacing: var(--label-ls);
-  text-transform: uppercase;
-  color: var(--dim);
+  line-height: 1.45;
+  color: var(--faint);
 }
+
+/* ── The caption under the stage ──────────────────────────────────── */
+
+.land-note {
+  margin: clamp(12px, 1.6vw, 18px) var(--edge) 0;
+  max-width: 76ch;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.75;
+  color: var(--faint);
+}
+.land-note b { color: var(--dim); font-weight: 400; }
+
+/* ── The stage, narrow ────────────────────────────────────────────────
+   Nothing floats here either, so there is nothing to unstack: the three tiles
+   become one column, and the field is first because it is the one thing this
+   page cannot afford to put below the fold. */
+@media (max-width: 940px) {
+  .work {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    min-height: 0;
+  }
+  .pane-find, .pane-map, .pane-live { grid-column: 1; grid-row: auto; }
+  .pane-frame { height: clamp(260px, 40vh, 380px); flex: none; }
+  .pane-find .panel-body { display: block; }
+}
+@media (max-width: 560px) {
+  .panel-bar { flex-wrap: wrap; gap: 8px; }
+  .find-row { flex-direction: column; }
+  .find-go { width: 100%; }
+  .game-results { width: 100%; }
+}
+
+/* ── The field ────────────────────────────────────────────────────────
+   The mode switch lives in the title bar because that is what it is: two tabs
+   of one window. It changes what the whole panel is for, not one setting
+   inside a form, and it read as the latter while it sat above the input. */
+
 .find-kind { display: flex; gap: 3px; padding: 3px; border: 1px solid var(--line); border-radius: 999px; }
 .find-kind-btn {
   padding: 3px 11px;
@@ -642,6 +740,8 @@ a.badge:hover, a.badge:focus-visible {
   background: transparent;
   color: var(--faint);
   font: 11px var(--mono);
+  text-transform: none;
+  letter-spacing: 0;
   cursor: pointer;
   transition: color 140ms ease;
 }
@@ -649,24 +749,15 @@ a.badge:hover, a.badge:focus-visible {
 .find-kind-btn[aria-pressed="true"] { background: var(--panel-2); color: var(--text); }
 @media (prefers-reduced-motion: reduce) { .find-kind-btn { transition: none; } }
 
-.land-win-body { padding: clamp(18px, 2.4vw, 28px); }
-.land-win-body .eyebrow { margin-top: 0; }
-.land-win .display { font-size: clamp(1.9rem, 3.4vw, 2.9rem); }
-.land-win .lede {
-  margin: 14px 0 0;
-  max-width: none;
-  font-size: clamp(0.9rem, 1vw, 1rem);
-}
-
 .find { margin: 0; }
-.find-row { position: relative; display: flex; gap: 8px; margin-top: clamp(18px, 2vw, 24px); }
+.find-row { position: relative; display: flex; gap: 8px; margin-top: clamp(18px, 2vw, 26px); }
 .find-input {
   flex: 1;
   min-width: 0;
-  padding: 13px 15px;
+  padding: 14px 16px;
   background: var(--bg);
   border: 1px solid var(--line-2);
-  border-radius: 8px;
+  border-radius: 9px;
   color: var(--text);
   font-family: var(--mono);
   font-size: 14px;
@@ -675,10 +766,10 @@ a.badge:hover, a.badge:focus-visible {
 .find-input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .find-go {
   flex: none;
-  padding: 13px 22px;
+  padding: 14px 24px;
   background: var(--accent);
   border: 0;
-  border-radius: 8px;
+  border-radius: 9px;
   color: #1b1205;
   font-family: var(--sans);
   font-size: 14px;
@@ -689,9 +780,8 @@ a.badge:hover, a.badge:focus-visible {
 .find-go:hover { filter: brightness(1.08); }
 .find-go:disabled { opacity: 0.6; cursor: progress; }
 
-/* In normal flow. The window is bottom-anchored on a wide screen, so adding
-   results grows it upwards without putting the list outside its clipped,
-   rounded frame. On a phone the same list naturally grows down with the page. */
+/* In normal flow rather than absolute: the panel clips its own corners, and a
+   list hanging out of a clipped box is a list with its bottom cut off. */
 .game-results {
   width: 100%;
   max-height: min(260px, 38vh);
@@ -699,7 +789,7 @@ a.badge:hover, a.badge:focus-visible {
   margin: 5px 0 0;
   padding: 5px;
   list-style: none;
-  background: var(--panel);
+  background: var(--panel-2);
   border: 1px solid var(--line-2);
   border-radius: 9px;
   box-shadow: 0 18px 36px #0006;
@@ -714,7 +804,7 @@ a.badge:hover, a.badge:focus-visible {
   color: var(--dim);
   text-decoration: none;
 }
-.game-result a:hover, .game-result a[aria-selected="true"], .game-result a:focus-visible { background: var(--panel-2); color: var(--text); outline: none; }
+.game-result a:hover, .game-result a[aria-selected="true"], .game-result a:focus-visible { background: var(--bg); color: var(--text); outline: none; }
 .game-result small { flex: none; color: var(--faint); font: 10px var(--mono); }
 
 .find-help {
@@ -738,12 +828,12 @@ a.badge:hover, a.badge:focus-visible {
 }
 
 /* ── What you looked up before ─────────────────────────────────────────
-   Inside the window, under the field, because it is a shortcut into the field
+   Inside the panel, under the field, because it is a shortcut into the field
    rather than a section of the page. Mono and quiet: these are handles, and a
    handle is a string somebody typed, not a title. */
 .recent {
-  margin: 16px 0 0;
-  padding-top: 14px;
+  margin: 18px 0 0;
+  padding-top: 15px;
   border-top: 1px solid var(--line);
   display: flex;
   flex-wrap: wrap;
@@ -802,97 +892,168 @@ a.badge:hover, a.badge:focus-visible {
 }
 .recent-clear:hover, .recent-clear:focus-visible { color: var(--dim); }
 
-/* ── The caption ──────────────────────────────────────────────────────
-   One line, and it is about the drawing rather than about whose drawing it is.
-   There was a block here - a label, a paragraph, three headline-sized figures
-   and a link to the profile behind them - and what it added up to was the
-   front page of the site advertising one person's account. */
+/* ── The bands ────────────────────────────────────────────────────────
+   Everything under the stage is one of these, and they are all built the same
+   way so that the differences between them are the content and not the
+   furniture: a mono line, a display heading, then the thing itself.
 
-.land-note {
-  margin: clamp(12px, 1.6vw, 18px) var(--edge) 0;
-  max-width: 76ch;
+   The mono line comes first and carries the only amber in the heading: a
+   small square, the same one the wordmark wears. It is how you know which
+   band you are in when the heading has scrolled past. */
+
+.band {
+  padding-inline: var(--edge);
+  padding-block: clamp(38px, 6vh, 72px);
+  border-top: 1px solid var(--line);
+}
+.band:first-of-type { border-top: 0; }
+.band-eyebrow {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 14px;
+  max-width: 74ch;
   font-family: var(--mono);
   font-size: 11.5px;
-  line-height: 1.75;
+  line-height: 1.6;
   color: var(--faint);
 }
-.land-note b { color: var(--dim); font-weight: 400; }
-
-/* ── The stage, on a phone ────────────────────────────────────────────
-   Nothing floats. The window stops being a window and becomes the top of the
-   page, and the map follows it - reversed in the flex, so the field is the
-   first thing under the status bar and the picture is what you scroll into.
-   The other way round put the search below the fold, which is the one thing
-   this page cannot afford to do. */
-@media (max-width: 860px) {
-  .land-stage {
-    display: flex;
-    flex-direction: column-reverse;
-    gap: var(--gap);
-    height: auto;
-  }
-  .land-frame { position: relative; height: clamp(300px, 46vh, 420px); }
-  .land-win {
-    position: static;
-    width: auto;
-    backdrop-filter: none;
-    background: var(--panel);
-    box-shadow: none;
-  }
+.band-eyebrow::before {
+  content: "";
+  flex: none;
+  width: 8px; height: 8px;
+  border-radius: 2px;
+  background: var(--accent);
+  transform: translateY(-1px);
 }
-@media (max-width: 560px) {
-  .land-win-bar { flex-wrap: wrap; gap: 8px; padding-right: 14px; }
-  .find-row { flex-direction: column; }
-  .find-go { width: 100%; }
-  .game-results { width: 100%; }
-  .rail-card { width: 186px; }
-}
-
-/* ── The rail ─────────────────────────────────────────────────────────
-   Covers, moving, because a still row of thirty-eight boxes is a grid nobody
-   reads and a moving one is a shelf. It carries no information the paragraph
-   above it does not: anybody who cannot see it, or who asked for less motion,
-   has lost a decoration and not a fact.
-
-   Edge to edge on purpose. It is the one band that is not an argument, and
-   letting it run past the gutter is what says so. */
-
-.rail {
-  padding-block: clamp(36px, 6vh, 66px);
-  border-block: 1px solid var(--line);
-  background: color-mix(in srgb, var(--panel) 55%, transparent);
-}
-.rail-copy { max-width: 68ch; }
-.rail-head {
+.band-head {
   margin: 0;
+  max-width: 26ch;
   font-family: var(--display);
   font-weight: var(--display-w);
-  font-size: clamp(1.5rem, 3.2vw, 2.2rem);
+  font-size: clamp(1.6rem, 3.4vw, 2.4rem);
   letter-spacing: var(--display-ls);
   line-height: 1.02;
+  text-wrap: balance;
 }
-.rail-body {
+.band-body {
   margin: 14px 0 0;
+  max-width: 68ch;
   font-size: 14.5px;
   line-height: 1.65;
   color: var(--dim);
 }
-.rail-body b { color: var(--text); font-weight: 600; }
-/* A button and not a link: it does not go anywhere, it moves the field above
-   into its other mode and puts the caret in it. */
-.rail-go {
+.band-body b { color: var(--text); font-weight: 600; }
+
+/* One control, in two tags. The franchise doors are links and the two that
+   only move the field above are buttons, and a reader should not be able to
+   tell which is which by looking: what they have in common is that they are
+   the way out of the paragraph they sit under. */
+.pill {
+  display: inline-block;
   margin: 16px 0 0;
-  padding: 8px 15px;
+  padding: 8px 16px;
   background: transparent;
   border: 1px solid var(--line-2);
   border-radius: 999px;
   color: var(--dim);
   font-family: var(--mono);
   font-size: 12px;
+  text-decoration: none;
   cursor: pointer;
   transition: border-color 140ms ease, color 140ms ease;
 }
-.rail-go:hover, .rail-go:focus-visible { border-color: var(--accent-d); color: var(--text); }
+.pill:hover, .pill:focus-visible { border-color: var(--accent); color: var(--accent); }
+@media (prefers-reduced-motion: reduce) { .pill { transition: none; } }
+
+/* ── What one lookup opens ────────────────────────────────────────────
+   Nine tiles where there were five. The first one is twice as wide and has
+   the treemap drawn small inside it, because "the whole library, to scale" is
+   the one of the nine that can show what it means in the space a tile has. */
+
+.surf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(258px, 1fr));
+  gap: var(--gap);
+  margin: clamp(22px, 2.8vw, 32px) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.surf {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: var(--pad);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  transition: border-color 160ms ease;
+}
+.surf:hover { border-color: var(--line-2); }
+@media (prefers-reduced-motion: reduce) { .surf { transition: none; } }
+.surf-wide { grid-column: span 2; }
+@media (max-width: 620px) { .surf-wide { grid-column: span 1; } }
+
+.surf-n {
+  position: absolute;
+  top: var(--pad);
+  right: var(--pad);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  color: var(--line-2);
+}
+.surf:hover .surf-n { color: var(--accent-d); }
+/* The wide tile's number sits over the drawing rather than over the panel, and
+   amber under grey at 10px is a number nobody can read. It gets the page's own
+   ground behind it, which is the smallest thing that fixes it. */
+.surf-wide .surf-n {
+  z-index: 2;
+  top: calc(var(--pad) + 7px);
+  right: calc(var(--pad) + 7px);
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
+  color: var(--dim);
+}
+.surf-wide:hover .surf-n { color: var(--accent); }
+.surf-h {
+  max-width: 24ch;
+  padding-right: 28px;
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--text);
+}
+.surf-b {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--dim);
+}
+/* The same drawing as the stage, a twelfth of the size and with a third of
+   the rectangles, so the tile that claims a library can be drawn to scale is
+   drawn to scale instead of saying so. */
+.surf-mini {
+  position: relative;
+  aspect-ratio: 16 / 5;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #0c0b10;
+}
+.surf-mini .cell { padding: 0; border-radius: 1px; box-shadow: inset 0 0 0 1px #0c0b10; transition: none; }
+
+/* ── The rail ─────────────────────────────────────────────────────────
+   Covers, moving, because a still row of thirty-eight boxes is a grid nobody
+   reads and a moving one is a shelf. It carries no information the paragraph
+   above it does not: anybody who cannot see it, or who asked for less motion,
+   has lost a decoration and not a fact. */
+
+.rail { background: color-mix(in srgb, var(--panel) 45%, transparent); }
+.rail-copy { max-width: 68ch; }
 
 .rail-track {
   margin: clamp(24px, 3vw, 34px) calc(var(--edge) * -1) 0;
@@ -946,7 +1107,7 @@ a.badge:hover, a.badge:focus-visible {
   object-fit: cover;
   /* Held back a little, so a row of two dozen storefront capsules sits behind
      the page instead of in front of it, and released on the one being pointed
-     at - which is the whole of the hover affordance here. */
+     at, which is the whole of the hover affordance here. */
   opacity: 0.7;
   transition: opacity 160ms ease;
 }
@@ -970,75 +1131,211 @@ a.badge:hover, a.badge:focus-visible {
   white-space: nowrap;
 }
 .rail-card:hover .rail-name, .rail-card:focus-visible .rail-name { color: var(--text); }
+@media (max-width: 560px) { .rail-card { width: 186px; } }
 
-/* ── What one lookup opens ────────────────────────────────────────────
-   Five cards, five real addresses. Every one of them points at the example
-   profile's own page rather than at a screenshot of it, which is the only
-   version of this section worth having. */
+/* ── The doors that need nobody ───────────────────────────────────── */
 
-.turns { padding-block: clamp(40px, 6vh, 72px) 0; }
-.turns-head {
+.open-copy {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: clamp(20px, 3vw, 46px);
+  margin-top: clamp(20px, 2.6vw, 30px);
+}
+.open-half { min-width: 0; }
+.open-h {
   margin: 0;
-  font-family: var(--display);
-  font-weight: var(--display-w);
-  font-size: clamp(1.5rem, 3.2vw, 2.2rem);
-  letter-spacing: var(--display-ls);
-  line-height: 1.02;
+  font-family: var(--sans);
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--text);
 }
-.turns-lede {
-  margin: 12px 0 0;
-  max-width: 64ch;
-  font-size: 14.5px;
-  line-height: 1.65;
-  color: var(--dim);
-}
-.turns-grid {
+.open-doors { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; }
+
+/* ── The two that are not pages here ──────────────────────────────────
+   Both drawn rather than screenshotted, and both wordless. A screenshot goes
+   stale in a language nobody rereads; a drawing is corrected in a diff. What
+   these two say is their arrangement, and the paragraph beside each says the
+   rest. */
+
+.take-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   gap: var(--gap);
-  margin: clamp(20px, 2.6vw, 30px) 0 0;
-  padding: 0;
-  list-style: none;
+  margin-top: clamp(22px, 2.8vw, 32px);
 }
-.turn {
-  position: relative;
-  display: grid;
-  align-content: start;
-  gap: 8px;
+.take-card {
+  display: flex;
+  flex-direction: column;
   padding: var(--pad);
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: var(--r);
 }
-.turn-n {
-  position: absolute;
-  top: var(--pad);
-  right: var(--pad);
+.take-card .band-body { flex: none; }
+.take-card .pill { align-self: flex-start; }
+
+.mock {
+  margin: clamp(20px, 2.4vw, 28px) 0 0;
+  padding: 12px;
+  background: #0c0b10;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+/* The extension, as an arrangement: somebody else's buy box, and our strip
+   sitting under it. Every width here is a rule and not a style attribute,
+   because the site is served under a CSP with style-src 'self' and an inline
+   width would arrive as nothing at all. */
+.mock-ext { display: grid; gap: 10px; max-width: 430px; }
+.mock-store {
+  display: grid;
+  gap: 7px;
+  padding: 11px 12px 12px;
+  background: var(--panel-2);
+  border-radius: 7px;
+}
+.mock-line { height: 6px; border-radius: 3px; background: var(--line-2); }
+.mock-line-a { width: 64%; }
+.mock-line-b { width: 38%; }
+.mock-buy { width: 74px; height: 16px; border-radius: 4px; background: var(--line-2); opacity: 0.75; }
+.mock-panel {
+  display: grid;
+  gap: 9px;
+  padding: 11px 12px 12px;
+  border: 1px solid var(--line-2);
+  border-left: 2px solid var(--accent);
+  border-radius: 7px;
+  background: var(--panel);
+}
+.mock-bar { display: flex; align-items: center; gap: 8px; }
+.mock-bar i:first-child { flex: none; width: 8px; height: 8px; border-radius: 2px; background: var(--accent); }
+.mock-bar i:last-child { width: 86px; height: 5px; border-radius: 3px; background: var(--line-2); }
+.mock-rows { display: grid; gap: 7px; }
+.mock-row { display: flex; align-items: center; gap: 10px; }
+.mock-k { flex: none; width: 44px; height: 5px; border-radius: 3px; background: var(--line-2); }
+.mock-meter { flex: 1; height: 7px; border-radius: 4px; background: var(--bar-rest); overflow: hidden; }
+.mock-meter i { display: block; height: 100%; background: var(--accent); opacity: 0.7; }
+.mock-row:nth-child(1) .mock-meter i { width: 78%; }
+.mock-row:nth-child(2) .mock-meter i { width: 54%; }
+.mock-row:nth-child(3) .mock-meter i { width: 31%; }
+.mock-tags { display: flex; gap: 6px; }
+.mock-tags span { height: 14px; border-radius: 999px; border: 1px solid var(--line-2); }
+.mock-tags span:nth-child(1) { width: 62px; }
+.mock-tags span:nth-child(2) { width: 44px; }
+.mock-tags span:nth-child(3) { width: 78px; }
+
+/* The generator's bar chart, from the stage's own proportions, so that the
+   two pictures on this page are the same library and the reader is not shown
+   two different fictions. */
+.mock-emb { margin-inline: 0; }
+.mock-file {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 12px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--line);
   font-family: var(--mono);
   font-size: 10.5px;
-  letter-spacing: 0.14em;
-  color: var(--line-2);
+  color: var(--faint);
 }
-.turn-h {
-  max-width: 22ch;
+.mock-file i { width: 7px; height: 7px; border-radius: 2px; background: var(--line-2); }
+.mock-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 104px;
+}
+.mock-chart i {
+  flex: 1;
+  min-height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: linear-gradient(180deg, var(--accent), var(--accent-d));
+}
+.mock-cap {
+  margin: 12px 0 0;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  line-height: 1.6;
+  color: var(--faint);
+}
+
+/* ── The parts ────────────────────────────────────────────────────────
+   Five cards, and the fifth of them is the one this page never had: the
+   repositories are the answer to "what is this, actually", and until now the
+   only one a reader could reach from here was the one they were reading. */
+
+.eco-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: var(--gap);
+  margin: clamp(22px, 2.8vw, 32px) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.eco-card {
+  display: grid;
+  align-content: start;
+  gap: 9px;
+  padding: var(--pad);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  border-top: 2px solid var(--line-2);
+  transition: border-top-color 160ms ease;
+}
+.eco-card:hover { border-top-color: var(--accent); }
+@media (prefers-reduced-motion: reduce) { .eco-card { transition: none; } }
+.eco-h {
   font-family: var(--sans);
   font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.02em;
-  line-height: 1.25;
   color: var(--text);
 }
-.turn-b {
-  font-size: 13.5px;
-  line-height: 1.6;
-  color: var(--dim);
+.eco-b { font-size: 13px; line-height: 1.6; color: var(--dim); }
+.eco-go {
+  margin-top: 2px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--faint);
+  text-decoration: none;
 }
+.eco-go:hover, .eco-go:focus-visible { color: var(--accent); }
+
+.eco-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px 26px;
+  margin-top: clamp(18px, 2vw, 24px);
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.eco-langs {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--faint);
+}
+.eco-langs b { color: var(--dim); font-weight: 400; }
+.eco-langs .pct { color: var(--accent); }
+.eco-links { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 0; }
+.eco-links a {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--dim);
+  text-decoration-color: var(--line-2);
+}
+.eco-links a:hover { color: var(--accent); }
 
 /* ── The three that do not change ─────────────────────────────────────
-   Last, and still the plainest thing on the page. They are checked rather than
-   read, and something styled to be believed is the wrong shape for that. */
+   Last, and still the plainest thing on the page. They are checked rather
+   than read, and something styled to be believed is the wrong shape for
+   that. */
 
-.promise { padding-block: clamp(34px, 5vh, 60px) 0; }
 .promise-head {
   margin: 0;
   font-family: var(--label);
@@ -1066,14 +1363,6 @@ a.badge:hover, a.badge:focus-visible {
 }
 .land-notes b { color: var(--dim); font-weight: 400; }
 
-@media (max-width: 560px) {
-  .find-head { align-items: flex-start; }
-  .find-row { flex-direction: column; }
-  .find-go { width: 100%; }
-  .game-results { width: 100%; }
-  .rail-card { width: 186px; }
-  .demo-frame { height: clamp(260px, 44vh, 360px); }
-}
 /* A game without its own layout says so, quietly. */
 .pg-line[data-plain="1"] { color: var(--faint); opacity: 0.75; }
 
@@ -1706,45 +1995,6 @@ a.seat:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
    attribute anyway. Everything else here is the site's own palette: this is
    the front page, and ten franchises taking it over would be ten pages
    arguing at once. */
-
-.fxs {
-  padding-block: clamp(36px, 6vh, 66px);
-  border-bottom: 1px solid var(--line);
-}
-.fxs-copy { max-width: 68ch; }
-.fxs-head {
-  margin: 0;
-  font-family: var(--display);
-  font-weight: var(--display-w);
-  font-size: clamp(1.5rem, 3.2vw, 2.2rem);
-  letter-spacing: var(--display-ls);
-  line-height: 1.02;
-}
-.fxs-body {
-  margin: 14px 0 0;
-  font-size: 14.5px;
-  line-height: 1.65;
-  color: var(--dim);
-}
-.fxs-body b { color: var(--text); font-weight: 600; }
-.fxs-go {
-  display: inline-block;
-  margin: 16px 0 0;
-  padding: 8px 15px;
-  border: 1px solid var(--line-2);
-  border-radius: 999px;
-  color: var(--dim);
-  font-family: var(--mono);
-  font-size: 12px;
-  text-decoration: none;
-  transition: border-color 140ms ease, color 140ms ease;
-}
-.fxs-go:hover, .fxs-go:focus-visible { border-color: var(--accent); color: var(--accent); }
-
-/* The houses have two doors rather than one, so the pair needs a gap the
-   single link never did. */
-.hxs { border-bottom: 1px solid var(--line); }
-.hxs-doors { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; }
 
 .fxs-grid {
   display: grid;

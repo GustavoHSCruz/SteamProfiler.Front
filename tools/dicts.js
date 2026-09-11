@@ -20,7 +20,7 @@ const SITE = path.join(__dirname, '..', 'site');
 /** The languages there are, read off disk so that a new one needs no line. */
 function languages() {
   return fs.readdirSync(SITE)
-    .map((f) => /^dict\.([a-z]{2})\.js$/.exec(f))
+    .map((f) => /^dict\.([a-z]{2}(?:-[a-z]{2})?)\.js$/.exec(f))
     .filter(Boolean)
     .map((m) => m[1])
     .sort((a, b) => (a === 'en' ? -1 : b === 'en' ? 1 : a.localeCompare(b)));

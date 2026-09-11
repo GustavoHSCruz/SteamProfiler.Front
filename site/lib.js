@@ -5,7 +5,7 @@
 const num = (n, d = 0) =>
   n == null ? '-' : n.toLocaleString(locale(), { minimumFractionDigits: d, maximumFractionDigits: d });
 
-/* Dates go through Intl rather than a hardcoded month table, so all three
+/* Dates go through Intl rather than a hardcoded month table, so every
    languages get their own month names and their own word order for free. */
 const SHORT_FMT = new Intl.DateTimeFormat(locale(), { day: 'numeric', month: 'short', year: 'numeric' });
 const LONG_FMT = new Intl.DateTimeFormat(locale(), { day: 'numeric', month: 'long', year: 'numeric' });
@@ -54,13 +54,10 @@ const rarity = (r) => (r == null ? '-' : r > 0 && r < 0.05 ? '<0,1%' : `${num(r,
 /** Hours, readable at both ends of the scale: a game with 1.4 h should not read
  *  "1 h", and 5.901 h has no business showing a decimal. */
 const hrs = (n) => (n == null ? '-' : n < 10 ? num(n, 1) : num(n, 0));
-/** "1 hora" / "1,4 horas" / "5.901 horas". */
-const hoursText = (n) => `${hrs(n)} ${n === 1 ? 'hora' : 'horas'}`;
+/** A localized hour count: "1 hour", "1,4 horas", "5,901 hours". */
+const hoursText = (n) => t('unit.hours', { n: hrs(n), raw: n });
 
-/** Money, in the currency the store quoted rather than in one assumed here.
- *  The prices are the Brazilian store's, so a reader in another language still
- *  sees BRL - that is the number that is true, and relabelling it would not
- *  make it theirs. */
+/** Money, in the currency the selected regional store actually quoted. */
 const CASH = {};
 function cash(cents, currency) {
   if (cents == null) return '-';

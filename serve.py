@@ -61,6 +61,16 @@ REDIRECTS = {'/apoiar': '/support', '/recados': '/feedback'}
 DICT_URL = '/dict.js'
 DICTS = sorted(path.name.split('.')[1] for path in SITE.glob('dict.*.js'))
 
+
+def language_code(tag):
+    """An Accept-Language tag in the same internal form i18n.js chooses."""
+    clean = (tag or '').strip().split(';')[0].lower().replace('_', '-')
+    if clean.startswith('zh-hant') or re.match(r'^zh-(tw|hk|mo)(?:-|$)', clean):
+        return 'zh-tw'
+    if clean == 'zh' or clean.startswith('zh-'):
+        return 'zh-cn'
+    return clean[:2]
+
 # Two segments, the second optional: a post is addressed by its id, and what
 # follows is its own title in whichever language the link was made in. Same
 # pattern as the live nginx, which is the point of this file.
@@ -191,7 +201,7 @@ class Handler(SimpleHTTPRequestHandler):
             if name == 'sp-lang' and value in DICTS:
                 return value
         for tag in (self.headers.get('Accept-Language') or '').split(','):
-            code = tag.strip().split(';')[0].lower()[:2]
+            code = language_code(tag)
             if code in DICTS:
                 return code
         return 'en'

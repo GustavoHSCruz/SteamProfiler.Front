@@ -9,7 +9,7 @@ The three checks that exist because each one already shipped once:
                    in the reader's browser and the fresh HTML asked it for a
                    string it did not have yet. Nothing about that is visible
                    from either file on its own: it is visible from asking
-                   whether every key the markup names exists in all three
+                   whether every key the markup names exists in every
                    languages, which is what this does. A key present in `en`
                    and missing from `ru` is the same bug on a slower fuse.
 
@@ -47,7 +47,7 @@ SITE = ROOT / "site"
 sys.path.insert(0, str(ROOT))
 import serve  # noqa: E402  - for PAGES and REDIRECTS, the live URL map
 
-LANGS = ("en", "pt", "ru")
+LANGS = ("en", "pt", "ru", "zh-cn", "zh-tw")
 
 # Elements that never close. Left here rather than imported from anywhere
 # because the list is fixed by HTML itself and has not changed in a decade.
@@ -237,7 +237,7 @@ def main():
         print(f"\n{len(fail)} problem(s) in {len(files)} shells", file=sys.stderr)
         return 1
     print(f"html ok: {len(files)} shells, "
-          f"{sum(1 for _ in files)} titles, keys present in all three languages")
+          f"{sum(1 for _ in files)} titles, keys present in all {len(LANGS)} languages")
     return 0
 
 

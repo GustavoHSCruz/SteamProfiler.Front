@@ -62,7 +62,7 @@
       "@id": "https://steamprofiler.org/#site",
       "url": "https://steamprofiler.org/",
       "name": "steamprofiler.org",
-      "inLanguage": ["en", "pt-BR", "ru"],
+      "inLanguage": ["en", "pt-BR", "ru", "zh-CN", "zh-TW"],
       "description": "One rectangle per game, sized by the hours you put into it. Paste any public Steam profile and see the whole library drawn to scale.",
       "author": { "@id": "https://steamprofiler.org/#author" }
     },
@@ -186,96 +186,180 @@
 
 <main class="land">
 
-<!-- ── The stage ─────────────────────────────────────────────────────────
-     The first screen is the shape of a Steam library, and the thing you came
-     here to type in floats over it as a window on a tiled desktop, which is
-     the shape the rest of this site is already built in.
+<!-- ── The workspace ─────────────────────────────────────────────────────
+     Fourth attempt at this screen, and the first one that is not a picture
+     with something laid over it. The first put a headline in a column beside
+     a map. The second made the map the whole screen and drew a real profile
+     on it, which turned the front of the site into one person's game names.
+     The third kept the map as the screen, with nobody's proportions on it,
+     and floated the field over the bottom-left corner.
 
-     Third attempt at this page. The first put a headline and a field in a
-     column on the left and hung a map on the right, which is the old front
-     page with an exhibit added to it. The second made the map the screen - and
-     the map was a real profile, so the front of the site became one person's
-     game names and one person's hour counts at full size, which is nobody's
-     business but that person's.
+     What was wrong with the third is what this one fixes. At any width worth
+     designing for, that screen was ninety per cent amber rectangles and ten
+     per cent the thing everybody came here to type in, and it said exactly
+     one thing about a service that now has five repositories behind it.
 
-     What is drawn here now is nobody's: seventy-two proportions out of
-     demo.js, no names on them and nothing to click. It says what a library
-     looks like when it is drawn to scale. The one behind a real profile is the
-     page the field leads to, and that is the only place a name belongs. -->
-<section class="land-stage">
-  <div class="land-frame">
-    <!-- Filled by search.js, and decoration in the strict sense: aria-hidden
-         because seventy-two unlabelled rectangles are a picture, and the
-         sentence under the tile is what that picture says. Empty here rather
-         than pre-rendered, because the layout depends on the width this box
-         actually got and percentages written into the file would be right at
-         exactly one size. -->
-    <div class="land-map" id="demo-map" aria-hidden="true"></div>
-  </div>
+     So the stage is tiled, which is what the rest of the site is already
+     drawn as: three panels, no overlap. The field is a panel and gets the
+     room a front door needs. The shape is a panel beside it and stays what it
+     was, nobody's. The third panel is the one that could not exist before -
+     four counts read from the service while the page is being read, which is
+     the only part of this screen that is different tomorrow. -->
+<section class="work">
 
-  <!-- The one element that breaks the tiling, same as on a profile. The mode
-       switch lives in its title bar because that is what it is: two tabs of one
-       window, not a setting inside the form. -->
-  <div class="land-win">
-    <form class="find" id="find" novalidate>
-      <div class="land-win-bar">
-        <label class="find-label" for="q" id="find-label" data-i18n="land.field">steam profile</label>
-        <div class="find-kind" role="group" aria-label="Search type">
-          <button type="button" class="find-kind-btn" data-kind="profile" aria-pressed="true" data-i18n="land.kind_profile">profile</button>
-          <button type="button" class="find-kind-btn" data-kind="game" aria-pressed="false" data-i18n="land.kind_game">game</button>
-        </div>
+  <form class="panel pane-find find" id="find" novalidate>
+    <div class="panel-bar">
+      <label class="pane-label" for="q" id="find-label" data-i18n="land.field">steam profile</label>
+      <div class="find-kind" role="group" aria-label="Search type">
+        <button type="button" class="find-kind-btn" data-kind="profile" aria-pressed="true" data-i18n="land.kind_profile">profile</button>
+        <button type="button" class="find-kind-btn" data-kind="game" aria-pressed="false" data-i18n="land.kind_game">game</button>
       </div>
-      <div class="land-win-body">
-        <p class="eyebrow" data-i18n="land.eyebrow">steam · any public profile</p>
-        <h1 class="display" data-i18n-html="land.h1">Your whole Steam library,<br>drawn to scale.</h1>
-        <p class="lede" data-i18n-html="land.lede">Type in a Steam profile. I read its public library and draw the time: <b>one rectangle per game</b>, area proportional to hours. Every game gets a page of its own, and <b>the most played ones get a themed one</b>.</p>
+    </div>
+    <div class="panel-body">
+      <p class="eyebrow" data-i18n="land.eyebrow">steam · any public profile</p>
+      <h1 class="display" data-i18n-html="land.h1">Your whole Steam library,<br>drawn to scale.</h1>
+      <p class="lede" data-i18n-html="land.lede">Type in a Steam profile. I read its public library and draw the time: <b>one rectangle per game</b>, area proportional to hours. Every game gets a page of its own, and <b>the most played ones get a themed one</b>.</p>
 
-        <div class="find-row">
-          <input class="find-input" id="q" name="q" type="text" autocomplete="off"
-                 spellcheck="false" enterkeyhint="go"
-                 data-i18n-ph="land.placeholder"
-                 aria-describedby="find-help" aria-autocomplete="list"
-                 aria-controls="game-results" aria-expanded="false">
-          <button class="find-go" type="submit" id="find-go" data-i18n="land.go">Look it up</button>
-        </div>
-        <ul class="game-results" id="game-results" role="listbox" hidden></ul>
-        <p class="find-help" id="find-help" data-i18n-html="land.help">A vanity name, a steamID64 or the full URL all work. The profile needs <b>Game details</b> set to public - that is the Steam setting that releases the game list.</p>
-        <p class="find-error" id="find-error" hidden role="alert"></p>
-
-        <!-- What you looked up before, from this browser and nowhere else.
-             Hidden until there is one, because an empty list of your own
-             history is a promise of a feature rather than a feature. The button
-             that clears it is beside it and not in a settings page: a list of
-             names that cannot be taken off the screen where it appears is a
-             list you did not agree to. -->
-        <section class="recent" id="recent" hidden>
-          <h2 class="recent-head" id="recent-head" data-i18n="land.recent">looked up before</h2>
-          <ul class="recent-list" id="recent-list" aria-labelledby="recent-head"></ul>
-          <button class="recent-clear" type="button" id="recent-clear"
-                  data-i18n="land.recent_clear">forget these</button>
-        </section>
+      <div class="find-row">
+        <input class="find-input" id="q" name="q" type="text" autocomplete="off"
+               spellcheck="false" enterkeyhint="go"
+               data-i18n-ph="land.placeholder"
+               aria-describedby="find-help" aria-autocomplete="list"
+               aria-controls="game-results" aria-expanded="false">
+        <button class="find-go" type="submit" id="find-go" data-i18n="land.go">Look it up</button>
       </div>
-    </form>
-  </div>
+      <ul class="game-results" id="game-results" role="listbox" hidden></ul>
+      <p class="find-help" id="find-help" data-i18n-html="land.help">A vanity name, a steamID64 or the full URL all work. The profile needs <b>Game details</b> set to public - that is the Steam setting that releases the game list.</p>
+      <p class="find-error" id="find-error" hidden role="alert"></p>
+
+      <!-- What you looked up before, from this browser and nowhere else.
+           Hidden until there is one, because an empty list of your own
+           history is a promise of a feature rather than a feature. The button
+           that clears it is beside it and not in a settings page: a list of
+           names that cannot be taken off the screen where it appears is a
+           list you did not agree to. -->
+      <section class="recent" id="recent" hidden>
+        <h2 class="recent-head" id="recent-head" data-i18n="land.recent">looked up before</h2>
+        <ul class="recent-list" id="recent-list" aria-labelledby="recent-head"></ul>
+        <button class="recent-clear" type="button" id="recent-clear"
+                data-i18n="land.recent_clear">forget these</button>
+      </section>
+    </div>
+  </form>
+
+  <!-- The shape, and it is still nobody's: seventy-two proportions out of
+       demo.js, no names on them and nothing to click. aria-hidden because
+       seventy-two unlabelled rectangles are a picture, and the line under the
+       stage is what that picture says. Empty in the file rather than
+       pre-rendered, because squarify() decides which rectangle sits beside
+       which from the width the panel actually got. -->
+  <section class="panel pane-map">
+    <div class="panel-bar">
+      <h2 class="pane-label" data-i18n="land.stage_map">the shape of a library</h2>
+    </div>
+    <div class="pane-frame">
+      <div class="land-map" id="demo-map" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <!-- Read from /api/status while the page is being read. Four counts and
+       nothing about anybody: how many games have been read in full, how much
+       of the catalogue is known, how many companies are behind it, how many
+       are graded for the Deck. The panel removes itself if the service does
+       not answer, because a front page that leads with four dashes is worse
+       than a front page with three panels instead of four. -->
+  <section class="panel pane-live" id="live" hidden>
+    <div class="panel-bar">
+      <h2 class="pane-label" data-i18n="land.live_head">what it knows right now</h2>
+      <a class="pane-go" href="/status" data-i18n="land.live_link">the whole status</a>
+    </div>
+    <div class="panel-body" id="live-body"></div>
+  </section>
+
 </section>
 
 <!-- What the picture is, in one line. It used to be a block: a heading, a
-     paragraph, three figures the size of the headline and a link to the profile
-     they came from - which turned the top of the site into an advertisement for
-     one person's account. The library is here to show the shape, and the shape
-     is all it is being asked to say. Whose account it is belongs in the footer,
-     where it already is. -->
+     paragraph, three figures the size of the headline and a link to the
+     profile they came from, which turned the top of the site into an
+     advertisement for one person's account. -->
 <p class="land-note" id="land-note" data-i18n-html="land.stage_note">That is the shape of a Steam library drawn to scale: <b>one rectangle per game</b>, area proportional to hours. Type a profile in and the rectangles get names, hours and a page each.</p>
 
+<!-- ── What one lookup opens ────────────────────────────────────────────
+     Nine now, and it used to be five. That is most of what "the front page
+     stopped in time" meant: the cards, the ids, the generator and the versus
+     page were all built after this section was written, and the page went on
+     describing a site with five of them.
+
+     Descriptions and not links, still. Every one of these used to point at a
+     real profile so a reader could go and look, and the only profile there
+     was to point at was the author's: five more links to one person's account
+     on a page that is not about that person. The field above is the link. -->
+<section class="band surf">
+  <p class="band-eyebrow" data-i18n="land.turns_lede">One lookup, and the library comes apart into the pages it was always made of.</p>
+  <h2 class="band-head" data-i18n="land.turns_head">What a profile turns into</h2>
+  <ul class="surf-grid">
+    <li class="surf surf-wide">
+      <span class="surf-n">01</span>
+      <!-- The same treemap as the stage, at a twelfth of the size and with
+           fewer rectangles in it, so the tile that says "the whole library,
+           to scale" is drawn to scale rather than described. Filled by
+           search.js from the same proportions. -->
+      <div class="surf-mini" id="surf-mini" aria-hidden="true"></div>
+      <b class="surf-h" data-i18n="land.c_map_h">The whole library, to scale</b>
+      <span class="surf-b" data-i18n="land.c_map_b">Every game that was ever launched, one rectangle each, area proportional to hours. The long tail folds into one block and says how many it holds.</span>
+    </li>
+    <li class="surf">
+      <span class="surf-n">02</span>
+      <b class="surf-h" data-i18n="land.c_game_h">One game, your record of it</b>
+      <span class="surf-b" data-i18n="land.c_game_b">Achievements ranked by how rare they are, the ones still locked, the year each one was unlocked, and the hours split by the system you played on.</span>
+    </li>
+    <li class="surf">
+      <span class="surf-n">03</span>
+      <b class="surf-h" data-i18n="land.c_year_h">One year of it</b>
+      <span class="surf-b" data-i18n="land.c_year_b">What was put down that year and what was unlocked during it, in the order it happened.</span>
+    </li>
+    <li class="surf">
+      <span class="surf-n">04</span>
+      <b class="surf-h" data-i18n="land.c_pile_h">The pile</b>
+      <span class="surf-b" data-i18n="land.c_pile_b">Everything owned and never launched, searchable, with what it cost. The number nobody asks for and everybody reads twice.</span>
+    </li>
+    <li class="surf">
+      <span class="surf-n">05</span>
+      <b class="surf-h" data-i18n="land.c_cards_h">The badges, and what the rest would cost</b>
+      <span class="surf-b" data-i18n="land.c_cards_b">Every trading-card badge this library has made, the sets it has not, and what one of each missing card goes for on the market today.</span>
+    </li>
+    <li class="surf">
+      <span class="surf-n">06</span>
+      <b class="surf-h" data-i18n="land.c_vs_h">Two libraries at one scale</b>
+      <span class="surf-b" data-i18n="land.c_vs_b">Both maps drawn against the same hour, the games the two have in common, and who put the time in where. Nothing is scored: the numbers are only set beside each other.</span>
+    </li>
+    <li class="surf">
+      <span class="surf-n">07</span>
+      <b class="surf-h" data-i18n="land.c_embed_h">A picture to take away</b>
+      <span class="surf-b" data-i18n="land.c_embed_b">A bar chart, a badge, a banner, a card of this library against another, a full-size Steam artwork. Each one as an address that stays current, or as a file that never changes again.</span>
+    </li>
+    <li class="surf">
+      <span class="surf-n">08</span>
+      <b class="surf-h" data-i18n="land.c_ids_h">Every id the account has</b>
+      <span class="surf-b" data-i18n="land.c_ids_b">SteamID64 in decimal and in hex, STEAM_1 and STEAM_0, the invite code, the FiveM identifier, and the five addresses that all open the same profile. Arithmetic on a number already resolved, not a second request.</span>
+    </li>
+    <li class="surf">
+      <span class="surf-n">09</span>
+      <b class="surf-h" data-i18n="land.c_pub_h">A game with nobody attached</b>
+      <span class="surf-b" data-i18n="land.c_pub_b">The same care, without a profile in it: global achievement rarity, who is playing right now, the review split, the news and the current price.</span>
+    </li>
+  </ul>
+</section>
+
 <!-- ── The rail ──────────────────────────────────────────────────────────
-     "A page built out of that game's own interface" is a claim, and a claim in
-     a paragraph is worth about as much as the paragraph. So the paragraph is
-     followed by the covers, each one the link to the page it is about. -->
-<section class="rail">
+     "A page built out of that game's own interface" is a claim, and a claim
+     in a paragraph is worth about as much as the paragraph. So the paragraph
+     is followed by the covers, each one the link to the page it is about. -->
+<section class="band rail">
   <div class="rail-copy">
-    <h2 class="rail-head" id="rail-head" data-i18n="land.rail_head">Every game gets a page of its own</h2>
-    <p class="rail-body" data-i18n-html="land.rail_body"><b>157 games</b> have one built out of that game's own interface: the post-match scoreboard for Dota 2, the buy menu for Counter-Strike, motorway signage for Euro Truck Simulator. Everything else gets the generic page, which is still the whole record - achievements by rarity, who is playing right now, reviews, news and what it costs today.</p>
-    <button class="rail-go" type="button" id="rail-go" data-i18n="land.rail_go">look a game up</button>
+    <h2 class="band-head" id="rail-head" data-i18n="land.rail_head">Every game gets a page of its own</h2>
+    <p class="band-body" data-i18n-html="land.rail_body"><b>157 games</b> have one built out of that game's own interface: the post-match scoreboard for Dota 2, the buy menu for Counter-Strike, motorway signage for Euro Truck Simulator. Everything else gets the generic page, which is still the whole record - achievements by rarity, who is playing right now, reviews, news and what it costs today.</p>
+    <button class="pill" type="button" id="rail-go" data-i18n="land.rail_go">look a game up</button>
   </div>
   <!-- Filled by search.js from DEMO_RAIL. A strip of covers is decoration in
        the strict sense: the section says everything it has to say without it,
@@ -283,96 +367,146 @@
   <div class="rail-track" id="rail-track"></div>
 </section>
 
-<!-- ── The ten ──────────────────────────────────────────────────────────
-     The rail above is one game's page. This is the same idea one level up, and
-     it is here rather than in the list below it for one reason: everything in
-     that list needs a profile to exist, and these ten do not. Somebody who
-     never types a name into the field above can still open all of them, which
-     makes this the only thing on the front page that is both a claim and a
-     door. -->
-<section class="fxs">
-  <div class="fxs-copy">
-    <h2 class="fxs-head" id="fxs-head" data-i18n="land.fx_head">Whole series, not just games</h2>
-    <p class="fxs-body" data-i18n-html="land.fx_body">A series drawn against the years it was made across - and against the years it took to reach Steam, which are almost never the same. Every game in it, what it costs today, and who is playing right now. <b>No profile needed.</b></p>
-    <a class="fxs-go" href="/franchises" data-i18n="land.fx_go">see all of them</a>
+<!-- ── The doors that need nobody ───────────────────────────────────────
+     Everything here works with the field above untouched. It is one band
+     rather than the two it used to be, because "no profile needed" was the
+     only thing either of them was really saying, and it was being said twice
+     under two headings that looked like two different offers. -->
+<section class="band open">
+  <p class="band-eyebrow" data-i18n="land.open_lede">A lookup is one way in and not the only one. Everything below this line needs no profile typed and names nobody.</p>
+  <h2 class="band-head" data-i18n="land.open_head">What opens with nobody in it</h2>
+
+  <div class="open-copy">
+    <div class="open-half">
+      <h3 class="open-h" id="fxs-head" data-i18n="land.fx_head">Whole series, not just games</h3>
+      <p class="band-body" data-i18n-html="land.fx_body">A series drawn against the years it was made across - and against the years it took to reach Steam, which are almost never the same. Every game in it, what it costs today, and who is playing right now. <b>No profile needed.</b></p>
+      <a class="pill" href="/franchises" data-i18n="land.fx_go">see all of them</a>
+    </div>
+    <div class="open-half">
+      <h3 class="open-h" data-i18n="land.hs_head">The companies behind them</h3>
+      <p class="band-body" data-i18n-html="land.hs_body">Every publisher and every developer on Steam, each with the whole shelf under it and the years it was busy. <b>Valve published Garry's Mod and Facepunch made it</b>, so these are two lists and not one seen twice.</p>
+      <p class="open-doors">
+        <a class="pill" href="/publishers" data-i18n="land.hs_pub">the publishers</a>
+        <a class="pill" href="/developers" data-i18n="land.hs_dev">the developers</a>
+      </p>
+    </div>
   </div>
+
   <!-- Filled by search.js out of franchise-list.js, which is the same table
-       the screens themselves are built from - so a franchise added there shows
+       the screens themselves are built from, so a franchise added there shows
        up here without anybody remembering to add it twice. -->
   <div class="fxs-grid" id="fxs-grid"></div>
 </section>
 
-<!-- ── The two shelves of companies ─────────────────────────────────────
-     Same door as the section above and for the same reason: neither of these
-     needs a profile to open. No grid under it, unlike the franchises - that
-     one is a table that ships with the page and this one is ninety thousand
-     companies the api pages through, so the front page offers the way in and
-     not a sample of it. -->
-<section class="fxs hxs">
-  <div class="fxs-copy">
-    <h2 class="fxs-head" data-i18n="land.hs_head">The companies behind them</h2>
-    <p class="fxs-body" data-i18n-html="land.hs_body">Every publisher and every developer on Steam, each with the whole shelf under it and the years it was busy. <b>Valve published Garry's Mod and Facepunch made it</b>, so these are two lists and not one seen twice.</p>
-    <p class="hxs-doors">
-      <a class="fxs-go" href="/publishers" data-i18n="land.hs_pub">the publishers</a>
-      <a class="fxs-go" href="/developers" data-i18n="land.hs_dev">the developers</a>
+<!-- ── The two that are not pages here ──────────────────────────────────
+     Both of them put this site's work somewhere else: one on Steam's own
+     store page, one on whatever page somebody pastes an address into. They
+     are drawn rather than screenshotted, the same way the panel on /extension
+     is markup: a screenshot goes stale in a language nobody checks, and a
+     drawing is corrected in a diff. -->
+<section class="band take">
+  <h2 class="band-head" data-i18n="land.take_head">Two of them are not pages here at all</h2>
+  <div class="take-grid">
+
+    <article class="take-card">
+      <h3 class="open-h" data-i18n="land.ext_head">Our extension comes to the shop with you</h3>
+      <p class="band-body" data-i18n-html="land.ext_body">It adds review trends, official activity and who a game may suit under Steam's buy box. Personal hours and achievements are optional. <b>Chrome and Firefox, with no cookies or sign-in.</b></p>
+      <a class="pill" href="/extension" data-i18n="land.ext_go">our extension</a>
+      <!-- The shape of it, with no words in it, and the arrangement is the
+           whole of what it says: somebody else's buy box, and our strip
+           underneath it. Wordless because a screenshot of a panel goes stale
+           in a language nobody rereads, and because every width in here is a
+           class rather than a style attribute: the site is served under a CSP
+           with style-src 'self', and an inline width would arrive as zero. -->
+      <div class="mock mock-ext" aria-hidden="true">
+        <div class="mock-store">
+          <span class="mock-line mock-line-a"></span>
+          <span class="mock-line mock-line-b"></span>
+          <span class="mock-buy"></span>
+        </div>
+        <div class="mock-panel">
+          <div class="mock-bar"><i></i><i></i></div>
+          <div class="mock-rows">
+            <div class="mock-row"><span class="mock-k"></span><span class="mock-meter"><i></i></span></div>
+            <div class="mock-row"><span class="mock-k"></span><span class="mock-meter"><i></i></span></div>
+            <div class="mock-row"><span class="mock-k"></span><span class="mock-meter"><i></i></span></div>
+          </div>
+          <div class="mock-tags"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="take-card">
+      <h3 class="open-h" data-i18n="land.emb_head">The chart, as an address</h3>
+      <p class="band-body" data-i18n-html="land.emb_body">Every profile page carries a generator: a bar chart, a badge, a banner, a card against another library, a full-size Steam artwork. Each one is an address that redraws itself when the hours move, or a file that never moves again. <b>Made for a README, a forum post or a Steam profile.</b></p>
+      <button class="pill" type="button" id="emb-go" data-i18n="land.emb_go">look a profile up</button>
+      <!-- Drawn from the same proportions as the stage, for the same reason:
+           a chart with names on it would be somebody's library on the front
+           page of the site. Filled by search.js. -->
+      <figure class="mock mock-emb">
+        <!-- The filename is not a string anybody translates: it is what the
+             file is called on the page this ends up on. -->
+        <div class="mock-file" aria-hidden="true"><i></i>README.md</div>
+        <div class="mock-chart" id="emb-chart" aria-hidden="true"></div>
+        <figcaption class="mock-cap" data-i18n="land.emb_mock">The shape of one, drawn by the service, sitting on a page that is not this one. No name on it here, for the same reason the map above has none.</figcaption>
+      </figure>
+    </article>
+
+  </div>
+</section>
+
+<!-- ── The parts ────────────────────────────────────────────────────────
+     The section this page did not have, and the reason it read as older than
+     the thing it is the front of. Four of these five repositories did not
+     exist when the front page was last written, and a reader had no way to
+     find out from here that any of them did. -->
+<section class="band eco">
+  <p class="band-eyebrow" data-i18n="land.eco_lede">Five repositories, all public, all MIT. The site is one of them and not the largest.</p>
+  <h2 class="band-head" data-i18n="land.eco_head">The parts it is made of</h2>
+
+  <ul class="eco-grid">
+    <li class="eco-card">
+      <b class="eco-h" data-i18n="land.eco_front_h">The site</b>
+      <span class="eco-b" data-i18n="land.eco_front_b">The pages, the drawings and the field you type into: everything your browser runs. Open, MIT, and the same checkout anybody who wants to change it works on.</span>
+      <a class="eco-go" href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener"><span data-i18n="land.eco_repo">the repository</span> ↗</a>
+    </li>
+    <li class="eco-card">
+      <b class="eco-h" data-i18n="land.eco_api_h">The service</b>
+      <span class="eco-b" data-i18n="land.eco_api_b">Python and the standard library, and nothing else. It reads Steam, caches what it may, draws the images, and answers every call these pages make.</span>
+      <a class="eco-go" href="https://github.com/GustavoHSCruz/SteamProfiler.Api" rel="noopener"><span data-i18n="land.eco_repo">the repository</span> ↗</a>
+    </li>
+    <li class="eco-card">
+      <b class="eco-h" data-i18n="land.eco_ext_h">The extension</b>
+      <span class="eco-b" data-i18n="land.eco_ext_b">One Manifest V3 source tree for Chrome and for Firefox. It runs on a store page and on a profile page and nowhere else, with no cookie and no sign-in.</span>
+      <a class="eco-go" href="https://github.com/GustavoHSCruz/SteamProfiler.Companion" rel="noopener"><span data-i18n="land.eco_repo">the repository</span> ↗</a>
+    </li>
+    <li class="eco-card">
+      <b class="eco-h" data-i18n="land.eco_i18n_h">The strings</b>
+      <span class="eco-b" data-i18n="land.eco_i18n_b">Every word a reader sees, in a repository of its own, one file per language. A translation is a pull request there, and the build writes it into the two that serve it.</span>
+      <a class="eco-go" href="https://github.com/GustavoHSCruz/SteamProfiler.i18n" rel="noopener"><span data-i18n="land.eco_repo">the repository</span> ↗</a>
+    </li>
+    <li class="eco-card">
+      <b class="eco-h" data-i18n="land.eco_player_h">The player</b>
+      <span class="eco-b" data-i18n="land.eco_player_b">What plays a trailer on a game page, on its own: progressive MP4 and WebM, Steam HLS through MediaSource, keyboard, fullscreen and picture-in-picture.</span>
+      <a class="eco-go" href="https://github.com/GustavoHSCruz/SteamProfiler.Player" rel="noopener"><span data-i18n="land.eco_repo">the repository</span> ↗</a>
+    </li>
+  </ul>
+
+  <!-- The languages, counted out of coverage.js, which the strings repo
+       writes beside the dictionaries. A file and not a request, because once
+       English has been merged underneath a language the dictionary that ships
+       can no longer say which half was translated. -->
+  <div class="eco-foot">
+    <p class="eco-langs" id="eco-langs"></p>
+    <p class="eco-links">
+      <a href="/translate" data-i18n="land.eco_translate">how much of it each language has</a>
+      <a href="/status" data-i18n="land.eco_status">how the service is doing right now</a>
     </p>
   </div>
 </section>
 
-<!-- ── The extension ────────────────────────────────────────────────────
-     The third door on this page that opens without a profile, and the only one
-     that leads off this site: the panel it describes is drawn on Steam's page,
-     not on ours. It sits after the two shelves and before the list below,
-     which is where the page stops being about what is here and starts being
-     about what a lookup turns into. -->
-<section class="fxs">
-  <div class="fxs-copy">
-    <h2 class="fxs-head" data-i18n="land.ext_head">Our extension comes to the shop with you</h2>
-    <p class="fxs-body" data-i18n-html="land.ext_body">It adds review trends, official activity and who a game may suit under Steam's buy box. Personal hours and achievements are optional. <b>Chrome and Firefox, with no cookies or sign-in.</b></p>
-    <a class="fxs-go" href="/extension" data-i18n="land.ext_go">our extension</a>
-  </div>
-</section>
-
-<!-- ── What one lookup opens ────────────────────────────────────────────
-     Descriptions and not links. Every one of these used to point at a real
-     profile so the reader could go and see it, and the only profile there was
-     to point at was the author's - five more links to one person's account on
-     a page that is not about that person. What each page is, is the thing this
-     section was for. -->
-<section class="turns">
-  <h2 class="turns-head" data-i18n="land.turns_head">What a profile turns into</h2>
-  <p class="turns-lede" data-i18n="land.turns_lede">One lookup, and the library comes apart into the pages it was always made of.</p>
-  <ul class="turns-grid">
-    <li class="turn">
-      <span class="turn-n">01</span>
-      <b class="turn-h" data-i18n="land.c_map_h">The whole library, to scale</b>
-      <span class="turn-b" data-i18n="land.c_map_b">Every game that was ever launched, one rectangle each, area proportional to hours. The long tail folds into one block and says how many it holds.</span>
-    </li>
-    <li class="turn">
-      <span class="turn-n">02</span>
-      <b class="turn-h" data-i18n="land.c_game_h">One game, your record of it</b>
-      <span class="turn-b" data-i18n="land.c_game_b">Achievements ranked by how rare they are, the ones still locked, the year each one was unlocked, and the hours split by the system you played on.</span>
-    </li>
-    <li class="turn">
-      <span class="turn-n">03</span>
-      <b class="turn-h" data-i18n="land.c_year_h">One year of it</b>
-      <span class="turn-b" data-i18n="land.c_year_b">What was put down that year and what was unlocked during it, in the order it happened.</span>
-    </li>
-    <li class="turn">
-      <span class="turn-n">04</span>
-      <b class="turn-h" data-i18n="land.c_pile_h">The pile</b>
-      <span class="turn-b" data-i18n="land.c_pile_b">Everything owned and never launched, searchable, with what it cost. The number nobody asks for and everybody reads twice.</span>
-    </li>
-    <li class="turn">
-      <span class="turn-n">05</span>
-      <b class="turn-h" data-i18n="land.c_pub_h">A game with nobody attached</b>
-      <span class="turn-b" data-i18n="land.c_pub_b">The same care, without a profile in it: global achievement rarity, who is playing right now, the review split, the news and the current price.</span>
-    </li>
-  </ul>
-</section>
-
 <!-- ── The three that stay true ──────────────────────────────────────── -->
-<section class="promise">
+<section class="band promise">
   <h2 class="promise-head" data-i18n="land.notes_head">The three that do not change</h2>
   <ul class="land-notes">
     <li data-i18n-html="land.note_stored"><b>No profile is stored.</b> Every lookup goes to Steam live and is cached for 15 minutes, that is all.</li>
@@ -397,6 +531,7 @@
 <script src="i18n.js" defer></script>
 <script src="lib.js" defer></script>
 <script src="franchise-list.js" defer></script>
+<script src="coverage.js" defer></script>
 <script src="demo.js" defer></script>
 <script src="search.js" defer></script>
 </body>

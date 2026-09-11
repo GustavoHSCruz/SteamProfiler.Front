@@ -1,5 +1,5 @@
-/* steamprofiler.org - three languages. English is the default; Portuguese and Russian
-   are picked up from the browser or chosen in the status bar.
+/* steamprofiler.org - five language variants. English is the default; the
+   others are picked up from the browser or chosen in the status bar.
 
    Loaded before everything else, because number and date formatting depend on
    the active locale and every other file uses them.
@@ -21,7 +21,13 @@
    cookie was missing or stale, and the page reloads once to get the right
    file. */
 
-const LOCALES = { en: 'en-US', pt: 'pt-BR', ru: 'ru-RU' };
+const LOCALES = {
+  'en': 'en-US',
+  'pt': 'pt-BR',
+  'ru': 'ru-RU',
+  'zh-cn': 'zh-CN',
+  'zh-tw': 'zh-TW',
+};
 /* One Steam storefront per language, because Steam prices each region on its
    own: Arma 3 is $29.99 in the US against R$99.99 in Brazil, and no exchange
    rate turns one into the other. So the site does not convert - it asks the
@@ -30,12 +36,12 @@ const LOCALES = { en: 'en-US', pt: 'pt-BR', ru: 'ru-RU' };
    The language picker is therefore the currency picker as well. A Brazilian
    reading in English sees dollars, which is the trade for not having a second
    control on the page saying almost the same thing. */
-const STORES = { en: 'us', pt: 'br', ru: 'ru' };
+const STORES = { en: 'us', pt: 'br', ru: 'ru', 'zh-cn': 'cn', 'zh-tw': 'tw' };
 /* The money that storefront quotes in, which is also the money a card price is
    approximated into. Only cards need this: every other price on the site
    arrives already in the reader's currency, because it was asked for there. */
-const MONEY = { en: 'USD', pt: 'BRL', ru: 'RUB' };
-const LANG_NAMES = { en: 'EN', pt: 'PT', ru: 'RU' };
+const MONEY = { en: 'USD', pt: 'BRL', ru: 'RUB', 'zh-cn': 'CNY', 'zh-tw': 'TWD' };
+const LANG_NAMES = { en: 'EN', pt: 'PT', ru: 'RU', 'zh-cn': '简', 'zh-tw': '繁' };
 /* The same name in localStorage and in the cookie, because they hold the same
    answer for two different readers: this file, and the server. */
 const LANG_KEY = 'sp-lang';
@@ -49,7 +55,10 @@ function pickLang() {
   const saved = localStorage.getItem(LANG_KEY);
   if (saved && LOCALES[saved]) return saved;
   for (const tag of navigator.languages || [navigator.language || '']) {
-    const code = tag.toLowerCase().slice(0, 2);
+    const clean = tag.toLowerCase().replaceAll('_', '-');
+    if (clean.startsWith('zh-hant') || /^zh-(tw|hk|mo)(?:-|$)/.test(clean)) return 'zh-tw';
+    if (clean === 'zh' || clean.startsWith('zh-')) return 'zh-cn';
+    const code = clean.slice(0, 2);
     if (code === 'pt') return 'pt';
     if (code === 'ru') return 'ru';
     if (code === 'en') return 'en';
@@ -59,7 +68,7 @@ function pickLang() {
 
 /** What the server will read on the next request. */
 function langCookie() {
-  const found = document.cookie.match(/(?:^|;\s*)sp-lang=([a-z]{2})/);
+  const found = document.cookie.match(/(?:^|;\s*)sp-lang=([a-z]{2}(?:-[a-z]{2})?)(?:;|$)/);
   return found ? found[1] : null;
 }
 
@@ -94,7 +103,7 @@ const store = () => STORES[LANG] || 'br';
 /** The money this reader counts in. */
 const myMoney = () => MONEY[LANG] || 'USD';
 
-/** Russian needs three plural forms; English and Portuguese need two. */
+/** Russian needs three plural forms; Chinese one; English and Portuguese two. */
 function plural(n, forms) {
   if (LANG === 'ru') {
     const m10 = Math.abs(n) % 10, m100 = Math.abs(n) % 100;
@@ -102,6 +111,7 @@ function plural(n, forms) {
     if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return forms[1];
     return forms[2] ?? forms[1];
   }
+  if (LANG.startsWith('zh-')) return forms[0];
   return n === 1 ? forms[0] : forms[1];
 }
 

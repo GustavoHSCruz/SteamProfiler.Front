@@ -73,6 +73,18 @@ check('a first visit does not settle on the language it was served', r.lang === 
 check('a first visit does not leave the cookie behind', r.cookie === 'pt');
 check('the Portuguese dictionary did not answer', r.t('nav.about') !== 'nav.about');
 
+// Chinese must keep its script variant: a generic or mainland tag chooses
+// Simplified, while Taiwan, Hong Kong, Macao and Hant choose Traditional.
+r = boot({ served: 'zh-cn', saved: null, languages: ['zh-CN', 'zh'] });
+check('a Simplified Chinese first visit reloads', r.reloaded === 0);
+check('a Simplified Chinese first visit chose the wrong variant', r.lang === 'zh-cn');
+check('the Simplified Chinese dictionary did not answer', /[一-鿿]/.test(r.t('nav.about')));
+
+r = boot({ served: 'zh-tw', saved: null, languages: ['zh-Hant-TW', 'zh'] });
+check('a Traditional Chinese first visit reloads', r.reloaded === 0);
+check('a Traditional Chinese first visit chose the wrong variant', r.lang === 'zh-tw');
+check('the Traditional Chinese dictionary did not answer', /[一-鿿]/.test(r.t('nav.about')));
+
 // A reader who chose Russian in the status bar, whose cookie was cleared.
 r = boot({ served: 'en', saved: 'ru', languages: ['pt-BR'] });
 check('a stale cookie does not fetch the right dictionary', r.reloaded === 1);

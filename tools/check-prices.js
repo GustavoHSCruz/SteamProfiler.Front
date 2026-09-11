@@ -15,7 +15,7 @@
    Run from the repo root: node tools/check-prices.js */
 const fs = require('fs');
 
-const LANGS = ['en', 'pt', 'ru'];
+const LANGS = require('./dicts.js').languages();
 const fail = [];
 const js = fs.readFileSync('site/game.js', 'utf8');
 const css = fs.readFileSync('site/games.css', 'utf8');
@@ -93,7 +93,7 @@ for (const [theme, fn] of themes) {
     fail.push(`${theme}: ${fn}() reuses no class from its own page - that is a template, not a block`);
   }
 
-  // 5. Every string it asks for exists in all three languages.
+  // 5. Every string it asks for exists in every language.
   // (?<![\w.]) so that the `t` at the end of priceFoot( is not read as t(.
   for (const key of [...body.matchAll(/(?<![\w.])t\('([^']+)'/g)].map((m) => m[1])) {
     for (const l of LANGS) {

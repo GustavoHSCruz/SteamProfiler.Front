@@ -8,8 +8,23 @@ The client half of [steamprofiler.org](https://steamprofiler.org): a Steam
 profile reader that draws a whole library to scale and gives every game that was
 ever launched a page designed after that game's own interface.
 
-Static HTML, CSS and JavaScript. No framework, no bundler, no build step, no
-dependencies. What is in `site/` is what the browser gets.
+Static HTML, CSS and JavaScript. No bundler, no build step, no dependencies:
+what is in `site/` is what the browser gets.
+
+**That last sentence is being reconsidered, and it is worth saying so here
+rather than in a commit message nobody reads.** A rebuild of the front on
+React and Vite is under way in a checkout of its own, and if it lands, this
+repository stops being a folder a browser can open and starts being a project
+that compiles. Nothing in it has changed yet: everything below describes what
+is served today, and the day that stops being true this paragraph is the first
+thing to go.
+
+What the rebuild is being weighed against is one row of the comparison and not
+a matter of taste. A page here answers with its text already in the markup -
+`tools/gen-shell.js` puts it there - and that is why an assistant asked whether
+this site is safe can read the answer without running anything. A single-page
+app has nothing to say to that question, so shipping one means either accepting
+it or serving the pages rendered, which is a second decision and not a detail.
 
 ```
 git clone git@github.com:GustavoHSCruz/SteamProfiler.Front.git
@@ -132,6 +147,36 @@ market quotes in the currency of whoever is signed in, nobody is signed in, and
 converting would be inventing a price. Every other number on this site is in
 the reader's own storefront currency.
 
+## The landing page
+
+`index.html` and `search.js`. Three tiles on the first screen and six bands
+under it, and the bands are all built the same way so that what differs
+between them is the content rather than the furniture: a mono line with the
+site's amber square on it, a display heading, then the thing itself.
+
+The first screen is tiled and nothing on it floats. The field is a panel of
+its own because it is the front door; the shape beside it is the treemap drawn
+from `demo.js`, which is nobody's library and is there to say what "to scale"
+means; the third panel is four counts read from `/api/status` while the page
+is being read - how much of Steam has been through here, how much of the
+catalogue is known, how many companies are behind it, how many are graded for
+the Deck. That panel is `hidden` in the shell and unhides itself only once the
+figures arrive, so a page served while the service is down is a page with
+three tiles rather than one leading with four dashes.
+
+The bands, in order: what a profile turns into (nine sub-pages, described and
+not linked - every one of them would have to point at the author's own profile
+to be a link), the rail of games with a page written for them, what opens with
+no profile at all, the two surfaces that are not pages on this site, the five
+repositories, and the three promises.
+
+The two drawings in "two of them are not pages here at all" are markup, the
+same way the panel on `/extension` is: a screenshot goes stale in a language
+nobody rereads and a drawing is corrected in a diff. Both are wordless, and
+every width in them is a class. The site is served under a CSP with `style-src
+'self'`, so a `style=` attribute in a shell arrives as nothing at all; the only
+styles set from script go through the CSSOM, which that policy allows.
+
 ## Game pages
 
 `/g/<appid>` is the indexable, profile-free side of the same idea. Its public
@@ -204,16 +249,15 @@ because that is the one on the shop today.
 
 ### On the front page
 
-The ten are on the landing page as well, under the rail, as ten plates in
-their own colours. It is the only block on that page whose links go somewhere
-without a profile, which is why it is above the list of what a lookup opens
-rather than inside it: somebody who never types a name into the field can
-still open all ten.
+The ten are on the landing page as well, as ten plates in their own colours,
+inside the band about what opens with nobody in it. They sit there rather than
+among the sub-pages because everything in that band is reachable by somebody
+who never types a name into the field, and the sub-pages are not.
 
 Drawn by `search.js` out of the same table the screens use, so a franchise
 added there appears there. The picture on each plate is the storefront capsule
 and not the key art the screens use - `library_hero.jpg` is around 400 KB and
-there would be ten of them above the fold.
+there would be ten of them on the front page.
 
 ### The openings
 
@@ -375,7 +419,8 @@ is only needed when a family is added or dropped.
 
 Pull requests are welcome. `CONTRIBUTING.md` has the house style, which is
 mostly: no dependencies, no build step, and comments that say why rather than
-what.
+what. It describes this tree as it stands, and it stands until the rebuild
+above replaces it rather than in spite of it.
 
 ## Licence
 

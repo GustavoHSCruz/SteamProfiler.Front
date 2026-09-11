@@ -98,9 +98,9 @@
 </head>
 <body>
 <main>
-  <p class="code">support / suporte / поддержка</p>
+  <p class="code">support / suporte / поддержка / 支持 / 支援</p>
   <h1>Open a ticket</h1>
-  <p class="lede">Abrir um chamado &middot; Отправить обращение</p>
+  <p class="lede">Abrir um chamado &middot; Отправить обращение &middot; 提交工单 &middot; 提交支援單</p>
 
   <p class="intro" lang="en">If your address was shut out and you believe that was a
   mistake, say so here. One person reads these.</p>
@@ -108,13 +108,15 @@
   foi um engano, diga aqui. Uma pessoa lê isto.</p>
   <p class="intro" lang="ru">Если ваш адрес закрыли и вы считаете это ошибкой,
   напишите здесь. Это читает человек.</p>
+  <p class="intro" lang="zh-CN">如果您的地址被封禁且您认为这是误判，请在此说明。会有人阅读这些内容。</p>
+  <p class="intro" lang="zh-TW">如果您的位址被封鎖且您認為這是誤判，請在此說明。會有人閱讀這些內容。</p>
 
   <form method="post" action="/appeal/send">
-    <label for="contact">Contact &middot; Contato &middot; Контакт</label>
+    <label for="contact">Contact &middot; Contato &middot; Контакт &middot; 联系方式 &middot; 聯絡方式</label>
     <input type="text" id="contact" name="contact" maxlength="200"
            autocomplete="off" placeholder="email, @handle...">
 
-    <label for="message">What happened &middot; O que aconteceu &middot; Что произошло</label>
+    <label for="message">What happened &middot; O que aconteceu &middot; Что произошло &middot; 发生了什么 &middot; 發生了什麼</label>
     <textarea id="message" name="message" maxlength="2000" required
               placeholder="..."></textarea>
 
@@ -123,7 +125,7 @@
       <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
     </div>
 
-    <button type="submit">Send &middot; Enviar &middot; Отправить</button>
+    <button type="submit">Send &middot; Enviar &middot; Отправить &middot; 发送 &middot; 傳送</button>
   </form>
 
   <p class="note" lang="en">Ten characters minimum, and a few per hour per address.
@@ -132,6 +134,8 @@
   endereço. Menos que isso ou mais que isso é descartado sem ser lido.</p>
   <p class="note" lang="ru">Не короче десяти символов и несколько раз в час с одного
   адреса. Всё, что короче или чаще, отбрасывается непрочитанным.</p>
+  <p class="note" lang="zh-CN">至少十个字符，每个地址每小时只能提交少量消息。过短或过于频繁的内容将被直接丢弃。</p>
+  <p class="note" lang="zh-TW">至少十個字元，每個位址每小時只能提交少量訊息。過短或過於頻繁的內容將被直接丟棄。</p>
 
   <footer>steamprofiler.org</footer>
 </main>
