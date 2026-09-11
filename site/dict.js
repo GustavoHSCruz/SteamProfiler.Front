@@ -1,12 +1,18 @@
-/* steamprofiler.org - every string on the site, in the three languages it speaks.
-   English is the source of truth and the fallback: a key missing from pt or ru
-   falls back to en rather than to nothing.
+/* steamprofiler.org - every string on the site, in the languages it speaks.
 
-   Keys read as paths - `nav.*` chrome, `land.*` the landing page, `dash.*` the
-   dashboard, `g.*` the game pages, `msg.*` messages, `sup.*` support, `err.*`
-   anything a visitor can be told went wrong. The last groups (`arma.*`,
-   `gmod.*`, `pd2.*`, …) are the keys the API sends instead of prose, so the
-   server never has to know which language anyone reads. */
+   GENERATED from the SteamProfiler.i18n repository - do not edit here. A
+   fix to a string, or a language, is a pull request there; running its
+   build.py writes this file. Editing this copy works until the next build
+   and then quietly goes away.
+
+   English is the source of truth and the fallback: a key missing from
+   another language falls back to en rather than to nothing.
+
+   Keys read as paths - `nav.*` chrome, `land.*` the landing page, `dash.*`
+   the dashboard, `g.*` the game pages, `msg.*` messages, `sup.*` support,
+   `err.*` anything a visitor can be told went wrong. The last groups
+   (`arma.*`, `gmod.*`, `pd2.*`, …) are the keys the API sends instead of
+   prose, so the server never has to know which language anyone reads. */
 
 const DICT = {
   en: {

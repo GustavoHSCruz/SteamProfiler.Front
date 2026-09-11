@@ -41,6 +41,12 @@ codebase and the whole site.
 three languages. English is the fallback, so `en` is mandatory; a `pt` or `ru`
 that is only a copy of the English is worse than leaving the key out.
 
+**The strings are written elsewhere.** `site/dict.js` is built from
+[SteamProfiler.i18n](https://github.com/GustavoHSCruz/SteamProfiler.i18n) and
+committed here so that a clone renders without it. A new key or a better
+sentence is a pull request there; this repository takes the built file. If you
+are adding a game page, open both, and say in each that the other exists.
+
 **A game page reuses its own page's classes.** The point of 158 layouts is that
 they are 158 designs. A new page that borrows the shared card and just changes
 the accent colour is a page that should have used the generic renderer.
@@ -70,7 +76,8 @@ is a common failure, and Russian is the one to check.
 
 1. A renderer in `game.js`, registered in `LAYOUTS` under the theme string.
 2. A block in `games.css`, scoped to that theme's class.
-3. Its strings in `dict.js`, all three languages.
+3. Its strings in the i18n repository, all three languages, and the rebuilt
+   `dict.js` here.
 
 Which appid gets which theme is decided by the API, not here, so a renderer for
 a theme the API does not send yet is dead code until it does. Open an issue

@@ -32,8 +32,10 @@ open source under MIT and lives in
 implementation remains out of scope for changes made in this repository.
 
 That boundary is also the contribution surface. Layout, CSS, copy,
-accessibility, translations, a new game page: all of it lives here and none of
-it needs the API to change.
+accessibility, a new game page: all of it lives here and none of it needs the
+API to change. The strings themselves are one repository further out, in
+[SteamProfiler.i18n](https://github.com/GustavoHSCruz/SteamProfiler.i18n),
+which is where a translation is written and where `site/dict.js` is built.
 
 ## The map
 
@@ -73,7 +75,7 @@ site/
   fonts.css       the vendored faces, generated
 
   i18n.js         t(), plural(), the language picker
-  dict.js         every string in three languages
+  dict.js         every string in three languages, built from SteamProfiler.i18n
   policy-text.js  past privacy policies, frozen
   policy-log.js   the index of those revisions
 
@@ -239,9 +241,12 @@ English is the default and the fallback. Portuguese and Russian are picked up
 from the browser or chosen in the status bar, and the choice lives in
 `localStorage`, so a link is never language-specific.
 
-- `dict.js` holds every string, 1670 keys times three languages, at full
+- `dict.js` holds every string, 2098 keys times three languages, at full
   parity. A key missing from `pt` or `ru` falls back to `en` rather than to
-  nothing.
+  nothing. It is built from
+  [SteamProfiler.i18n](https://github.com/GustavoHSCruz/SteamProfiler.i18n) and
+  committed here, so a clone renders without that repository; a fix to a string
+  is a pull request there, not an edit here.
 - `i18n.js` has `t()` for a key, `ts()` for a key that arrived in a payload,
   `plural()` with Russian's three forms, and `applyStatic()` for the
   `data-i18n` attributes in the HTML.
@@ -251,8 +256,11 @@ key such as `@err.rate|n=6`, and the browser resolves it. Numbers and dates go
 through `Intl` with the active locale, so each language's own separators and
 month names come for free.
 
-A translation is therefore a pure front-end change: add or fix keys in `dict.js`
-and nothing else has to move.
+A translation therefore touches no logic at all: it is a key in the i18n
+repository, and its build writes `dict.js` back here. Adding a whole language
+does come back to this repository for the things a language is besides its
+words - the storefront, the currency and the date format in `i18n.js`, and the
+`LANGS` each tool carries.
 
 ## The shells carry their text
 
@@ -267,8 +275,9 @@ browser is unaffected, because `applyStatic()` still overwrites every one of
 them with the reader's language a moment later. What changed is what is there
 before the script runs.
 
-`dict.js` is still the only place a string is written. The generator copies;
-`--check` is what keeps it a copy. After editing any `data-i18n` string, run:
+`dict.js` is still the only place this repository reads a string from. The
+generator copies; `--check` is what keeps it a copy. After rebuilding `dict.js`
+from the i18n repository, or editing any `data-i18n` string, run:
 
 ```
 node tools/gen-shell.js
