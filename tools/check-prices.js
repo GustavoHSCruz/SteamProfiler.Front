@@ -13,17 +13,14 @@
      new prefix. Furniture from the room, or it is not bespoke.
 
    Run from the repo root: node tools/check-prices.js */
-const fs = require('fs'), vm = require('vm');
+const fs = require('fs');
 
 const LANGS = ['en', 'pt', 'ru'];
 const fail = [];
 const js = fs.readFileSync('site/game.js', 'utf8');
 const css = fs.readFileSync('site/games.css', 'utf8');
 
-const ctx = {};
-vm.createContext(ctx);
-vm.runInContext(fs.readFileSync('site/dict.js', 'utf8') + ';globalThis.__D=DICT;', ctx);
-const DICT = ctx.__D;
+const DICT = require('./dicts.js').load();
 
 /* ── The registry ──────────────────────────────────────────────────── */
 

@@ -75,7 +75,7 @@ site/
   fonts.css       the vendored faces, generated
 
   i18n.js         t(), plural(), the language picker
-  dict.js         every string in three languages, built from SteamProfiler.i18n
+  dict.<lang>.js  the strings, one file per language, built from SteamProfiler.i18n
   policy-text.js  past privacy policies, frozen
   policy-log.js   the index of those revisions
 
@@ -241,12 +241,19 @@ English is the default and the fallback. Portuguese and Russian are picked up
 from the browser or chosen in the status bar, and the choice lives in
 `localStorage`, so a link is never language-specific.
 
-- `dict.js` holds every string, 2098 keys times three languages, at full
-  parity. A key missing from `pt` or `ru` falls back to `en` rather than to
-  nothing. It is built from
+- `dict.<lang>.js` is the dictionary, one file per language, 2098 keys each.
+  They are built from
   [SteamProfiler.i18n](https://github.com/GustavoHSCruz/SteamProfiler.i18n) and
   committed here, so a clone renders without that repository; a fix to a string
   is a pull request there, not an edit here.
+- **A reader downloads one of them.** `/dict.js` is not a file: `serve.py` and,
+  in production, nginx pick `dict.pt.js` or `dict.ru.js` from the `sp-lang`
+  cookie, then from `Accept-Language`, then English. It was one file with all
+  three languages in it, which cost 152 KB gzipped to read in one of them;
+  Portuguese is 48 KB and Russian 58 KB.
+- The fallback is resolved at build time as a consequence: each file is English
+  with that language's lines swapped in, so `t()` has nothing to fall back to
+  and needs nothing. An untranslated key arrives as English text.
 - `i18n.js` has `t()` for a key, `ts()` for a key that arrived in a payload,
   `plural()` with Russian's three forms, and `applyStatic()` for the
   `data-i18n` attributes in the HTML.

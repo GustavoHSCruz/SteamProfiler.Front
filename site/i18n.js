@@ -6,7 +6,20 @@
 
    Strings live here and only here - including the ones the API returns, which
    sends stable keys (`arma.terrain.other`, `gmod.props`, …) rather than prose,
-   so the server never has to know which language a visitor reads. */
+   so the server never has to know which language a visitor reads.
+
+   **One dictionary arrives, not three.** `/dict.js` is a different file per
+   language, built by SteamProfiler.i18n with English already underneath, and
+   the server picks which one to send from the `sp-lang` cookie. A reader in
+   Portuguese therefore downloads 48 KB instead of 152, and `t()` has nothing
+   to fall back to because the fallback was resolved before the file shipped.
+
+   That is why the choice is written to a cookie as well as to localStorage:
+   localStorage is where this file reads it, and the cookie is the only part of
+   it the server can see. `DICT_LANG` says which language actually arrived, and
+   it is the last word here: when it disagrees with the stored choice, the
+   cookie was missing or stale, and the page reloads once to get the right
+   file. */
 
 const LOCALES = { en: 'en-US', pt: 'pt-BR', ru: 'ru-RU' };
 /* One Steam storefront per language, because Steam prices each region on its
@@ -23,7 +36,13 @@ const STORES = { en: 'us', pt: 'br', ru: 'ru' };
    arrives already in the reader's currency, because it was asked for there. */
 const MONEY = { en: 'USD', pt: 'BRL', ru: 'RUB' };
 const LANG_NAMES = { en: 'EN', pt: 'PT', ru: 'RU' };
+/* The same name in localStorage and in the cookie, because they hold the same
+   answer for two different readers: this file, and the server. */
 const LANG_KEY = 'sp-lang';
+/* A year, renewed on every visit that agrees with it. Lax because the only
+   thing it does is choose a file, and a cross-site GET that lands on a page in
+   the wrong language is not worth a broken link from a forum. */
+const LANG_COOKIE = ';path=/;max-age=31536000;samesite=lax';
 
 /** Stored choice first, then the browser, then English. */
 function pickLang() {
@@ -38,7 +57,37 @@ function pickLang() {
   return 'en';
 }
 
+/** What the server will read on the next request. */
+function langCookie() {
+  const found = document.cookie.match(/(?:^|;\s*)sp-lang=([a-z]{2})/);
+  return found ? found[1] : null;
+}
+
 let LANG = pickLang();
+
+/* The dictionary that arrived is the only one there is, so when it is not the
+   one this reader wants, the file has to be fetched again rather than looked
+   up again. That happens once per browser in practice: the cookie is written
+   below and renewed on every agreeing visit, and the server falls back to
+   Accept-Language when there is no cookie at all, which is the same guess
+   pickLang() makes from navigator.languages.
+
+   The session flag is the guard against a loop. Cookies can be refused, and a
+   reader whose cookies are refused should read the site in whatever language
+   arrived rather than reload forever. */
+if (typeof DICT_LANG === 'string' && DICT_LANG !== LANG) {
+  const asked = sessionStorage.getItem(LANG_KEY);
+  document.cookie = `${LANG_KEY}=${LANG}${LANG_COOKIE}`;
+  if (langCookie() === LANG && asked !== LANG) {
+    sessionStorage.setItem(LANG_KEY, LANG);
+    location.reload();
+  } else {
+    LANG = DICT_LANG;
+  }
+} else {
+  sessionStorage.removeItem(LANG_KEY);
+  document.cookie = `${LANG_KEY}=${LANG}${LANG_COOKIE}`;
+}
 const locale = () => LOCALES[LANG];
 /** The storefront this reader's prices come from. */
 const store = () => STORES[LANG] || 'br';
@@ -57,10 +106,11 @@ function plural(n, forms) {
 }
 
 /** Look up a string. `{name}` placeholders are filled from `vars`; a missing key
- *  falls back to English and then to the key itself, which makes it obvious. */
+ *  is the key itself, which makes it obvious. There is no English fallback to
+ *  try here: the file that arrived is one language deep and every key it does
+ *  not translate is already English in it. */
 function t(key, vars) {
-  let s = DICT[LANG]?.[key];
-  if (s == null) s = DICT.en[key];
+  let s = DICT[key];
   if (s == null) return key;
   if (typeof s === 'function') s = s(vars || {});
   if (vars) {
@@ -83,9 +133,13 @@ function ts(value) {
   return t(key, vars);
 }
 
+/** Change language: write it where this file reads it, write it where the
+ *  server reads it, and reload, which is what fetches the other dictionary. */
 function setLang(next) {
   if (!LOCALES[next] || next === LANG) return;
   localStorage.setItem(LANG_KEY, next);
+  document.cookie = `${LANG_KEY}=${next}${LANG_COOKIE}`;
+  sessionStorage.removeItem(LANG_KEY);
   location.reload();
 }
 

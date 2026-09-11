@@ -5,7 +5,7 @@
      the newest archived revision differing from the live priv.* strings, which
        would mean the policy was edited and never archived;
      a revision losing keys the one before it had, without that being visible;
-     the three languages holding different key sets, in dict.js or in the
+     the three languages holding different key sets, in the dictionary or in the
        archive, which would make the diff read differently depending on who is
        reading it.
 
@@ -22,7 +22,7 @@ function load(file, name) {
   return ctx.__X;
 }
 
-const DICT = load('site/dict.js', 'DICT');
+const DICT = require('./dicts.js').load();
 const LOG = load('site/policy-log.js', 'POLICY_LOG');
 const TEXT = load('site/policy-text.js', 'POLICY_TEXT');
 
@@ -36,7 +36,7 @@ for (const l of LANGS) {
 for (const l of LANGS.slice(1)) {
   const a = Object.keys(live.en).sort().join('\n');
   const b = Object.keys(live[l]).sort().join('\n');
-  if (a !== b) fail.push(`dict.js: priv.* keys in "${l}" differ from "en"`);
+  if (a !== b) fail.push(`dict.${l}.js: priv.* keys differ from "en"`);
 }
 
 /* ── The archive ───────────────────────────────────────────────────── */
@@ -71,7 +71,7 @@ const archived = TEXT[latest.version] || {};
 for (const l of LANGS) {
   for (const key of new Set([...Object.keys(live[l]), ...Object.keys(archived[l] || {})])) {
     if (live[l][key] !== (archived[l] || {})[key]) {
-      fail.push(`v${latest.version} "${l}" ${key}: archive and dict.js disagree`
+      fail.push(`v${latest.version} "${l}" ${key}: archive and dict.${l}.js disagree`
         + ` - edit the policy, then run node tools/gen-policy.js`);
     }
   }
@@ -93,4 +93,4 @@ if (fail.length) {
 }
 console.log(`policy ok: ${LOG.length} revision(s), `
   + `${Object.keys(live.en).length} keys × ${LANGS.length} languages, `
-  + `v${latest.version} matches dict.js`);
+  + `v${latest.version} matches the dictionary`);

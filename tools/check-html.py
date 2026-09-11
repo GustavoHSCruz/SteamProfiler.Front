@@ -77,18 +77,19 @@ warn = []
 
 
 def dictionary():
-    """DICT out of dict.js, via node, because dict.js is JavaScript and the
-    alternative is a regex that would disagree with the browser about what the
-    file says."""
+    """Every language, via node and tools/dicts.js, because the dictionaries are
+    JavaScript and the alternative is a regex that would disagree with the
+    browser about what they say.
+
+    One file per language since the strings moved to SteamProfiler.i18n, each
+    with English already merged underneath, so what comes back here is what a
+    reader of that language would actually get."""
     out = subprocess.run(
         ["node", "-e",
-         f"const fs=require('fs'),vm=require('vm'),c={{}};vm.createContext(c);"
-         f"vm.runInContext(fs.readFileSync({str(SITE / 'dict.js')!r},'utf8')"
-         f"+';globalThis.__D=DICT;',c);"
-         f"console.log(JSON.stringify(c.__D))"],
+         f"console.log(JSON.stringify(require({str(ROOT / 'tools' / 'dicts.js')!r}).load()))"],
         capture_output=True, text=True)
     if out.returncode != 0:
-        fail.append(f"dict.js did not load: {out.stderr.strip().splitlines()[-1:]}")
+        fail.append(f"the dictionaries did not load: {out.stderr.strip().splitlines()[-1:]}")
         return {lang: {} for lang in LANGS}
     return json.loads(out.stdout)
 

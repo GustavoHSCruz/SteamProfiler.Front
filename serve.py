@@ -50,6 +50,15 @@ PAGES = {
 # Old Portuguese paths, kept because links to them exist.
 REDIRECTS = {'/apoiar': '/support', '/recados': '/feedback'}
 
+# The dictionary is one file per language and the reader gets exactly one of
+# them, so /dict.js is not a file: it is whichever dict.<lang>.js the reader
+# asked for. nginx does this with a map on $cookie_sp_lang, and the two have to
+# agree, or a string looks translated here and arrives in English in
+# production. Read off disk so that adding a language to SteamProfiler.i18n
+# does not need a line here.
+DICT_URL = '/dict.js'
+DICTS = sorted(path.name.split('.')[1] for path in SITE.glob('dict.*.js'))
+
 # Two segments, the second optional: a post is addressed by its id, and what
 # follows is its own title in whichever language the link was made in. Same
 # pattern as the live nginx, which is the point of this file.
@@ -133,6 +142,10 @@ class Handler(SimpleHTTPRequestHandler):
             self.answer(200, b'ok\n', 'text/plain')
             return
 
+        if path == DICT_URL:
+            self.path = f'/dict.{self.dict_lang()}.js'
+            path = self.path
+
         if path in REDIRECTS:
             self.send_response(301)
             self.send_header('Location', REDIRECTS[path])
@@ -162,6 +175,24 @@ class Handler(SimpleHTTPRequestHandler):
             self.answer(405, b'{"error":"method not allowed"}', 'application/json')
         else:
             super().do_GET()
+
+    def dict_lang(self):
+        """The language to answer /dict.js in: the cookie the status bar wrote,
+        then the browser's own preference, then English.
+
+        The second step is what keeps a first visit from costing a reload: a
+        reader with no cookie yet gets the language their browser asks for,
+        which is the same guess pickLang() is about to make in i18n.js."""
+        cookie = self.headers.get('Cookie') or ''
+        for part in cookie.split(';'):
+            name, _, value = part.strip().partition('=')
+            if name == 'sp-lang' and value in DICTS:
+                return value
+        for tag in (self.headers.get('Accept-Language') or '').split(','):
+            code = tag.strip().split(';')[0].lower()[:2]
+            if code in DICTS:
+                return code
+        return 'en'
 
     # ── The API, borrowed from wherever it is running ────────────────────
     def forward(self, method):

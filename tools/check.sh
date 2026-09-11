@@ -51,11 +51,12 @@ while IFS= read -r f; do
 done < <(find . -name '*.py' -not -path './.git/*' -not -path './__pycache__/*' | sort)
 
 # ── Does it hold together ────────────────────────────────────────────
-step "shells match dict.js"     node tools/gen-shell.js --check
+step "shells match dict.en.js"     node tools/gen-shell.js --check
 step "policy archive is intact" node tools/check-policy.js
 step "price blocks are distinct" node tools/check-prices.js
 step "franchise screens are isolated" node tools/check-franchise-exclusives.js
 step "every key a script asks for exists" node tools/check-keys.js
+step "the language boot lands right" node tools/check-language-boot.js
 step "html, keys and routes"    python3 tools/check-html.py
 
 # ── Is it the file a crawler expects ─────────────────────────────────

@@ -37,15 +37,21 @@ obvious alternative was tried and failed.
 **No em dashes.** Use a spaced hyphen. This is consistent across the whole
 codebase and the whole site.
 
-**Copy is not hardcoded.** Every visible string is a key in `dict.js`, in all
-three languages. English is the fallback, so `en` is mandatory; a `pt` or `ru`
-that is only a copy of the English is worse than leaving the key out.
+**Copy is not hardcoded.** Every visible string is a key in the dictionary, in
+all three languages. English is the fallback, so `en` is mandatory; a `pt` or
+`ru` that is only a copy of the English is worse than leaving the key out.
 
-**The strings are written elsewhere.** `site/dict.js` is built from
+**The strings are written elsewhere.** `site/dict.<lang>.js` is built from
 [SteamProfiler.i18n](https://github.com/GustavoHSCruz/SteamProfiler.i18n) and
 committed here so that a clone renders without it. A new key or a better
-sentence is a pull request there; this repository takes the built file. If you
+sentence is a pull request there; this repository takes the built files. If you
 are adding a game page, open both, and say in each that the other exists.
+
+**One dictionary reaches the reader.** `/dict.js` is served as whichever
+`dict.<lang>.js` the `sp-lang` cookie names, so a page cannot read a string in a
+language it was not sent. If you add something that switches language without a
+reload, it has to fetch that file, not look in a second one - there is no
+second one. `tools/check-language-boot.js` walks the four ways that goes wrong.
 
 **A game page reuses its own page's classes.** The point of 158 layouts is that
 they are 158 designs. A new page that borrows the shared card and just changes

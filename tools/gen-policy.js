@@ -1,5 +1,5 @@
 /* Generates site/policy-log.js and site/policy-text.js from the live priv.*
-   keys in site/dict.js. Run from the repo root.
+   keys in the built dictionaries. Run from the repo root.
 
    The snapshot comes from the dictionary rather than being retyped, or the
    archive would be a paraphrase of the policy instead of a copy of it.
@@ -9,10 +9,7 @@
    every revision - is only ever fetched by the page that reads it. */
 const fs = require('fs'), vm = require('vm');
 
-const ctx = {};
-vm.createContext(ctx);
-vm.runInContext(fs.readFileSync('site/dict.js', 'utf8') + ';globalThis.__D=DICT;', ctx);
-const D = ctx.__D;
+const D = require('./dicts.js').load();
 
 const LANGS = ['en', 'pt', 'ru'];
 const keys = Object.keys(D.en).filter((k) => k.startsWith('priv.')).sort();
@@ -155,19 +152,19 @@ fs.writeFileSync('site/policy-log.js', log.join('\n'));
 
 const out = [`/* steamprofiler.org - every revision of the privacy policy, whole, kept.
 
-   The live text is in dict.js under priv.*; this file is the photographs of
+   The live text is in the dictionary under priv.*; this file is the photographs of
    it. A revision is never edited once published: if it was wrong, that is what
    the next one says, and both stay. That is the whole point - a policy with no
    archive is a policy that can be rewritten without anybody noticing.
 
-   Adding a revision: edit the policy in dict.js, append an entry to REVISIONS
+   Adding a revision: edit the policy in SteamProfiler.i18n, append an entry to REVISIONS
    in tools/gen-policy.js with \`text: 'live'\` (and take that marker off the one
    before it), then run the generator. It reads the frozen revisions back out
    of this file rather than rebuilding them, so re-running can only ever append
    to history, never rewrite it.
 
    tools/check-policy.js fails if the newest revision here has drifted from
-   dict.js, or if the date on /privacy has drifted from policy-log.js. */
+   the dictionary, or if the date on /privacy has drifted from policy-log.js. */
 
 const POLICY_TEXT = {`];
 

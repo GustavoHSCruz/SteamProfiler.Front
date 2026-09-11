@@ -1,4 +1,4 @@
-/* Writes the English strings from site/dict.js into the HTML shells, so that a
+/* Writes the English strings from site/dict.en.js into the HTML shells, so that a
    reader without JavaScript gets the page instead of the skeleton of one.
 
    Every page here is markup plus `data-i18n` attributes, and i18n.js fills them
@@ -19,7 +19,8 @@
    is what is there before the script runs, which is what a crawler, a link
    preview, a screen reader on a slow line and a search engine all read.
 
-   The strings are still only written in dict.js. This file copies them; it is
+   The strings are still only written in SteamProfiler.i18n, which builds the
+   dict files here. This file copies English out of them; it is
    not a second place to edit them, and `--check` is what keeps that true.
 
    Attributes and not just elements: `data-i18n-doc` is the <title>, and a page
@@ -33,7 +34,7 @@
      node tools/gen-shell.js          rewrite the shells
      node tools/gen-shell.js --check  fail if any of them has drifted
 */
-const fs = require('fs'), path = require('path'), vm = require('vm');
+const fs = require('fs'), path = require('path');
 
 const SITE = 'site';
 const CHECK = process.argv.includes('--check');
@@ -45,10 +46,7 @@ const CHECK = process.argv.includes('--check');
    unescaped ampersand into the document. */
 const ATTRS = { 'data-i18n': false, 'data-i18n-html': true, 'data-i18n-doc': false };
 
-const ctx = {};
-vm.createContext(ctx);
-vm.runInContext(fs.readFileSync(path.join(SITE, 'dict.js'), 'utf8') + ';globalThis.__D=DICT;', ctx);
-const EN = ctx.__D.en;
+const EN = require('./dicts.js').load().en;
 
 const fail = [];
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -106,7 +104,7 @@ function rewrite(file) {
          arguments. Either way there is no fixed English to write down, and
          leaving the element as it was is better than writing the key into the
          page. */
-      fail.push(`${file}: ${key} is not a plain string in DICT.en`);
+      fail.push(`${file}: ${key} is not a plain string in dict.en.js`);
       at = end;
       continue;
     }
@@ -142,11 +140,11 @@ if (fail.length) {
 }
 if (CHECK) {
   if (changed.length) {
-    console.error(`the shells have drifted from dict.js: ${changed.join(', ')}`);
+    console.error(`the shells have drifted from dict.en.js: ${changed.join(', ')}`);
     console.error('run: node tools/gen-shell.js');
     process.exit(1);
   }
-  console.log('shells match dict.js');
+  console.log('shells match dict.en.js');
 } else {
   console.log(changed.length ? `wrote ${changed.join(', ')}` : 'nothing to write');
 }

@@ -13,7 +13,7 @@
    computed ones are looked up against a table that already fell back on
    purpose, and this is the one class that is simply a typo.
 
-   The other direction is not checked. A key in dict.js that nothing reads is
+   The other direction is not checked. A key in the dictionary that nothing reads is
    dead weight and not a bug, and half of them are read from HTML or sent by
    the api rather than named in a script here.
 
@@ -21,18 +21,13 @@
 
      node tools/check-keys.js
 */
-const fs = require('fs'), path = require('path'), vm = require('vm');
+const fs = require('fs'), path = require('path');
 
 const SITE = 'site';
 
-/* dict.js holds function-valued strings that call plural(), which lives in
-   i18n.js. Nothing here calls them - only their names are wanted - but the
-   file has to evaluate, so the context gets a stub. */
-const ctx = { plural: (n, forms) => forms[0] };
-vm.createContext(ctx);
-vm.runInContext(
-  fs.readFileSync(path.join(SITE, 'dict.js'), 'utf8') + ';globalThis.__D=DICT;', ctx);
-const EN = ctx.__D.en;
+/* English is the one that has to answer for every key: it is what the shells
+   are baked in and what every other language is built on top of. */
+const EN = require('./dicts.js').load().en;
 
 /* `t('some.key'` and nothing else: a quoted literal in the shape a key has,
    read straight off the source. A parser would be the tidier answer and would
@@ -42,7 +37,7 @@ const CALL = /\bt\('([a-z][a-z0-9_]*\.[a-z0-9_.]+)'/g;
 
 const missing = [];
 for (const file of fs.readdirSync(SITE).sort()) {
-  if (!file.endsWith('.js') || file === 'dict.js') continue;
+  if (!file.endsWith('.js') || file.startsWith('dict.')) continue;
   const src = fs.readFileSync(path.join(SITE, file), 'utf8');
   for (const m of src.matchAll(CALL)) {
     if (!(m[1] in EN)) missing.push(`${file}: ${m[1]}`);
@@ -50,8 +45,8 @@ for (const file of fs.readdirSync(SITE).sort()) {
 }
 
 if (missing.length) {
-  console.error(`${missing.length} key(s) asked for and not in dict.js:`);
+  console.error(`${missing.length} key(s) asked for and not in the dictionary:`);
   for (const line of missing) console.error(`  ✗ ${line}`);
   process.exit(1);
 }
-console.log('keys ok: every literal t() in site/*.js is in dict.js');
+console.log('keys ok: every literal t() in site/*.js is in the dictionary');
