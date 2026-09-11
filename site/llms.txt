@@ -108,6 +108,16 @@ optional profile panel on themselves.
   game it has on Steam with the year, banded by decade. `/publishers/<slug>`
   and `/developers/<slug>` are one house; the same four addresses under
   `/u/<name>/` add that library's hours and say what it is missing.
+- [Translate](https://steamprofiler.org/translate): how much of the site each
+  language has, counted string by string against English, and what it takes to
+  add a language. Every string the site shows lives in one MIT repository,
+  SteamProfiler.i18n, and an untranslated key is served as English rather than
+  as a gap, so a partial translation is a usable one.
+- [Status](https://steamprofiler.org/status): whether the service is answering,
+  how much of the day's Steam key allowance is left, whether steamcommunity.com
+  is rate limiting, and how much of Steam has been read here so far. The
+  traffic figures on it are weekly totals of addresses and requests; nothing on
+  that page describes one visitor, one profile or one country.
 - Profiles live at `/u/<name>`. See the crawling note below.
 - `/u/<name>/ids` writes that account's own number in every format Steam has
   handed out - SteamID64 in decimal and hex, STEAM_1 and STEAM_0, `[U:1:x]`,

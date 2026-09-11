@@ -162,7 +162,17 @@ function applyStatic(root = document) {
   if (title) document.title = t(title.dataset.i18nDoc);
 }
 
-/** The language picker, dropped into the status bar of every page. */
+/** The language picker, dropped into the status bar of every page.
+ *
+ *  It ends in a link to /translate, which is the one piece of chrome on this
+ *  site that exists to recruit. A reader looking at three codes and not
+ *  finding their own is, at that exact second, the person most likely to add
+ *  a fourth, and this is the only moment the site can say so - everywhere
+ *  else, the offer would be an advert on a page somebody came to read.
+ *
+ *  The label is a plus and the name is on the element, not in it: a link
+ *  whose whole text is punctuation is announced as "plus" by a screen reader
+ *  and as nothing at all by a translation of it. */
 function langSwitchInto(node) {
   if (!node) return;
   for (const code of Object.keys(LOCALES)) {
@@ -175,4 +185,11 @@ function langSwitchInto(node) {
     else b.addEventListener('click', () => setLang(code));
     node.append(b);
   }
+  const add = document.createElement('a');
+  add.className = 'lang lang-add';
+  add.href = '/translate';
+  add.textContent = '+';
+  add.title = t('tr.cta_title');
+  add.setAttribute('aria-label', t('tr.cta_title'));
+  node.append(add);
 }

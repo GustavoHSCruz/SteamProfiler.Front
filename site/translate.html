@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n-doc="tr.title">Translate steamprofiler.org</title>
+<meta name="description" content="How much of steamprofiler.org each language has, counted string by string, and what it takes to add a language or finish one. Every string lives in one open repository.">
+<link rel="canonical" href="https://steamprofiler.org/translate">
+<meta property="og:title" content="Translate steamprofiler.org">
+<meta property="og:description" content="How much of steamprofiler.org each language has, counted string by string, and what it takes to add a language or finish one.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://steamprofiler.org/translate">
+<meta property="og:site_name" content="steamprofiler.org">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0b0a0e">
+<meta property="og:image" content="https://steamprofiler.org/og-home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A library drawn to scale: one rectangle per game, area proportional to hours.">
+<meta name="twitter:card" content="summary_large_image">
+<!-- The page that turns a reader into a translator, which is a different job
+     from the one the repository's README does. A README is read by somebody
+     who already decided; this is read by somebody who noticed their language
+     was missing a sentence and does not yet know that fixing it is one line in
+     one file. So the numbers come first and the instructions come after them.
+
+     Nothing here is fetched. coverage.js is written by the i18n repository's
+     own build, beside the dictionaries, because that build is the last place
+     that knows which half of a language was translated and which half fell
+     back to English - once a dictionary ships, the two are the same file. -->
+<link rel="preload" href="/fonts/bricolage-grotesque-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts.css">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/extras.css">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+<body>
+
+<header class="bar-top">
+  <a class="wordmark" href="/">steamprofiler<span>.org</span></a>
+  <nav class="bar-mods">
+    <a class="mod" href="/" data-i18n="nav.lookup">look up a profile</a>
+    <a class="mod" href="/blog" data-i18n="nav.blog">blog</a>
+    <a class="mod" href="/feedback" data-i18n="nav.messages">feedback</a>
+    <span class="langs" id="langs"></span>
+  </nav>
+</header>
+
+<main class="page">
+  <section class="page-head">
+    <p class="eyebrow" data-i18n="tr.eyebrow">translation</p>
+    <h1 class="display" data-i18n="tr.h1">The whole site is two thousand lines. This is what each language has of them.</h1>
+    <p class="lede" data-i18n="tr.lede">Every string a reader sees lives in one repository, and a translation is a pull request against it. Nothing else has to change: the pages already ask for a key and print whatever the dictionary answers.</p>
+  </section>
+
+  <article class="panel">
+    <div class="panel-bar"><span data-i18n="tr.state">where each language stands</span><b data-i18n="tr.state_tag">counted against English</b></div>
+    <div class="panel-body">
+      <div class="rows" id="langs-list"></div>
+      <p class="note" data-i18n="tr.state_note">English is the source, so it is always whole. A key another language has not reached is not a hole in the page: the build writes the English line into it, which is why a language that is a third done still answers for every string on the site.</p>
+      <p class="note" id="embed-note"></p>
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-bar"><span data-i18n="tr.weight">where the weight is</span><b data-i18n="tr.weight_tag">before starting</b></div>
+    <div class="panel-body">
+      <div class="rows" id="weights"></div>
+      <p class="note" data-i18n="tr.weight_note">Two fifths of the site is the game pages, and that is the part a translator can leave for last: each one is a caption about a single game, read by the people who own it. The chrome, the dashboard and the policy are what every visitor sees on the way in.</p>
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-bar"><span data-i18n="tr.how">how a language gets in</span><b data-i18n="tr.how_tag">four steps</b></div>
+    <div class="panel-body">
+      <ol class="tr-steps">
+        <li data-i18n-html="tr.how_1">Copy <code>locales/site/en.js</code> to your language code and translate the lines you want. What you leave out stays English.</li>
+        <li data-i18n-html="tr.how_2">Copy <code>locales/embed/en.json</code> too. It is a few dozen words and it has to be complete, because the server paints them into an image one whole language at a time.</li>
+        <li data-i18n-html="tr.how_3">Run <code>node check.js</code>. It refuses a translation that would break a page, and it lists what is still untranslated without refusing it.</li>
+        <li data-i18n-html="tr.how_4">Open the pull request. A new language also needs one line in the site and one in the server that choose which file a reader gets - say so in the request and they go in with it.</li>
+      </ol>
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-bar"><span data-i18n="tr.rules">the three ways to break a page</span><b data-i18n="tr.rules_tag">what the check refuses</b></div>
+    <div class="panel-body">
+      <ul class="abt-list">
+        <li data-i18n-html="tr.rules_ph"><b>Renaming a placeholder.</b> <code>{n}</code> is where a number is written in. A line that translates the name prints the sentence with the number missing, and nothing anywhere says so.</li>
+        <li data-i18n-html="tr.rules_tags"><b>Leaving a tag open.</b> Values carry <code>&lt;b&gt;</code> and <code>&lt;a&gt;</code>. One that opens a tag and never closes it swallows the rest of the element it sits in, which breaks a layout it is not even near.</li>
+        <li data-i18n-html="tr.rules_plural"><b>Flattening a plural.</b> A few strings are a small function instead of a sentence, because a language with plural forms has to pick the form itself. Keep it a function, and count the raw number rather than the printed one.</li>
+      </ul>
+      <p class="note" data-i18n="tr.rules_line">And one entry per line, always. That is what makes merging a translation a swap instead of a parse.</p>
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-bar"><span data-i18n="tr.links">where to start</span><b data-i18n="tr.links_tag">three links</b></div>
+    <div class="panel-body">
+      <ul class="abt-links">
+        <li><a href="https://github.com/GustavoHSCruz/SteamProfiler.i18n" rel="noopener" data-i18n="tr.repo">SteamProfiler.i18n, where every string lives ↗</a></li>
+        <li><a href="https://github.com/GustavoHSCruz/SteamProfiler.i18n/blob/main/CONTRIBUTING.md" rel="noopener" data-i18n="tr.contributing">What a pull request has to hold ↗</a></li>
+        <li><a href="/feedback" data-i18n="tr.say">Tell me a string is wrong</a></li>
+      </ul>
+      <p class="note" data-i18n="tr.note">Nothing on this page is fetched. These counts are written into the site by the same build that writes the dictionaries, because that build is the last place that still knows which half of a language was translated and which half fell back to English.</p>
+    </div>
+  </article>
+</main>
+
+<footer class="foot">
+  <p><a href="/" data-i18n="nav.lookup">look up a profile</a> · <a href="/about" data-i18n="nav.about">about</a> · <a href="/status" data-i18n="nav.status">status</a> · <a href="/privacy" data-i18n="nav.privacy">privacy</a> · <a class="foot-repo" href="https://github.com/GustavoHSCruz/SteamProfiler.i18n" rel="noopener" data-i18n="tr.repo">SteamProfiler.i18n, where every string lives ↗</a></p>
+  <p class="foot-legal" data-i18n="foot.disclaimer">steamprofiler.org is an independent hobby project. It is not affiliated with, endorsed by, or connected to Valve Corporation. Steam and the Steam logo are trademarks of Valve Corporation. Game names and art belong to their respective owners.</p>
+</footer>
+
+<script src="/dict.js" defer></script>
+<script src="/coverage.js" defer></script>
+<script src="/i18n.js" defer></script>
+<script src="/lib.js" defer></script>
+<script src="/translate.js" defer></script>
+</body>
+</html>

@@ -43,6 +43,8 @@ PAGES = {
     '/franchises': '/franchises.html',
     '/publishers': '/publishers.html',
     '/developers': '/developers.html',
+    '/translate': '/translate.html',
+    '/status': '/status.html',
     '/appeal': '/appeal.html',
     '/appeal/sent': '/appeal-sent.html',
 }

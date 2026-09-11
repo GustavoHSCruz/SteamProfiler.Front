@@ -61,6 +61,9 @@ site/
   feedback.html   the form and the public board                   feedback.js
   support.html    the donation channels                           support.js
   extension.html  the browser extension, and the panel it draws  extension.js
+  translate.html  how much of the site each language has         translate.js
+    coverage.js   those counts, built from SteamProfiler.i18n
+  status.html     whether it is answering, and what it knows      status.js
   privacy.html    what the site does with data                    privacy.js
   policy-history.html   every past revision of that policy        policy-history.js
   appeal.html     the form behind a block, plus appeal-sent.html
@@ -105,6 +108,8 @@ tools/            checks and generators, run with node, never shipped
 | `/feedback` | leave a bug or an idea, and the public board |
 | `/support` | the donation channels |
 | `/extension` | SteamProfiler Companion, the extension this project makes: what it draws on a Steam store page, everything it may touch, and how to install it while it is not in the stores yet. The panel in the middle of that page is markup and not a screenshot, so it speaks the reader's language and is corrected in a diff |
+| `/translate` | how much of the site each language has, string by string, and what it takes to add a language or finish one. The counts are a file rather than a request: `coverage.js` is written by SteamProfiler.i18n's own build, beside the dictionaries, because once English has been merged underneath a language the file that ships can no longer say which half was translated |
+| `/status` | whether the service is answering, how much of the day's Steam allowance is left, whether steamcommunity.com is cooling down, and how much of Steam has been through here. It reads `/api/status`, which is the public half of `/healthz` and a payload of its own rather than this page filtering the operator's one in the browser |
 | `/privacy`, `/privacy/history` | the policy and its archive |
 
 Paths under `/u/` are resolved in `router.js` after `profile.html` loads. The
@@ -241,7 +246,7 @@ English is the default and the fallback. Portuguese and Russian are picked up
 from the browser or chosen in the status bar, and the choice lives in
 `localStorage`, so a link is never language-specific.
 
-- `dict.<lang>.js` is the dictionary, one file per language, 2098 keys each.
+- `dict.<lang>.js` is the dictionary, one file per language, 2183 keys each.
   They are built from
   [SteamProfiler.i18n](https://github.com/GustavoHSCruz/SteamProfiler.i18n) and
   committed here, so a clone renders without that repository; a fix to a string
@@ -257,6 +262,10 @@ from the browser or chosen in the status bar, and the choice lives in
 - `i18n.js` has `t()` for a key, `ts()` for a key that arrived in a payload,
   `plural()` with Russian's three forms, and `applyStatic()` for the
   `data-i18n` attributes in the HTML.
+- `coverage.js` is how much of English each language has, written here by the
+  same build for `/translate` to draw. It is built rather than measured on the
+  page because a shipped dictionary has English merged underneath it and can no
+  longer tell a translated line from a fallen-back one.
 
 The API never sends prose. Anything it would otherwise say in words travels as a
 key such as `@err.rate|n=6`, and the browser resolves it. Numbers and dates go

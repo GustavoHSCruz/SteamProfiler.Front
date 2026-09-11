@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n-doc="st.title">Status - steamprofiler.org</title>
+<meta name="description" content="Whether steamprofiler.org is answering, how much of the day's Steam allowance is left, whether steamcommunity.com is cooling down, and how much of Steam this site has read so far.">
+<link rel="canonical" href="https://steamprofiler.org/status">
+<meta property="og:title" content="Status - steamprofiler.org">
+<meta property="og:description" content="Whether the site is answering, how much of the day's Steam allowance is left, and how much of Steam it has read so far.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://steamprofiler.org/status">
+<meta property="og:site_name" content="steamprofiler.org">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0b0a0e">
+<meta property="og:image" content="https://steamprofiler.org/og-home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A library drawn to scale: one rectangle per game, area proportional to hours.">
+<meta name="twitter:card" content="summary_large_image">
+<!-- The public half of /healthz, and the split is the whole design of this
+     page. /healthz prints the gate's counters, the ban table and what the
+     census is holding, because the person reading it is the person who runs
+     this. A visitor has three questions instead - is it up, is Steam
+     answering, how much does it know - and none of them needs a figure that
+     describes one address, one profile or one country.
+
+     So the api answers /status with its own payload rather than this page
+     filtering /healthz in the browser. A filter in the client is not a
+     boundary: the bytes still left the server. -->
+<link rel="preload" href="/fonts/bricolage-grotesque-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts.css">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/extras.css">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+<body>
+
+<header class="bar-top">
+  <a class="wordmark" href="/">steamprofiler<span>.org</span></a>
+  <nav class="bar-mods">
+    <a class="mod" href="/" data-i18n="nav.lookup">look up a profile</a>
+    <a class="mod" href="/blog" data-i18n="nav.blog">blog</a>
+    <a class="mod" href="/feedback" data-i18n="nav.messages">feedback</a>
+    <span class="langs" id="langs"></span>
+  </nav>
+</header>
+
+<main class="page">
+  <section class="page-head">
+    <p class="eyebrow" data-i18n="st.eyebrow">status</p>
+    <h1 class="display" data-i18n="st.h1">Whether it is answering, and how much it has learned.</h1>
+    <p class="lede" data-i18n="st.lede">This site is one machine in a house, reading Steam with a key that has a daily allowance. When something here is slow or refuses, it is almost always one of the three below.</p>
+    <p class="page-stamp" id="stamp" data-i18n="st.reading">Reading…</p>
+  </section>
+
+  <p class="notice" id="failed" data-tone="bad" hidden></p>
+
+  <article class="panel">
+    <div class="panel-bar"><span data-i18n="st.steam">what it depends on</span><b data-i18n="st.steam_tag">three lights</b></div>
+    <div class="panel-body">
+      <ul class="lights" id="lights"></ul>
+      <p class="note" data-i18n="st.budget_note">Every visitor’s lookup spends the same key, which is mine, and it is capped per day. Running out does not take the site down: it keeps answering everything it already knows and stops learning new profiles until midnight UTC.</p>
+      <p class="note" data-i18n="st.community_note">The market, the inventories and the profile pages are the half of Steam with no API, and that half answers a burst with a refusal. While it cools, card prices and inventories fill in slowly and nothing else is affected.</p>
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-bar"><span data-i18n="st.known">what it has learned</span><b data-i18n="st.known_tag">kept on disk</b></div>
+    <div class="panel-body">
+      <dl class="kv" id="known"></dl>
+      <p class="note" data-i18n="st.known_note">A game enters the first figure because somebody who owned it was looked up here, so that is not the size of Steam - it is how much of Steam has been through this site. The catalogue index is the other kind: it is synced whole, on a timer, and it is what the lookup field reads.</p>
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-bar"><span data-i18n="st.week">the week</span><b data-i18n="st.week_tag">counts only</b></div>
+    <div class="panel-body">
+      <dl class="kv" id="week"></dl>
+      <p class="note" id="weeks-head" data-i18n="st.weeks_past" hidden>the weeks before this one</p>
+      <div class="rows" id="weeks"></div>
+      <p class="note" data-i18n="st.week_note">Not people. An address is what gets counted, and the two do not line up in either direction: a carrier network behind one address is a hundred readers, and one reader on wifi, on a phone and behind a VPN is three. The digest that recognises an address is replaced every seven days, and the old one is deleted rather than kept.</p>
+      <p><a href="/privacy" data-i18n="st.privacy">What is counted, and what is deliberately not ↗</a></p>
+    </div>
+  </article>
+</main>
+
+<footer class="foot">
+  <p><a href="/" data-i18n="nav.lookup">look up a profile</a> · <a href="/about" data-i18n="nav.about">about</a> · <a href="/translate" data-i18n="nav.translate">translate</a> · <a href="/privacy" data-i18n="nav.privacy">privacy</a> · <a class="foot-repo" href="https://github.com/GustavoHSCruz/SteamProfiler.Api" rel="noopener" data-i18n="foot.api_repo">API source ↗</a></p>
+  <p class="foot-legal" data-i18n="foot.disclaimer">steamprofiler.org is an independent hobby project. It is not affiliated with, endorsed by, or connected to Valve Corporation. Steam and the Steam logo are trademarks of Valve Corporation. Game names and art belong to their respective owners.</p>
+</footer>
+
+<script src="/dict.js" defer></script>
+<script src="/i18n.js" defer></script>
+<script src="/lib.js" defer></script>
+<script src="/status.js" defer></script>
+</body>
+</html>
