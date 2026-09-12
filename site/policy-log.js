@@ -97,4 +97,14 @@ const POLICY_LOG = [
       ru: "Седьмая внешняя сторона - и первая, добавленная потому, что её потребовал экран, а не потому, что список был неполным. Экран Deck отвечает, пошла бы игра из библиотеки на Linux; именно этой половины вопроса Steam не публикует, а публикуют те, кто её запускал, - на ProtonDB. Открытие этого экрана ставит appid-ы той библиотеки в очередь здесь, а воркер разбирает очередь потом, по игре раз в пару секунд, вперемешку со всеми другими, попавшими в неё с тех пор: наружу уходит appid, никогда профиль или адрес, и в момент, который ничего не говорит о том, когда кто-то смотрел. Вступление раздела изменилось вместе с этим: оно делило список на поиск и таймер, а этот случай - ни то, ни другое.",
     },
   },
+  {
+    version: 9,
+    date: "2026-09-12",
+    commit: null,
+    summary: {
+      en: "I now count which screen was opened, alongside how many visits came back and how many profiles were looked up. What gets recorded is the name of a page and nothing else: the profile in /u/<who>/cards is thrown away before the count is taken, and there is nothing in any of the three counts that could join it to the other two. A reload does not count twice; leaving a screen and coming back does. The list of what is counted here named three things and had quietly become four.",
+      pt: "Passei a contar qual tela foi aberta, ao lado de quantas visitas voltaram e de quantos perfis foram consultados. O que fica registrado é nome de página e mais nada: o perfil de /u/<quem>/cards é jogado fora antes da contagem, e não tem em nenhuma das três contagens nada que sirva pra cruzar com as outras duas. F5 não conta duas vezes; sair da tela e voltar conta. A lista do que é contado aqui citava três coisas e já tinha virado quatro.",
+      ru: "Теперь я считаю ещё и то, какой экран открыли, - рядом с тем, сколько визитов вернулось и сколько профилей смотрели. Записывается имя страницы и больше ничего: профиль из /u/<кто>/cards отбрасывается до подсчёта, и ни в одном из трёх подсчётов нет ничего, чем их можно было бы связать между собой. Перезагрузка не считается дважды; уйти с экрана и вернуться - считается. В списке того, что здесь считается, были названы три вещи, а их уже стало четыре.",
+    },
+  },
 ];
