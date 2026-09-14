@@ -422,6 +422,18 @@ h4.prose-h { font-size: 15.5px; letter-spacing: 0; }
 .prose-list li { margin-bottom: 8px; }
 .prose-list li::marker { color: var(--faint); }
 
+/* A picture takes the column's width and no more, framed like the panels it
+   usually shows. Height follows the file, so nothing is cropped. */
+.prose-figure { margin: 0 0 28px; }
+.prose-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line-2);
+  border-radius: 10px;
+  background: var(--panel-2);
+}
+
 .prose-quote {
   margin: 0 0 20px;
   padding-left: 16px;

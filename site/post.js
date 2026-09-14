@@ -68,6 +68,9 @@ function inlineInto(into, text) {
   return into;
 }
 
+/** `![alt](/path)`, the same shape blog.py reads the preview image from. */
+const IMAGE = /^!\[([^\]\n]*)\]\((\/(?!\/)[^)\s]*)\)$/;
+
 const line = (tag, cls, text) => inlineInto(h(tag, cls ? { cls } : {}), text);
 
 /** The whole body, block by block. Fenced code is read first and verbatim:
@@ -103,6 +106,16 @@ function renderProse(body, into) {
       continue;
     }
 
+    // A picture is a line of its own, and only this site's: img-src is 'self',
+    // and anything else stays as the characters that were typed.
+    const image = raw.trim().match(IMAGE);
+    if (image) {
+      into.append(h('figure', { cls: 'prose-figure' },
+        h('img', { attr: { src: image[2], alt: image[1], loading: 'lazy', decoding: 'async' } })));
+      i += 1;
+      continue;
+    }
+
     if (/^(-{3,}|\*{3,})$/.test(raw.trim())) {
       into.append(h('hr'));
       i += 1;
@@ -130,7 +143,8 @@ function renderProse(body, into) {
     // A paragraph runs until a blank line, and a single newline inside one is
     // a wrapped line rather than a break: prose typed in a textarea is full of
     // them and none of them were meant as <br>.
-    const para = gather((l) => l.trim() && !/^(```|#{2,4}\s|[-*]\s|\d+\.\s|>)/.test(l), (l) => l);
+    const para = gather((l) => l.trim() && !/^(```|#{2,4}\s|[-*]\s|\d+\.\s|>)/.test(l)
+      && !IMAGE.test(l.trim()), (l) => l);
     into.append(line('p', null, para.join(' ')));
   }
   return into;
