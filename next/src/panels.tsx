@@ -331,7 +331,7 @@ export function News({ t, lang }: { t: T; lang: string }) {
   const opening = (here?.contents ?? '')
     .replace(/\[[^\]]*\]/g, ' ')
     .replace(/\s+/g, ' ')
-    .replace(/([.!?])([A-ZÀ-ÖØ-Þ])/g, '$1 $2')
+    .replace(/([.!?])([A-Z\u00C0-\u00D6\u00D8-\u00DE])/g, '$1 $2')
     .trim();
 
   return (

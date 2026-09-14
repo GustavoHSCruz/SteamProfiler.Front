@@ -1,0 +1,7 @@
+{
+  "name": "steamprofiler",
+  "version": "0.1.0",
+  "private": true,
+  "module": "index.tsx",
+  "types": "dist/types/index.d.ts"
+}

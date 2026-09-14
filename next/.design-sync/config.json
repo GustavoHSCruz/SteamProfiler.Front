@@ -1,0 +1,76 @@
+{
+  "projectId": "4be13ba6-d321-4b50-9095-34a1683432ab",
+  "shape": "package",
+  "pkg": "steamprofiler",
+  "globalName": "SteamProfiler",
+  "buildCmd": "node .design-sync/build.mjs",
+  "entry": ".design-sync/pkg/index.tsx",
+  "cssEntry": "dist/steamprofiler.css",
+  "srcDir": "../../src",
+  "componentSrcMap": {
+    "Panel": "../../src/ui.tsx",
+    "CountUp": "../../src/ui.tsx",
+    "Treemap": "../../src/ui.tsx",
+    "Link": "../../src/router.tsx",
+    "Find": "../../src/panels.tsx",
+    "MapPanel": "../../src/panels.tsx",
+    "Live": "../../src/panels.tsx",
+    "Rail": "../../src/panels.tsx",
+    "News": "../../src/panels.tsx",
+    "Doors": "../../src/panels.tsx",
+    "Ext": "../../src/panels.tsx",
+    "Emb": "../../src/panels.tsx",
+    "Parts": "../../src/panels.tsx"
+  },
+  "docsMap": {
+    "Panel": "../docs/bench.md",
+    "CountUp": "../docs/bench.md",
+    "Treemap": "../docs/bench.md",
+    "Link": "../docs/bench.md",
+    "Find": "../docs/home-panels.md",
+    "MapPanel": "../docs/home-panels.md",
+    "Live": "../docs/home-panels.md",
+    "Rail": "../docs/home-panels.md",
+    "News": "../docs/home-panels.md",
+    "Doors": "../docs/home-panels.md",
+    "Ext": "../docs/home-panels.md",
+    "Emb": "../docs/home-panels.md",
+    "Parts": "../docs/home-panels.md",
+    "Artwork": "../docs/duo.md",
+    "DesignControls": "../docs/duo.md"
+  },
+  "dtsPropsFor": {
+    "Find": "t: (key: string, vars?: Record<string, string | number>) => string; inputRef: React.RefObject<HTMLInputElement | null>;",
+    "Live": "t: (key: string, vars?: Record<string, string | number>) => string; lang: string; live: { known?: { detailed?: number; catalogue?: number; houses?: number; deck?: { rated?: number; known?: number } } } | null;",
+    "Link": "to: string; className?: string; children: React.ReactNode; title?: string; id?: string; style?: React.CSSProperties; target?: string; rel?: string; onMouseEnter?: React.MouseEventHandler<HTMLAnchorElement>; onFocus?: React.FocusEventHandler<HTMLAnchorElement>; 'aria-current'?: 'page' | boolean;",
+    "Artwork": "design: { version: 1; title: string; subtitle: string; eyebrow: string; theme: 'ember' | 'mint' | 'violet' | 'ice'; layout: 'banner' | 'card' | 'square'; stats: { label: string; value: string }[] }; svgRef?: React.Ref<SVGSVGElement>;",
+    "DesignControls": "design: { version: 2; kind: 'bars' | 'banner' | 'badge' | 'versus' | 'artwork' | 'text' | 'mosaic' | 'poster' | 'rings' | 'year' | 'scene3d'; options: Record<string, string>; selection: number[]; excluded: number[]; background: string | null }; change: (d: DesignControlsProps['design']) => void; disabled: boolean;"
+  },
+  "overrides": {
+    "Parts": {
+      "cardMode": "column"
+    },
+    "Doors": {
+      "cardMode": "column"
+    },
+    "Link": {
+      "cardMode": "column"
+    },
+    "Panel": {
+      "cardMode": "column"
+    },
+    "Treemap": {
+      "cardMode": "column"
+    },
+    "Artwork": {
+      "cardMode": "column"
+    },
+    "DesignControls": {
+      "cardMode": "column"
+    },
+    "Find": {
+      "cardMode": "column"
+    }
+  },
+  "readmeHeader": ".design-sync/conventions.md"
+}

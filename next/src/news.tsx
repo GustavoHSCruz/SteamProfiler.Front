@@ -50,7 +50,7 @@ function opening(item: api.NewsItem) {
   return (item.contents ?? '')
     .replace(/\[[^\]]*\]/g, ' ')
     .replace(/\s+/g, ' ')
-    .replace(/([.!?])([A-ZÀ-ÖØ-Þ])/g, '$1 $2')
+    .replace(/([.!?])([A-Z\u00C0-\u00D6\u00D8-\u00DE])/g, '$1 $2')
     .trim();
 }
 

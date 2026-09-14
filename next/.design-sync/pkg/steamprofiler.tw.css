@@ -1,0 +1,11 @@
+/* Tailwind input for the design-sync stylesheet: the bench's own styles.css,
+   the classes its source already uses, and the token families spelled out
+   so a design can reach for any of them, not only the ones the bench uses. */
+@import "../../src/styles.css";
+@source "../../src";
+@source "../previews";
+
+@source inline("{bg,text,border,border-t,border-b,border-l,border-r,ring,outline,fill,stroke,divide,decoration,caret,accent,from,via,to}-{ink,panel,panel-2,line,line-2,text,dim,faint,amber,amber-d}");
+@source inline("{bg,text,border}-{ink,panel,panel-2,line,line-2,text,dim,faint,amber,amber-d}/{5,10,15,20,30,40,50,60,70,80,90}");
+@source inline("{hover:,focus-visible:,}{bg,text,border}-{panel-2,line-2,text,dim,amber,amber-d}");
+@source inline("font-{display,sans,mono}");
