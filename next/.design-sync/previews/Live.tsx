@@ -4,7 +4,7 @@ const sample = { known: { detailed: 48210, catalogue: 131402, houses: 2917, deck
 
 export function FourCounts() {
   return (
-    <div style={{ display: 'grid', width: 260, height: 360 }}>
+    <div style={{ display: 'grid', width: '100%', maxWidth: 260, height: 360 }}>
       <Live t={translator('pt')} lang="pt" live={sample} />
     </div>
   );
@@ -12,7 +12,7 @@ export function FourCounts() {
 
 export function TwoCounts() {
   return (
-    <div style={{ display: 'grid', width: 260, height: 190 }}>
+    <div style={{ display: 'grid', width: '100%', maxWidth: 260, height: 190 }}>
       <Live t={translator('en')} lang="en" live={{ known: { detailed: 48210, houses: 2917 } }} />
     </div>
   );

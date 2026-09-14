@@ -1,6 +1,6 @@
 import { Panel } from 'steamprofiler';
 
-const frame = { display: 'grid', width: 380, height: 230 } as const;
+const frame = { display: 'grid', width: '100%', maxWidth: 380, minHeight: 230 } as const;
 
 export function WithRoute() {
   return (

@@ -8,7 +8,7 @@ function Controls({ preset }: { preset?: string }) {
     return theme ? { ...d, options: { ...d.options, ...theme.options } } : d;
   });
   return (
-    <div className="duo" style={{ width: 340 }}>
+    <div className="duo" style={{ width: '100%', maxWidth: 340 }}>
       <div className="controls">
         <DesignControls design={design} change={setDesign} disabled={false} />
       </div>

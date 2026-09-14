@@ -6,7 +6,7 @@ const t = translator('pt');
 export function ProfileLookup() {
   const input = useRef<HTMLInputElement>(null);
   return (
-    <div style={{ display: 'grid', width: 620, minHeight: 420 }}>
+    <div style={{ display: 'grid', width: '100%', maxWidth: 620, minHeight: 420 }}>
       <Find t={t} inputRef={input} />
     </div>
   );
@@ -15,7 +15,7 @@ export function ProfileLookup() {
 export function English() {
   const input = useRef<HTMLInputElement>(null);
   return (
-    <div style={{ display: 'grid', width: 620, minHeight: 420 }}>
+    <div style={{ display: 'grid', width: '100%', maxWidth: 620, minHeight: 420 }}>
       <Find t={translator('en')} inputRef={input} />
     </div>
   );

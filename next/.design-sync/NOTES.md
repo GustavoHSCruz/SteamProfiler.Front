@@ -30,9 +30,13 @@ Target: claude.ai/design project "SteamProfiler" (id in config.json). Run everyt
   `../previews`. An arbitrary class in a preview without a rebuild of `build.mjs` renders unstyled.
 - The bundle must be ASCII. `src/panels.tsx` and `src/news.tsx` had `[A-ZÀ-ÖØ-Þ]` in a regex;
   served without a charset it decoded as Latin-1 and killed `window.SteamProfiler`. Rewritten as
-  `À-ÖØ-Þ` (checked equivalent over U+0000-02FF).
+  `\u00C0-\u00D6\u00D8-\u00DE` (checked equivalent over U+0000-02FF).
 - Grid cells are narrow: Panel, Link, Treemap, Artwork, DesignControls, Find, Doors and Parts
   use `cardMode: column`. Parts must be `width: 100%`, its grid is breakpoint-driven.
+- Preview frames are `width: '100%', maxWidth: N`, never a fixed width: the card in the
+  claude.ai/design pane is ~430px of content, much narrower than the 1200px capture, and a fixed
+  760px Doors was cut off there. Check new previews at a 600px viewport before uploading
+  (screenshot each `components/*/X/X.html` with playwright at width 600).
 - Duo previews need `<div className="duo">`; DesignControls also needs `.controls` around it.
 
 ## Known render warns
