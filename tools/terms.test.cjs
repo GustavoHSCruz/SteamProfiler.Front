@@ -16,7 +16,7 @@ function fixture(t) {
   const files = ['tools/gen-terms.js', 'tools/dicts.js', 'site/terms.html', 'legal/terms/v1.json'];
   files.push(...fs.readdirSync(path.join(root, 'site')).filter(f => /^dict\..*\.js$/.test(f)).map(f => `site/${f}`));
   for (const file of files) fs.copyFileSync(path.join(root, file), path.join(dir, file));
-  const git = (...args) => execFileSync('git', ['-C', dir, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+  const git = (...args) => execFileSync('git', ['-C', dir, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith('GIT_'))) }).trim();
   git('init', '--quiet');
   git('config', 'user.name', 'Terms archive test');
   git('config', 'user.email', 'terms-test@example.invalid');

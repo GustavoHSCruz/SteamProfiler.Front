@@ -4,6 +4,7 @@ const { execFileSync } = require('node:child_process');
 function getSiteVersion(repository) {
   const git = (...args) => execFileSync('git', ['-C', repository, ...args], {
     encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
+    env: Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith('GIT_'))),
   }).trim();
   try {
     const commit = git('rev-parse', 'HEAD');

@@ -7,7 +7,7 @@ const { execFileSync } = require('child_process');
 
 let gitRoot = '.';
 function git(args) {
-  try { return execFileSync('git', ['-C', gitRoot, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim(); }
+  try { return execFileSync('git', ['-C', gitRoot, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith('GIT_'))) }).trim(); }
   catch { return null; }
 }
 
