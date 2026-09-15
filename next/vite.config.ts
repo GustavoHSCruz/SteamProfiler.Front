@@ -1,6 +1,15 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
+const require = createRequire(import.meta.url);
+const { getSiteVersion, validateSiteVersion } = require('../tools/site-version.cjs');
+const siteVersion = validateSiteVersion(process.env.SP_SITE_VERSION_FILE
+  ? JSON.parse(readFileSync(process.env.SP_SITE_VERSION_FILE, 'utf8'))
+  : getSiteVersion(fileURLToPath(new URL('..', import.meta.url))));
 
 /* The same trick serve.py plays in the other repo: this holds no data, and
    anything under /api or /art is forwarded to a running instance, so a
@@ -8,6 +17,7 @@ import tailwindcss from '@tailwindcss/vite';
 const UPSTREAM = process.env.SP_API ?? 'https://steamprofiler.org';
 
 export default defineConfig({
+  define: { __SITE_VERSION__: JSON.stringify(siteVersion) },
   plugins: [react(), tailwindcss()],
   server: {
     port: 5180,

@@ -435,3 +435,32 @@ trademarks of Valve Corporation. Game names and art belong to their respective
 owners.
 
 Built with AI assistance, reviewed and shipped by a person.
+
+## Terms of use
+
+See [TERMS.md](TERMS.md) for this application’s terms and the Git-linked revision archive.
+
+The terms are published at `/terms`, with the complete archive at `/terms/history`.
+To change them, add the next `legal/terms/vN.json` snapshot with its version,
+effective date, English/Portuguese summaries and complete text. Preserve every
+committed snapshot. Update the corresponding `tos.*` strings in SteamProfiler.i18n,
+run its `build.py`, then run `node tools/gen-shell.js` and
+`node tools/gen-terms.js` in this repository. Run `tools/check.sh` before committing.
+The deploy runs `node tools/gen-terms.js --require-commits` in its detached
+worktree to attach the introducing Git SHA and refuses drafts or rewritten
+snapshots. Use full Git history; a shallow checkout cannot resolve the introducing
+commit reliably. No extra commit is needed merely to write the SHA into its own document.
+
+## Site version
+
+The footer shows the Front's short Git hash, linked to the full introducing
+commit, and identifies local changes when the checkout is dirty. This is the
+site build version, separate from legal document revisions.
+
+Run `node tools/gen-version.js` to refresh the static pages and `site/version.json`.
+React captures the same Git metadata through Vite for development and builds.
+Deployment generates the version from the clean detached worktree before other
+artifacts and passes `SP_SITE_VERSION_FILE` to both React builds, so every page
+shows the deployed Front commit without treating generated files as local edits.
+`deploy.sh --local` explicitly identifies local changes. A source export without
+Git shows `local`, and production publication requires a clean Git checkout.

@@ -10,7 +10,7 @@
    still answer for every string on the site. */
 
 const COVERAGE = {
-  "keys": 2227,
+  "keys": 2277,
   "groups": [
     {
       "id": "games",
@@ -34,68 +34,68 @@ const COVERAGE = {
     },
     {
       "id": "rest",
-      "keys": 1038
+      "keys": 1088
     }
   ],
   "languages": [
     {
       "code": "en",
-      "done": 2227,
+      "done": 2277,
       "groups": {
         "games": 849,
         "generator": 114,
         "franchises": 96,
         "dash": 74,
         "privacy": 56,
-        "rest": 1038
+        "rest": 1088
       }
     },
     {
       "code": "pt",
-      "done": 2227,
+      "done": 2277,
       "groups": {
         "games": 849,
         "generator": 114,
         "franchises": 96,
         "dash": 74,
         "privacy": 56,
-        "rest": 1038
+        "rest": 1088
       }
     },
     {
       "code": "ru",
-      "done": 2227,
+      "done": 2229,
       "groups": {
         "games": 849,
         "generator": 114,
         "franchises": 96,
         "dash": 74,
         "privacy": 56,
-        "rest": 1038
+        "rest": 1040
       }
     },
     {
       "code": "zh-cn",
-      "done": 317,
+      "done": 319,
       "groups": {
         "games": 0,
         "generator": 0,
         "franchises": 0,
         "dash": 74,
         "privacy": 0,
-        "rest": 243
+        "rest": 245
       }
     },
     {
       "code": "zh-tw",
-      "done": 317,
+      "done": 319,
       "groups": {
         "games": 0,
         "generator": 0,
         "franchises": 0,
         "dash": 74,
         "privacy": 0,
-        "rest": 243
+        "rest": 245
       }
     }
   ],

@@ -165,3 +165,6 @@ rather than taken on trust:
 <https://github.com/GustavoHSCruz/SteamProfiler.Front>
 <https://github.com/GustavoHSCruz/SteamProfiler.Api>
 <https://github.com/GustavoHSCruz/SteamProfiler.Companion>
+
+- [Terms of Service / Terms of Use](https://steamprofiler.org/terms): conditions for the public website and APIs, Duo and Companion.
+- [Terms archive](https://steamprofiler.org/terms/history): complete revisions, differences and introducing Git commits.

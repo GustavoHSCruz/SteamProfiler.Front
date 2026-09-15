@@ -7,6 +7,7 @@ import { NewsPage, PostPage } from './news';
 import { AboutPage, PrivacyPage, StatusPage } from './pages-view';
 import { Link, usePath } from './router';
 import * as api from './api';
+import { SITE_VERSION } from './site-version';
 
 /* The bench: a status bar, nine panels tiled under it, and a legal line.
    No scroll narrative, no band that is one idea and half a screen of air.
@@ -127,6 +128,7 @@ export default function App() {
             [t('foot.bugs_ideas'), `${api.SITE}/feedback`],
             [t('nav.extension'), `${api.SITE}/extension`],
             [t('nav.support'), `${api.SITE}/support`],
+            [t('nav.terms'), `${api.SITE}/terms`],
 
             [t('foot.front_repo'), 'https://github.com/GustavoHSCruz/SteamProfiler.Front'],
             [t('foot.api_repo'), 'https://github.com/GustavoHSCruz/SteamProfiler.Api'],
@@ -135,6 +137,14 @@ export default function App() {
               {label}
             </a>
           ))}
+        </p>
+        <p className="font-mono mt-2 text-[10px] text-faint">
+          {t('foot.site_version')} · {SITE_VERSION.commit ? (
+            <a href={`https://github.com/GustavoHSCruz/SteamProfiler.Front/commit/${SITE_VERSION.commit}`} target="_blank" rel="noopener noreferrer" className="text-dim no-underline hover:text-amber">
+              {SITE_VERSION.commit.slice(0, 7)}
+            </a>
+          ) : 'local'}
+          {SITE_VERSION.dirty && <> · {t('foot.local_changes')}</>}
         </p>
         <p className="mono mt-2.5 max-w-[120ch] text-[10px] leading-relaxed text-faint">{t('foot.disclaimer')}</p>
       </footer>

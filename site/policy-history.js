@@ -177,6 +177,8 @@ function revisionInto(root, rev, prev, isLatest) {
         : h('em', { text: t('pol.no_commit') })),
       body));
 
+  panel.id = `v${rev.version}`;
+
   // The first revision has nothing behind it, so there is one view and no
   // switch. Everything after it opens on what changed, because that is the
   // question somebody came to this page with.

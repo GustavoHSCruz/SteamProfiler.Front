@@ -37,6 +37,8 @@ PAGES = {
     '/support': '/support.html',
     '/privacy': '/privacy.html',
     '/privacy/history': '/policy-history.html',
+    '/terms': '/terms.html',
+    '/terms/history': '/terms-history.html',
     '/blog': '/blog.html',
     '/about': '/about.html',
     '/extension': '/extension.html',

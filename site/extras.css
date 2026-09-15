@@ -732,3 +732,6 @@ h4.prose-h { font-size: 15.5px; letter-spacing: 0; }
   border-style: dashed;
 }
 .lang-add:hover { color: var(--accent); border-color: var(--accent-d); }
+
+/* Semantic section headings in the terms use the standard panel bar type. */
+.panel-bar .terms-heading { margin: 0; font: inherit; }
