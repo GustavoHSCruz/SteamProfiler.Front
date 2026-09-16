@@ -21,17 +21,17 @@ import * as api from './api';
 /** One card of a policy: a title bar, and blocks of paragraphs and lists. */
 function PolicyCard({ t, card }: { t: T; card: Card }) {
   return (
-    <section className="p" id={card.head?.replace('.', '-')}>
+    <section className="sp-panel" id={card.head?.replace('.', '-')}>
       {card.head && (
-        <div className="p-bar">
-          <h2 className="m-0 flex items-center gap-2.5 font-[inherit] text-[inherit] font-medium tracking-[inherit]">
-            <span className="dot" />
+        <div className="sp-panel-bar">
+          <h2 className="sp-panel-title">
+            <span className="sp-dot" />
             <span>{t(card.head)}</span>
           </h2>
           {card.tag && <b className="shrink-0 font-medium normal-case tracking-normal text-faint">{t(card.tag)}</b>}
         </div>
       )}
-      <div className="p-body px-[clamp(16px,2vw,26px)] py-[clamp(16px,1.8vw,24px)]">
+      <div className="sp-panel-body px-[clamp(16px,2vw,26px)] py-[clamp(16px,1.8vw,24px)]">
         {card.blocks.map((block, i) =>
           block.t === 'ul' ? (
             <ul key={i} className="policy-list">
@@ -58,7 +58,7 @@ function PolicyCard({ t, card }: { t: T; card: Card }) {
             <p
               key={i}
               className={block.t === 'note'
-                ? 'mono mt-5 border-t border-line pt-4 text-[11px] leading-relaxed text-faint'
+                ? 'font-mono mt-5 border-t border-line pt-4 text-[11px] leading-relaxed text-faint'
                 : 'policy-p'}
               dangerouslySetInnerHTML={{ __html: t(block.k) }}
             />
@@ -84,7 +84,7 @@ function PolicyPage({ t, cards, eyebrow, h1, lede, foot }: {
 
       <div className="stick grid gap-[var(--gap)]">
         <Panel title={t(eyebrow)} area="">
-          <h1 className="display text-[clamp(1.5rem,2.2vw,2rem)]">{t(h1)}</h1>
+          <h1 className="sp-display text-[clamp(1.5rem,2.2vw,2rem)]">{t(h1)}</h1>
           <p className="mt-3 text-[13px] leading-snug text-dim" dangerouslySetInnerHTML={{ __html: t(lede) }} />
           {foot}
           {/* The index. On a page of seven cards of prose it is the one thing
@@ -99,7 +99,7 @@ function PolicyPage({ t, cards, eyebrow, h1, lede, foot }: {
                     e.preventDefault();
                     document.getElementById(card.head!.replace('.', '-'))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                   }}
-                  className="mono block truncate rounded px-2 py-1 text-[11px] text-faint no-underline hover:bg-panel-2 hover:text-amber"
+                  className="font-mono block truncate rounded px-2 py-1 text-[11px] text-faint no-underline hover:bg-panel-2 hover:text-amber"
                 >
                   {t(card.head)}
                 </a>
@@ -121,7 +121,7 @@ export function PrivacyPage({ t }: { t: T }) {
       h1="priv.h1"
       lede="priv.lede"
       foot={
-        <p className="mono mt-4 text-[11px] text-faint">
+        <p className="font-mono mt-4 text-[11px] text-faint">
           {/* The archive of earlier revisions is a page of the served site and
               is not rebuilt here: a policy's history is a record, and a
               prototype has no business keeping a second copy of one. */}
@@ -163,9 +163,9 @@ function Light({ name, state, tone, detail }: { name: string; state: string; ton
   return (
     <li className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-line px-4 py-3.5 last:border-b-0">
       <span className={`h-2 w-2 shrink-0 self-center rounded-full ${colour}`} />
-      <span className="mono text-[11px] uppercase tracking-[.12em] text-faint">{name}</span>
+      <span className="font-mono text-[11px] uppercase tracking-[.12em] text-faint">{name}</span>
       <b className="text-[14px] font-semibold text-text">{state}</b>
-      {detail && <span className="mono ml-auto text-[11px] text-faint">{detail}</span>}
+      {detail && <span className="font-mono ml-auto text-[11px] text-faint">{detail}</span>}
     </li>
   );
 }
@@ -218,8 +218,8 @@ export function StatusPage({ t, lang }: { t: T; lang: string }) {
     <main className="feedgrid">
       <div className="grid gap-[var(--gap)]">
         <Panel title={t('st.steam')} area="" tight>
-          {failed && <p className="mono px-4 py-5 text-[12px] text-faint">{t('st.failed')}</p>}
-          {!data && !failed && <p className="mono px-4 py-5 text-[12px] text-faint">{t('st.reading')}</p>}
+          {failed && <p className="font-mono px-4 py-5 text-[12px] text-faint">{t('st.failed')}</p>}
+          {!data && !failed && <p className="font-mono px-4 py-5 text-[12px] text-faint">{t('st.reading')}</p>}
           {data && (
             <>
               <ul className="m-0 list-none p-0">
@@ -244,7 +244,7 @@ export function StatusPage({ t, lang }: { t: T; lang: string }) {
                     : undefined}
                 />
               </ul>
-              <p className="mono border-t border-line px-4 py-3 text-[11px] leading-relaxed text-faint">
+              <p className="font-mono border-t border-line px-4 py-3 text-[11px] leading-relaxed text-faint">
                 {t('st.budget_note')}
               </p>
             </>
@@ -256,12 +256,12 @@ export function StatusPage({ t, lang }: { t: T; lang: string }) {
             <dl className="m-0 grid grid-cols-2 gap-px bg-line p-0 sm:grid-cols-4">
               {figures.map(([key, value]) => (
                 <div key={key} className="bg-panel px-4 py-3.5">
-                  <dd className="mono m-0 text-[clamp(1.1rem,1.6vw,1.5rem)] leading-none text-amber">{value}</dd>
-                  <dt className="mono mt-1.5 text-[10px] leading-tight text-faint">{t(key)}</dt>
+                  <dd className="font-mono m-0 text-[clamp(1.1rem,1.6vw,1.5rem)] leading-none text-amber">{value}</dd>
+                  <dt className="font-mono mt-1.5 text-[10px] leading-tight text-faint">{t(key)}</dt>
                 </div>
               ))}
             </dl>
-            <p className="mono border-t border-line px-4 py-3 text-[11px] leading-relaxed text-faint">{t('st.known_note')}</p>
+            <p className="font-mono border-t border-line px-4 py-3 text-[11px] leading-relaxed text-faint">{t('st.known_note')}</p>
           </Panel>
         )}
 
@@ -270,15 +270,15 @@ export function StatusPage({ t, lang }: { t: T; lang: string }) {
             <dl className="m-0 grid grid-cols-3 gap-px bg-line p-0">
               {([['st.w_requests', traffic.requests], ['st.w_addresses', traffic.addresses], ['st.w_lookups', traffic.lookups]] as const).map(([key, value]) => (
                 <div key={key} className="bg-panel px-4 py-3.5">
-                  <dd className="mono m-0 text-[clamp(1.1rem,1.6vw,1.5rem)] leading-none text-amber">{num(value)}</dd>
-                  <dt className="mono mt-1.5 text-[10px] leading-tight text-faint">{t(key)}</dt>
+                  <dd className="font-mono m-0 text-[clamp(1.1rem,1.6vw,1.5rem)] leading-none text-amber">{num(value)}</dd>
+                  <dt className="font-mono mt-1.5 text-[10px] leading-tight text-faint">{t(key)}</dt>
                 </div>
               ))}
             </dl>
 
             {weeks.length > 0 && (
               <div className="border-t border-line px-4 py-4">
-                <p className="mono mb-3 text-[10px] uppercase tracking-[.12em] text-faint">{t('st.weeks_past')}</p>
+                <p className="font-mono mb-3 text-[10px] uppercase tracking-[.12em] text-faint">{t('st.weeks_past')}</p>
 
                 {/* Two numbers per row, and they are not the same thing: the
                     bar and the first are requests, the second is addresses.
@@ -286,7 +286,7 @@ export function StatusPage({ t, lang }: { t: T; lang: string }) {
                     is a legend nobody sees without a mouse and a reason to
                     hover - and the first person to read this asked what the
                     second column was. A header row costs one line, once. */}
-                <div className="mono mb-2 flex items-end gap-3 text-[9.5px] leading-tight text-faint">
+                <div className="font-mono mb-2 flex items-end gap-3 text-[9.5px] leading-tight text-faint">
                   <span className="w-[4.5rem] shrink-0" />
                   <span className="flex-1" />
                   <span className="w-[4.5rem] shrink-0 text-right">{t('st.w_requests')}</span>
@@ -296,29 +296,29 @@ export function StatusPage({ t, lang }: { t: T; lang: string }) {
                 <div ref={bars} className="grid gap-2">
                   {weeks.map((week) => (
                     <div key={week.began_at} className="flex items-center gap-3">
-                      <span className="mono w-[4.5rem] shrink-0 whitespace-nowrap text-[10.5px] text-faint">
+                      <span className="font-mono w-[4.5rem] shrink-0 whitespace-nowrap text-[10.5px] text-faint">
                         {short.format(new Date(week.began_at * 1000))}
                       </span>
                       <span className="h-[6px] flex-1 overflow-hidden rounded bg-[#26232f]">
                         <i className="week-bar block h-full rounded bg-amber/70" />
                       </span>
-                      <span className="mono w-[4.5rem] shrink-0 text-right text-[11px] text-dim">{num(week.requests)}</span>
-                      <span className="mono w-[4rem] shrink-0 text-right text-[11px] text-faint">{num(week.addresses)}</span>
+                      <span className="font-mono w-[4.5rem] shrink-0 text-right text-[11px] text-dim">{num(week.requests)}</span>
+                      <span className="font-mono w-[4rem] shrink-0 text-right text-[11px] text-faint">{num(week.addresses)}</span>
                     </div>
                   ))}
                 </div>
               </div>
             )}
-            <p className="mono border-t border-line px-4 py-3 text-[11px] leading-relaxed text-faint">{t('st.week_note')}</p>
+            <p className="font-mono border-t border-line px-4 py-3 text-[11px] leading-relaxed text-faint">{t('st.week_note')}</p>
           </Panel>
         )}
       </div>
 
       <div className="stick grid gap-[var(--gap)]">
         <Panel title={t('st.eyebrow')} area="">
-          <h1 className="display text-[clamp(1.5rem,2.2vw,2rem)]">{t('st.h1')}</h1>
+          <h1 className="sp-display text-[clamp(1.5rem,2.2vw,2rem)]">{t('st.h1')}</h1>
           <p className="mt-3 text-[13px] leading-snug text-dim">{t('st.lede')}</p>
-          <p className="mono mt-4 border-t border-line pt-4 text-[11px]">
+          <p className="font-mono mt-4 border-t border-line pt-4 text-[11px]">
             <Link to="/privacy" className="text-dim no-underline hover:text-amber">{t('st.privacy')}</Link>
           </p>
         </Panel>

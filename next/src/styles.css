@@ -1,4 +1,7 @@
 @import "tailwindcss";
+/* The components, from SteamProfiler.UI. In the components layer so every
+   utility below still wins over them. */
+@import "./ui-kit/steamprofiler-ui.css" layer(components);
 
 /* ── The faces ───────────────────────────────────────────────────────── */
 @font-face { font-family: 'Bricolage Grotesque'; font-weight: 600; font-display: swap; src: url(/fonts/bricolage-grotesque-600.woff2) format('woff2'); }
@@ -18,20 +21,20 @@
    wireframe. These sit two or three steps apart and let the gaps do the
    dividing. */
 @theme {
-  --color-ink:     #08070c;
-  --color-panel:   #101017;
-  --color-panel-2: #15151d;
-  --color-line:    #22212c;
-  --color-line-2:  #32313d;
-  --color-text:    #f1eff5;
-  --color-dim:     #948fa0;
-  --color-faint:   #5f5c6c;
-  --color-amber:   #ffb454;
-  --color-amber-d: #c97f22;
+  --color-ink:     var(--bg);
+  --color-panel:   var(--panel);
+  --color-panel-2: var(--panel-2);
+  --color-line:    var(--line);
+  --color-line-2:  var(--line-2);
+  --color-text:    var(--text);
+  --color-dim:     var(--dim);
+  --color-faint:   var(--faint);
+  --color-amber:   var(--accent);
+  --color-amber-d: var(--accent-d);
 
-  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
-  --font-sans: 'Archivo', system-ui, -apple-system, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-display: var(--display);
+  --font-sans: var(--sans);
+  --font-mono: var(--mono);
 }
 
 :root {
@@ -59,184 +62,11 @@ body {
 ::selection { background: var(--color-amber); color: #16100a; }
 :focus-visible { outline: 2px solid var(--color-amber); outline-offset: 2px; border-radius: 4px; }
 
-/* ── The panel ───────────────────────────────────────────────────────
-   Nine of these and nothing else. Title bar, body, and the compositor's
-   gradient ring on the one being pointed at, drawn as an inset ring so it
-   never changes the box and never shifts the grid. */
-.p {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  min-height: 0;
-  background: var(--color-panel);
-  border: 1px solid var(--color-line);
-  border-radius: var(--r);
-  overflow: hidden;
-}
-.p::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(120deg, #33ccff, #a37bff 55%, #ff7ac4);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 200ms ease;
-  pointer-events: none;
-  z-index: 3;
-}
-.p:hover::after, .p:focus-within::after { opacity: .85; }
-@media (prefers-reduced-motion: reduce) { .p::after { transition: none; } }
-
-.p-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  flex: none;
-  padding: 8px 12px;
-  background: rgba(255,255,255,.025);
-  border-bottom: 1px solid var(--color-line);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  color: var(--color-dim);
-  white-space: nowrap;
-}
-.p-bar > * { min-width: 0; }
-.p-body { flex: 1; min-height: 0; padding: 14px; }
-.p-tight { padding: 0; }
-
-/* A link in a title bar: the way out of that panel, and never the loudest
-   thing in it. */
-.p-go {
-  flex: none;
-  font-size: 10px;
-  letter-spacing: .06em;
-  text-transform: none;
-  color: var(--color-faint);
-  text-decoration: none;
-  transition: color 160ms;
-}
-.p-go:hover { color: var(--color-amber); }
-
-/* ── Type ─────────────────────────────────────────────────────────── */
-.display {
-  font-family: var(--font-display);
-  font-weight: 800;
-  letter-spacing: -.04em;
-  line-height: .94;
-  text-wrap: balance;
-}
-.mono { font-family: var(--font-mono); }
-.dot { display: inline-block; width: 7px; height: 7px; border-radius: 2px; background: var(--color-amber); }
-
-/* ── Controls ─────────────────────────────────────────────────────── */
-.field {
-  width: 100%;
-  padding: 12px 14px;
-  background: var(--color-ink);
-  border: 1px solid var(--color-line-2);
-  border-radius: 8px;
-  color: var(--color-text);
-  font-family: var(--font-mono);
-  font-size: 14px;
-  outline: none;
-  transition: border-color 160ms, box-shadow 160ms;
-}
-.field::placeholder { color: var(--color-faint); }
-.field:focus {
-  border-color: var(--color-amber-d);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-amber) 13%, transparent);
-}
-.go {
-  flex: none;
-  padding: 12px 22px;
-  border: 0;
-  border-radius: 8px;
-  background: var(--color-amber);
-  color: #16100a;
-  font-weight: 600;
-  font-size: 14px;
-  letter-spacing: -.01em;
-  cursor: pointer;
-  transition: filter 140ms, transform 140ms;
-}
-.go:hover { filter: brightness(1.08); }
-.go:active { transform: translateY(1px); }
-.go:disabled { opacity: .6; cursor: progress; }
-
-.pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  border: 1px solid var(--color-line-2);
-  border-radius: 999px;
-  background: transparent;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--color-dim);
-  text-decoration: none;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: color 160ms, border-color 160ms, background-color 160ms;
-}
-.pill:hover { color: var(--color-amber); border-color: var(--color-amber-d); background: color-mix(in srgb, var(--color-amber) 8%, transparent); }
-
-/* ── The language picker ─────────────────────────────────────────────
-   A real <select>. It was three buttons, which is fine for two languages and
-   wrong for three and worse for four: the bar is already a row of pills and
-   a fourth one that is secretly a radio group reads as another link. The
-   native control also brings the keyboard, the touch wheel on a phone and
-   the reader's own list styling, none of which a div rewrites for free.
-
-   Only the box is styled. The list that drops out of it belongs to the
-   browser, and `color-scheme: dark` on the root is what keeps it dark. */
-.lang {
-  appearance: none;
-  /* The one control on this page whose menu is drawn by the browser and not
-     by us, and that has a consequence worth writing down: Chrome paints the
-     popup with the *select's own* background-color. Transparent, which is
-     what the pill next to it wanted, came out white, and the option text
-     inherited the page's light grey - grey on white, unreadable, which is
-     exactly what this looked like.
-
-     So the box carries a real colour, the options are told theirs rather
-     than left to inherit, and color-scheme is set here as well as on the
-     root, because the popup is a native widget and reads it from the element
-     it belongs to. */
-  color-scheme: dark;
-  padding: 5px 26px 5px 12px;
-  border: 1px solid var(--color-line);
-  border-radius: 999px;
-  background-color: var(--color-panel);
-  background-image:
-    linear-gradient(45deg, transparent 50%, var(--color-faint) 50%),
-    linear-gradient(135deg, var(--color-faint) 50%, transparent 50%);
-  background-size: 5px 5px, 5px 5px;
-  background-position: right 13px center, right 8px center;
-  background-repeat: no-repeat;
-  color: var(--color-dim);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  cursor: pointer;
-  transition: color 160ms, border-color 160ms;
-}
-.lang:hover { color: var(--color-text); border-color: var(--color-line-2); background-color: var(--color-panel-2); }
-.lang option {
-  background-color: var(--color-panel);
-  color: var(--color-text);
-}
-.lang option:checked { color: var(--color-amber); }
-.lang:focus-visible { outline: 2px solid var(--color-amber); outline-offset: 2px; }
+/* ── Panels, type and controls ───────────────────────────────────────
+   Come from SteamProfiler.UI (ui-kit/, imported above): .sp-panel and its
+   bar, .sp-display, .sp-dot, .sp-input, .sp-btn, .sp-pill, .sp-seg, the
+   language picker's .sp-select--pill. What stays in this file is what only
+   the bench has. */
 
 /* ── The bench ───────────────────────────────────────────────────────
    Nine panels, tiled. Areas rather than a flow, because the point of this
@@ -337,30 +167,10 @@ body {
    block underneath at a fixed height. Five cards side by side would be five
    things to read at once; five rows and one excerpt is one thing to read and
    four to choose from, in a third of the room. */
-.rowl {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  width: 100%;
-  padding: 3px 8px;
-  border: 0;
-  border-radius: 5px;
-  background: transparent;
-  color: var(--color-dim);
-  font-family: var(--font-sans);
-  font-size: 13.5px;
-  text-align: left;
-  cursor: pointer;
-  transition: background-color 140ms, color 140ms;
-}
-.rowl b { font-family: var(--font-mono); font-size: 10.5px; color: var(--color-line-2); font-weight: 500; }
-.rowl:hover { color: var(--color-text); }
-.rowl[data-on="1"] { background: var(--color-panel-2); color: var(--color-text); }
-.rowl[data-on="1"] b { color: var(--color-amber); }
 /* Five rows dividing the panel between them rather than five rows and a
    hole underneath: the feed is five posts long and the panel is as tall as
    the one beside it, so the rows take the difference. */
-.rowl-tall {
+.sp-row.row-tall {
   height: 100%;
   align-items: center;
   padding: 0 14px;
@@ -539,7 +349,7 @@ body {
 }
 /* An anchor the index can reach, offset by the bar that would otherwise sit
    on top of whatever it just scrolled to. */
-.p[id] { scroll-margin-top: calc(42px + var(--gap)); }
+.sp-panel[id] { scroll-margin-top: calc(42px + var(--gap)); }
 
 /* The bar takes its width from the row it is in, and the row takes it from
    the CSSOM. See usePainted in ui.tsx: the policy refuses a style attribute

@@ -6,6 +6,7 @@ import { Doors, Emb, Ext, Find, Live, Map, News, Parts, Rail } from './panels';
 import { NewsPage, PostPage } from './news';
 import { AboutPage, PrivacyPage, StatusPage } from './pages-view';
 import { Link, usePath } from './router';
+import { Select } from './ui-kit/react';
 import * as api from './api';
 import { SITE_VERSION } from './site-version';
 
@@ -57,22 +58,18 @@ export default function App() {
   return (
     <>
       <header className="sticky top-0 z-40 flex h-[42px] items-center justify-between gap-4 border-b border-line bg-ink/80 px-3 backdrop-blur-xl md:px-4">
-        <Link to="/" className="mono flex items-center gap-2.5 text-[12.5px] font-semibold text-text no-underline">
-          <span className="dot" />
-          steamprofiler<span className="font-normal text-faint">.org</span>
+        <Link to="/" className="sp-wordmark">
+          steamprofiler<span>.org</span>
         </Link>
-        <nav className="mono flex items-center gap-1.5 overflow-x-auto text-[11px] [scrollbar-width:none]">
+        <nav className="font-mono flex items-center gap-1.5 overflow-x-auto text-[11px] [scrollbar-width:none]">
           {/* The addresses this cut answers itself are routes; the rest are
               the served site and open where they live. */}
           {([['w.news', '/news'], ['abt.eyebrow', '/about'], ['st.eyebrow', '/status'], ['priv.eyebrow', '/privacy']] as const).map(([key, to]) => (
             <Link
               key={to}
               to={to}
-              className={`whitespace-nowrap rounded-full border px-3 py-1 no-underline transition-colors ${
-                path.startsWith(to)
-                  ? 'border-amber-d bg-amber/10 text-amber'
-                  : 'border-line text-dim hover:border-line-2 hover:text-text'
-              } ${to === '/news' ? '' : 'hidden sm:inline-block'}`}
+              aria-current={path.startsWith(to) ? 'page' : undefined}
+              className={`sp-pill sp-pill--quiet ${to === '/news' ? '' : 'hidden sm:inline-flex'}`}
             >
               {t(key)}
             </Link>
@@ -81,13 +78,14 @@ export default function App() {
             <a
               key={href}
               href={`${api.SITE}${href}`} {...api.OUT}
-              className="hidden whitespace-nowrap rounded-full border border-line px-3 py-1 text-dim no-underline transition-colors hover:border-line-2 hover:text-text lg:inline-block"
+              className="sp-pill sp-pill--quiet hidden lg:inline-flex"
             >
               {t(key)}
             </a>
           ))}
-          <select
-            className="lang ml-1"
+          <Select
+            pill
+            className="ml-1"
             value={lang}
             aria-label={t('w.lang')}
             onChange={(e) => setLang(e.target.value as Lang)}
@@ -95,7 +93,7 @@ export default function App() {
             {LANGS.map((l) => (
               <option key={l} value={l}>{LANG_NAMES[l]}</option>
             ))}
-          </select>
+          </Select>
         </nav>
       </header>
 
@@ -121,7 +119,7 @@ export default function App() {
       {/* Outside the bench, because it is not a panel: it is the line every
           public page of this project carries, and the links that go with it. */}
       <footer className="px-3 pb-5 pt-1 md:px-4">
-        <p className="mono flex flex-wrap gap-x-5 gap-y-1 text-[10.5px]">
+        <p className="font-mono flex flex-wrap gap-x-5 gap-y-1 text-[10.5px]">
           {[
             [t('foot.example'), `${api.SITE}/u/gordziilla`],
             [t('nav.blog'), `${api.SITE}/blog`],
@@ -146,7 +144,7 @@ export default function App() {
           ) : 'local'}
           {SITE_VERSION.dirty && <> · {t('foot.local_changes')}</>}
         </p>
-        <p className="mono mt-2.5 max-w-[120ch] text-[10px] leading-relaxed text-faint">{t('foot.disclaimer')}</p>
+        <p className="font-mono mt-2.5 max-w-[120ch] text-[10px] leading-relaxed text-faint">{t('foot.disclaimer')}</p>
       </footer>
     </>
   );

@@ -4,6 +4,7 @@ import type { Lang, T } from './copy';
 import { DEMO_RAIL, DEMO_SHAPE, DEMO_THEMES, FRANCHISES, HEADER_ART } from './data';
 import { CountUp, Panel, Treemap, usePainted } from './ui';
 import { Link } from './router';
+import { Button, Display, Eyebrow, Hint, Input, Panel as KitPanel, Lede, Notice, Pill, PillButton, Segmented } from './ui-kit/react';
 import * as api from './api';
 
 /* ── The field ────────────────────────────────────────────────────────
@@ -85,46 +86,36 @@ export function Find({ t, inputRef }: { t: T; inputRef: React.RefObject<HTMLInpu
   }
 
   return (
-    <section className="p a-find">
-      <div className="p-bar">
-        <h2 className="m-0 flex items-center gap-2.5 font-[inherit] text-[inherit] font-medium tracking-[inherit]">
-          <span className="dot" />
-          <span>{t(kind === 'game' ? 'land.game_field' : 'land.field')}</span>
-        </h2>
-        {/* Two tabs of one panel, in its title bar, because that is what the
-            switch is: it changes what the whole panel is for, not one
-            setting inside the form. */}
-        <div className="flex gap-1 rounded-full border border-line p-[3px]">
-          {(['profile', 'game'] as const).map((k) => (
-            <button
-              key={k}
-              type="button"
-              onClick={() => { setKind(k); setQ(''); setHits([]); setError(''); inputRef.current?.focus(); }}
-              className={`mono rounded-full px-3 py-[2px] text-[10.5px] lowercase tracking-normal transition-colors ${
-                kind === k ? 'bg-panel-2 text-text' : 'text-faint hover:text-dim'
-              }`}
-            >
-              {t(k === 'game' ? 'land.kind_game' : 'land.kind_profile')}
-            </button>
-          ))}
-        </div>
-      </div>
-
+    <KitPanel
+      className="a-find"
+      title={t(kind === 'game' ? 'land.game_field' : 'land.field')}
+      /* Two tabs of one panel, in its title bar, because that is what the
+         switch is: it changes what the whole panel is for, not one
+         setting inside the form. */
+      action={
+        <Segmented
+          label={t('land.field')}
+          value={kind}
+          options={[
+            { value: 'profile', label: t('land.kind_profile') },
+            { value: 'game', label: t('land.kind_game') },
+          ]}
+          onChange={(k) => { setKind(k); setQ(''); setHits([]); setError(''); inputRef.current?.focus(); }}
+        />
+      }
+      tight
+      bodyClassName="flex"
+    >
       <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col justify-center gap-0 p-[clamp(14px,1.5vw,22px)]">
-        <p className="mono text-[10px] uppercase tracking-[.18em] text-dim">{t('land.eyebrow')}</p>
-        <h1
-          className="display mt-3 text-[clamp(1.9rem,2.7vw,2.9rem)]"
-          dangerouslySetInnerHTML={{ __html: t('land.h1') }}
-        />
-        <p
-          className="mt-3 max-w-[46ch] text-[13.5px] leading-snug text-dim [&_b]:font-semibold [&_b]:text-text"
-          dangerouslySetInnerHTML={{ __html: t('land.lede') }}
-        />
+        <Eyebrow className="tracking-[.18em]">{t('land.eyebrow')}</Eyebrow>
+        <Display className="mt-3 text-[clamp(1.9rem,2.7vw,2.9rem)]" dangerouslySetInnerHTML={{ __html: t('land.h1') }} />
+        <Lede className="mt-3 max-w-[46ch] leading-snug" dangerouslySetInnerHTML={{ __html: t('land.lede') }} />
 
         <div className="mt-5 flex flex-col gap-2 sm:flex-row">
-          <input
+          <Input
             ref={inputRef}
-            className="field"
+            mono
+            className="[--sp-input-pad:12px_14px]"
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder={t(kind === 'game' ? 'land.game_placeholder' : 'land.placeholder')}
@@ -132,9 +123,9 @@ export function Find({ t, inputRef }: { t: T; inputRef: React.RefObject<HTMLInpu
             autoComplete="off"
             enterKeyHint="go"
           />
-          <button className="go" disabled={busy}>
+          <Button type="submit" variant="primary" size="lg" disabled={busy}>
             {busy ? t('land.searching') : t(kind === 'game' ? 'land.game_go' : 'land.go')}
-          </button>
+          </Button>
         </div>
 
         {hits.length > 0 && (
@@ -144,7 +135,7 @@ export function Find({ t, inputRef }: { t: T; inputRef: React.RefObject<HTMLInpu
                 <button
                   type="button"
                   onClick={() => api.open(`/g/${g.appid}`)}
-                  className="mono flex w-full items-center justify-between gap-6 rounded px-2 py-1.5 text-left text-[12px] text-dim hover:bg-ink hover:text-text"
+                  className="flex w-full items-center justify-between gap-6 rounded px-2 py-1.5 text-left font-mono text-[12px] text-dim hover:bg-ink hover:text-text"
                 >
                   <span className="truncate">{g.name}</span>
                   <span className="shrink-0 text-[10px] text-faint">app {g.appid}</span>
@@ -154,10 +145,7 @@ export function Find({ t, inputRef }: { t: T; inputRef: React.RefObject<HTMLInpu
           </ul>
         )}
 
-        <p
-          className="mono mt-3 text-[10.5px] leading-relaxed text-faint [&_b]:font-normal [&_b]:text-dim"
-          dangerouslySetInnerHTML={{ __html: t(kind === 'game' ? 'land.game_help' : 'land.help') }}
-        />
+        <Hint className="mt-3 text-[10.5px]" dangerouslySetInnerHTML={{ __html: t(kind === 'game' ? 'land.game_help' : 'land.help') }} />
 
         {/* What you looked up before, from this browser and nowhere else.
             Absent until there is one, because an empty list of your own
@@ -166,33 +154,24 @@ export function Find({ t, inputRef }: { t: T; inputRef: React.RefObject<HTMLInpu
             nobody will find. */}
         {kind === 'profile' && recent.length > 0 && (
           <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-line pt-3">
-            <span className="mono text-[9.5px] uppercase tracking-[.12em] text-faint">{t('land.recent')}</span>
+            <span className="font-mono text-[9.5px] uppercase tracking-[.12em] text-faint">{t('land.recent')}</span>
             {recent.map((name) => (
-              <button
-                key={name}
-                type="button"
-                onClick={() => api.open(`/u/${encodeURIComponent(name)}`)}
-                className="mono max-w-[18ch] truncate rounded-full border border-line px-2.5 py-1 text-[11px] text-dim transition-colors hover:border-amber-d hover:text-text"
-              >
+              <PillButton key={name} size="sm" quiet className="inline-block max-w-[18ch] truncate" onClick={() => api.open(`/u/${encodeURIComponent(name)}`)}>
                 {name}
-              </button>
+              </PillButton>
             ))}
-            <button
-              type="button"
+            <Button
+              variant="text"
+              className="ml-auto"
               onClick={() => { setRecent([]); localStorage.removeItem(RECENT_KEY); }}
-              className="mono ml-auto text-[10px] text-faint underline underline-offset-2 hover:text-dim"
             >
               {t('land.recent_clear')}
-            </button>
+            </Button>
           </div>
         )}
-        {error && (
-          <p className="mono mt-2 rounded border-l-2 border-[#ff7a5c] bg-[#ff5f4514] px-3 py-2 text-[11.5px] text-[#ffb8a8]">
-            {error}
-          </p>
-        )}
+        {error && <Notice tone="bad" className="mt-2">{error}</Notice>}
       </form>
-    </section>
+    </KitPanel>
   );
 }
 
@@ -204,7 +183,7 @@ export function Map({ t }: { t: T }) {
         <div className="relative flex-1 bg-[#0b0a10]">
           <Treemap />
         </div>
-        <p className="mono flex-none border-t border-line px-3 py-2.5 text-[10.5px] leading-relaxed text-faint">
+        <p className="font-mono flex-none border-t border-line px-3 py-2.5 text-[10.5px] leading-relaxed text-faint">
           {t('w.shape_note')}
         </p>
       </div>
@@ -232,10 +211,10 @@ export function Live({ t, lang, live }: { t: T; lang: string; live: api.Status |
       <dl className="m-0 flex h-full flex-col">
         {shown.map(([value, key]) => (
           <div key={key} className="flex-1 border-b border-line px-3.5 py-3 last:border-b-0">
-            <dd className="mono m-0 text-[clamp(1.3rem,1.9vw,1.8rem)] leading-none tracking-tight text-amber">
+            <dd className="font-mono m-0 text-[clamp(1.3rem,1.9vw,1.8rem)] leading-none tracking-tight text-amber">
               <CountUp to={value} locale={LOCALES[lang as Lang]} />
             </dd>
-            <dt className="mono mt-1.5 text-[10px] leading-tight text-faint">{t(key)}</dt>
+            <dt className="font-mono mt-1.5 text-[10px] leading-tight text-faint">{t(key)}</dt>
           </div>
         ))}
       </dl>
@@ -253,8 +232,8 @@ export function Rail({ t }: { t: T }) {
     <Panel title={t('w.themes')} area="a-rail" tight>
       <div className="flex h-full min-h-[260px] flex-col">
         <div className="flex-none px-3.5 pt-3">
-          <p className="display text-[clamp(2.6rem,4.4vw,3.6rem)] leading-none text-amber">{DEMO_THEMES}</p>
-          <p className="mono mt-2 text-[10.5px] leading-relaxed text-faint">{t('w.rail_note')}</p>
+          <p className="sp-display text-[clamp(2.6rem,4.4vw,3.6rem)] leading-none text-amber">{DEMO_THEMES}</p>
+          <p className="font-mono mt-2 text-[10.5px] leading-relaxed text-faint">{t('w.rail_note')}</p>
         </div>
         <div className="rail-box relative mt-3 min-h-0 flex-1 overflow-hidden [mask-image:linear-gradient(180deg,transparent,#000_12%,#000_88%,transparent)]">
           <div className="lane-v px-2" data-run={still ? '0' : '1'}>
@@ -281,7 +260,7 @@ export function Rail({ t }: { t: T }) {
             )}
           </div>
         </div>
-        <p className="mono flex-none border-t border-line px-3.5 py-2 text-[10px] text-faint">{t('w.plain')}</p>
+        <p className="font-mono flex-none border-t border-line px-3.5 py-2 text-[10px] text-faint">{t('w.plain')}</p>
       </div>
     </Panel>
   );
@@ -352,14 +331,14 @@ export function News({ t, lang }: { t: T; lang: string }) {
             <li key={item.id} className="min-h-0 flex-1 border-b border-line last:border-b-0">
               <Link
                 to={`/news/${item.id}`}
-                className="rowl rowl-tall no-underline"
+                className="sp-row row-tall"
                 data-on={i === at ? '1' : '0'}
                 onMouseEnter={() => setAt(i)}
                 onFocus={() => setAt(i)}
               >
                 <b className="w-[3.8rem] shrink-0 whitespace-nowrap tabular-nums">{when(item.date)}</b>
                 <span className="truncate">{item.title}</span>
-                <span className="mono ml-auto hidden shrink-0 text-[9.5px] uppercase tracking-[.1em] text-line-2 xl:inline">
+                <span className="font-mono ml-auto hidden shrink-0 text-[9.5px] uppercase tracking-[.1em] text-line-2 xl:inline">
                   {t(feedOf(item) === 'ann' ? 'w.feed_ann' : 'w.feed_blog')}
                 </span>
               </Link>
@@ -367,7 +346,7 @@ export function News({ t, lang }: { t: T; lang: string }) {
           ))}
 
           {failed && (
-            <li className="mono flex flex-1 items-center px-3.5 text-[11.5px] leading-relaxed text-faint">
+            <li className="font-mono flex flex-1 items-center px-3.5 text-[11.5px] leading-relaxed text-faint">
               {t('w.news_off')}
             </li>
           )}
@@ -377,7 +356,7 @@ export function News({ t, lang }: { t: T; lang: string }) {
           {here ? (
             <>
               <p className="line-clamp-2 text-[12.5px] leading-snug text-dim">{opening}</p>
-              <p className="mono mt-1.5 text-[10px] text-faint">
+              <p className="font-mono mt-1.5 text-[10px] text-faint">
                 {here.author ? `${here.author} · ` : ''}
                 <Link to={`/news/${here.id}`} className="text-dim no-underline hover:text-amber">
                   {t('w.news_open')}
@@ -385,7 +364,7 @@ export function News({ t, lang }: { t: T; lang: string }) {
               </p>
             </>
           ) : (
-            <p className="mono text-[11px] text-faint">{failed ? '' : t('w.news_wait')}</p>
+            <p className="font-mono text-[11px] text-faint">{failed ? '' : t('w.news_wait')}</p>
           )}
         </div>
       </div>
@@ -415,16 +394,16 @@ export function Doors({ t }: { t: T }) {
               <img src={`${HEADER_ART}/${f.flagship}/capsule_231x87.jpg`} alt="" loading="lazy" decoding="async" />
               <span className="plate-veil" />
               <span className="relative z-10 block">
-                <b className="display block text-[13.5px] leading-tight">{f.name}</b>
-                <span className="mono mt-0.5 block text-[9.5px] text-text/70">{f.born}-{f.last} · {f.n}</span>
+                <b className="sp-display block text-[13.5px] leading-tight">{f.name}</b>
+                <span className="font-mono mt-0.5 block text-[9.5px] text-text/70">{f.born}-{f.last} · {f.n}</span>
               </span>
             </a>
           ))}
         </div>
         <div className="flex flex-none flex-wrap items-center gap-2 border-t border-line px-3 py-2.5">
-          <p className="mono mr-auto max-w-[46ch] text-[10.5px] leading-relaxed text-faint">{t('land.open_lede')}</p>
-          <a className="pill" href={`${api.SITE}/publishers`} {...api.OUT}>{t('land.hs_pub')}</a>
-          <a className="pill" href={`${api.SITE}/developers`} {...api.OUT}>{t('land.hs_dev')}</a>
+          <p className="font-mono mr-auto max-w-[46ch] text-[10.5px] leading-relaxed text-faint">{t('land.open_lede')}</p>
+          <Pill href={`${api.SITE}/publishers`} {...api.OUT}>{t('land.hs_pub')}</Pill>
+          <Pill href={`${api.SITE}/developers`} {...api.OUT}>{t('land.hs_dev')}</Pill>
         </div>
       </div>
     </Panel>
@@ -464,7 +443,7 @@ export function Ext({ t }: { t: T }) {
           </div>
           <div className="mk mt-1.5 border-l-2 border-l-amber">
             <div className="flex items-center gap-2">
-              <i className="dot" />
+              <i className="sp-dot" />
               <i className="mk-line w-[62px] flex-none" />
             </div>
             <div ref={meters} className="grid gap-[7px]">
@@ -497,7 +476,7 @@ export function Emb({ t, onLookup }: { t: T; onLookup: () => void }) {
         </div>
         <figure aria-hidden className="m-0 hidden w-[160px] shrink-0 2xl:block">
           <div className="mk">
-            <span className="mono flex items-center gap-1.5 border-b border-line pb-1.5 text-[9.5px] text-faint">
+            <span className="font-mono flex items-center gap-1.5 border-b border-line pb-1.5 text-[9.5px] text-faint">
               <i className="block h-[6px] w-[6px] rounded-[2px] bg-line-2" />README.md
             </span>
             <div ref={chart} className="mk-bars">
@@ -535,10 +514,10 @@ export function Parts({ t }: { t: T }) {
                 rel="noopener"
                 className="group block h-full border-t-2 border-t-transparent p-3.5 no-underline transition-colors hover:border-t-amber hover:bg-panel-2"
               >
-                <span className="mono text-[9.5px] tracking-[.2em] text-line-2">{String(i + 1).padStart(2, '0')}</span>
+                <span className="font-mono text-[9.5px] tracking-[.2em] text-line-2">{String(i + 1).padStart(2, '0')}</span>
                 <b className="mt-1 block text-[13.5px] font-semibold tracking-tight text-text">{t(head)}</b>
                 <span className="mt-1.5 block text-[11.5px] leading-snug text-dim">{t(body)}</span>
-                <span className="mono mt-2 block text-[10px] text-faint transition-colors group-hover:text-amber">
+                <span className="font-mono mt-2 block text-[10px] text-faint transition-colors group-hover:text-amber">
                   {t('land.eco_repo')} ↗
                 </span>
               </a>
@@ -546,14 +525,14 @@ export function Parts({ t }: { t: T }) {
           ))}
         </ul>
         <div className="flex flex-none flex-wrap items-center gap-x-6 gap-y-2 border-t border-line px-3.5 py-2.5">
-          <p className="mono m-0 text-[10.5px] text-faint">
+          <p className="font-mono m-0 text-[10.5px] text-faint">
             {t('w.langs_line', { n: (2224).toLocaleString(), k: 3 })}
             {' · '}
             <span className="text-dim">EN</span> <span className="text-amber">100%</span>{' · '}
             <span className="text-dim">PT</span> <span className="text-amber">100%</span>{' · '}
             <span className="text-dim">RU</span> <span className="text-amber">100%</span>
           </p>
-          <p className="mono m-0 ml-auto flex flex-wrap gap-x-5 gap-y-1 text-[10.5px]">
+          <p className="font-mono m-0 ml-auto flex flex-wrap gap-x-5 gap-y-1 text-[10.5px]">
             <a className="text-dim no-underline hover:text-amber" href={`${api.SITE}/translate`} {...api.OUT}>
               {t('land.eco_translate')}
             </a>

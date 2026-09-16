@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { LOCALES } from './copy';
 import type { Lang, T } from './copy';
 import { Panel } from './ui';
+import { PanelGo, Segmented } from './ui-kit/react';
 import { Link } from './router';
 import { bbcode } from './bbcode';
 import * as api from './api';
@@ -58,7 +59,7 @@ function opening(item: api.NewsItem) {
  *  once because the band and the plain header both need it. */
 function Meta({ t, item, when }: { t: T; item: api.NewsItem; when: string }) {
   return (
-    <p className="mono flex flex-wrap items-center gap-x-3 gap-y-1 text-[10.5px] uppercase tracking-[.14em] text-faint">
+    <p className="font-mono flex flex-wrap items-center gap-x-3 gap-y-1 text-[10.5px] uppercase tracking-[.14em] text-faint">
       <span className="text-amber">{t(kindOf(item) === 'client' ? 'w.feed_ann' : 'w.feed_blog')}</span>
       <span>{when}</span>
       {item.author && <span className="normal-case tracking-normal">{t('n.by', { who: item.author })}</span>}
@@ -81,26 +82,21 @@ export function NewsPage({ t, lang }: { t: T; lang: string }) {
   return (
     <main className="feedgrid">
       <div className="grid gap-[var(--gap)]">
-        <section className="p">
-          <div className="p-bar">
-            <h2 className="m-0 flex items-center gap-2.5 font-[inherit] text-[inherit] font-medium tracking-[inherit]">
-              <span className="dot" />
+        <section className="sp-panel">
+          <div className="sp-panel-bar">
+            <h2 className="sp-panel-title">
+              <span className="sp-dot" />
               <span>{t('n.feed')}</span>
             </h2>
-            <div className="flex gap-1 rounded-full border border-line p-[3px]">
-              {(['all', 'fest', 'client'] as const).map((k) => (
-                <button
-                  key={k}
-                  type="button"
-                  onClick={() => setKind(k)}
-                  className={`mono rounded-full px-3 py-[2px] text-[10.5px] lowercase tracking-normal transition-colors ${
-                    kind === k ? 'bg-panel-2 text-text' : 'text-faint hover:text-dim'
-                  }`}
-                >
-                  {t(k === 'all' ? 'n.filter_all' : k === 'fest' ? 'n.filter_fest' : 'n.filter_client')}
-                </button>
-              ))}
-            </div>
+            <Segmented
+              label={t('n.feed')}
+              value={kind}
+              options={(['all', 'fest', 'client'] as const).map((k) => ({
+                value: k,
+                label: t(k === 'all' ? 'n.filter_all' : k === 'fest' ? 'n.filter_fest' : 'n.filter_client'),
+              }))}
+              onChange={setKind}
+            />
           </div>
 
           <ul className="m-0 flex list-none flex-col p-0">
@@ -111,7 +107,7 @@ export function NewsPage({ t, lang }: { t: T; lang: string }) {
               </li>
             ))}
 
-            {failed && <li className="mono px-4 py-6 text-[12px] text-faint">{t('n.empty')}</li>}
+            {failed && <li className="font-mono px-4 py-6 text-[12px] text-faint">{t('n.empty')}</li>}
 
             {shown.map((item) => (
               <li key={item.id} className="border-b border-line last:border-b-0">
@@ -119,7 +115,7 @@ export function NewsPage({ t, lang }: { t: T; lang: string }) {
                   to={`/news/${item.id}`}
                   className="group flex items-baseline gap-4 px-4 py-4 no-underline transition-colors hover:bg-panel-2"
                 >
-                  <b className="mono w-[3.8rem] shrink-0 whitespace-nowrap text-[10.5px] font-medium tabular-nums text-faint">
+                  <b className="font-mono w-[3.8rem] shrink-0 whitespace-nowrap text-[10.5px] font-medium tabular-nums text-faint">
                     {when.short(item.date)}
                   </b>
                   {/* Steam's own card for the event, at the size a row can
@@ -146,7 +142,7 @@ export function NewsPage({ t, lang }: { t: T; lang: string }) {
                     </span>
                     <span className="mt-1 block truncate text-[12.5px] text-dim">{opening(item)}</span>
                   </span>
-                  <span className="mono hidden shrink-0 text-[9.5px] uppercase tracking-[.1em] text-line-2 transition-colors group-hover:text-amber-d sm:inline">
+                  <span className="font-mono hidden shrink-0 text-[9.5px] uppercase tracking-[.1em] text-line-2 transition-colors group-hover:text-amber-d sm:inline">
                     {t(kindOf(item) === 'client' ? 'w.feed_ann' : 'w.feed_blog')}
                   </span>
                 </Link>
@@ -158,13 +154,13 @@ export function NewsPage({ t, lang }: { t: T; lang: string }) {
 
       <div className="stick grid gap-[var(--gap)]">
         <Panel title={t('n.source')} area="" go={t('w.news_go')} goHref="https://store.steampowered.com/news/">
-          <h1 className="display text-[clamp(1.5rem,2.2vw,2rem)]">{t('n.news_title')}</h1>
+          <h1 className="sp-display text-[clamp(1.5rem,2.2vw,2rem)]">{t('n.news_title')}</h1>
           <p className="mt-3 text-[13px] leading-snug text-dim">{t('n.news_lede')}</p>
-          <p className="mono mt-4 border-t border-line pt-3 text-[11px] leading-relaxed text-faint">
+          <p className="font-mono mt-4 border-t border-line pt-3 text-[11px] leading-relaxed text-faint">
             {t('n.source_body')}
           </p>
           {items && (
-            <p className="mono mt-3 text-[11px] text-faint">
+            <p className="font-mono mt-3 text-[11px] text-faint">
               <span className="text-amber">{t('n.count', { n: items.length })}</span>
             </p>
           )}
@@ -202,18 +198,18 @@ export function PostPage({ t, lang, id }: { t: T; lang: string; id: string }) {
 
   return (
     <main className="feedgrid">
-      <section className="p">
-        <div className="p-bar">
-          <Link to="/news" className="flex items-center gap-2.5 text-[inherit] no-underline">
-            <span className="dot" />
+      <section className="sp-panel">
+        <div className="sp-panel-bar">
+          <Link to="/news" className="sp-panel-title no-underline">
+            <span className="sp-dot" />
             <span>{t('n.back')}</span>
           </Link>
           {item && (
-            <a className="p-go" href={item.url} target="_blank" rel="noopener">{t('n.on_steam')} ↗</a>
+            <PanelGo external href={item.url}>{t('n.on_steam')}</PanelGo>
           )}
         </div>
 
-        <div className="p-body p-tight">
+        <div className="sp-panel-body sp-panel-body--tight">
           {!items && !failed && (
             <div className="grid gap-3 px-[clamp(16px,2.4vw,34px)] py-[clamp(18px,2.4vw,30px)]">
               <span className="h-3 w-40 animate-pulse rounded bg-line" />
@@ -223,10 +219,10 @@ export function PostPage({ t, lang, id }: { t: T; lang: string; id: string }) {
             </div>
           )}
 
-          {failed && <p className="mono px-[clamp(16px,2.4vw,34px)] py-[clamp(18px,2.4vw,30px)] text-[12px] text-faint">{t('n.empty')}</p>}
+          {failed && <p className="font-mono px-[clamp(16px,2.4vw,34px)] py-[clamp(18px,2.4vw,30px)] text-[12px] text-faint">{t('n.empty')}</p>}
 
           {items && !item && (
-            <p className="mono px-[clamp(16px,2.4vw,34px)] py-[clamp(18px,2.4vw,30px)] text-[12px] leading-relaxed text-faint">
+            <p className="font-mono px-[clamp(16px,2.4vw,34px)] py-[clamp(18px,2.4vw,30px)] text-[12px] leading-relaxed text-faint">
               {t('n.missing')}{' '}
               <Link to="/news" className="text-dim hover:text-amber">{t('n.back')} ↗</Link>
             </p>
@@ -242,7 +238,7 @@ export function PostPage({ t, lang, id }: { t: T; lang: string; id: string }) {
                   <img src={item.art.background} alt="" />
                   <div className="hero-in">
                     <Meta t={t} item={item} when={when.full(item.date)} />
-                    <h1 className="display mt-3 max-w-[24ch] text-[clamp(1.8rem,3.4vw,2.8rem)]">{item.title}</h1>
+                    <h1 className="sp-display mt-3 max-w-[24ch] text-[clamp(1.8rem,3.4vw,2.8rem)]">{item.title}</h1>
                     {item.art.subtitle && (
                       <p className="mt-3 max-w-[52ch] text-[14.5px] leading-snug text-dim">{item.art.subtitle}</p>
                     )}
@@ -251,13 +247,13 @@ export function PostPage({ t, lang, id }: { t: T; lang: string; id: string }) {
               ) : (
                 <div className="px-[clamp(16px,2.4vw,34px)] pt-[clamp(18px,2.4vw,30px)]">
                   <Meta t={t} item={item} when={when.full(item.date)} />
-                  <h1 className="display mt-3 max-w-[24ch] text-[clamp(1.7rem,3.2vw,2.6rem)]">{item.title}</h1>
+                  <h1 className="sp-display mt-3 max-w-[24ch] text-[clamp(1.7rem,3.2vw,2.6rem)]">{item.title}</h1>
                 </div>
               )}
 
               <div className="px-[clamp(16px,2.4vw,34px)] pb-[clamp(18px,2.4vw,30px)]">
                 {thin ? (
-                  <p className="mono mt-6 text-[12.5px] leading-relaxed text-faint">
+                  <p className="font-mono mt-6 text-[12.5px] leading-relaxed text-faint">
                     {t('n.sending')}{' '}
                     <a className="text-amber" href={item.url}>{t('n.on_steam')} ↗</a>
                   </p>
@@ -265,7 +261,7 @@ export function PostPage({ t, lang, id }: { t: T; lang: string; id: string }) {
                   <div className="post mt-7" dangerouslySetInnerHTML={{ __html: body }} />
                 )}
 
-                <p className="mono mt-10 border-t border-line pt-4 text-[10px] leading-relaxed text-faint">
+                <p className="font-mono mt-10 border-t border-line pt-4 text-[10px] leading-relaxed text-faint">
                   {t('n.valve_note')}
                 </p>
               </div>
@@ -283,7 +279,7 @@ export function PostPage({ t, lang, id }: { t: T; lang: string; id: string }) {
                   to={`/news/${other.id}`}
                   className="flex items-baseline gap-3 px-3.5 py-2.5 no-underline transition-colors hover:bg-panel-2"
                 >
-                  <b className="mono w-[3.4rem] shrink-0 whitespace-nowrap text-[10px] text-faint">{when.short(other.date)}</b>
+                  <b className="font-mono w-[3.4rem] shrink-0 whitespace-nowrap text-[10px] text-faint">{when.short(other.date)}</b>
                   <span className="line-clamp-2 text-[12.5px] leading-snug text-dim">{other.title}</span>
                 </Link>
               </li>

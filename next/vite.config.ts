@@ -23,6 +23,7 @@ export default defineConfig({
     port: 5180,
     strictPort: true,
     open: false,
+    allowedHosts: ['devs.steamprofiler.org'],
     proxy: {
       '/api': { target: UPSTREAM, changeOrigin: true, secure: true },
       '/art': { target: UPSTREAM, changeOrigin: true, secure: true },

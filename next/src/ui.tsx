@@ -3,11 +3,13 @@ import type { ReactNode } from 'react';
 import { animate, useInView } from 'motion/react';
 import { DEMO_SHAPE, squarify } from './data';
 import { Link } from './router';
+import { PanelAction, PanelGo, Panel as KitPanel } from './ui-kit/react';
 
 /* ── The panel ────────────────────────────────────────────────────────
-   The only container on this page. A title bar that says what the panel is
-   and, at its right, the one way out of it; a body; and nothing else. Nine
-   of these tiled is the whole layout. */
+   The only container on this page, drawn by SteamProfiler.UI. What this
+   wrapper adds is the bench's own idea of an exit: a route through the
+   router, an address off the site, or a button, decided by which prop is set.
+   `area` is the grid area the panel takes on the bench. */
 export function Panel({ title, area, go, goHref, goTo, onGo, tight, children }: {
   title: string;
   area: string;
@@ -20,19 +22,14 @@ export function Panel({ title, area, go, goHref, goTo, onGo, tight, children }: 
   tight?: boolean;
   children: ReactNode;
 }) {
+  const action = !go ? null
+    : goHref ? <PanelGo external href={goHref}>{go}</PanelGo>
+    : goTo ? <Link to={goTo} className="sp-panel-go">{go}</Link>
+    : <PanelAction onClick={onGo}>{go}</PanelAction>;
   return (
-    <section className={`p ${area}`}>
-      <div className="p-bar">
-        <h2 className="m-0 flex items-center gap-2.5 overflow-hidden font-[inherit] text-[inherit] font-medium tracking-[inherit]">
-          <span className="dot shrink-0" />
-          <span className="truncate">{title}</span>
-        </h2>
-        {go && goHref && <a className="p-go" href={goHref} target="_blank" rel="noopener">{go} ↗</a>}
-        {go && goTo && <Link to={goTo} className="p-go">{go}</Link>}
-        {go && !goHref && !goTo && <button type="button" className="p-go" onClick={onGo}>{go}</button>}
-      </div>
-      <div className={`p-body ${tight ? 'p-tight' : ''}`}>{children}</div>
-    </section>
+    <KitPanel title={title} className={area} action={action} tight={tight}>
+      {children}
+    </KitPanel>
   );
 }
 
