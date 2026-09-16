@@ -107,4 +107,34 @@ const POLICY_LOG = [
       ru: "Теперь я считаю ещё и то, какой экран открыли, - рядом с тем, сколько визитов вернулось и сколько профилей смотрели. Записывается имя страницы и больше ничего: профиль из /u/<кто>/cards отбрасывается до подсчёта, и ни в одном из трёх подсчётов нет ничего, чем их можно было бы связать между собой. Перезагрузка не считается дважды; уйти с экрана и вернуться - считается. В списке того, что здесь считается, были названы три вещи, а их уже стало четыре.",
     },
   },
+  {
+    version: 10,
+    date: "2026-09-15",
+    commit: null,
+    summary: {
+      en: "Added a private, bounded security request history for tools, probes and HTTP errors, with sensitive fields hidden. It is a separate exception to traffic counting, disclosed with its retention and limits.",
+      pt: "Adicionado um histórico privado e limitado de requisições de segurança para ferramentas, sondagens e erros HTTP, com campos sensíveis ocultados. É uma exceção separada das contagens de tráfego, com retenção e limites descritos.",
+      ru: "Добавлена закрытая ограниченная история запросов безопасности для инструментов, проверок и ошибок HTTP со скрытыми чувствительными полями. Это отдельное исключение из подсчётов трафика с описанными сроком хранения и лимитами.",
+    },
+  },
+  {
+    version: 11,
+    date: "2026-09-15",
+    commit: null,
+    summary: {
+      en: "Security history now includes declared crawlers, search and AI bots, including successful requests and redirects. Ordinary successful browser visits remain excluded; retention and sensitive-field protection are unchanged.",
+      pt: "O histórico de segurança passa a incluir robôs declarados, de busca e de IA, inclusive acessos bem-sucedidos e redirecionamentos. Visitas comuns bem-sucedidas de navegadores ficam de fora; a retenção e a proteção de campos sensíveis permanecem.",
+      ru: "История безопасности теперь включает заявленных роботов, поиск и ИИ, в том числе успешные запросы и перенаправления. Обычные успешные посещения браузеров исключены; срок хранения и защита чувствительных полей сохранены.",
+    },
+  },
+  {
+    version: 12,
+    date: "2026-09-15",
+    commit: null,
+    summary: {
+      en: "Security history records every completed client request received by nginx, including ordinary browsers, APIs, pages, assets and health checks, without collection filters based on route, User-Agent, status or attack detection. Non-sensitive query values are retained; retention and sensitive-field protection continue.",
+      pt: "O histórico de segurança registra todas as requisições de clientes concluídas recebidas pelo nginx, incluindo navegadores comuns, APIs, páginas, arquivos e verificações de saúde, sem filtros de coleta por rota, User-Agent, status ou detecção de ataques. Valores de parâmetros não sensíveis são mantidos; a retenção e a proteção de campos sensíveis continuam.",
+      ru: "История безопасности записывает все завершённые клиентские запросы nginx, включая обычные браузеры, API, страницы, файлы и проверки работоспособности, без фильтров по пути, User-Agent, статусу или признакам атаки. Нечувствительные значения параметров сохраняются; срок хранения и защита чувствительных полей действуют.",
+    },
+  },
 ];

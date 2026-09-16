@@ -17,6 +17,20 @@ Disallow: /u/
 Disallow: /api/
 Disallow: /appeal
 
+# Semrush crawlers are denied site-wide by nginx as well.
+# https://www.semrush.com/bot/
+User-agent: SemrushBot
+User-agent: SemrushBot-BA
+User-agent: SemrushBot-SI
+User-agent: SemrushBot-SWA
+User-agent: SemrushBot-OCOB
+User-agent: SemrushBot-FT
+User-agent: SemrushBot-ESI
+User-agent: SiteAuditBot
+User-agent: SplitSignalBot
+User-agent: RyteBot
+Disallow: /
+
 # ── The agents a person is standing behind ───────────────────────────
 # These are not crawlers. Each one fetches a page because somebody asked their
 # assistant a question about that page, once, and nothing is indexed or kept
