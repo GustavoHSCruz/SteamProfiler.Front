@@ -31,6 +31,40 @@ User-agent: SplitSignalBot
 User-agent: RyteBot
 Disallow: /
 
+# ── The ones that take and send nobody ───────────────────────────────
+# Backlink indexes, SEO suites, sales databases and survey scanners. Each one
+# reads the whole site to sell what it read to somebody else, and nobody ever
+# arrives here because of any of them - which is the difference between this
+# group and every search engine, which stays welcome above.
+#
+# It is also not free to be read: a profile page spends the Steam key, and the
+# day's ceiling is shared with the people the site is for.
+#
+# nginx denies all of these with 403 at the origin as well. This block is the
+# ask that comes first, and it is what the well-behaved half of them obeys
+# without ever reaching the deny.
+User-agent: AhrefsBot
+User-agent: MJ12bot
+User-agent: DotBot
+User-agent: rogerbot
+User-agent: BLEXBot
+User-agent: DataForSeoBot
+User-agent: SerpstatBot
+User-agent: Barkrowler
+User-agent: SEOkicks
+User-agent: MegaIndex
+User-agent: linkdexbot
+User-agent: SISTRIX Crawler
+User-agent: spbot
+User-agent: Screaming Frog SEO Spider
+User-agent: ZoomInfoBot
+User-agent: Diffbot
+User-agent: omgili
+User-agent: webzio-extended
+User-agent: InternetMeasurement
+User-agent: CensysInspect
+Disallow: /
+
 # ── The agents a person is standing behind ───────────────────────────
 # These are not crawlers. Each one fetches a page because somebody asked their
 # assistant a question about that page, once, and nothing is indexed or kept
