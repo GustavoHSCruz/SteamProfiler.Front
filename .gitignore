@@ -1,3 +1,7 @@
 __pycache__/
 *.pyc
 .DS_Store
+
+# As imagens de post moram no R2, atrás do cdn.steamprofiler.org. Este
+# repositório é público e guarda toda versão de todo arquivo que recebe.
+site/blog-img/
