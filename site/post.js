@@ -68,8 +68,9 @@ function inlineInto(into, text) {
   return into;
 }
 
-/** `![alt](/path)`, the same shape blog.py reads the preview image from. */
-const IMAGE = /^!\[([^\]\n]*)\]\((\/(?!\/)[^)\s]*)\)$/;
+/** `![alt](/path)` or `![alt](https://cdn.steamprofiler.org/...)`, the same
+ *  shape blog.py reads the preview image from. */
+const IMAGE = /^!\[([^\]\n]*)\]\(((?:\/(?!\/)|https:\/\/cdn\.steamprofiler\.org\/)[^)\s]*)\)$/;
 
 const line = (tag, cls, text) => inlineInto(h(tag, cls ? { cls } : {}), text);
 
@@ -106,8 +107,8 @@ function renderProse(body, into) {
       continue;
     }
 
-    // A picture is a line of its own, and only this site's: img-src is 'self',
-    // and anything else stays as the characters that were typed.
+    // A picture is a line of its own, and only this site's or its CDN's, which
+    // is what img-src allows; anything else stays as the characters typed.
     const image = raw.trim().match(IMAGE);
     if (image) {
       into.append(h('figure', { cls: 'prose-figure' },
