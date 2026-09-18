@@ -61,7 +61,13 @@ function repValue(s) {
   switch (s.key) {
     case 'age': return t('rep.v_days', { n: num(v) });
     case 'bans': return v ? num(v) : t('rep.v_none');
-    case 'sustained': return v != null ? t('rep.v_per_day', { n: num(v, 2) }) : '';
+    case 'sustained': {
+      // A bare number is a payload from rules version 2, cached before the
+      // idle days came along.
+      const { per_day: perDay, idle_days: idle } = typeof v === 'number' ? { per_day: v } : v || {};
+      return [perDay != null && t('rep.v_per_day', { n: num(perDay, 2) }),
+              idle != null && t('rep.v_idle', { n: num(idle) })].filter(Boolean).join(' · ');
+    }
     case 'limited': return t(v ? 'rep.v_limited' : 'rep.v_unlocked');
     case 'friend_bans': return t('rep.v_of', { k: num(v.flagged), n: num(v.sampled) });
     case 'hours': return `${num(v)} h`;
