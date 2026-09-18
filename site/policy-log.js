@@ -137,4 +137,14 @@ const POLICY_LOG = [
       ru: "История безопасности записывает все завершённые клиентские запросы nginx, включая обычные браузеры, API, страницы, файлы и проверки работоспособности, без фильтров по пути, User-Agent, статусу или признакам атаки. Нечувствительные значения параметров сохраняются; срок хранения и защита чувствительных полей действуют.",
     },
   },
+  {
+    version: 13,
+    date: "2026-09-18",
+    commit: null,
+    summary: {
+      en: "A second experiment: the reputation score on a profile page, 0 to 100, worked out from what the profile already publishes. To weigh it, the server now also asks Steam whether the friends on a public friend list carry a VAC or game ban, and keeps only how many do - never which ones. Nothing new is written down; the score lives in memory with the profile for fifteen minutes.",
+      pt: "Um segundo experimento: a nota de reputação na página de um perfil, de 0 a 100, calculada do que o perfil já publica. Pra pesar isso, o servidor passou a perguntar à Steam também se os amigos de uma lista pública têm banimento VAC ou de jogo, e guarda só quantos têm - nunca quais. Nada novo é gravado; a nota vive na memória junto com o perfil por quinze minutos.",
+      ru: "Второй эксперимент: оценка репутации на странице профиля, от 0 до 100, вычисленная из того, что профиль уже публикует. Чтобы её взвесить, сервер теперь также спрашивает Steam, есть ли у друзей из открытого списка бан VAC или игровой бан, и оставляет только их количество - никогда не то, у кого именно. Ничего нового не записывается; оценка живёт в памяти вместе с профилем пятнадцать минут.",
+    },
+  },
 ];

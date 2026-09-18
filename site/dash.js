@@ -576,6 +576,67 @@ function buildBans(b) {
   line.hidden = false;
 }
 
+/** Reputation, experimental. The api sends the score, the weights and what
+ *  each signal earned; this draws one row per signal with its meter filled to
+ *  its own weight, what it measured under it, and says how much of the 100
+ *  could be measured at all - a score taken over half the evidence is a
+ *  weaker score, and the reader should not have to guess that. */
+function repValue(s) {
+  const v = s.value;
+  if (s.points == null) return t('rep.unknown');
+  switch (s.key) {
+    case 'age': return t('rep.v_days', { n: num(v) });
+    case 'bans': return v ? num(v) : t('rep.v_none');
+    case 'sustained': return v != null ? t('rep.v_per_day', { n: num(v, 2) }) : '';
+    case 'limited': return t(v ? 'rep.v_limited' : 'rep.v_unlocked');
+    case 'friend_bans': return t('rep.v_of', { k: num(v.flagged), n: num(v.sampled) });
+    case 'hours': return `${num(v)} h`;
+    case 'variety': return t('rep.v_variety', { g: num(v.games), s: num(v.top_share) });
+    case 'profile': case 'community': return t('rep.v_of', { k: num(v.length), n: num(4) });
+    case 'items': return t('rep.v_of', { k: num(v.length), n: num(4) });
+    default: return v != null ? num(v) : '';
+  }
+}
+
+function buildRep(r) {
+  const wrap = el('panel-rep');
+  if (!wrap) return;
+  if (!r) {
+    wrap.remove();
+    return;
+  }
+  el('rep-score').textContent = num(r.score);
+  const band = r.score >= 70 ? 'high' : r.score >= 40 ? 'mid' : 'low';
+  el('rep-band').textContent = `${t(`rep.band_${band}`)} · ${t('rep.known', { n: num(r.known) })}`;
+  if (r.cap) {
+    const line = el('rep-cap');
+    line.textContent = t('rep.capped', {
+      max: num(r.cap.max), raw: num(r.raw), why: t(`rep.cap_${r.cap.reason}`),
+    });
+    line.hidden = false;
+  }
+  const parent = el('rep-rows');
+  parent.textContent = '';
+  const animate = !still();
+  r.signals.forEach((s, i) => {
+    const row = h('div', { cls: 'row' });
+    if (s.points == null) row.dataset.unknown = '1';
+    const meter = h('span', { cls: 'meter' });
+    if (animate) meter.dataset.animate = '1';
+    const fill = h('i');
+    fill.style.width = `${s.points ? (s.points / s.weight) * 100 : 0}%`;
+    if (animate) fill.style.animationDelay = `${i * 40}ms`;
+    meter.append(fill);
+    const fig = h('span', { cls: 'row-fig' },
+      s.points == null ? '-' : num(s.points, s.points % 1 ? 1 : 0),
+      h('small', { text: ` / ${s.weight}` }));
+    row.append(h('span', { cls: 'row-name', text: t(`rep.s_${s.key}`) }), meter, fig,
+      h('span', { cls: 'row-val', text: repValue(s) }));
+    parent.append(row);
+  });
+  el('rep-note').textContent = t('rep.note', { v: r.version });
+}
+
 function buildShowcase(pf) {
   const wrap = el('panel-showcase');
   if (!pf.showcase?.length && !pf.bio) {
@@ -2328,6 +2389,7 @@ function renderDashboard(d, query) {
   MONEY_Q = query;
   buildMoney(d.money, d.store_coverage);
   buildGenres(d.genres, d.store_coverage);
+  buildRep(d.reputation);
   buildFriends(d.friend_list, query);
   // Not awaited, like the collection panel on the cards page: the dashboard is
   // complete without it and this one costs a call of its own.
