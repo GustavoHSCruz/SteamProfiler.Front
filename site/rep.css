@@ -1,0 +1,113 @@
+/* steamprofiler.org - reputation: the dial on the dashboard and the screen at
+   /u/<perfil>/rep. Amber like the rest of the site, and no red anywhere: the
+   number is a reading of what Steam publishes, not a verdict on a person. */
+
+/* ── The dial ─────────────────────────────────────────────────────── */
+
+.gauge { position: relative; max-width: 260px; margin: 4px auto 0; }
+.gauge svg { display: block; width: 100%; height: auto; overflow: visible; }
+.gauge-track, .gauge-fill { fill: none; stroke-width: 14; }
+.gauge-track { stroke: var(--line); }
+.gauge-fill { stroke: var(--accent); }
+.gauge-tick { stroke: var(--faint); stroke-width: 1.5; }
+.gauge-tick.is-edge { stroke: var(--dim); stroke-width: 2; }
+.gauge-needle line { stroke: var(--text); stroke-width: 3; stroke-linecap: round; }
+.gauge-needle circle { fill: var(--text); }
+.gauge-needle { transform-box: view-box; transform-origin: 100px 100px; }
+@media (prefers-reduced-motion: no-preference) {
+  .gauge-needle { animation: gauge-sweep 900ms cubic-bezier(.2, .8, .2, 1) backwards; }
+  .gauge-fill { animation: gauge-fill 900ms cubic-bezier(.2, .8, .2, 1) backwards; }
+  @keyframes gauge-sweep { from { transform: rotate(-90deg); } }
+  @keyframes gauge-fill { from { stroke-dasharray: 0 100; } }
+}
+.gauge-end {
+  position: absolute; bottom: -4px;
+  font-family: var(--mono); font-size: 10.5px; color: var(--faint);
+}
+.gauge-end.is-lo { left: 6%; }
+.gauge-end.is-hi { right: 3%; }
+
+.gauge-num {
+  margin: 10px 0 0; text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.gauge-num b {
+  font-family: var(--display); font-weight: var(--display-w);
+  font-size: clamp(2.2rem, 3.6vw, 3rem); line-height: 1;
+  letter-spacing: -0.03em; color: var(--accent);
+}
+.gauge-num small { font-family: var(--mono); font-size: 12px; color: var(--dim); }
+.gauge-band {
+  margin: 6px 0 0; text-align: center;
+  font-family: var(--label); font-weight: var(--label-w);
+  font-size: 10.5px; letter-spacing: var(--label-ls);
+  text-transform: uppercase; color: var(--dim);
+}
+.p-rep .record { text-align: center; }
+.gauge-more {
+  display: block; width: max-content; margin: 16px auto 0;
+  font-family: var(--mono); font-size: 12.5px;
+  color: var(--accent); text-decoration: none;
+}
+.gauge-more:hover { text-decoration: underline; }
+
+/* ── The screen ───────────────────────────────────────────────────── */
+
+.rpt {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(20px, 4vh, 48px) var(--edge) var(--edge);
+}
+#rpt-root { display: grid; gap: var(--gap); }
+.rpt-head { max-width: 70ch; margin-bottom: clamp(6px, 1.5vh, 18px); }
+.rpt-kicker {
+  margin: 0 0 10px;
+  font-family: var(--label); font-weight: var(--label-w);
+  font-size: 11px; letter-spacing: var(--label-ls);
+  text-transform: uppercase; color: var(--faint);
+}
+.rpt-title { margin: 0; font-size: clamp(1.6rem, 4vw, 2.6rem); overflow-wrap: anywhere; }
+.rpt-lede { margin: 14px 0 0; font-size: 14.5px; line-height: 1.65; color: var(--dim); }
+
+.rpt-top-body {
+  display: grid; grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+  align-items: center; gap: clamp(16px, 4vw, 48px);
+}
+.gauge.is-big { max-width: 320px; margin: 0; }
+.rpt-sum .gauge-num, .rpt-sum .gauge-band { text-align: left; margin-top: 0; }
+.rpt-sum .gauge-band { margin-top: 8px; }
+.rpt-sum .record { max-width: 60ch; }
+
+.rpt-cards {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 8px;
+}
+.rpt-card {
+  padding: 14px 15px 15px;
+  border: 1px solid var(--line); border-radius: var(--r);
+}
+/* A span, so it has to be told it is a block: outside the .row grid nothing
+   else does. */
+.rpt-card .meter { display: block; }
+.rpt-card-top {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  margin-bottom: 10px;
+}
+.rpt-name { font-size: 14px; color: var(--text); }
+.rpt-score {
+  font-family: var(--mono); font-size: 18px; font-weight: 600;
+  font-variant-numeric: tabular-nums; color: var(--accent);
+}
+.rpt-val {
+  margin: 10px 0 0; font-family: var(--mono); font-size: 12px; color: var(--dim);
+}
+.rpt-desc { margin: 6px 0 0; font-size: 13px; line-height: 1.55; color: var(--faint); }
+.rpt-card[data-unknown] .rpt-name,
+.rpt-card[data-unknown] .rpt-score,
+.rpt-card[data-unknown] .rpt-val { color: var(--faint); }
+
+@media (max-width: 640px) {
+  .rpt-top-body { grid-template-columns: minmax(0, 1fr); }
+  .gauge.is-big { margin: 0 auto; }
+  .rpt-sum .gauge-num, .rpt-sum .gauge-band { text-align: center; }
+}

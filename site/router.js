@@ -63,6 +63,10 @@ const gen = parts[2] === 'embed';
 // account's own number, in every format Steam has ever handed out.
 const codes = parts[2] === 'ids';
 
+// And once more: reputation, signal by signal. A word, like the rest, so it
+// can never be read as an appid.
+const repute = parts[2] === 'rep';
+
 /** The address this view should have been reached at. A link built by hand or
  *  held from before this page understood URLs still works, and gets tidied in
  *  place so the one the visitor copies from here is the short one. It also puts
@@ -80,6 +84,7 @@ function canonical() {
                   : deck ? '/deck'
                   : gen ? '/embed'
                   : codes ? '/ids'
+                  : repute ? '/rep'
                     : appid ? `/${appid}` : '';
   return `/u/${encodeURIComponent(query)}${tail}`;
 }
@@ -99,6 +104,7 @@ function fail(message, retry) {
   el('deck').hidden = true;
   el('embed').hidden = true;
   el('ids').hidden = true;
+  el('rep').hidden = true;
   failure.hidden = false;
   el('failure-text').textContent = message;
   const again = el('failure-retry');
@@ -135,7 +141,7 @@ function showChrome(profileQuery, persona) {
   // waits on different calls and the skeleton it draws is that view's layout.
   bootStart(rival ? 'versus' : pile ? 'backlog' : cardset ? 'cards'
     : year ? 'year' : franchises ? 'franchises' : axis ? 'houses' : deck ? 'deck'
-      : gen ? 'embed' : codes ? 'ids' : appid ? 'game' : 'dash', query, appid);
+      : gen ? 'embed' : codes ? 'ids' : repute ? 'rep' : appid ? 'game' : 'dash', query, appid);
 
   let steamid;
   try {
@@ -274,6 +280,15 @@ function showChrome(profileQuery, persona) {
       showChrome(query, d.profile.persona);
       bootDone();
       renderIds(el('sid-root'), d, steamid, encodeURIComponent(query));
+    } else if (repute) {
+      // Everything on this screen is already in the profile payload: the api
+      // scores the account when it builds the profile.
+      const d = await api(`/profile?id=${steamid}`);
+      bootMark('fetched');
+      el('rep').hidden = false;
+      showChrome(query, d.profile.persona);
+      bootDone();
+      renderRep(el('rpt-root'), d, encodeURIComponent(query));
     } else if (year) {
       // Every figure on this page except the unlocks is already in the profile
       // payload, so the page is complete the moment that lands. The unlocks

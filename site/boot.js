@@ -124,13 +124,19 @@ const BOOT_PLAN = {
     ['fetched', [['load.s_library', 0]]],
     ['drawn', [['load.s_page', 0]]],
   ],
+  // Reputation is scored with the profile, so its wait is the profile's.
+  rep: [
+    ['resolved', [['load.s_find', 0]]],
+    ['fetched', [['load.s_library', 0], ['load.s_hours', 2600]]],
+    ['drawn', [['load.s_page', 0]]],
+  ],
 };
 
 const BOOT_HEAD = {
   dash: 'load.h_dash', backlog: 'load.h_dash', cards: 'load.h_dash',
   game: 'load.h_game', versus: 'load.h_versus', year: 'load.h_year',
   franchises: 'load.h_franchises', houses: 'load.h_houses', deck: 'load.h_deck',
-  embed: 'load.h_embed', ids: 'load.h_ids',
+  embed: 'load.h_embed', ids: 'load.h_ids', rep: 'load.h_rep',
 };
 
 /* What the window says once the wait stops being short, and when. Three
@@ -220,6 +226,12 @@ const BOOT_SHAPE = {
   ],
   // Rows, which is all the codes screen is.
   ids: () => bootPile(),
+  // A dial beside its summary, and then the cards.
+  rep: () => [
+    { x: 0, y: 0, w: 100, h: 30 },
+    { x: 0, y: 32, w: 32, h: 20 }, { x: 34, y: 32, w: 32, h: 20 }, { x: 68, y: 32, w: 32, h: 20 },
+    { x: 0, y: 54, w: 32, h: 20 }, { x: 34, y: 54, w: 32, h: 20 }, { x: 68, y: 54, w: 32, h: 20 },
+  ],
 };
 
 /* ── The wait of one game ──────────────────────────────────────────────

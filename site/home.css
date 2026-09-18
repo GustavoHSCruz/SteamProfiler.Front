@@ -1583,27 +1583,9 @@ a.time-col { text-decoration: none; color: inherit; }
 .p-gen { grid-column: span 4; }
 
 /* ── Reputation ───────────────────────────────────────────────────────
-   Each row is one signal, its meter filled to the share of its own weight it
-   earned - not scaled against the other rows, because a 3-point signal fully
-   earned is a full bar. A signal the profile does not publish is drawn faint
-   and empty rather than hidden: the reader should see what was not counted. */
+   A dial and a link. The gauge itself is in rep.css, shared with the screen
+   the link goes to. */
 .p-rep { grid-column: span 4; }
-.p-rep .figure { margin-bottom: 4px; }
-.p-rep .figure small { margin-left: 10px; }
-.p-rep .rep-rows { margin-top: 16px; }
-.rep-rows .row { grid-template-columns: minmax(90px, 1.6fr) minmax(0, 1.4fr) 8ch; }
-.rep-rows .row[data-unknown] .row-name, .rep-rows .row[data-unknown] .row-fig { color: var(--faint); }
-.rep-rows .row-fig small { color: var(--faint); font-weight: 400; }
-.rep-rows .row-val {
-  grid-column: 1 / -1; margin-top: -2px;
-  font-size: 11px; color: var(--faint);
-}
-@media (max-width: 560px) {
-  /* The generic phone rule drops the meter under the name; this row's own
-     column rule outranks it, so it has to be said again here. */
-  .rep-rows .row { grid-template-columns: minmax(0, 1fr) auto; }
-  .rep-rows .row-val { order: 4; }
-}
 
 /* ── Friends ──────────────────────────────────────────────────────────
    Each tile goes to the versus page. The private ones are drawn dimmed and

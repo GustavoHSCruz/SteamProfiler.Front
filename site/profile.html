@@ -36,6 +36,7 @@
 <link rel="stylesheet" href="/deck.css">
 <link rel="stylesheet" href="/embed.css">
 <link rel="stylesheet" href="/ids.css">
+<link rel="stylesheet" href="/rep.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
@@ -202,18 +203,12 @@
       </div>
     </article>
 
-    <!-- Reputation, 0 to 100, from what is expensive to fake: time, hours,
-         money, a clean record and a clean circle. Experimental, and the bar
-         says so. The api computes it (rep.py); this only draws the rows. -->
+    <!-- Reputation, 0 to 100, as a dial and nothing else. What it is made of
+         is its own screen, /u/<perfil>/rep, one link under the number. The api
+         computes it (rep.py); rep.js draws both. -->
     <article class="panel p-rep" id="panel-rep">
       <div class="panel-bar"><span data-i18n="rep.title">reputation</span><b data-i18n="rep.tag">experimental</b></div>
-      <div class="panel-body">
-        <p class="figure is-hot"><span id="rep-score">-</span><small data-i18n="rep.of">out of 100</small></p>
-        <p class="note" id="rep-band"></p>
-        <p class="record" id="rep-cap" hidden></p>
-        <div class="rows rep-rows" id="rep-rows"></div>
-        <p class="note" id="rep-note"></p>
-      </div>
+      <div class="panel-body" id="rep-body"></div>
     </article>
 
     <!-- The versus page has existed since the treemap did. This is the first
@@ -544,6 +539,12 @@
   <div id="sid-root"></div>
 </main>
 
+<!-- Reputation, signal by signal. Drawn by rep.js out of the profile payload:
+     the api already did the arithmetic, this screen only shows it. -->
+<main id="rep" class="rpt" hidden>
+  <div id="rpt-root"></div>
+</main>
+
 <footer class="foot">
   <p><span data-i18n="foot.source_pre">Read from Steam. Fetched</span> <time id="g-generated"></time>. <a href="/feedback" data-i18n="foot.found_bug">found a bug?</a> · <a href="/blog" data-i18n="nav.blog">blog</a> · <a href="/about" data-i18n="nav.about">about</a> · <a href="/privacy" data-i18n="nav.privacy">privacy</a> · <a href="/terms" data-i18n="nav.terms">terms of use</a> · <a class="foot-repo" href="https://github.com/GustavoHSCruz/SteamProfiler.Front" rel="noopener" data-i18n="foot.front_repo">front-end source ↗</a> · <a class="foot-repo" href="https://github.com/GustavoHSCruz/SteamProfiler.Api" rel="noopener" data-i18n="foot.api_repo">API source ↗</a></p>
   <p id="credit-slot"><a href="/u/gordziilla">made with ♥</a></p>
@@ -570,6 +571,7 @@
 <script src="/deck.js" defer></script>
 <script src="/embed.js" defer></script>
 <script src="/ids.js" defer></script>
+<script src="/rep.js" defer></script>
 <script src="/router.js" defer></script>
 </body>
 </html>
