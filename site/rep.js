@@ -63,9 +63,11 @@ function repValue(s) {
     case 'bans': return v ? num(v) : t('rep.v_none');
     case 'sustained': {
       // A bare number is a payload from rules version 2, cached before the
-      // idle days came along.
-      const { per_day: perDay, idle_days: idle } = typeof v === 'number' ? { per_day: v } : v || {};
-      return [perDay != null && t('rep.v_per_day', { n: num(perDay, 2) }),
+      // idle days came along; per_year arrived with version 4.
+      const { per_day: perDay, per_year: perYear, idle_days: idle } =
+        typeof v === 'number' ? { per_day: v } : v || {};
+      return [perYear != null ? t('rep.v_per_year', { n: num(perYear) })
+                : perDay != null && t('rep.v_per_day', { n: num(perDay, 2) }),
               idle != null && t('rep.v_idle', { n: num(idle) })].filter(Boolean).join(' · ');
     }
     case 'limited': return t(v ? 'rep.v_limited' : 'rep.v_unlocked');
