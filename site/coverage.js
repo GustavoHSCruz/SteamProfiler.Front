@@ -10,7 +10,7 @@
    still answer for every string on the site. */
 
 const COVERAGE = {
-  "keys": 2339,
+  "keys": 2341,
   "groups": [
     {
       "id": "games",
@@ -34,32 +34,32 @@ const COVERAGE = {
     },
     {
       "id": "rest",
-      "keys": 1149
+      "keys": 1151
     }
   ],
   "languages": [
     {
       "code": "en",
-      "done": 2339,
+      "done": 2341,
       "groups": {
         "games": 849,
         "generator": 114,
         "franchises": 96,
         "dash": 74,
         "privacy": 57,
-        "rest": 1149
+        "rest": 1151
       }
     },
     {
       "code": "pt",
-      "done": 2339,
+      "done": 2341,
       "groups": {
         "games": 849,
         "generator": 114,
         "franchises": 96,
         "dash": 74,
         "privacy": 57,
-        "rest": 1149
+        "rest": 1151
       }
     },
     {
