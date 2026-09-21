@@ -65,11 +65,12 @@ DYNAMIC = (re.compile(r"^/u/"),
 DESC_MIN, DESC_MAX = 50, 320
 
 # Shells nobody arrives at from a search result, so a description on them would
-# be written for a reader who does not exist. The first four are served
+# be written for a reader who does not exist. The first five are served
 # `internal` by nginx and have no address of their own; post.html has a real
 # description, written by the api into the head at request time out of the
 # post's own title, because a shell shared by every post cannot carry one.
 NO_DESCRIPTION = {"abuse.html", "banned.html", "appeal.html", "appeal-sent.html",
+                  "maintenance.html",
                   "post.html"}
 
 fail = []

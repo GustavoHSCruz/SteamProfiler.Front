@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>503 / steamprofiler.org</title>
+<!-- Same construction as banned.html: one response, no second request. While
+     this page is up nothing else on the site answers, so it cannot lean on the
+     stylesheet, the fonts or the dictionary. Every language at once, because
+     there is no script to pick one.
+
+     No return date on purpose. The page is switched on and off from the
+     server and outlives any one pause; a date written here is a promise that
+     goes stale the first time the pause runs long. -->
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    --bg: #0b0a0e; --panel: #131219; --line: #282631;
+    --text: #eeecf3; --dim: #8e8a9b; --faint: #5d5a6b; --accent: #ffb454;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+    font-family: var(--sans); font-size: 16px; line-height: 1.55;
+    display: flex; align-items: center; justify-content: center;
+    padding: clamp(16px, 5vw, 48px);
+  }
+  main {
+    width: 100%; max-width: 46rem;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    padding: clamp(20px, 4vw, 40px);
+  }
+  .code {
+    font-family: var(--mono); font-weight: 500; font-size: 13px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent);
+    margin: 0 0 6px;
+  }
+  h1 {
+    margin: 0 0 4px; font-size: clamp(26px, 5vw, 38px); font-weight: 800;
+    letter-spacing: -0.03em; line-height: 1.05;
+  }
+  .lede { margin: 0; color: var(--dim); font-size: 15px; }
+  section { border-top: 1px solid var(--line); margin-top: 26px; padding-top: 20px; }
+  h2 {
+    font-family: var(--mono); font-weight: 500; font-size: 12px;
+    letter-spacing: 0.16em; color: var(--faint);
+    margin: 0 0 8px; text-transform: uppercase;
+  }
+  section p { margin: 0; }
+  section p + p { margin-top: 13px; }
+  .last { color: var(--dim); }
+  footer {
+    margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--line);
+    color: var(--faint); font-family: var(--mono); font-size: 12px;
+  }
+  .legal { margin: 8px 0 0; font-family: var(--sans); font-size: 12px; line-height: 1.5; }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f4f3f7; --panel: #ffffff; --line: #dedce6;
+      --text: #17161c; --dim: #5b5769; --faint: #85809a; --accent: #9a5c00;
+    }
+  }
+</style>
+</head>
+<body>
+<main>
+  <p class="code">503 / maintenance</p>
+  <h1>Down for maintenance</h1>
+  <p class="lede">Em manutenção &middot; На обслуживании &middot; 维护中 &middot; 維護中</p>
+
+  <section lang="en">
+    <h2>English</h2>
+    <p>SteamProfiler is paused for a few days while the server gets some work done.</p>
+    <p class="last">Nothing on your Steam account is affected. Come back soon and everything
+    will be where you left it.</p>
+  </section>
+
+  <section lang="pt-BR">
+    <h2>Português</h2>
+    <p>O SteamProfiler está parado por alguns dias enquanto o servidor passa por manutenção.</p>
+    <p class="last">Nada muda na sua conta Steam. Volte em breve e tudo vai estar onde
+    você deixou.</p>
+  </section>
+
+  <section lang="ru">
+    <h2>Русский</h2>
+    <p>SteamProfiler приостановлен на несколько дней, пока на сервере идут работы.</p>
+    <p class="last">С вашим аккаунтом Steam ничего не происходит. Загляните чуть позже,
+    всё будет на своих местах.</p>
+  </section>
+
+  <section lang="zh-CN">
+    <h2>简体中文</h2>
+    <p>SteamProfiler 正在进行服务器维护，将暂停几天。</p>
+    <p class="last">您的 Steam 账户不受任何影响。请稍后再来，一切都会保持原样。</p>
+  </section>
+
+  <section lang="zh-TW">
+    <h2>繁體中文</h2>
+    <p>SteamProfiler 正在進行伺服器維護，將暫停幾天。</p>
+    <p class="last">您的 Steam 帳戶不受任何影響。請稍後再來，一切都會保持原樣。</p>
+  </section>
+
+  <footer>steamprofiler.org
+    <p class="legal">steamprofiler.org is an independent hobby project. It is not affiliated with, endorsed by, or connected to Valve Corporation. Steam and the Steam logo are trademarks of Valve Corporation.</p>
+  </footer>
+</main>
+</body>
+</html>

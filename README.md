@@ -83,6 +83,7 @@ site/
   policy-history.html   every past revision of that policy        policy-history.js
   appeal.html     the form behind a block, plus appeal-sent.html
   banned.html     what a blocked visitor sees, plus abuse.html
+  maintenance.html   the 503 every route gets while the site is paused
 
   style.css       tokens, reset, chrome, shared primitives
   home.css        the landing page
