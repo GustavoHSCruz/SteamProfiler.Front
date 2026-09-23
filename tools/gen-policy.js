@@ -147,6 +147,16 @@ const REVISIONS = [
       pt: 'Um segundo experimento: a nota de reputação na página de um perfil, de 0 a 100, calculada do que o perfil já publica. Pra pesar isso, o servidor passou a perguntar à Steam também se os amigos de uma lista pública têm banimento VAC ou de jogo, e guarda só quantos têm - nunca quais. Nada novo é gravado; a nota vive na memória junto com o perfil por quinze minutos.',
       ru: 'Второй эксперимент: оценка репутации на странице профиля, от 0 до 100, вычисленная из того, что профиль уже публикует. Чтобы её взвесить, сервер теперь также спрашивает Steam, есть ли у друзей из открытого списка бан VAC или игровой бан, и оставляет только их количество - никогда не то, у кого именно. Ничего нового не записывается; оценка живёт в памяти вместе с профилем пятнадцать минут.',
     },
+  },
+  {
+    version: 14,
+    date: '2026-09-23',
+    commit: null,
+    summary: {
+      en: 'Says where the data is stored: the server is in Brazil. The Steam Web API terms ask for that country to be named in the privacy policy, and it had not been. Nothing about what is kept changed.',
+      pt: 'Passa a dizer onde os dados ficam: o servidor é no Brasil. Os termos da Steam Web API pedem que esse país esteja na política de privacidade, e ele não estava. Nada mudou no que é guardado.',
+      ru: 'Теперь сказано, где хранятся данные: сервер находится в Бразилии. Условия Steam Web API требуют, чтобы эта страна была названа в политике конфиденциальности, а её там не было. В том, что хранится, ничего не изменилось.',
+    },
     text: 'live',
   },
 ];
