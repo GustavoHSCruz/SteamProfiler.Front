@@ -71,8 +71,7 @@ site/
     franchise-list.js      the ten with a screen written for them
     franchise-catalogue.js every other series
     franchises/<slug>.css|.js  one pair per written screen, loaded on demand
-  blog.html       the index                    blog.js
-  post.html       one post                     post.js
+  post.html       one post, kept for the owner panel's preview   post.js
   extension.html  the browser extension, and the panel it draws  extension.js
   translate.html  how much of the site each language has         translate.js
     coverage.js   those counts, built from SteamProfiler.i18n

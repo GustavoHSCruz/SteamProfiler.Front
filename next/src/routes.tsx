@@ -54,7 +54,7 @@ export const ROUTES: Route[] = [
     page: adapt(() => import('./news').then((m) => m.NewsPage), (p) => ({ t: p.t, lang: p.lang })),
   },
   {
-    name: 'post', test: /^\/news\/(?<id>[^/]+)$/, title: 'n.news_title', desc: 'n.news_lede', head: 'news', src: 'src/news.tsx',
+    name: 'news-post', test: /^\/news\/(?<id>[^/]+)$/, title: 'n.news_title', desc: 'n.news_lede', head: 'news', src: 'src/news.tsx',
     page: adapt(() => import('./news').then((m) => m.PostPage), (p) => ({ t: p.t, lang: p.lang, id: p.params.id })),
   },
   {
@@ -78,6 +78,14 @@ export const ROUTES: Route[] = [
     name: 'feedback', test: /^\/feedback\/?$/, title: 'msg.title', desc: 'msg.meta', head: 'feedback', prerender: ['/feedback'], src: 'src/pages/Feedback.tsx',
     page: lazyPage(() => import('./pages/Feedback')),
   },
+  {
+    name: 'blog', test: /^\/blog\/?$/, title: 'blog.title', head: 'blog', prerender: ['/blog'], src: 'src/pages/Blog.tsx',
+    page: lazyPage(() => import('./pages/Blog')),
+  },
+  {
+    name: 'post', test: /^\/blog\/[a-z0-9][a-z0-9-]{0,79}(?:\/[a-z0-9][a-z0-9-]{0,79})?$/, title: 'blog.title', head: 'post', template: '/blog/x', src: 'src/pages/Post.tsx',
+    page: lazyPage(() => import('./pages/Post')),
+  },
   /* ── Pages from site/, run by the legacy engine until they are rewritten ── */
   {
     name: 'profile', test: /^\/u\/[^/]+(?:\/.*)?$/, legacy: 'profile', template: '/u/_', src: 'legacy:profile',
@@ -98,14 +106,6 @@ export const ROUTES: Route[] = [
   {
     name: 'developers', test: /^\/developers(?:\/[a-z0-9][a-z0-9-]{0,39})?$/, legacy: 'developers', title: 'hs.dev_doc', prerender: ['/developers'], src: 'legacy:developers',
     page: legacyPage(() => import('legacy:developers')),
-  },
-  {
-    name: 'blog', test: /^\/blog\/?$/, legacy: 'blog', title: 'blog.title', prerender: ['/blog'], src: 'legacy:blog',
-    page: legacyPage(() => import('legacy:blog')),
-  },
-  {
-    name: 'post', test: /^\/blog\/[a-z0-9][a-z0-9-]{0,79}(?:\/[a-z0-9][a-z0-9-]{0,79})?$/, legacy: 'post', title: 'blog.title', template: '/blog/_', src: 'legacy:post',
-    page: legacyPage(() => import('legacy:post')),
   },
   {
     name: 'extension', test: /^\/extension\/?$/, legacy: 'extension', title: 'ext.doc', prerender: ['/extension'], src: 'legacy:extension',

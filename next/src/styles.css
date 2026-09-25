@@ -372,3 +372,28 @@ body {
    the CSSOM. See usePainted in ui.tsx: the policy refuses a style attribute
    and a server-rendered page is full of them. */
 .week-bar { width: var(--fill, 0%); }
+
+/* ── A post, read ────────────────────────────────────────────────────
+   The one place on the site set for reading rather than for scanning: a
+   larger size, a longer line height and room between blocks. Everything
+   else stays in the bench's own voice - amber links, mono for code, a
+   hairline where the text breaks. */
+.reading { font-size: 15.5px; line-height: 1.75; color: var(--color-dim); }
+.reading > * + * { margin-top: 1.1em; }
+.reading b { color: var(--color-text); font-weight: 600; }
+.reading a { color: var(--color-amber); text-underline-offset: 3px; }
+.reading h2, .reading h3, .reading h4 { font-family: var(--font-display); color: var(--color-text); line-height: 1.2; margin-top: 1.8em; }
+.reading h2 { font-size: 1.45em; }
+.reading h3 { font-size: 1.2em; }
+.reading h4 { font-size: 1.05em; }
+.reading ul, .reading ol { padding-left: 1.3em; }
+.reading ul { list-style: square; }
+.reading ol { list-style: decimal; }
+.reading li + li { margin-top: .35em; }
+.reading li::marker { color: var(--color-amber); }
+.reading blockquote { border-left: 2px solid var(--color-amber-d); padding-left: 1em; color: var(--color-text); }
+.reading code { font-family: var(--font-mono); font-size: .88em; background: var(--color-panel-2); border: 1px solid var(--color-line); border-radius: 4px; padding: .05em .35em; }
+.reading pre { background: var(--color-panel-2); border: 1px solid var(--color-line); border-radius: 6px; padding: 14px 16px; overflow-x: auto; line-height: 1.55; }
+.reading pre code { background: none; border: 0; padding: 0; font-size: 13px; }
+.reading figure img { display: block; width: 100%; height: auto; border-radius: 6px; border: 1px solid var(--color-line); }
+.reading hr { border: 0; border-top: 1px solid var(--color-line); }

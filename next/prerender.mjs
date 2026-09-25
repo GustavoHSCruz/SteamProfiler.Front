@@ -24,6 +24,21 @@ const { render, LANGS, ROUTES, translator } = await import('./dist/server/entry-
    that says it prerenders and is missing here cannot happen, because there is
    no here. A route with a `template` is rendered once, at that address, into
    _t/<name>/, and nginx serves that one file for every address it matches. */
+/* A name is a folder under _t/ and a line in nginx.conf; two routes with
+   one name would write each other's template. */
+const names = ROUTES.map((r) => r.name);
+const twice = names.filter((n, i) => names.indexOf(n) !== i);
+if (twice.length) throw new Error(`prerender: route name used twice: ${twice.join(', ')}`);
+
+/* And every address written must be one its own route answers: an address
+   that falls through to the bench writes the bench into another page's file,
+   and the browser then hydrates the wrong page over it. */
+for (const r of ROUTES) {
+  for (const path of [...(r.prerender ?? []), ...(r.template ? [r.template] : [])]) {
+    if (!r.test.test(path)) throw new Error(`prerender: ${r.name} would write ${path}, which it does not match`);
+  }
+}
+
 const PAGES = ROUTES.flatMap((r) => [
   ...(r.prerender ?? []).map((path) => ({ route: r, path, file: path === '/' ? '' : path })),
   ...(r.template ? [{ route: r, path: r.template, file: `_t/${r.name}` }] : []),
@@ -33,7 +48,7 @@ const PAGES = ROUTES.flatMap((r) => [
    data - is a file per page in head/, read as it is with its comments taken
    out. Those comments explain the tags to whoever edits them; the reader's
    browser has no use for them. */
-const headOf = (name) => readFileSync(join('head', `${name}.html`), 'utf8').replace(/<!--[\s\S]*?-->\n?/g, '').trim();
+const headOf = (name) => readFileSync(join('head', `${name}.html`), 'utf8').replace(/<!--(?!#|og-->)[\s\S]*?-->\n?/g, '').trim();
 
 /* A page from site/ keeps the head its shell had: the description, the robots
    line, the preview, and the server-side includes three of them carry - the
@@ -101,9 +116,15 @@ for (const page of PAGES) {
     if (r.legacy) {
       out = out.replace(/<title>[^<]*<\/title>\n?/, '');
       head = legacyHead(r.legacy, t);
+    } else if (headOf(r.head).includes('{{title}}')) {
+      /* A head whose order matters writes its own <title>, and says where. */
+      out = out.replace(/<title>[^<]*<\/title>\n?/, '');
+      head = headOf(r.head).replace('{{title}}', esc(strip(t(r.title))));
     } else {
       out = out.replace(/<title>[^<]*<\/title>/, `<title>${esc(strip(t(r.title)))}</title>`);
-      head = [`<meta name="description" content="${esc(strip(t(r.desc)).slice(0, 300))}">`, headOf(r.head)].join('\n');
+      /* No `desc` on the route: the description is a line in its head file,
+         which is how the pages lifted from site/ carried it. */
+      head = [r.desc ? `<meta name="description" content="${esc(strip(t(r.desc)).slice(0, 300))}">` : '', headOf(r.head)].filter(Boolean).join('\n');
     }
     out = out
       .replace('</head>', `${head}\n${[...styles, ...preload].join('\n')}\n</head>`)

@@ -4,6 +4,7 @@ import { Button, Empty, Field, Input, Notice, Panel, Segmented, Tag, Textarea } 
 import type { TagTone } from '../ui-kit/react';
 import { BarNote, Sheet } from '../sheet';
 import { ApiError, apiPost, formats, useApi } from '../lib';
+import { Vote } from '../vote';
 import { cameFrom } from '../router';
 import type { Lang, T } from '../i18n';
 import type { PageProps } from '../routes';
@@ -32,36 +33,10 @@ const STATUS_TONE: Record<Item['status'], TagTone> = {
 const MAX = 2000;
 
 function Card({ t, lang, item, onError }: { t: T; lang: Lang; item: Item; onError: (m: string) => void }) {
-  const [votes, setVotes] = useState(item.votes);
-  const [voted, setVoted] = useState(!!item.voted);
-  const [busy, setBusy] = useState(false);
   const { shortDate } = formats(lang);
-
-  const vote = async () => {
-    setBusy(true);
-    try {
-      const got = await apiPost<{ votes: number; voted: boolean }>('/vote', { id: item.id });
-      setVotes(got.votes);
-      setVoted(got.voted);
-    } catch (e) {
-      onError(e instanceof ApiError ? e.say(t) : String(e));
-    }
-    setBusy(false);
-  };
-
   return (
     <article className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 border-b border-line px-4 py-3.5 last:border-b-0">
-      <button
-        type="button"
-        disabled={busy}
-        onClick={vote}
-        title={t(voted ? 'msg.unvote' : 'msg.agree')}
-        aria-pressed={voted}
-        className={`font-mono flex h-12 w-11 flex-col items-center justify-center rounded-md border text-[11px] transition-colors ${voted ? 'border-amber text-amber' : 'border-line text-dim hover:border-amber-d hover:text-text'}`}
-      >
-        <i className="not-italic">▲</i>
-        <b className="font-semibold">{votes}</b>
-      </button>
+      <Vote t={t} endpoint="/vote" body={{ id: item.id }} votes={item.votes} voted={item.voted} agree={t('msg.agree')} onError={onError} />
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
           <h3 className="m-0 text-[14px] font-semibold text-text">{item.title}</h3>

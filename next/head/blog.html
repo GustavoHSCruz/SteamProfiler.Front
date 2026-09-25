@@ -1,0 +1,59 @@
+<!-- The head of /blog past its title and description: canonical,
+     the link preview and the structured data. Lifted from site/blog.html when
+     the page moved to next/, and the source from then on. -->
+<meta name="description" content="Notes about steamprofiler.org: what was built, what it reads out of Steam, and what the numbers on it can and cannot say.">
+<link rel="canonical" href="https://steamprofiler.org/blog">
+<meta property="og:site_name" content="steamprofiler.org">
+<meta property="og:title" content="blog - steamprofiler.org">
+<meta property="og:description" content="Notes about what was built here, and why it reads the way it does.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://steamprofiler.org/blog">
+<meta property="og:image" content="https://steamprofiler.org/og-blog.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A blog post drawn as bars: an amber heading over paragraphs of grey lines.">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://steamprofiler.org/#site",
+      "url": "https://steamprofiler.org/",
+      "name": "steamprofiler.org"
+    },
+    {
+      "@type": "Blog",
+      "@id": "https://steamprofiler.org/blog#webpage",
+      "url": "https://steamprofiler.org/blog",
+      "name": "blog - steamprofiler.org",
+      "description": "Notes about steamprofiler.org: what was built, what it reads out of Steam, and what the numbers on it can and cannot say.",
+      "inLanguage": "en",
+      "isPartOf": {
+        "@id": "https://steamprofiler.org/#site"
+      },
+      "breadcrumb": {
+        "@id": "https://steamprofiler.org/blog#breadcrumb"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://steamprofiler.org/blog#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "steamprofiler.org",
+          "item": "https://steamprofiler.org/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Blog"
+        }
+      ]
+    }
+  ]
+}
+</script>

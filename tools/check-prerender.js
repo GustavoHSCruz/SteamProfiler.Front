@@ -19,6 +19,7 @@ const path = require('path');
 
 const DIST = 'next/dist';
 const MIN_TEXT = 400;
+const MIN_TEMPLATE_TEXT = 200;
 
 if (!fs.existsSync(DIST)) {
   console.error(`${DIST} is not there: run npm --prefix next run build first`);
@@ -54,6 +55,9 @@ function headGaps(file, html) {
     return (head.match(HEAD_TAGS) ?? []).filter((tag) => !html.includes(tag)).map((tag) => `lost ${tag.slice(0, 60)} from site/${legacy}.html`);
   }
   const out = [];
+  /* An include is the api writing the canonical and the preview for this
+     one address before nginx sends the file - a post's, a game's. */
+  if (html.includes('<!--#include virtual=')) return out;
   if (!/<link rel="canonical" href="https:\/\/steamprofiler\.org\/[^"]*">/.test(html)) out.push('no canonical');
   if (!/<meta property="og:title" content="[^"]+">/.test(html)) out.push('no og:title');
   if (!/<meta property="og:image" content="https:[^"]+">/.test(html)) out.push('no og:image');
@@ -69,7 +73,10 @@ for (const file of files) {
     .replace(/\s+/g, ' ')
     .trim();
   if (html.includes('<div id="root"></div>')) bad.push(`${file}: the root is empty`);
-  else if (text.length < MIN_TEXT) bad.push(`${file}: only ${text.length} characters of text`);
+  /* A template under _t/ is one file for every address of its route, and
+     what differs between those addresses - a post, a profile - arrives from
+     the service; what it must carry is the chrome and the page's frame. */
+  else if (text.length < (file.includes(`${path.sep}_t${path.sep}`) ? MIN_TEMPLATE_TEXT : MIN_TEXT)) bad.push(`${file}: only ${text.length} characters of text`);
   else if (!/<title>[^<]{3,}<\/title>/.test(html)) bad.push(`${file}: no title`);
   else if (!/<html lang="[a-z-]{2,5}"/.test(html)) bad.push(`${file}: no lang on <html>`);
   else for (const missing of headGaps(file, html)) bad.push(`${file}: ${missing}`);

@@ -1,0 +1,15 @@
+<!-- The whole head of /blog/<id>/<title>, because its order matters: the
+     include is the post's own title, description, canonical and preview,
+     written by the api before the page leaves nginx, and it has to come
+     before the plain title and description below - the first of each is the
+     one a link card reads. Those two are what is left anywhere this file is
+     served without SSI, where the include is only a comment. -->
+<!--#include virtual="/api/blog/meta?key=$key&title=$title&host=$http_host&scheme=$ext_scheme" -->
+<title>{{title}}</title>
+<meta name="description" content="A post from the steamprofiler.org blog.">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://steamprofiler.org/og-blog.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A blog post drawn as bars: an amber heading over paragraphs of grey lines.">
+<meta name="twitter:card" content="summary_large_image">
