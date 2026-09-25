@@ -9,35 +9,53 @@ profile reader that draws a whole library to scale and gives every game that was
 ever launched a page designed after that game's own interface.
 
 React, TypeScript and Vite, rendered to files at build time. `next/` is the
-front: `npm run build` compiles it and writes one HTML file per page and per
-language with the text already in the markup, and the browser hydrates that
-file rather than replacing it. `site/` is the half that has not been moved yet,
-static HTML, CSS and JavaScript served as they are, and nginx decides address
-by address which of the two answers. Moving a page is a line in that map, and
-the day `site/` is empty the second half of this paragraph goes with it.
+front, and every address on the site is answered by it: `npm run build`
+compiles it and writes one HTML file per page and per language with the text
+already in the markup, the browser hydrates that file rather than replacing
+it, and from there on moving between pages is a route change, not a reload.
+
+Most pages are components in `next/src/pages`. The rest - the profile and its
+157 game pages, `/g/<appid>`, the franchise screens, the terms and the two
+policy archives - are still the scripts in `site/`, run inside the app rather
+than served beside it. `next/vite-legacy.ts` builds each of those pages into
+one module out of the scripts its old shell loaded, with its stylesheets
+scoped to that page, and `next/src/legacy/` runs it in a window and a document
+of its own that are cleaned up when the reader leaves. They look and behave
+exactly as they did; what they are waiting for is to be rewritten as
+components, one screen at a time, and each one that is takes its files out of
+`site/`.
 
 The prerender is not decoration. A page here answers with its text already in
 the markup, and that is why an assistant asked whether this site is safe can
 read the answer without running anything. A single-page app that serves an
-empty `<div>` has nothing to say to that question, so every page `next/` takes
-over ships as a file with its words in it, and `tools/check-prerender.js`
-refuses a build where one does not.
+empty `<div>` has nothing to say to that question, so every page ships as a
+file with its words in it, and `tools/check-prerender.js` refuses a build
+where one does not.
 
 ```
 git clone git@github.com:GustavoHSCruz/SteamProfiler.Front.git
 cd SteamProfiler.Front
 npm --prefix next ci
-npm --prefix next run dev   # http://localhost:5180   the pages next/ serves
-python3 serve.py            # http://127.0.0.1:8013   the pages site/ still serves
+npm --prefix next run dev          # http://localhost:5180   every page
+npm --prefix next run build && node next/serve-dist.mjs
+                                   # http://localhost:5182   what ships, served the way nginx serves it
 ```
 
 Both forward `/api/` and `/art/` to a running instance,
 `https://steamprofiler.org` by default, so a fresh checkout renders real
-profiles immediately. `serve.py` is a development server in the standard
-library and serves `site/` under the same URL map the live site uses; `--api
-URL` points it somewhere else and `--offline` cuts the forwarding, which is
-enough for work on pages that hold no data. `SP_API=http://host:port npm run
-dev` does the same for `next/`.
+profiles immediately; `SP_API=http://host:port` points them somewhere else.
+`serve.py` still serves `site/` on its own at http://127.0.0.1:8013, which is
+only useful for the pages that have not moved and is going away with them.
+
+### Adding or moving a page
+
+A row in `next/src/routes.tsx` - its address as a regex, its chunk, the keys
+of its title and description, and `head/<name>.html` with its canonical and
+link preview - and the matching `location` in the api's `nginx.conf`. A page
+whose address carries an id (a post, a house, a profile) sets `template`: one
+file is rendered for every address it answers, so what is in that file must
+not depend on the id, and the prerender refuses a template address its own
+route would not match.
 
 ## What is here, and what is not
 
@@ -53,6 +71,10 @@ API to change. The strings themselves are one repository further out, in
 which is where a translation is written and where `site/dict.js` is built.
 
 ## The map
+
+The app is described in `next/README.md`. What follows is `site/`: the
+scripts the legacy engine still runs, the stylesheets it scopes, and the
+static files nginx serves beside the app.
 
 ```
 site/
@@ -145,33 +167,14 @@ the reader's own storefront currency.
 
 ## The landing page
 
-`index.html` and `search.js`. Three tiles on the first screen and six bands
-under it, and the bands are all built the same way so that what differs
-between them is the content rather than the furniture: a mono line with the
-site's amber square on it, a display heading, then the thing itself.
+`next/src/pages/Home.tsx` and the nine panels in `next/src/panels.tsx`: the
+field, the map, what the service knows right now, the games with a page of
+their own, Steam's news, the franchise and house doors, the extension, the
+generator and the repositories - tiled, all on one screen, and nothing moves
+but what the reader is pointing at. `next/README.md` describes each panel.
 
-The first screen is tiled and nothing on it floats. The field is a panel of
-its own because it is the front door; the shape beside it is the treemap drawn
-from `demo.js`, which is nobody's library and is there to say what "to scale"
-means; the third panel is four counts read from `/api/status` while the page
-is being read - how much of Steam has been through here, how much of the
-catalogue is known, how many companies are behind it, how many are graded for
-the Deck. That panel is `hidden` in the shell and unhides itself only once the
-figures arrive, so a page served while the service is down is a page with
-three tiles rather than one leading with four dashes.
-
-The bands, in order: what a profile turns into (nine sub-pages, described and
-not linked - every one of them would have to point at the author's own profile
-to be a link), the rail of games with a page written for them, what opens with
-no profile at all, the two surfaces that are not pages on this site, the five
-repositories, and the three promises.
-
-The two drawings in "two of them are not pages here at all" are markup, the
-same way the panel on `/extension` is: a screenshot goes stale in a language
-nobody rereads and a drawing is corrected in a diff. Both are wordless, and
-every width in them is a class. The site is served under a CSP with `style-src
-'self'`, so a `style=` attribute in a shell arrives as nothing at all; the only
-styles set from script go through the CSSOM, which that policy allows.
+The old `site/index.html` and `search.js` are still in the tree and no longer
+served; they go with the rest of `site/`.
 
 ## Game pages
 
@@ -320,6 +323,11 @@ words - the storefront, the currency and the date format in `i18n.js`, and the
 
 ## The shells carry their text
 
+Pages in `next/` are prerendered, and carry their text by being rendered.
+What follows is about the shells still in `site/`, which the app renders from
+too - `next/src/legacy/shell.ts` fills them in the reader's language before
+they reach the markup.
+
 Every page is markup plus `data-i18n` attributes, and `applyStatic()` fills them
 on boot. That is right for a browser and was wrong for everything else: a fetch
 of the site with no JavaScript returned a nav bar and eight empty paragraphs, so
@@ -372,7 +380,8 @@ git push
 ```
 
 What is on the site is a commit, not a working tree. Uncommitted work stays on
-the machine it was written on; `python3 serve.py` is the preview.
+the machine it was written on; `npm --prefix next run build && node
+next/serve-dist.mjs` is the preview of exactly what ships.
 
 The hook lives in `.githooks/` so that it is versioned rather than existing on
 one machine. A fresh checkout has to be pointed at it once:
