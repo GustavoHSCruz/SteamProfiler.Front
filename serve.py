@@ -33,8 +33,6 @@ SITE = Path(__file__).resolve().parent / 'site'
 # server does this with try_files; the effect has to match, or a route works
 # here and 404s in production.
 PAGES = {
-    '/feedback': '/feedback.html',
-    '/support': '/support.html',
     '/privacy': '/privacy.html',
     '/privacy/history': '/policy-history.html',
     '/terms': '/terms.html',

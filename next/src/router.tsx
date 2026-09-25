@@ -35,6 +35,23 @@ export function usePath() {
   return path;
 }
 
+/* The page the reader was on before this one, inside the site. A full load
+   has document.referrer for that; a route change does not change it. */
+let previous: string | null = null;
+
+/** Where the reader came from on this site, or null for an arrival from
+ *  somewhere else. A bug report is most useful with this attached. */
+export function cameFrom(): string | null {
+  if (previous) return previous;
+  if (typeof document === 'undefined' || !document.referrer) return null;
+  try {
+    const ref = new URL(document.referrer);
+    return ref.origin === window.location.origin ? ref.pathname : null;
+  } catch {
+    return null;
+  }
+}
+
 /** Go somewhere. An address this front draws is a route change; any other
  *  is an ordinary page load, because nginx still answers it from site/. */
 export function navigate(to: string, { replace = false } = {}) {
@@ -46,6 +63,7 @@ export function navigate(to: string, { replace = false } = {}) {
     return;
   }
   if (url.pathname + url.search + url.hash === window.location.pathname + window.location.search + window.location.hash) return;
+  if (!replace) previous = window.location.pathname;
   if (replace) window.history.replaceState(null, '', url.href);
   else window.history.pushState(null, '', url.href);
   window.dispatchEvent(new Event('sp:navigate'));

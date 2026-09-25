@@ -73,8 +73,6 @@ site/
     franchises/<slug>.css|.js  one pair per written screen, loaded on demand
   blog.html       the index                    blog.js
   post.html       one post                     post.js
-  feedback.html   the form and the public board                   feedback.js
-  support.html    the donation channels                           support.js
   extension.html  the browser extension, and the panel it draws  extension.js
   translate.html  how much of the site each language has         translate.js
     coverage.js   those counts, built from SteamProfiler.i18n

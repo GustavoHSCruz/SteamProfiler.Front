@@ -70,6 +70,14 @@ export const ROUTES: Route[] = [
     page: adapt(() => import('./pages-view').then((m) => m.StatusPage), (p) => ({ t: p.t, lang: p.lang })),
   },
 
+  {
+    name: 'support', test: /^\/support\/?$/, title: 'sup.title', desc: 'sup.meta', head: 'support', prerender: ['/support'], src: 'src/pages/Support.tsx',
+    page: lazyPage(() => import('./pages/Support')),
+  },
+  {
+    name: 'feedback', test: /^\/feedback\/?$/, title: 'msg.title', desc: 'msg.meta', head: 'feedback', prerender: ['/feedback'], src: 'src/pages/Feedback.tsx',
+    page: lazyPage(() => import('./pages/Feedback')),
+  },
   /* ── Pages from site/, run by the legacy engine until they are rewritten ── */
   {
     name: 'profile', test: /^\/u\/[^/]+(?:\/.*)?$/, legacy: 'profile', template: '/u/_', src: 'legacy:profile',
@@ -98,14 +106,6 @@ export const ROUTES: Route[] = [
   {
     name: 'post', test: /^\/blog\/[a-z0-9][a-z0-9-]{0,79}(?:\/[a-z0-9][a-z0-9-]{0,79})?$/, legacy: 'post', title: 'blog.title', template: '/blog/_', src: 'legacy:post',
     page: legacyPage(() => import('legacy:post')),
-  },
-  {
-    name: 'feedback', test: /^\/feedback\/?$/, legacy: 'feedback', title: 'msg.title', prerender: ['/feedback'], src: 'legacy:feedback',
-    page: legacyPage(() => import('legacy:feedback')),
-  },
-  {
-    name: 'support', test: /^\/support\/?$/, legacy: 'support', title: 'sup.title', prerender: ['/support'], src: 'legacy:support',
-    page: legacyPage(() => import('legacy:support')),
   },
   {
     name: 'extension', test: /^\/extension\/?$/, legacy: 'extension', title: 'ext.doc', prerender: ['/extension'], src: 'legacy:extension',

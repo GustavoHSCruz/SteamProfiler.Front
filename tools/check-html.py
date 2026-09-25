@@ -168,10 +168,22 @@ class Shell(HTMLParser):
             self.ld.append(data)
 
 
+# The addresses the app in next/ draws, read out of its route table: each row
+# carries its pattern as a regex literal, `test: /^\/support\/?$/`. A page
+# moved from site/ to next/ leaves serve.PAGES, and this is where it is found.
+NEXT_ROUTES = [
+    re.compile(m.group(1).replace("\\/", "/").replace("(?<", "(?P<"))
+    for m in re.finditer(r"test: /(.+?)/,",
+                         (ROOT / "next" / "src" / "routes.tsx").read_text(encoding="utf-8"))
+]
+
+
 def known_route(href):
     """Whether the live server would answer this path with something."""
     path = href.split("#")[0].split("?")[0]
     if path in serve.PAGES or path in serve.REDIRECTS:
+        return True
+    if any(rx.match(path) for rx in NEXT_ROUTES):
         return True
     if any(rx.match(path) for rx in DYNAMIC):
         return True
