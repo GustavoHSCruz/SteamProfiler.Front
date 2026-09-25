@@ -58,7 +58,10 @@ function headGaps(file, html) {
   /* An include is the api writing the canonical and the preview for this
      one address before nginx sends the file - a post's, a game's. */
   if (html.includes('<!--#include virtual=')) return out;
-  if (!/<link rel="canonical" href="https:\/\/steamprofiler\.org\/[^"]*">/.test(html)) out.push('no canonical');
+  /* A template is one file for many addresses, and one canonical for all of
+     them would tell a search engine they are the same page. None is right. */
+  const template = file.includes(`${path.sep}_t${path.sep}`);
+  if (!template && !/<link rel="canonical" href="https:\/\/steamprofiler\.org\/[^"]*">/.test(html)) out.push('no canonical');
   if (!/<meta property="og:title" content="[^"]+">/.test(html)) out.push('no og:title');
   if (!/<meta property="og:image" content="https:[^"]+">/.test(html)) out.push('no og:image');
   return out;

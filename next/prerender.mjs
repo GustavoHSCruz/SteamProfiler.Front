@@ -126,6 +126,13 @@ for (const page of PAGES) {
          which is how the pages lifted from site/ carried it. */
       head = [r.desc ? `<meta name="description" content="${esc(strip(t(r.desc)).slice(0, 300))}">` : '', headOf(r.head)].filter(Boolean).join('\n');
     }
+    /* A template answers many addresses, so it names none of them: the
+       canonical and og:url of the route's own page would tell a search engine
+       that every house, every post is that page. An include in the head still
+       writes the right ones per address, where there is one. */
+    if (page.file.startsWith('_t/')) {
+      head = head.replace(/<link rel="canonical"[^>]*>\n?/g, '').replace(/<meta property="og:url"[^>]*>\n?/g, '');
+    }
     out = out
       .replace('</head>', `${head}\n${[...styles, ...preload].join('\n')}\n</head>`)
       .replace('<div id="root"></div>', `<div id="root">${html}</div>`);
