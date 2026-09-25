@@ -1,5 +1,5 @@
 import { startTransition, useCallback, useEffect, useState } from 'react';
-import type { AnchorHTMLAttributes, MouseEvent, ReactNode } from 'react';
+import type { AnchorHTMLAttributes, MouseEvent, ReactNode, Ref } from 'react';
 import { boot, SERVER } from './boot';
 import { isRouted } from './routes';
 
@@ -79,6 +79,7 @@ export function Link({ to, className, children, title, ...rest }: {
   className?: string;
   children: ReactNode;
   title?: string;
+  ref?: Ref<HTMLAnchorElement>;
 } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'onClick' | 'className' | 'title'>) {
   const onClick = useCallback((e: MouseEvent<HTMLAnchorElement>) => {
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;

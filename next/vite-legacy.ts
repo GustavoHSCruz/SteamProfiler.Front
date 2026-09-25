@@ -35,7 +35,7 @@ export const LEGACY_DIR = fileURLToPath(new URL('../site', import.meta.url));
 /* The shells the app runs this way, by the name their module is imported as.
    The key is the file under LEGACY_DIR. */
 export const LEGACY_PAGES = [
-  'profile', 'game-public', 'franchises', 'publishers', 'developers',
+  'profile', 'game-public', 'franchises',
   'terms', 'terms-history', 'policy-history',
 ] as const;
 export type LegacyName = (typeof LEGACY_PAGES)[number];

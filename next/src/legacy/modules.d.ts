@@ -6,3 +6,6 @@ declare module 'legacy:*' {
   export const title: string | null;
   export const name: string;
 }
+
+/* A site/ stylesheet imported by a component, scoped by vite-legacy.ts. */
+declare module '*.css?legacy=houses';
