@@ -19,6 +19,8 @@ const UPSTREAM = process.env.SP_API ?? 'https://steamprofiler.org';
 export default defineConfig({
   define: { __SITE_VERSION__: JSON.stringify(siteVersion) },
   plugins: [react(), tailwindcss()],
+  /* prerender.mjs reads it to find each page's chunk and its imports. */
+  build: { manifest: true },
   server: {
     port: 5180,
     strictPort: true,

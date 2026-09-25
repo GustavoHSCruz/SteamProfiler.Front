@@ -29,7 +29,7 @@ const files = [];
 (function walk(dir) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) { if (entry.name !== 'assets' && entry.name !== 'server') walk(full); }
+    if (entry.isDirectory()) { if (!['assets', 'server', 'shell', '.vite'].includes(entry.name)) walk(full); }
     else if (/^index\.[a-z-]+\.html$/.test(entry.name)) files.push(full);
   }
 })(DIST);
@@ -52,6 +52,15 @@ for (const file of files) {
   else if (!/<link rel="canonical" href="https:\/\/steamprofiler\.org\/[^"]*">/.test(html)) bad.push(`${file}: no canonical`);
   else if (!/<meta property="og:title" content="[^"]+">/.test(html)) bad.push(`${file}: no og:title`);
   else if (!/<meta property="og:image" content="https:[^"]+">/.test(html)) bad.push(`${file}: no og:image`);
+}
+
+/* The shells are the opposite case and are checked for the opposite thing:
+   one per language, with an empty root, so the page is rendered and not
+   hydrated over somebody else's markup. */
+for (const lang of ['en', 'pt', 'ru', 'zh-cn', 'zh-tw']) {
+  const file = path.join(DIST, 'shell', `index.${lang}.html`);
+  if (!fs.existsSync(file)) bad.push(`${file}: missing`);
+  else if (!fs.readFileSync(file, 'utf8').includes('<div id="root"></div>')) bad.push(`${file}: the shell's root is not empty`);
 }
 
 if (!files.length) {

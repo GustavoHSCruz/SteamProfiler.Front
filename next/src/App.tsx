@@ -1,24 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { LANGS, LANG_NAMES, loadDict, pickLang, translator } from './i18n';
 import { boot, SERVER } from './boot';
 import type { Lang } from './i18n';
-import { Doors, Emb, Ext, Find, Live, Map, News, Parts, Rail } from './panels';
-import { NewsPage, PostPage } from './news';
-import { AboutPage, PrivacyPage, StatusPage } from './pages-view';
+import { match } from './routes';
 import { Link, usePath } from './router';
 import { Select } from './ui-kit/react';
 import * as api from './api';
 import { SITE_VERSION } from './site-version';
 
-/* The bench: a status bar, nine panels tiled under it, and a legal line.
-   No scroll narrative, no band that is one idea and half a screen of air.
-   What moves is what the reader is pointing at, what they have focused, and
-   the four numbers on their way in from the service. */
-/* Every address this cut draws itself. Anything else falls through to the
-   bench, which is also what a mistyped path gets: a front page is a better
-   answer to a wrong address than a page saying it was wrong. */
-const ROUTED = /^\/(news|privacy|about|status)(\/|$)/;
-
+/* The chrome every page shares - the status bar and the legal line - and
+   whichever page the address names, from the table in routes.tsx. */
 export default function App() {
   const path = usePath();
   /* boot.lang is the language the served file was rendered in, and the
@@ -36,9 +27,12 @@ export default function App() {
     if (wanted !== boot.lang) setLang(wanted);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const [live, setLive] = useState<api.Status | null>(null);
-  const input = useRef<HTMLInputElement>(null);
   const t = useMemo(() => translator(lang), [lang]);
+  /* An address nothing claims gets the bench, which is a better answer to a
+     wrong address than a page saying it was wrong. nginx only sends this
+     front the addresses it draws, so in production this is a dev-server
+     case. */
+  const found = match(path) ?? match('/');
 
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -50,24 +44,11 @@ export default function App() {
     document.cookie = `sp-lang=${lang};path=/;max-age=31536000;samesite=lax`;
   }, [lang]);
 
-  /* Only the bench draws the four counts, so only the bench asks for them.
-     /status asks for the same payload on its own and gets the same promise
-     back, so moving between the two is still one request. */
-  const onBench = !ROUTED.test(path);
+  /* The file set the title for the first address; every one after that is a
+     route change inside the page, and the tab should follow it. */
   useEffect(() => {
-    if (!onBench) return;
-    let alive = true;
-    api.status().then((out) => alive && setLive(out)).catch(() => alive && setLive(null));
-    return () => { alive = false; };
-  }, [onBench]);
-
-  /* The two panels that offer a lookup do not go anywhere themselves: they
-     hand the caret to the field in the corner, which is the only address bar
-     this page has. */
-  const toField = () => {
-    input.current?.focus();
-    input.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-  };
+    if (found) document.title = t(found.route.title).replace(/<[^>]*>/g, '');
+  }, [found?.route, t]);
 
   return (
     <>
@@ -111,24 +92,12 @@ export default function App() {
         </nav>
       </header>
 
-      {path === '/privacy' && <PrivacyPage t={t} />}
-      {path === '/about' && <AboutPage t={t} />}
-      {path === '/status' && <StatusPage t={t} lang={lang} />}
-      {path === '/news' && <NewsPage t={t} lang={lang} />}
-      {path.startsWith('/news/') && <PostPage t={t} lang={lang} id={decodeURIComponent(path.slice('/news/'.length))} />}
-      {onBench && (
-        <main className="bench">
-          <Find t={t} inputRef={input} />
-          <Map t={t} />
-          <Live t={t} lang={lang} live={live} />
-          <Rail t={t} />
-          <News t={t} lang={lang} />
-          <Doors t={t} />
-          <Ext t={t} />
-          <Emb t={t} onLookup={toField} />
-          <Parts t={t} />
-        </main>
-      )}
+      {/* The old page stays on screen while the next one's chunk arrives - the
+          router navigates inside a transition - so this fallback is only
+          ever seen on a first visit to a page nothing has loaded yet. */}
+      <Suspense fallback={<main className="min-h-[60vh]" aria-busy="true" />}>
+        {found && <found.route.page t={t} lang={lang} path={path} params={found.params} />}
+      </Suspense>
 
       {/* Outside the bench, because it is not a panel: it is the line every
           public page of this project carries, and the links that go with it. */}

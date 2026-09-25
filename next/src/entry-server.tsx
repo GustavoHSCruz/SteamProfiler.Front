@@ -3,6 +3,7 @@ import App from './App';
 import { boot } from './boot';
 import { LANGS, provideDict, translator } from './i18n';
 import type { Dict, Lang } from './i18n';
+import { ROUTES, match } from './routes';
 import en from './i18n/en';
 import pt from './i18n/pt';
 import ru from './i18n/ru';
@@ -16,13 +17,15 @@ for (const l of LANGS) provideDict(l, ALL[l]);
 
 /* Called once per page and per language by prerender.mjs. There is no
    request here and there will not be one in production either: this runs on
-   the build machine and its output is a file nginx serves. */
-export function render(path: string, lang: Lang) {
+   the build machine and its output is a file nginx serves. The page's chunk
+   is loaded first, so renderToString meets a component and not a suspense. */
+export async function render(path: string, lang: Lang) {
   boot.path = path;
   boot.lang = lang;
+  await match(path)?.route.page.preload();
   return renderToString(<App />);
 }
 
-/* Re-exported so the prerender has one module to load rather than two, and
-   so the list of languages it walks is the same list the picker offers. */
-export { LANGS, translator };
+/* Re-exported so the prerender walks the same table the router reads, and
+   the same list of languages the picker offers. */
+export { LANGS, ROUTES, translator };

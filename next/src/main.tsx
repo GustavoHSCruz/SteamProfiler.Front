@@ -4,6 +4,7 @@ import './styles.css';
 import App from './App';
 import { boot } from './boot';
 import { loadDict, pickLang, servedLang } from './i18n';
+import { match } from './routes';
 
 /* The page may already be here.
 
@@ -20,7 +21,10 @@ const prerendered = !!root.firstElementChild;
 boot.path = window.location.pathname;
 boot.lang = (prerendered && servedLang()) || pickLang();
 
-loadDict(boot.lang).then(() => {
+/* The dictionary and the page's own chunk, together: hydrating before the page
+   is here would suspend, and React would keep the served markup standing
+   instead of taking it over. */
+Promise.all([loadDict(boot.lang), (match(boot.path) ?? match('/'))?.route.page.preload()]).then(() => {
   const app = (
     <StrictMode>
       <App />

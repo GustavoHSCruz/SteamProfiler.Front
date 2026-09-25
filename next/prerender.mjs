@@ -15,21 +15,16 @@
    cookie is the same line of config against the same cookie, so the
    addresses stay clean and a reader in Portuguese gets Portuguese in the
    markup rather than English that corrects itself after the script runs. */
-import { readFileSync, readdirSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
-const { render, LANGS, translator } = await import('./dist/server/entry-server.js');
+const { render, LANGS, ROUTES, translator } = await import('./dist/server/entry-server.js');
 
-/* Every address this front answers itself, with the keys its <title> and its
-   description are written in. A route missing from here is a route that
-   ships as an empty div, so this list is the checklist. */
-const PAGES = [
-  { path: '/', title: 'land.title', desc: 'land.meta', head: 'home' },
-  { path: '/news', title: 'n.news_title', desc: 'n.news_lede', head: 'news' },
-  { path: '/privacy', title: 'priv.title', desc: 'priv.lede', head: 'privacy' },
-  { path: '/about', title: 'abt.title', desc: 'abt.lede', head: 'about' },
-  { path: '/status', title: 'st.title', desc: 'st.lede', head: 'status' },
-];
+/* Every address written to a file, read off the router's own table: a route
+   that says it prerenders and is missing here cannot happen, because there is
+   no here. The table's `title`, `desc` and `head` are the page's <title>, its
+   description and the file in head/ with its canonical and preview. */
+const PAGES = ROUTES.flatMap((r) => (r.prerender ?? []).map((path) => ({ path, title: r.title, desc: r.desc, head: r.head, src: r.src })));
 
 /* The rest of each page's head - canonical, the link preview, the structured
    data - is a file per page in head/, read as it is with its comments taken
@@ -42,8 +37,23 @@ const template = readFileSync('dist/index.html', 'utf8');
 /* The dictionary is a chunk of its own and the page cannot hydrate until it
    has arrived, so each file asks for its language's chunk up front instead of
    leaving the browser to find out after the main bundle has run. */
-const chunks = readdirSync('dist/assets');
-const dictChunk = (lang) => chunks.find((f) => f.startsWith(`${lang}-`) && f.endsWith('.js'));
+const manifest = JSON.parse(readFileSync('dist/.vite/manifest.json', 'utf8'));
+const entry = Object.values(manifest).find((m) => m.isEntry);
+const dictChunk = (lang) => manifest[`src/i18n/${lang}.ts`].file;
+
+/* The page's own chunk and whatever it imports that the entry does not
+   already carry, for the same reason: hydration waits for the page. */
+function pageChunks(src) {
+  const out = new Set();
+  const walk = (key) => {
+    const m = manifest[key];
+    if (!m || m === entry || out.has(m.file)) return;
+    out.add(m.file);
+    for (const dep of m.imports ?? []) walk(dep);
+  };
+  walk(src);
+  return [...out];
+}
 const strip = (s) => s.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
@@ -51,14 +61,14 @@ let written = 0;
 for (const page of PAGES) {
   for (const lang of LANGS) {
     const t = translator(lang);
-    const html = render(page.path, lang);
+    const html = await render(page.path, lang);
     const title = strip(t(page.title));
     const desc = strip(t(page.desc)).slice(0, 300);
 
     const out = template
       .replace('<html lang="en">', `<html lang="${lang}">`)
       .replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`)
-      .replace('</head>', `<meta name="description" content="${esc(desc)}">\n${headOf(page.head)}\n<link rel="modulepreload" crossorigin href="/assets/${dictChunk(lang)}">\n</head>`)
+      .replace('</head>', `<meta name="description" content="${esc(desc)}">\n${headOf(page.head)}\n${[dictChunk(lang), ...pageChunks(page.src)].map((f) => `<link rel="modulepreload" crossorigin href="/${f}">`).join('\n')}\n</head>`)
       .replace('<div id="root"></div>', `<div id="root">${html}</div>`);
 
     const file = join('dist', page.path === '/' ? '' : page.path, `index.${lang}.html`);
@@ -67,4 +77,23 @@ for (const page of PAGES) {
     written += 1;
   }
 }
-console.log(`prerender: ${written} files, ${PAGES.length} pages x ${LANGS.length} languages`);
+/* The shell, for every address whose page is not a file: a post, and in
+   time a game or a profile. Its root is empty on purpose. The words on those
+   pages come from the service, and a file prerendered for some other address
+   - the list of posts, served for one post - is markup React would have to
+   throw away while telling the console it did; an empty root is rendered
+   into from scratch instead. What the file does carry is the language, the
+   dictionary and the chrome's own chunk, so the page is one round trip from
+   drawn. */
+let shells = 0;
+for (const lang of LANGS) {
+  const t = translator(lang);
+  const out = template
+    .replace('<html lang="en">', `<html lang="${lang}">`)
+    .replace(/<title>[^<]*<\/title>/, `<title>${esc(strip(t('land.title')))}</title>`)
+    .replace('</head>', `<link rel="modulepreload" crossorigin href="/${dictChunk(lang)}">\n</head>`);
+  mkdirSync('dist/shell', { recursive: true });
+  writeFileSync(join('dist/shell', `index.${lang}.html`), out);
+  shells += 1;
+}
+console.log(`prerender: ${written} files, ${PAGES.length} pages x ${LANGS.length} languages, and ${shells} shells`);

@@ -13,12 +13,15 @@ import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 
 const ROOT = 'dist';
-const LANGS = ['en', 'pt', 'ru'];
+const { LANGS, ROUTES } = await import('./dist/server/entry-server.js');
 const TYPES = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css',
   '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.png': 'image/png', '.json': 'application/json',
 };
-const PAGES = new Set(['/', '/news', '/privacy', '/about', '/status']);
+/* Read off the router's own table, so this cannot answer a different set of
+   addresses than the app draws. */
+const PAGES = new Set(ROUTES.flatMap((r) => r.prerender ?? []));
+const routed = (path) => ROUTES.some((r) => r.test.test(path));
 
 /* The policy the real server sends, copied from nginx.conf, because a
    preview that is more permissive than production is a preview that hides
@@ -71,11 +74,15 @@ createServer(async (req, res) => {
     }
   }
 
-  if (PAGES.has(path)) {
+  if (PAGES.has(path) || routed(path)) {
     const cookie = (req.headers.cookie ?? '').match(/sp-lang=([a-z-]+)/)?.[1];
     const asked = url.searchParams.get('lang') ?? cookie;
     const lang = LANGS.includes(asked) ? asked : 'en';
-    const file = join(ROOT, path === '/' ? '' : path, `index.${lang}.html`);
+    /* A page with its own file gets it; any other address the app draws gets
+       the shell, the same rule nginx.conf follows. */
+    const file = PAGES.has(path)
+      ? join(ROOT, path === '/' ? '' : path, `index.${lang}.html`)
+      : join(ROOT, 'shell', `index.${lang}.html`);
     try {
       res.writeHead(200, {
         'Content-Type': TYPES['.html'],
