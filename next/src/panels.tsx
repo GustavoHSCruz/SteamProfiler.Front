@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { LOCALES } from './copy';
-import type { Lang, T } from './copy';
+import { LOCALES } from './i18n';
+import type { Lang, T } from './i18n';
 import { DEMO_RAIL, DEMO_SHAPE, DEMO_THEMES, FRANCHISES, HEADER_ART } from './data';
 import { CountUp, Panel, Treemap, usePainted } from './ui';
 import { Link } from './router';

@@ -46,6 +46,12 @@ for (const file of files) {
   else if (text.length < MIN_TEXT) bad.push(`${file}: only ${text.length} characters of text`);
   else if (!/<title>[^<]{3,}<\/title>/.test(html)) bad.push(`${file}: no title`);
   else if (!/<html lang="[a-z-]{2,5}"/.test(html)) bad.push(`${file}: no lang on <html>`);
+  /* The link preview and the canonical went missing once already: the pages
+     moved here from site/ and their heads did not come with them, so for two
+     weeks a link to the home page pasted anywhere arrived with no card. */
+  else if (!/<link rel="canonical" href="https:\/\/steamprofiler\.org\/[^"]*">/.test(html)) bad.push(`${file}: no canonical`);
+  else if (!/<meta property="og:title" content="[^"]+">/.test(html)) bad.push(`${file}: no og:title`);
+  else if (!/<meta property="og:image" content="https:[^"]+">/.test(html)) bad.push(`${file}: no og:image`);
 }
 
 if (!files.length) {
@@ -57,4 +63,4 @@ if (bad.length) {
   for (const line of bad) console.error(`  ✗ ${line}`);
   process.exit(1);
 }
-console.log(`prerender ok: ${files.length} files, all with their text, a title and a lang`);
+console.log(`prerender ok: ${files.length} files, all with their text, a title, a lang, a canonical and a preview`);

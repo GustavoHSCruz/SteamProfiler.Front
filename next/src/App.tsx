@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { LANGS, LANG_NAMES, pickLang, translator } from './copy';
+import { LANGS, LANG_NAMES, loadDict, pickLang, translator } from './i18n';
 import { boot, SERVER } from './boot';
-import type { Lang } from './copy';
+import type { Lang } from './i18n';
 import { Doors, Emb, Ext, Find, Live, Map, News, Parts, Rail } from './panels';
 import { NewsPage, PostPage } from './news';
 import { AboutPage, PrivacyPage, StatusPage } from './pages-view';
@@ -21,14 +21,28 @@ const ROUTED = /^\/(news|privacy|about|status)(\/|$)/;
 
 export default function App() {
   const path = usePath();
-  const [lang, setLang] = useState<Lang>(() => (SERVER ? boot.lang : pickLang()));
+  /* boot.lang is the language the served file was rendered in, and the
+     dictionary for it is already loaded; the first render has to match the
+     markup, so it starts there even when the stored choice says otherwise. */
+  const [lang, setLangNow] = useState<Lang>(boot.lang);
+  const setLang = (next: Lang) => { loadDict(next).then(() => setLangNow(next)); };
+
+  /* A reader whose choice disagrees with the file that arrived - a cookie that
+     was refused, or a first visit guessed from the browser - is switched after
+     the hydration, not during it. */
+  useEffect(() => {
+    if (SERVER) return;
+    const wanted = pickLang();
+    if (wanted !== boot.lang) setLang(wanted);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [live, setLive] = useState<api.Status | null>(null);
   const input = useRef<HTMLInputElement>(null);
   const t = useMemo(() => translator(lang), [lang]);
 
   useEffect(() => {
     document.documentElement.lang = lang;
-    localStorage.setItem('sp-lang', lang);
+    try { localStorage.setItem('sp-lang', lang); } catch { /* the cookie below still works */ }
     /* The server picks which prerendered file to serve from this cookie, the
        same way it already picks which dictionary to send. Writing it here is
        what makes the next visit arrive already in the right language instead

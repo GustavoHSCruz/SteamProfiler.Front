@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { LOCALES } from './copy';
-import type { Lang, T } from './copy';
+import { LOCALES } from './i18n';
+import type { Lang, T } from './i18n';
 import { ABOUT, PRIVACY } from './pages';
 import type { Card } from './pages';
 import { Panel, usePainted } from './ui';

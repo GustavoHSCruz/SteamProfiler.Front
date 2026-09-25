@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { LOCALES } from './copy';
-import type { Lang, T } from './copy';
+import { LOCALES } from './i18n';
+import type { Lang, T } from './i18n';
 import { Panel } from './ui';
 import { PanelGo, Segmented } from './ui-kit/react';
 import { Link } from './router';

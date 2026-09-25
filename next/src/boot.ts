@@ -9,7 +9,7 @@
    needs them reads them once, at first render, and after that the browser is
    the source of truth. A context would make that a prop drill through nine
    panels to say something neither of them can change. */
-import type { Lang } from './copy';
+import type { Lang } from './i18n';
 
 export const SERVER = typeof window === 'undefined';
 

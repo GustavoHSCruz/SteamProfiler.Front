@@ -1,24 +1,15 @@
 /* steamprofiler.org - every string on the site, in zh-tw.
 
-   GENERATED from the SteamProfiler.i18n repository - do not edit here. A
-   fix to a string, or a language, is a pull request there; running its
-   build.py writes this file. Editing this copy works until the next build
-   and then quietly goes away.
+   GENERATED from the SteamProfiler.i18n repository - do not edit here.
+   Built from the same lines as site/dict.<lang>.js, with English
+   underneath, so a key this language has not translated is English. */
 
-   One language per file, and a reader is served exactly one of them:
-   nginx picks it from the `sp-lang` cookie, serve.py does the same in a
-   local checkout, and both answer at /dict.js. So there is no fallback
-   left at runtime and none is needed - a key this language has not
-   translated is already sitting here in English.
+import { pluralFor } from './plural';
+import type { Dict } from './plural';
 
-   Keys read as paths - `nav.*` chrome, `land.*` the landing page, `dash.*`
-   the dashboard, `g.*` the game pages, `msg.*` messages, `sup.*` support,
-   `err.*` anything a visitor can be told went wrong. The last groups
-   (`arma.*`, `gmod.*`, `pd2.*`, …) are the keys the API sends instead of
-   prose, so the server never has to know which language anyone reads. */
+const plural = pluralFor('zh-tw');
 
-const DICT_LANG = 'zh-tw';
-const DICT = {
+const DICT: Dict = {
   /* ── The rest of GTA, and the last four Armas ── */
   'g.gta3_cap': 'GTA III publishes no stats and no achievements - it is from 2001, two years before Steam. The radar, two bars and a row of stars were the entire interface, and none of it was ever reported anywhere.',
   'g.gsa_tagged': 'the only thing recorded',
@@ -2462,3 +2453,5 @@ const DICT = {
   'foot.site_version': "網站版本",
   'foot.local_changes': "本機變更",
 };
+
+export default DICT;

@@ -15,7 +15,7 @@
    cookie is the same line of config against the same cookie, so the
    addresses stay clean and a reader in Portuguese gets Portuguese in the
    markup rather than English that corrects itself after the script runs. */
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, readdirSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
 const { render, LANGS, translator } = await import('./dist/server/entry-server.js');
@@ -24,14 +24,26 @@ const { render, LANGS, translator } = await import('./dist/server/entry-server.j
    description are written in. A route missing from here is a route that
    ships as an empty div, so this list is the checklist. */
 const PAGES = [
-  { path: '/', title: 'land.title', desc: 'land.meta' },
-  { path: '/news', title: 'n.news_title', desc: 'n.news_lede' },
-  { path: '/privacy', title: 'priv.title', desc: 'priv.lede' },
-  { path: '/about', title: 'abt.title', desc: 'abt.lede' },
-  { path: '/status', title: 'st.title', desc: 'st.lede' },
+  { path: '/', title: 'land.title', desc: 'land.meta', head: 'home' },
+  { path: '/news', title: 'n.news_title', desc: 'n.news_lede', head: 'news' },
+  { path: '/privacy', title: 'priv.title', desc: 'priv.lede', head: 'privacy' },
+  { path: '/about', title: 'abt.title', desc: 'abt.lede', head: 'about' },
+  { path: '/status', title: 'st.title', desc: 'st.lede', head: 'status' },
 ];
 
+/* The rest of each page's head - canonical, the link preview, the structured
+   data - is a file per page in head/, read as it is with its comments taken
+   out. Those comments explain the tags to whoever edits them; the reader's
+   browser has no use for them. */
+const headOf = (name) => readFileSync(join('head', `${name}.html`), 'utf8').replace(/<!--[\s\S]*?-->\n?/g, '').trim();
+
 const template = readFileSync('dist/index.html', 'utf8');
+
+/* The dictionary is a chunk of its own and the page cannot hydrate until it
+   has arrived, so each file asks for its language's chunk up front instead of
+   leaving the browser to find out after the main bundle has run. */
+const chunks = readdirSync('dist/assets');
+const dictChunk = (lang) => chunks.find((f) => f.startsWith(`${lang}-`) && f.endsWith('.js'));
 const strip = (s) => s.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
@@ -46,7 +58,7 @@ for (const page of PAGES) {
     const out = template
       .replace('<html lang="en">', `<html lang="${lang}">`)
       .replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`)
-      .replace('</head>', `<meta name="description" content="${esc(desc)}">\n</head>`)
+      .replace('</head>', `<meta name="description" content="${esc(desc)}">\n${headOf(page.head)}\n<link rel="modulepreload" crossorigin href="/assets/${dictChunk(lang)}">\n</head>`)
       .replace('<div id="root"></div>', `<div id="root">${html}</div>`);
 
     const file = join('dist', page.path === '/' ? '' : page.path, `index.${lang}.html`);

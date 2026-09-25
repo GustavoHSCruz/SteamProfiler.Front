@@ -185,7 +185,9 @@ src/
   panels.tsx   the nine
   ui.tsx       the panel primitive, the count-up, the treemap
   data.ts      the shape, the rail, the franchises, squarify()
-  copy.ts      every string, in en, pt and ru
+  i18n/        the five dictionaries, built by SteamProfiler.i18n, and the
+               language list; one chunk per language
+  head/        each page's canonical, link preview and structured data
   pages.ts     the shape of /privacy and /about, generated from the other repo
   pages-view.tsx  those two, and /status
   api.ts       /status, /resolve, /game/search
@@ -252,14 +254,17 @@ that is broken for a month:
 5. **The swap**: `site/` comes out, this goes in, `deploy.sh` grows a build
    step, and CONTRIBUTING stops saying "no dependencies".
 
-Nothing is served from here until step 5, and step 5 is one commit.
+Each page is served from here as soon as it is ported, by moving its
+address into the next/ block of nginx.conf; step 5 is what is left once
+nothing points at `site/`.
 
-## If this is the one
+## Where the strings are
 
-The strings move to `SteamProfiler.i18n` like everything else the project
-shows a reader. `copy.ts` is a prototype's shortcut: the `land.*`, `priv.*`,
-`abt.*`, `st.*` and `nav.*` keys in it are lifted verbatim from the built
-dictionaries and must not be edited here, and the `w.*` and `n.*` ones - the
-panel titles and the news pages, which the served site has no equivalent of -
-are the only strings written in this repo. Their Russian is mine and wants a
-reader who has it.
+Nowhere in this folder. `src/i18n/<lang>.ts` is built by
+[SteamProfiler.i18n](https://github.com/GustavoHSCruz/SteamProfiler.i18n) from
+the same lines as `site/dict.<lang>.js`, English underneath, so both halves of
+the front say the same thing while both are served. A string is a pull request
+there, and `./build.py` in that repository writes it here.
+
+The browser loads one of the five: the page names its language on `<html>`,
+asks for that chunk with a `modulepreload`, and hydrates once it is in.
