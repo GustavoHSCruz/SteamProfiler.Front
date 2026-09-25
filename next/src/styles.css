@@ -3,19 +3,16 @@
    utility below still wins over them. */
 @import "./ui-kit/steamprofiler-ui.css" layer(components);
 
-/* ── The pages from site/ ─────────────────────────────────────────────
-   Their stylesheets were written against the browser's own defaults, and
-   Tailwind's preflight is not those: it zeroes margins, lets buttons inherit
-   the page's font and takes the bullets off lists. Inside a page run from
-   site/ this layer puts the browser's values back, and because it is a layer
-   the page's own rules - which are not in one - still win over it wherever
-   they say anything. SVG is left alone: `revert` would also undo the fill
-   and stroke a chart sets as attributes. */
-@layer legacy-revert {
-  .legacy :where(*:not(svg, svg *)),
-  .legacy :where(*:not(svg, svg *))::before,
-  .legacy :where(*:not(svg, svg *))::after { all: revert; }
-}
+/* The page's element is its old <body>, and wears that body's background. A
+   body's background is painted under everything; an element's is painted over
+   its own children with a negative z-index - the profile's Steam background,
+   a game's key art held behind the text - so without a stacking context of
+   its own the page covered its own pictures. */
+.legacy { isolation: isolate; }
+/* A franchise's opening covers the whole window, the app's status bar
+   included, the way it covered the old page's. Only while it plays: the rest
+   of the time the bar stays over the page as it scrolls. */
+.legacy:has(.fx-intro) { position: relative; z-index: 60; }
 
 /* ── The faces ───────────────────────────────────────────────────────── */
 @font-face { font-family: 'Bricolage Grotesque'; font-weight: 600; font-display: swap; src: url(/fonts/bricolage-grotesque-600.woff2) format('woff2'); }

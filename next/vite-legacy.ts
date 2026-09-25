@@ -156,3 +156,42 @@ export function legacyPages(): Plugin {
     },
   };
 }
+
+/* ── Tailwind's reset, kept off the pages from site/ ───────────────────
+   Preflight zeroes margins, sets images to `height: auto`, takes the bullets
+   off lists. The pages from site/ were drawn against the browser's own
+   defaults, and undoing preflight inside them after the fact (`all: revert`)
+   undid more than preflight: it threw away the width and height attributes
+   an <img> sizes itself by, so every capsule on the backlog came out half as
+   tall. So preflight is never applied there at all. After Tailwind has
+   written the app's stylesheet, every selector in its `base` layer is told
+   to skip anything inside a `.legacy` page. */
+const EXCLUDE = ':not(.legacy *)';
+
+/** The exclusion goes before the pseudo-element, which has to end a
+ *  selector - written `::after`, or `:after` the way the minified output
+ *  writes the four that are old enough to have had one colon. */
+export function excludeLegacy(sel: string): string {
+  const m = /::|:(?:before|after|first-line|first-letter)\b/.exec(sel);
+  return m ? `${sel.slice(0, m.index)}${EXCLUDE}${sel.slice(m.index)}` : `${sel}${EXCLUDE}`;
+}
+
+export function preflightOffLegacy(): Plugin {
+  return {
+    name: 'steamprofiler-preflight-off-legacy',
+    transform(code, id) {
+      if (!/\/src\/styles\.css(?:\?|$)/.test(id)) return null;
+      const root = postcss.parse(code);
+      let touched = 0;
+      root.walkAtRules('layer', (layer) => {
+        if (layer.params.trim() !== 'base') return;
+        layer.walkRules((rule) => {
+          rule.selectors = rule.selectors.map((sel) => excludeLegacy(sel.trim()));
+          touched += 1;
+        });
+      });
+      if (!touched) this.error('preflightOffLegacy: no @layer base in styles.css - did the Tailwind import change?');
+      return { code: root.toString(), map: null };
+    },
+  };
+}

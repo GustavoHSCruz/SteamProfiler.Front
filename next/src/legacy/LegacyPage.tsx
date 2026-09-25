@@ -74,14 +74,14 @@ export function legacyPage(load: () => Promise<LegacyModule>, prepare?: Prepare)
   }));
 }
 
-/* ── /u/<who>/<appid> ─────────────────────────────────────────────────
-   nginx puts <meta name="sp-game"> in the head of that address, from an
+/* ── /u/<who>/<appid> and /g/<appid> ──────────────────────────────────
+   nginx puts <meta name="sp-game"> in the head of those addresses, from an
    include that asks the api which theme the game has, and boot.js reads it
    to draw the wait screen in the game's colours from the first frame. A
    page reached by a link inside the app never went through nginx, so the
    meta is whatever the first page left - another game's, or none. This asks
    the same question the include asks, before the page runs. */
-const GAME_PATH = /^\/u\/[^/]+\/(\d{1,8})$/;
+const GAME_PATH = /^\/(?:u\/[^/]+|g)\/(\d{1,8})$/;
 let themedFor = typeof window === 'undefined' ? null : GAME_PATH.exec(window.location.pathname)?.[1] ?? null;
 
 export function profileTheme(path: string): Promise<void> | void {

@@ -109,7 +109,7 @@ export const ROUTES: Route[] = [
   },
   {
     name: 'game-public', test: /^\/g\/\d{1,8}$/, legacy: 'game-public', title: 'gp.doc', template: '/g/0', src: 'legacy:game-public',
-    page: legacyPage(() => import('legacy:game-public')),
+    page: legacyPage(() => import('legacy:game-public'), profileTheme),
   },
   {
     name: 'franchises', test: /^\/franchises(?:\/[a-z0-9][a-z0-9-]{0,39})?$/, legacy: 'franchises', title: 'fx.doc', prerender: ['/franchises'], src: 'legacy:franchises',

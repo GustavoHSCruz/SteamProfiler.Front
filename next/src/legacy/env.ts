@@ -115,6 +115,10 @@ export function createEnv(root: HTMLElement, lang: Lang, t: T, setLang: (l: Lang
         case 'querySelectorAll':
           return (sel: string) => scope.querySelectorAll(sel);
         case 'addEventListener': return track(target);
+        /* What a page appends to the body - a franchise's opening, a link it
+           clicks to start a download - has to land where the page's
+           stylesheet reaches, which is the page's element and not <body>. */
+        case 'body': return root;
         case 'defaultView': return win;
         case 'location': return loc;
       }
