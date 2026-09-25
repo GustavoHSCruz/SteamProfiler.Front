@@ -19,7 +19,10 @@ function classes(css) {
   css = css.replace(/\/\*[\s\S]*?\*\//g, '');
   const out = new Set();
   for (const m of css.matchAll(/([^{}@;]+)\{/g)) {
-    for (const c of m[1].matchAll(/\.([a-zA-Z_][\w-]*)/g)) out.add(c[1]);
+    /* A class named inside :has() is looked for, not styled: the app may ask
+       whether a site/ page is showing something without dressing it. */
+    const styled = m[1].replace(/:has\([^)]*\)/g, '');
+    for (const c of styled.matchAll(/\.([a-zA-Z_][\w-]*)/g)) out.add(c[1]);
   }
   return out;
 }
