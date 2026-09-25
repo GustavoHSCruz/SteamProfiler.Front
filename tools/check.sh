@@ -75,6 +75,7 @@ if [ -d next/node_modules ]; then
   step "next: types"     npm --prefix next run --silent typecheck
   step "next: build and prerender" npm --prefix next run --silent build
   step "next: every page is a file" node tools/check-prerender.js
+  step "next: its styles leave site/ pages alone" node tools/check-legacy-css.js
 elif [ -n "${CI:-}" ]; then
   # Where the result is public a skip is a pass nobody earned.
   printf '  FAIL  next/ has no node_modules (the workflow must run npm ci)\n'

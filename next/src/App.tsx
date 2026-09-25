@@ -3,9 +3,8 @@ import { LANGS, LANG_NAMES, loadDict, pickLang, translator } from './i18n';
 import { boot, SERVER } from './boot';
 import type { Lang } from './i18n';
 import { match } from './routes';
-import { Link, usePath } from './router';
+import { Link, useLinkCapture, usePath } from './router';
 import { Select } from './ui-kit/react';
-import * as api from './api';
 import { SITE_VERSION } from './site-version';
 
 /* The chrome every page shares - the status bar and the legal line - and
@@ -28,6 +27,15 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const t = useMemo(() => translator(lang), [lang]);
+  useLinkCapture();
+
+  /* The pages from site/ ask for a language this way; see legacy/env.ts. */
+  useEffect(() => {
+    const onLang = (e: Event) => setLang((e as CustomEvent<Lang>).detail);
+    window.addEventListener('sp:lang', onLang);
+    return () => window.removeEventListener('sp:lang', onLang);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   /* An address nothing claims gets the bench, which is a better answer to a
      wrong address than a page saying it was wrong. nginx only sends this
      front the addresses it draws, so in production this is a dev-server
@@ -47,7 +55,7 @@ export default function App() {
   /* The file set the title for the first address; every one after that is a
      route change inside the page, and the tab should follow it. */
   useEffect(() => {
-    if (found) document.title = t(found.route.title).replace(/<[^>]*>/g, '');
+    if (found?.route.title) document.title = t(found.route.title).replace(/<[^>]*>/g, '');
   }, [found?.route, t]);
 
   return (
@@ -69,14 +77,15 @@ export default function App() {
               {t(key)}
             </Link>
           ))}
-          {[['nav.blog', '/blog'], ['nav.messages', '/feedback'], ['nav.support', '/support']].map(([key, href]) => (
-            <a
-              key={href}
-              href={`${api.SITE}${href}`} {...api.OUT}
+          {[['nav.blog', '/blog'], ['nav.messages', '/feedback'], ['nav.support', '/support']].map(([key, to]) => (
+            <Link
+              key={to}
+              to={to}
+              aria-current={path.startsWith(to) ? 'page' : undefined}
               className="sp-pill sp-pill--quiet hidden lg:inline-flex"
             >
               {t(key)}
-            </a>
+            </Link>
           ))}
           <Select
             pill
@@ -104,13 +113,16 @@ export default function App() {
       <footer className="px-3 pb-5 pt-1 md:px-4">
         <p className="font-mono flex flex-wrap gap-x-5 gap-y-1 text-[10.5px]">
           {[
-            [t('foot.example'), `${api.SITE}/u/gordziilla`],
-            [t('nav.blog'), `${api.SITE}/blog`],
-            [t('foot.bugs_ideas'), `${api.SITE}/feedback`],
-            [t('nav.extension'), `${api.SITE}/extension`],
-            [t('nav.support'), `${api.SITE}/support`],
-            [t('nav.terms'), `${api.SITE}/terms`],
-
+            [t('foot.example'), '/u/gordziilla'],
+            [t('nav.blog'), '/blog'],
+            [t('foot.bugs_ideas'), '/feedback'],
+            [t('nav.extension'), '/extension'],
+            [t('nav.support'), '/support'],
+            [t('nav.terms'), '/terms'],
+          ].map(([label, to]) => (
+            <Link key={to} to={to} className="text-dim no-underline hover:text-amber">{label}</Link>
+          ))}
+          {[
             [t('foot.front_repo'), 'https://github.com/GustavoHSCruz/SteamProfiler.Front'],
             [t('foot.api_repo'), 'https://github.com/GustavoHSCruz/SteamProfiler.Api'],
           ].map(([label, href]) => (

@@ -3,6 +3,20 @@
    utility below still wins over them. */
 @import "./ui-kit/steamprofiler-ui.css" layer(components);
 
+/* ── The pages from site/ ─────────────────────────────────────────────
+   Their stylesheets were written against the browser's own defaults, and
+   Tailwind's preflight is not those: it zeroes margins, lets buttons inherit
+   the page's font and takes the bullets off lists. Inside a page run from
+   site/ this layer puts the browser's values back, and because it is a layer
+   the page's own rules - which are not in one - still win over it wherever
+   they say anything. SVG is left alone: `revert` would also undo the fill
+   and stroke a chart sets as attributes. */
+@layer legacy-revert {
+  .legacy :where(*:not(svg, svg *)),
+  .legacy :where(*:not(svg, svg *))::before,
+  .legacy :where(*:not(svg, svg *))::after { all: revert; }
+}
+
 /* ── The faces ───────────────────────────────────────────────────────── */
 @font-face { font-family: 'Bricolage Grotesque'; font-weight: 600; font-display: swap; src: url(/fonts/bricolage-grotesque-600.woff2) format('woff2'); }
 @font-face { font-family: 'Bricolage Grotesque'; font-weight: 800; font-display: swap; src: url(/fonts/bricolage-grotesque-800.woff2) format('woff2'); }
@@ -120,21 +134,21 @@ body {
    the one under it lifts out of the sheet, which is the whole of the
    interaction and is the reason this is a picture you lean into rather
    than a picture you look at. */
-.map { position: absolute; inset: 0; }
-.cell {
+.bench-map { position: absolute; inset: 0; }
+.bench-cell {
   position: absolute;
   border-radius: 2px;
   box-shadow: inset 0 0 0 1px #0b0a10;
   transition: filter 160ms ease, transform 160ms ease;
 }
-.map:hover .cell { filter: brightness(.72); }
-.map .cell:hover {
+.bench-map:hover .bench-cell { filter: brightness(.72); }
+.bench-map .bench-cell:hover {
   filter: brightness(1.5);
   transform: scale(1.06);
   z-index: 2;
 }
 @media (prefers-reduced-motion: reduce) {
-  .cell, .map:hover .cell, .map .cell:hover { transition: none; transform: none; filter: none; }
+  .bench-cell, .bench-map:hover .bench-cell, .bench-map .bench-cell:hover { transition: none; transform: none; filter: none; }
 }
 
 /* ── The vertical rail ───────────────────────────────────────────────

@@ -85,11 +85,11 @@ export function Treemap({ stagger = true }: { stagger?: boolean }) {
   const still = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   return (
-    <div className="map" ref={box} aria-hidden>
+    <div className="bench-map" ref={box} aria-hidden>
       {rects.map((r, i) => (
         <div
           key={i}
-          className="cell"
+          className="bench-cell"
           style={{
             left: `${(r.x / w) * 100}%`,
             top: `${(r.y / h) * 100}%`,

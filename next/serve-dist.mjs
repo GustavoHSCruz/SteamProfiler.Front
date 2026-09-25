@@ -10,6 +10,7 @@
 import { createServer } from 'node:http';
 import { Readable } from 'node:stream';
 import { readFile } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import { extname, join, normalize } from 'node:path';
 
 const ROOT = 'dist';
@@ -23,20 +24,41 @@ const TYPES = {
 const PAGES = new Set(ROUTES.flatMap((r) => r.prerender ?? []));
 const routed = (path) => ROUTES.some((r) => r.test.test(path));
 
+/* Which file answers an address, the same order nginx.conf uses: the page's
+   own file; the route's template; the file of the route's first address,
+   whose markup is the same for all of them; and last the empty shell. */
+function fileFor(path, lang) {
+  if (PAGES.has(path)) return join(ROOT, path === '/' ? '' : path, `index.${lang}.html`);
+  const r = ROUTES.find((x) => x.test.test(path));
+  if (r?.template) return join(ROOT, '_t', r.name, `index.${lang}.html`);
+  if (r?.prerender?.length) return join(ROOT, r.prerender[0] === '/' ? '' : r.prerender[0], `index.${lang}.html`);
+  return join(ROOT, 'shell', `index.${lang}.html`);
+}
+
 /* The policy the real server sends, copied from nginx.conf, because a
    preview that is more permissive than production is a preview that hides
    exactly the class of bug worth catching here: `style-src 'self'` with no
    'unsafe-inline' blocks a `style=` attribute, and server-rendered React
    writes those into the markup. */
-const CSP = "default-src 'self'; img-src 'self' data: https://avatars.steamstatic.com "
-  + "https://cdn.cloudflare.steamstatic.com https://cdn.akamai.steamstatic.com "
-  + "https://shared.akamai.steamstatic.com https://shared.fastly.steamstatic.com "
-  + "https://community.fastly.steamstatic.com https://community.cloudflare.steamstatic.com "
-  + "https://images.steamusercontent.com https://clan.cloudflare.steamstatic.com "
-  + "https://clan.steamstatic.com https://steamcdn-a.akamaihd.net https://media.steampowered.com; "
-  + "media-src blob: https://cdn.cloudflare.steamstatic.com https://video.akamai.steamstatic.com; "
-  + "style-src 'self'; script-src 'self'; font-src 'self'; "
-  + "connect-src 'self' https://video.akamai.steamstatic.com; base-uri 'none'; frame-ancestors 'self'";
+/* Read out of nginx.conf when the api is checked out beside this repo, so
+   the two cannot drift; the copy below is the policy as of when it was
+   written, for a checkout that has only this repository. */
+const CSP = (() => {
+  try {
+    const conf = readFileSync(new URL('../../steamprofiler-api/nginx.conf', import.meta.url), 'utf8');
+    const m = /map \$host \$sp_csp \{\s*default "([^"]+)";/.exec(conf);
+    if (m) return m[1];
+  } catch { /* not checked out */ }
+  return "default-src 'self'; img-src 'self' data: https://cdn.steamprofiler.org https://avatars.steamstatic.com "
+    + "https://cdn.cloudflare.steamstatic.com https://cdn.akamai.steamstatic.com "
+    + "https://shared.akamai.steamstatic.com https://shared.fastly.steamstatic.com "
+    + "https://community.fastly.steamstatic.com https://community.cloudflare.steamstatic.com "
+    + "https://images.steamusercontent.com https://clan.cloudflare.steamstatic.com "
+    + "https://clan.steamstatic.com https://steamcdn-a.akamaihd.net https://media.steampowered.com; "
+    + "media-src blob: https://cdn.cloudflare.steamstatic.com https://video.akamai.steamstatic.com; "
+    + "style-src 'self'; script-src 'self'; font-src 'self'; "
+    + "connect-src 'self' https://video.akamai.steamstatic.com; base-uri 'none'; frame-ancestors 'self'";
+})();
 
 /* The same three upstreams vite.config.ts forwards in development. Without
    them this preview is the built site with the service unplugged, which
@@ -76,13 +98,24 @@ createServer(async (req, res) => {
 
   if (PAGES.has(path) || routed(path)) {
     const cookie = (req.headers.cookie ?? '').match(/sp-lang=([a-z-]+)/)?.[1];
-    const asked = url.searchParams.get('lang') ?? cookie;
+    /* No cookie is a first visit, and nginx guesses from Accept-Language in
+       the same order i18n/index.ts guesses from navigator.languages. */
+    const guess = (() => {
+      for (const raw of (req.headers['accept-language'] ?? '').split(',')) {
+        const tag = raw.split(';')[0].trim().toLowerCase();
+        if (tag.startsWith('zh-hant') || /^zh-(tw|hk|mo)/.test(tag)) return 'zh-tw';
+        if (tag.startsWith('zh')) return 'zh-cn';
+        if (tag.startsWith('pt')) return 'pt';
+        if (tag.startsWith('ru')) return 'ru';
+        if (tag.startsWith('en')) return 'en';
+      }
+      return null;
+    })();
+    const asked = url.searchParams.get('lang') ?? cookie ?? guess;
     const lang = LANGS.includes(asked) ? asked : 'en';
     /* A page with its own file gets it; any other address the app draws gets
        the shell, the same rule nginx.conf follows. */
-    const file = PAGES.has(path)
-      ? join(ROOT, path === '/' ? '' : path, `index.${lang}.html`)
-      : join(ROOT, 'shell', `index.${lang}.html`);
+    const file = fileFor(path, lang);
     try {
       res.writeHead(200, {
         'Content-Type': TYPES['.html'],
@@ -95,8 +128,11 @@ createServer(async (req, res) => {
     }
   }
 
+  /* Anything the build did not produce is still a file of the served site -
+     a franchise's own stylesheet, an Open Graph picture - and nginx answers
+     those from site/ until it is gone. */
   try {
-    const body = await readFile(join(ROOT, path));
+    const body = await readFile(join(ROOT, path)).catch(() => readFile(join('..', 'site', path)));
     res.writeHead(200, { 'Content-Type': TYPES[extname(path)] ?? 'application/octet-stream' });
     res.end(body);
   } catch {

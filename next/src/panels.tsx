@@ -3,7 +3,7 @@ import { LOCALES } from './i18n';
 import type { Lang, T } from './i18n';
 import { DEMO_RAIL, DEMO_SHAPE, DEMO_THEMES, FRANCHISES, HEADER_ART } from './data';
 import { CountUp, Panel, Treemap, usePainted } from './ui';
-import { Link } from './router';
+import { Link, navigate } from './router';
 import { Button, Display, Eyebrow, Hint, Input, Panel as KitPanel, Lede, Notice, Pill, PillButton, Segmented } from './ui-kit/react';
 import * as api from './api';
 
@@ -69,15 +69,15 @@ export function Find({ t, inputRef }: { t: T; inputRef: React.RefObject<HTMLInpu
     setError('');
     if (!term) return setError(t('land.empty'));
     if (kind === 'game') {
-      if (/^\d{1,8}$/.test(term)) return api.open(`/g/${term}`);
-      if (hits[0]) return api.open(`/g/${hits[0].appid}`);
+      if (/^\d{1,8}$/.test(term)) return navigate(`/g/${term}`);
+      if (hits[0]) return navigate(`/g/${hits[0].appid}`);
       return setError(t('land.game_choose'));
     }
     setBusy(true);
     try {
       await api.resolve(term);
       remember(term);
-      api.open(`/u/${encodeURIComponent(term)}`);
+      navigate(`/u/${encodeURIComponent(term)}`);
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -134,7 +134,7 @@ export function Find({ t, inputRef }: { t: T; inputRef: React.RefObject<HTMLInpu
               <li key={g.appid}>
                 <button
                   type="button"
-                  onClick={() => api.open(`/g/${g.appid}`)}
+                  onClick={() => navigate(`/g/${g.appid}`)}
                   className="flex w-full items-center justify-between gap-6 rounded px-2 py-1.5 text-left font-mono text-[12px] text-dim hover:bg-ink hover:text-text"
                 >
                   <span className="truncate">{g.name}</span>
@@ -156,7 +156,7 @@ export function Find({ t, inputRef }: { t: T; inputRef: React.RefObject<HTMLInpu
           <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-line pt-3">
             <span className="font-mono text-[9.5px] uppercase tracking-[.12em] text-faint">{t('land.recent')}</span>
             {recent.map((name) => (
-              <PillButton key={name} size="sm" quiet className="inline-block max-w-[18ch] truncate" onClick={() => api.open(`/u/${encodeURIComponent(name)}`)}>
+              <PillButton key={name} size="sm" quiet className="inline-block max-w-[18ch] truncate" onClick={() => navigate(`/u/${encodeURIComponent(name)}`)}>
                 {name}
               </PillButton>
             ))}
@@ -207,7 +207,7 @@ export function Live({ t, lang, live }: { t: T; lang: string; live: api.Status |
   if (!shown.length) return null;
 
   return (
-    <Panel title={t('w.live')} area="a-live" go={t('land.live_link')} goHref={`${api.SITE}/status`} tight>
+    <Panel title={t('w.live')} area="a-live" go={t('land.live_link')} goTo="/status" tight>
       <dl className="m-0 flex h-full flex-col">
         {shown.map(([value, key]) => (
           <div key={key} className="flex-1 border-b border-line px-3.5 py-3 last:border-b-0">
@@ -241,7 +241,7 @@ export function Rail({ t }: { t: T }) {
               DEMO_RAIL.map(([appid, name]) => (
                 <a
                   key={`${pass}-${appid}`}
-                  href={`${api.SITE}/g/${appid}`} {...api.OUT}
+                  href={`/g/${appid}`}
                   aria-hidden={pass === 1 || undefined}
                   tabIndex={pass === 1 ? -1 : undefined}
                   title={name}
@@ -382,14 +382,14 @@ export function Doors({ t }: { t: T }) {
     Object.fromEntries(FRANCHISES.map((f, i) => [i, { '--tint': f.tint }])),
   );
   return (
-    <Panel title={t('w.doors')} area="a-fx" go={t('w.all_fx')} goHref={`${api.SITE}/franchises`} tight>
+    <Panel title={t('w.doors')} area="a-fx" go={t('w.all_fx')} goTo="/franchises" tight>
       <div className="flex h-full min-h-[280px] flex-col">
         <div ref={plates} className="grid min-h-0 flex-1 grid-cols-2 gap-1.5 p-2 sm:grid-cols-3 xl:grid-cols-5">
           {FRANCHISES.map((f) => (
             <a
               key={f.slug}
               className="plate flex min-h-[74px] flex-col justify-end p-2.5"
-              href={`${api.SITE}/franchises/${f.slug}`} {...api.OUT}
+              href={`/franchises/${f.slug}`}
             >
               <img src={`${HEADER_ART}/${f.flagship}/capsule_231x87.jpg`} alt="" loading="lazy" decoding="async" />
               <span className="plate-veil" />
@@ -402,8 +402,8 @@ export function Doors({ t }: { t: T }) {
         </div>
         <div className="flex flex-none flex-wrap items-center gap-2 border-t border-line px-3 py-2.5">
           <p className="font-mono mr-auto max-w-[46ch] text-[10.5px] leading-relaxed text-faint">{t('land.open_lede')}</p>
-          <Pill href={`${api.SITE}/publishers`} {...api.OUT}>{t('land.hs_pub')}</Pill>
-          <Pill href={`${api.SITE}/developers`} {...api.OUT}>{t('land.hs_dev')}</Pill>
+          <Pill href={`/publishers`}>{t('land.hs_pub')}</Pill>
+          <Pill href={`/developers`}>{t('land.hs_dev')}</Pill>
         </div>
       </div>
     </Panel>
@@ -426,7 +426,7 @@ export function Ext({ t }: { t: T }) {
     Object.fromEntries(EXT_METERS.map((w, i) => [i, { width: `${w}%` }])),
   );
   return (
-    <Panel title={t('w.ext')} area="a-ext" go={t('land.ext_go')} goHref={`${api.SITE}/extension`}>
+    <Panel title={t('w.ext')} area="a-ext" go={t('land.ext_go')} goTo="/extension">
       <div className="flex h-full gap-4">
         <div className="min-w-0 flex-1">
           <h3 className="text-[15px] font-semibold leading-tight tracking-tight">{t('land.ext_head')}</h3>
@@ -533,10 +533,10 @@ export function Parts({ t }: { t: T }) {
             <span className="text-dim">RU</span> <span className="text-amber">100%</span>
           </p>
           <p className="font-mono m-0 ml-auto flex flex-wrap gap-x-5 gap-y-1 text-[10.5px]">
-            <a className="text-dim no-underline hover:text-amber" href={`${api.SITE}/translate`} {...api.OUT}>
+            <a className="text-dim no-underline hover:text-amber" href={`/translate`}>
               {t('land.eco_translate')}
             </a>
-            <a className="text-dim no-underline hover:text-amber" href={`${api.SITE}/status`} {...api.OUT}>
+            <a className="text-dim no-underline hover:text-amber" href={`/status`}>
               {t('land.eco_status')}
             </a>
           </p>

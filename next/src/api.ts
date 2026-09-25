@@ -168,29 +168,3 @@ export function bodyWeight(item: NewsItem) {
 }
 
 export const READABLE = 120;
-
-/* Where the pages this front does not draw itself actually live.
-   
-   In production: next door. This front answers /, /news, /privacy, /about and
-   /status, and every other address on steamprofiler.org is still served from
-   the old tree - so a link to /u/<name> or /blog is an ordinary same-origin
-   link and behaves like one, in the same tab, with the back button working.
-
-   In development there is no old tree beside this one, so those addresses
-   point at the served site instead. It is the same trick vite.config.ts plays
-   with /api: the half that is not here is borrowed from the instance that is
-   running. */
-export const SITE = import.meta.env.PROD ? '' : 'https://steamprofiler.org';
-
-/** What an anchor to the site's other half needs. Nothing in production,
- *  where that half is next door and the link is ordinary; a new tab in
- *  development, where it is a different origin entirely. Spread it rather
- *  than writing target/rel by hand, so the two cases cannot drift. */
-export const OUT = import.meta.env.PROD ? {} : { target: '_blank', rel: 'noopener' } as const;
-
-/** Go to a page this front does not draw. Same tab in production because it
- *  is the same site; a new tab in development because it is not. */
-export function open(path: string) {
-  if (import.meta.env.PROD) window.location.assign(path);
-  else window.open(`${SITE}${path}`, '_blank', 'noopener');
-}

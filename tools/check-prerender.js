@@ -29,10 +29,36 @@ const files = [];
 (function walk(dir) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) { if (!['assets', 'server', 'shell', '.vite'].includes(entry.name)) walk(full); }
+    if (entry.isDirectory()) { if (!['assets', 'server', 'shell', '.vite', 'fonts'].includes(entry.name)) walk(full); }
     else if (/^index\.[a-z-]+\.html$/.test(entry.name)) files.push(full);
   }
 })(DIST);
+
+/* The link preview and the canonical went missing once already: the pages
+   moved here from site/ and their heads did not come with them, so for two
+   weeks a link to the home page pasted anywhere arrived with no card. So a
+   page written from head/ must have both, and a page still run from a site/
+   shell must carry every preview tag, canonical and server-side include that
+   shell had - the includes are how /g/ and /blog/ get their title and
+   preview per address, and a lost one fails the same way, silently. */
+const RECORD = fs.existsSync(path.join(DIST, '.prerender.json'))
+  ? new Map(JSON.parse(fs.readFileSync(path.join(DIST, '.prerender.json'), 'utf8')).map((r) => [path.normalize(r.file), r.legacy]))
+  : new Map();
+const HEAD_TAGS = /<link rel="canonical"[^>]*>|<meta property="og:[^"]+"[^>]*>|<meta name="(?:twitter:[^"]+|robots)"[^>]*>|<!--#include[^>]*-->|<!--og-->/g;
+
+function headGaps(file, html) {
+  const legacy = RECORD.get(path.normalize(path.relative('next', file)));
+  if (legacy) {
+    const shell = fs.readFileSync(path.join('site', `${legacy}.html`), 'utf8');
+    const head = shell.slice(0, shell.indexOf('</head>'));
+    return (head.match(HEAD_TAGS) ?? []).filter((tag) => !html.includes(tag)).map((tag) => `lost ${tag.slice(0, 60)} from site/${legacy}.html`);
+  }
+  const out = [];
+  if (!/<link rel="canonical" href="https:\/\/steamprofiler\.org\/[^"]*">/.test(html)) out.push('no canonical');
+  if (!/<meta property="og:title" content="[^"]+">/.test(html)) out.push('no og:title');
+  if (!/<meta property="og:image" content="https:[^"]+">/.test(html)) out.push('no og:image');
+  return out;
+}
 
 const bad = [];
 for (const file of files) {
@@ -46,12 +72,7 @@ for (const file of files) {
   else if (text.length < MIN_TEXT) bad.push(`${file}: only ${text.length} characters of text`);
   else if (!/<title>[^<]{3,}<\/title>/.test(html)) bad.push(`${file}: no title`);
   else if (!/<html lang="[a-z-]{2,5}"/.test(html)) bad.push(`${file}: no lang on <html>`);
-  /* The link preview and the canonical went missing once already: the pages
-     moved here from site/ and their heads did not come with them, so for two
-     weeks a link to the home page pasted anywhere arrived with no card. */
-  else if (!/<link rel="canonical" href="https:\/\/steamprofiler\.org\/[^"]*">/.test(html)) bad.push(`${file}: no canonical`);
-  else if (!/<meta property="og:title" content="[^"]+">/.test(html)) bad.push(`${file}: no og:title`);
-  else if (!/<meta property="og:image" content="https:[^"]+">/.test(html)) bad.push(`${file}: no og:image`);
+  else for (const missing of headGaps(file, html)) bad.push(`${file}: ${missing}`);
 }
 
 /* The shells are the opposite case and are checked for the opposite thing:

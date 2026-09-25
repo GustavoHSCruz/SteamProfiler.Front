@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+import { legacyPages } from './vite-legacy.ts';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -18,7 +19,7 @@ const UPSTREAM = process.env.SP_API ?? 'https://steamprofiler.org';
 
 export default defineConfig({
   define: { __SITE_VERSION__: JSON.stringify(siteVersion) },
-  plugins: [react(), tailwindcss()],
+  plugins: [legacyPages(), react(), tailwindcss()],
   /* prerender.mjs reads it to find each page's chunk and its imports. */
   build: { manifest: true },
   server: {

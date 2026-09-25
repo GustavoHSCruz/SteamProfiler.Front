@@ -2,6 +2,7 @@ import type { ComponentType } from 'react';
 import { lazyPage } from './lazy';
 import type { Lazy } from './lazy';
 import type { Lang, T } from './i18n';
+import { legacyPage, profileTheme } from './legacy/LegacyPage';
 
 /* Every address this front draws, in one table.
 
@@ -21,9 +22,17 @@ export type Route = {
   name: string;
   test: RegExp;
   page: Lazy<PageProps>;
-  /** The key of the <title>, and of the description, for this address. */
-  title: string;
-  desc: string;
+  /** The key of the <title>, and of the description, for this address. A
+   *  page from site/ that names its own tab has no title here. */
+  title?: string;
+  desc?: string;
+  /** A page from site/, whose <head> - title, description, preview, and the
+   *  server-side includes some of them carry - is read out of its shell. */
+  legacy?: string;
+  /** One address to render, written as a single file that nginx serves for
+   *  every address the route matches: the page's markup does not depend on
+   *  which one it is, only its data does. */
+  template?: string;
   /** head/<name>.html, the canonical and the preview. */
   head?: string;
   /** The module the page lives in, as Vite's manifest names it, so its
@@ -59,6 +68,64 @@ export const ROUTES: Route[] = [
   {
     name: 'status', test: /^\/status\/?$/, title: 'st.title', desc: 'st.lede', head: 'status', prerender: ['/status'], src: 'src/pages-view.tsx',
     page: adapt(() => import('./pages-view').then((m) => m.StatusPage), (p) => ({ t: p.t, lang: p.lang })),
+  },
+
+  /* ── Pages from site/, run by the legacy engine until they are rewritten ── */
+  {
+    name: 'profile', test: /^\/u\/[^/]+(?:\/.*)?$/, legacy: 'profile', template: '/u/_', src: 'legacy:profile',
+    page: legacyPage(() => import('legacy:profile'), profileTheme),
+  },
+  {
+    name: 'game-public', test: /^\/g\/\d{1,8}$/, legacy: 'game-public', title: 'gp.doc', template: '/g/0', src: 'legacy:game-public',
+    page: legacyPage(() => import('legacy:game-public')),
+  },
+  {
+    name: 'franchises', test: /^\/franchises(?:\/[a-z0-9][a-z0-9-]{0,39})?$/, legacy: 'franchises', title: 'fx.doc', prerender: ['/franchises'], src: 'legacy:franchises',
+    page: legacyPage(() => import('legacy:franchises')),
+  },
+  {
+    name: 'publishers', test: /^\/publishers(?:\/[a-z0-9][a-z0-9-]{0,39})?$/, legacy: 'publishers', title: 'hs.pub_doc', prerender: ['/publishers'], src: 'legacy:publishers',
+    page: legacyPage(() => import('legacy:publishers')),
+  },
+  {
+    name: 'developers', test: /^\/developers(?:\/[a-z0-9][a-z0-9-]{0,39})?$/, legacy: 'developers', title: 'hs.dev_doc', prerender: ['/developers'], src: 'legacy:developers',
+    page: legacyPage(() => import('legacy:developers')),
+  },
+  {
+    name: 'blog', test: /^\/blog\/?$/, legacy: 'blog', title: 'blog.title', prerender: ['/blog'], src: 'legacy:blog',
+    page: legacyPage(() => import('legacy:blog')),
+  },
+  {
+    name: 'post', test: /^\/blog\/[a-z0-9][a-z0-9-]{0,79}(?:\/[a-z0-9][a-z0-9-]{0,79})?$/, legacy: 'post', title: 'blog.title', template: '/blog/_', src: 'legacy:post',
+    page: legacyPage(() => import('legacy:post')),
+  },
+  {
+    name: 'feedback', test: /^\/feedback\/?$/, legacy: 'feedback', title: 'msg.title', prerender: ['/feedback'], src: 'legacy:feedback',
+    page: legacyPage(() => import('legacy:feedback')),
+  },
+  {
+    name: 'support', test: /^\/support\/?$/, legacy: 'support', title: 'sup.title', prerender: ['/support'], src: 'legacy:support',
+    page: legacyPage(() => import('legacy:support')),
+  },
+  {
+    name: 'extension', test: /^\/extension\/?$/, legacy: 'extension', title: 'ext.doc', prerender: ['/extension'], src: 'legacy:extension',
+    page: legacyPage(() => import('legacy:extension')),
+  },
+  {
+    name: 'translate', test: /^\/translate\/?$/, legacy: 'translate', title: 'tr.title', prerender: ['/translate'], src: 'legacy:translate',
+    page: legacyPage(() => import('legacy:translate')),
+  },
+  {
+    name: 'terms', test: /^\/terms\/?$/, legacy: 'terms', title: 'tos.title', prerender: ['/terms'], src: 'legacy:terms',
+    page: legacyPage(() => import('legacy:terms')),
+  },
+  {
+    name: 'terms-history', test: /^\/terms\/history\/?$/, legacy: 'terms-history', title: 'tos.archive_title', prerender: ['/terms/history'], src: 'legacy:terms-history',
+    page: legacyPage(() => import('legacy:terms-history')),
+  },
+  {
+    name: 'policy-history', test: /^\/privacy\/history\/?$/, legacy: 'policy-history', title: 'pol.title', prerender: ['/privacy/history'], src: 'legacy:policy-history',
+    page: legacyPage(() => import('legacy:policy-history')),
   },
 ];
 

@@ -72,3 +72,26 @@ export function Link({ to, className, children, title, ...rest }: {
 
   return <a href={to} className={className} title={title} onClick={onClick} {...rest}>{children}</a>;
 }
+
+/** Every plain <a href> on the page to an address the app draws is followed
+ *  without a reload - the ones React renders, the ones in a policy's text,
+ *  and the ones the pages from site/ build with h(). Listened for on the way
+ *  back up, so a handler that already dealt with a click and said so with
+ *  preventDefault wins, and so does anything asking for a new tab, a
+ *  download or a jump within the same page. */
+export function useLinkCapture() {
+  useEffect(() => {
+    const onClick = (e: globalThis.MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = (e.target as Element | null)?.closest?.('a[href]') as HTMLAnchorElement | null;
+      if (!a || (a.target && a.target !== '_self') || a.hasAttribute('download')) return;
+      const url = new URL(a.href, window.location.href);
+      if (url.origin !== window.location.origin || !isRouted(url.pathname)) return;
+      if (url.pathname === window.location.pathname && url.search === window.location.search && url.hash) return;
+      e.preventDefault();
+      navigate(url.pathname + url.search + url.hash);
+    };
+    document.addEventListener('click', onClick);
+    return () => document.removeEventListener('click', onClick);
+  }, []);
+}

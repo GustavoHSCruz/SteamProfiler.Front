@@ -38,12 +38,9 @@ function PolicyCard({ t, card }: { t: T; card: Card }) {
               {block.items.map((item) =>
                 item.href ? (
                   <li key={item.k}>
-                    {/* A route of this prototype stays inside it; everything
-                        else is the served site or somebody else's, and says so
-                        with a new tab. */}
-                    {item.href.startsWith('/') && !HERE.has(item.href) ? (
-                      <a href={`${api.SITE}${item.href}`} {...api.OUT}>{t(item.k)} ↗</a>
-                    ) : item.href.startsWith('/') ? (
+                    {/* An address on this site stays in it; somebody else's
+                        opens beside it. */}
+                    {item.href.startsWith('/') ? (
                       <Link to={item.href}>{t(item.k)}</Link>
                     ) : (
                       <a href={item.href} target="_blank" rel="noopener">{t(item.k)}</a>
@@ -68,10 +65,6 @@ function PolicyCard({ t, card }: { t: T; card: Card }) {
     </section>
   );
 }
-
-/** The addresses this prototype answers itself. Everything else in a policy's
- *  links points at the served site. */
-const HERE = new Set(['/', '/news', '/privacy', '/about', '/status']);
 
 function PolicyPage({ t, cards, eyebrow, h1, lede, foot }: {
   t: T; cards: Card[]; eyebrow: string; h1: string; lede: string; foot?: React.ReactNode;
@@ -122,12 +115,9 @@ export function PrivacyPage({ t }: { t: T }) {
       lede="priv.lede"
       foot={
         <p className="font-mono mt-4 text-[11px] text-faint">
-          {/* The archive of earlier revisions is a page of the served site and
-              is not rebuilt here: a policy's history is a record, and a
-              prototype has no business keeping a second copy of one. */}
-          <a className="text-dim no-underline hover:text-amber" href={`${api.SITE}/privacy/history`} {...api.OUT}>
-            {t('pol.see')} ↗
-          </a>
+          <Link className="text-dim no-underline hover:text-amber" to="/privacy/history">
+            {t('pol.see')}
+          </Link>
         </p>
       }
     />
