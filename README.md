@@ -8,36 +8,36 @@ The client half of [steamprofiler.org](https://steamprofiler.org): a Steam
 profile reader that draws a whole library to scale and gives every game that was
 ever launched a page designed after that game's own interface.
 
-Static HTML, CSS and JavaScript. No bundler, no build step, no dependencies:
-what is in `site/` is what the browser gets.
+React, TypeScript and Vite, rendered to files at build time. `next/` is the
+front: `npm run build` compiles it and writes one HTML file per page and per
+language with the text already in the markup, and the browser hydrates that
+file rather than replacing it. `site/` is the half that has not been moved yet,
+static HTML, CSS and JavaScript served as they are, and nginx decides address
+by address which of the two answers. Moving a page is a line in that map, and
+the day `site/` is empty the second half of this paragraph goes with it.
 
-**That last sentence is being reconsidered, and it is worth saying so here
-rather than in a commit message nobody reads.** A rebuild of the front on
-React and Vite is under way in a checkout of its own, and if it lands, this
-repository stops being a folder a browser can open and starts being a project
-that compiles. Nothing in it has changed yet: everything below describes what
-is served today, and the day that stops being true this paragraph is the first
-thing to go.
-
-What the rebuild is being weighed against is one row of the comparison and not
-a matter of taste. A page here answers with its text already in the markup -
-`tools/gen-shell.js` puts it there - and that is why an assistant asked whether
-this site is safe can read the answer without running anything. A single-page
-app has nothing to say to that question, so shipping one means either accepting
-it or serving the pages rendered, which is a second decision and not a detail.
+The prerender is not decoration. A page here answers with its text already in
+the markup, and that is why an assistant asked whether this site is safe can
+read the answer without running anything. A single-page app that serves an
+empty `<div>` has nothing to say to that question, so every page `next/` takes
+over ships as a file with its words in it, and `tools/check-prerender.js`
+refuses a build where one does not.
 
 ```
 git clone git@github.com:GustavoHSCruz/SteamProfiler.Front.git
 cd SteamProfiler.Front
-python3 serve.py          # http://127.0.0.1:8013
+npm --prefix next ci
+npm --prefix next run dev   # http://localhost:5180   the pages next/ serves
+python3 serve.py            # http://127.0.0.1:8013   the pages site/ still serves
 ```
 
-`serve.py` is a development server in the standard library and nothing else. It
-serves `site/` under the same URL map the live site uses and forwards `/api/`
-and `/art/` to a running instance, `https://steamprofiler.org` by default, so a
-fresh checkout renders real profiles immediately. `--api URL` points it
-somewhere else and `--offline` cuts the forwarding, which is enough for work on
-pages that hold no data.
+Both forward `/api/` and `/art/` to a running instance,
+`https://steamprofiler.org` by default, so a fresh checkout renders real
+profiles immediately. `serve.py` is a development server in the standard
+library and serves `site/` under the same URL map the live site uses; `--api
+URL` points it somewhere else and `--offline` cuts the forwarding, which is
+enough for work on pages that hold no data. `SP_API=http://host:port npm run
+dev` does the same for `next/`.
 
 ## What is here, and what is not
 

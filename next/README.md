@@ -18,17 +18,11 @@ node serve-dist.mjs   # http://localhost:5182   what ships, served like nginx
 the field really resolves. `SP_API=http://host:port npm run dev` points it
 elsewhere.
 
-A prototype, outside `steamprofiler-front` on purpose: nothing here is
-deployed, nothing here is in the OSS repo, the served page is untouched.
-
-Two things in the served repo were changed on its account, and only those two.
-The about page and the home's own card for the front end used to promise "no
-framework, no build step"; that promise now has a date on it, so it was taken
-out rather than inverted - a site that says it uses React before it does is
-wrong in the same way, and a claim removed does not need editing twice. The
-front's README and CONTRIBUTING say plainly that this rebuild is being weighed
-and that the rule still holds for the tree that is served. What has not been
-written anywhere is that the switch happened, because it has not.
+This is the front. It began as a prototype of the landing page and nginx
+now sends it `/`, `/news`, `/privacy`, `/about` and `/status`; every other
+address still comes from `site/` while it is moved over, one route at a
+time, with the old page as the fallback if a build writes nothing. The
+order is at the end of this file.
 
 The two entries this page keeps in a browser are `sp-lang` and `sp-recent`,
 which are the names the privacy policy gives them. Keeping the same thing
@@ -212,7 +206,7 @@ page to fail.
 | shipped to the reader | ~113 kB gzip, 51 kB of that the whole dictionary | ~147 kB gzip, dictionary included, three languages |
 | dependencies | none | react, motion, tailwind, vite |
 | build step | none | yes |
-| renders without JavaScript | the whole page, text and all | nothing |
+| renders without JavaScript | the whole page, text and all | the whole page, text and all, prerendered |
 
 The first row is now this cut's to answer for, and the honest version of it
 is that a third of that is React. The last one is the only one
@@ -220,8 +214,8 @@ that matters beyond taste. The served page carries its English in the markup
 precisely because three assistants, asked whether the site was safe to use,
 answered from what survives without a script - and one decided from the
 silence that it was a phishing page. A single-page React app has no answer to
-that. Putting this cut on steamprofiler.org means accepting it or adding
-server rendering, which is a second decision and not a detail.
+that, which is why this one is not one: the build renders every page to a
+file first, as the section on the prerender above describes.
 
 ## What replacing the front actually means
 

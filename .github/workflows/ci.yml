@@ -25,12 +25,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # No package.json and nothing to install: the checks are node and python
-      # reading files. Pinned to a major so a runner image bump cannot change
-      # what "passes" means without the change being visible here.
+      # Pinned to a major so a runner image bump cannot change what "passes"
+      # means without the change being visible here.
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: npm
+          cache-dependency-path: next/package-lock.json
+
+      # next/ is the front and it compiles. Without its packages check.sh skips
+      # the types, the build and the prerender, which in a clean checkout meant
+      # this badge went green over a front that did not build.
+      - name: npm ci (next/)
+        run: npm --prefix next ci
 
       - uses: actions/setup-python@v5
         with:

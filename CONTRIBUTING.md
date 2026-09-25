@@ -14,27 +14,41 @@ The first line points git at the versioned pre-push hook, which runs the checks
 before anything leaves your machine. Without it the checks still run in CI, but
 you find out after the push instead of before.
 
-Edit a file in `site/`, reload the page. There is nothing to rebuild and
-nothing to restart. `serve.py` forwards `/api/` to the live site, so profiles,
-prices and the feedback board work from a fresh checkout.
+```
+npm --prefix next ci                  # once, and after package-lock.json moves
+npm --prefix next run dev             # http://localhost:5180
+```
 
-Use `--offline` when working on pages that hold no data. Be considerate with the
-default upstream: it is a home server, and it rate limits.
+The front is `next/`: React and TypeScript, built by Vite and rendered to one
+HTML file per page and language by `next/prerender.mjs`. The dev server
+reloads on save. `site/` holds the pages that have not been moved to `next/`
+yet; edit a file there and reload, there is nothing to rebuild. Both servers
+forward `/api/` to the live site, so profiles, prices and the feedback board
+work from a fresh checkout.
+
+Use `--offline` with `serve.py` when working on pages that hold no data. Be
+considerate with the default upstream: it is a home server, and it rate limits.
 
 ## House style
 
-**No dependencies and no build step.** No npm, no bundler, no framework, no
-preprocessor. If something needs a package to work, it does not go in.
+**Few dependencies, and each one argued for.** `next/package.json` is React,
+React DOM, Motion, Tailwind, TypeScript and Vite. A package that does one
+function's worth of work is a function instead; a new dependency is a pull
+request that says what it replaces and what it weighs in the bundle.
 
-This is the rule for the tree you are reading, and the tree you are reading is
-what is served. A rebuild of the front on React and Vite is being weighed
-separately; until it replaces `site/`, a pull request against `site/` is held
-to the line above, and a patch that brings a package in is a patch this
-repository cannot take even if the rebuild later makes the same choice.
+**The text is in the file.** Every page `next/` serves is prerendered through
+`react-dom/server`, so it reads without a script. Data from the service
+arrives after hydration; the words that explain the page do not wait for it.
+`tools/check.sh` fails when a page stops rendering to a file.
 
-**Vanilla everything.** Plain DOM APIs, plain CSS, modern syntax without
-transpiling. `lib.js` has the shared helpers; use `h()` to build elements rather
-than assembling HTML strings.
+**Components, typed.** A screen is a React component in `next/src`, and the
+shared pieces - panel, table, chip, meter, nav - come from `src/ui-kit`, which
+is generated from [SteamProfiler.UI](https://github.com/GustavoHSCruz/SteamProfiler.UI)
+and edited there, not here.
+
+**`site/` until it is gone.** Pages not yet moved are plain HTML, CSS and
+JavaScript with no build step. A fix there stays in that style, with `h()` from
+`lib.js` rather than HTML strings; a new feature goes in `next/`.
 
 **Comments say why.** The code already says what it does. A comment earns its
 place by recording the reason a thing is the way it is, especially when the
