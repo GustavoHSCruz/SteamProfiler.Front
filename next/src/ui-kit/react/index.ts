@@ -1,4 +1,4 @@
-// SteamProfiler.UI 0.1.0 (dacc046+dirty). Generated: edit github.com/GustavoHSCruz/SteamProfiler.UI, not this copy.
+// SteamProfiler.UI 0.1.0 (76d7fe3+dirty). Generated: edit github.com/GustavoHSCruz/SteamProfiler.UI, not this copy.
 export { cx } from './cx';
 export { Button, ButtonLink } from './Button';
 export type { ButtonProps, ButtonLinkProps, ButtonVariant, ButtonSize } from './Button';
@@ -22,3 +22,13 @@ export type { StatProps } from './Stat';
 export { Row } from './Row';
 export type { RowProps } from './Row';
 export { Skeleton } from './Skeleton';
+export { Switch } from './Switch';
+export type { SwitchProps } from './Switch';
+export { Table } from './Table';
+export type { TableProps } from './Table';
+export { Nav } from './Nav';
+export type { NavProps, NavItem } from './Nav';
+export { Meter } from './Meter';
+export type { MeterProps } from './Meter';
+export { Lamp, Code, Empty, Bar, BarGap } from './Bits';
+export type { LampTone } from './Bits';
