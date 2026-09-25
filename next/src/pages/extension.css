@@ -1,0 +1,47 @@
+/* The Companion's panel, drawn: the markup and colours of the real one, so it
+   is read in the reader's language and a change to the extension is a change
+   to these lines rather than a new screenshot. */
+.cmp-panel {
+  padding: 20px;
+  color: #f4f1eb;
+  background: linear-gradient(135deg, #17141d 0%, #0b0a0e 70%);
+  border: 1px solid #4a4458;
+  border-left: 4px solid var(--color-amber);
+  border-radius: 2px;
+  /* Arial, and not the site's faces, because that is the font the panel
+     inherits from the store page it is drawn on. */
+  font-family: Arial, Helvetica, sans-serif;
+}
+.cmp-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.cmp-identity { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.cmp-mark {
+  display: grid; place-items: center; flex: 0 0 42px; height: 42px;
+  color: #0b0a0e; background: var(--color-amber);
+  font-size: 16px; font-weight: 900; letter-spacing: -1px;
+}
+.cmp-kicker { margin: 0 0 3px; color: #aaa3b4; font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; }
+.cmp-title { margin: 0; color: #fff; font-size: 22px; line-height: 1.1; }
+.cmp-brand { flex: none; color: var(--color-amber); font-size: 12px; font-weight: 700; }
+.cmp-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin-top: 20px; background: #37323f; }
+.cmp-metric { min-width: 0; padding: 15px; background: #131117; }
+.cmp-metric strong { display: block; overflow: hidden; color: #fff; font-size: 20px; text-overflow: ellipsis; white-space: nowrap; }
+.cmp-metric span { display: block; margin-top: 5px; color: #98919f; font-size: 11px; letter-spacing: .5px; text-transform: uppercase; }
+.cmp-insights { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+.cmp-insight { min-width: 0; padding: 13px; background: #131117; border: 1px solid #312d38; }
+.cmp-insight > span { display: block; margin-bottom: 8px; color: #98919f; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; }
+.cmp-insight strong { display: block; color: #f4f1eb; font-size: 13px; line-height: 1.4; }
+.cmp-insight strong b { color: #fff; }
+.cmp-insight strong i { color: #aaa3b4; font-size: 11px; font-style: normal; font-weight: 400; }
+.cmp-insight em { display: block; margin-top: 6px; color: #aaa3b4; font-size: 11px; font-style: normal; }
+/* The opt-in section runs the width of the grid and carries the green edge
+   the real panel gives it: "this one is about you" is why it is a different
+   colour over there. */
+.cmp-personal { grid-column: 1 / -1; border-left: 3px solid #8bd49c; }
+.cmp-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+/* A picture of a button, not a button: there is nothing here for it to do. */
+.cmp-btn { padding: 10px 15px; color: #f4f1eb; background: #292530; border: 1px solid #4a4458; border-radius: 2px; font: 700 12px/1 Arial, Helvetica, sans-serif; }
+.cmp-btn--primary { color: #0b0a0e; background: var(--color-amber); border-color: var(--color-amber); }
+@media (max-width: 700px) {
+  .cmp-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cmp-insights { grid-template-columns: 1fr; }
+}

@@ -24,7 +24,16 @@ function classes(css) {
   return out;
 }
 
-const app = classes(fs.readFileSync('next/src/styles.css', 'utf8'));
+/* Every stylesheet the app ships except the design system's own copy. */
+const app = new Set();
+const walkApp = (dir) => {
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, e.name);
+    if (e.isDirectory()) { if (e.name !== 'ui-kit') walkApp(full); }
+    else if (e.name.endsWith('.css')) for (const c of classes(fs.readFileSync(full, 'utf8'))) app.add(c);
+  }
+};
+walkApp('next/src');
 const legacy = new Set();
 const walk = (dir) => {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -37,8 +46,8 @@ walk('site');
 
 const shared = [...app].filter((c) => legacy.has(c) && !c.startsWith('sp-')).sort();
 if (shared.length) {
-  console.error(`next/src/styles.css and site/ both style: ${shared.map((c) => '.' + c).join(' ')}`);
-  console.error('rename the one in next/src/styles.css; the site/ page would wear it too');
+  console.error(`next/src and site/ both style: ${shared.map((c) => '.' + c).join(' ')}`);
+  console.error('rename the one in next/src; the site/ page would wear it too');
   process.exit(1);
 }
 console.log(`no class shared between the app and ${legacy.size} site/ classes`);

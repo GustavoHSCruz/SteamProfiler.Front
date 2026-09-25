@@ -86,6 +86,14 @@ export const ROUTES: Route[] = [
     name: 'post', test: /^\/blog\/[a-z0-9][a-z0-9-]{0,79}(?:\/[a-z0-9][a-z0-9-]{0,79})?$/, title: 'blog.title', head: 'post', template: '/blog/x', src: 'src/pages/Post.tsx',
     page: lazyPage(() => import('./pages/Post')),
   },
+  {
+    name: 'extension', test: /^\/extension\/?$/, title: 'ext.doc', head: 'extension', prerender: ['/extension'], src: 'src/pages/Extension.tsx',
+    page: lazyPage(() => import('./pages/Extension')),
+  },
+  {
+    name: 'translate', test: /^\/translate\/?$/, title: 'tr.title', head: 'translate', prerender: ['/translate'], src: 'src/pages/Translate.tsx',
+    page: lazyPage(() => import('./pages/Translate')),
+  },
   /* ── Pages from site/, run by the legacy engine until they are rewritten ── */
   {
     name: 'profile', test: /^\/u\/[^/]+(?:\/.*)?$/, legacy: 'profile', template: '/u/_', src: 'legacy:profile',
@@ -106,14 +114,6 @@ export const ROUTES: Route[] = [
   {
     name: 'developers', test: /^\/developers(?:\/[a-z0-9][a-z0-9-]{0,39})?$/, legacy: 'developers', title: 'hs.dev_doc', prerender: ['/developers'], src: 'legacy:developers',
     page: legacyPage(() => import('legacy:developers')),
-  },
-  {
-    name: 'extension', test: /^\/extension\/?$/, legacy: 'extension', title: 'ext.doc', prerender: ['/extension'], src: 'legacy:extension',
-    page: legacyPage(() => import('legacy:extension')),
-  },
-  {
-    name: 'translate', test: /^\/translate\/?$/, legacy: 'translate', title: 'tr.title', prerender: ['/translate'], src: 'legacy:translate',
-    page: legacyPage(() => import('legacy:translate')),
   },
   {
     name: 'terms', test: /^\/terms\/?$/, legacy: 'terms', title: 'tos.title', prerender: ['/terms'], src: 'legacy:terms',
